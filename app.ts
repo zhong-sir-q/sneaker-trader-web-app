@@ -1,6 +1,7 @@
-import express, { Response, Request, response } from 'express';
+import express, { Response, Request } from 'express';
 import mysql from 'mysql';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 import { Stripe } from 'stripe';
 import { config } from 'dotenv';
 
@@ -10,8 +11,8 @@ const app = express();
 
 // enable cors
 app.use(cors());
-app.use(express.json()); // parsing application/json
-app.use(express.urlencoded({ extended: false }));
+app.use('/api', express.json()); // parsing application/json
+
 app.get('/', (req, res) => res.send('Homepage is here'));
 
 // dynamically translate the datatype of the columns of the database to here
@@ -66,11 +67,13 @@ const stripe = new Stripe(process.env.stripeSecretKey as string, { apiVersion: '
 // would using a connection pool here be better?
 connection.connect();
 
-// TODO: assign primary key to the products table
+const formatInsertAllColumnsQuery = (tableName: string, obj: { [key: string]: string | number }) =>
+  `insert into ${tableName} (${formatColumns(obj)}) values (${formatValues(obj)})`;
+
 const dbCreateProduct = (conn: mysql.Connection, product: Product) => {
-  const createProductQuery = `insert into products (${formatColumns(product)}) values (${formatValues(product)})`;
-  conn.query(createProductQuery, (err, res) => {
-    if (err) throw new Error(`Error creating the product in the database: ${err}`);
+  const createProductQuery = formatInsertAllColumnsQuery('Products', product);
+  conn.query(createProductQuery, (err) => {
+    if (err) throw new Error(`Error creating the product in the database: ${err.message}`);
   });
 };
 
@@ -107,6 +110,8 @@ const runAsyncWrapper = (cb: any) => (res: Response<any>, req: Request<any>, nex
 
 const formatSneakerMetaData = (shoe: Sneaker) => {
   const sneakerMetaData = makeDeepCopy(shoe);
+  // the name and description are passed by argument
+  // to create the product so it is not needed here
   delete sneakerMetaData.name;
   delete sneakerMetaData.description;
 
@@ -123,7 +128,7 @@ const formatDbSneaker = (shoe: Sneaker, productId: string, priceId: string) => {
 
 // create a product in stripe -> use the product id to create the price -> using the price
 app.post(
-  '/product',
+  '/api/product',
   runAsyncWrapper(async (req: Request<any>, res: Response<any>) => {
     if (hasValidBody(req)) {
       const sneaker = req.body;
@@ -155,41 +160,45 @@ app.post(
   })
 );
 
-const getUserStripeCustomerId = (conn: mysql.Connection, userId: string, cb: FetchDbDataCallback) => {
-  const query = 'select stripe_customer_id from users where id = ?';
-  conn.query(query, userId, (err, data) => {
+const getCustomerId = (conn: mysql.Connection, userId: string, cb: FetchDbDataCallback) => {
+  const query = 'select id from Customers where userId = ?';
+
+  conn.query(query, userId, (err, data: { id: string }[]) => {
     if (err) cb(err, undefined);
     // no customer id in respect to the user id
     if (!data[0]) cb(undefined, undefined);
-    else cb(undefined, data[0].stripe_customer_id);
+    else cb(undefined, data[0].id);
   });
 };
 
-type DbUser = {
+type DbCustomer = {
   id: string;
-  stripe_customer_id: string;
+  userId: string;
 };
 
 type FetchDbDataCallback = (err: mysql.MysqlError | undefined, queryResult: string | undefined) => Promise<void>;
 
-const dbCreateUser = (conn: mysql.Connection, user: DbUser) => {
-  const createUserQuery = `insert into users (${formatColumns(user)}) values (${formatValues(user)})`;
-  conn.query(createUserQuery, (err, res) => {
-    if (err) throw new Error(`Error creating the user in the database: ${err}`);
+const dbCreateCustomer = (conn: mysql.Connection, customer: DbCustomer) => {
+  const createCustoerQuery = formatInsertAllColumnsQuery('Customers', customer);
+
+  conn.query(createCustoerQuery, (err) => {
+    if (err) throw new Error(`Error creating the user in the database: ${err.message}`);
   });
 };
 
-app.get('/user/:id', (req, res, next) => {
-  const userId = req.params.id;
-  getUserStripeCustomerId(connection, userId, async (err, queryResult) => {
+// if the customer does not already exists in db, then create a customer in stripe ->  create a user in the table
+app.get('/api/customer/:userId', (req, res, next) => {
+  const userId = req.params.userId;
+  getCustomerId(connection, userId, async (err, queryResult) => {
     if (err) next(err);
 
     if (!queryResult) {
-      // TODO: the route will accept the user's email address in the query string
-      // so it will be passed by argument to create the user in stripe
-      // create a customer in stripe ->  create a user in the table
-      const customer = await stripe.customers.create();
-      dbCreateUser(connection, { id: userId, stripe_customer_id: customer.id });
+      // this check may not be necessary, but use it just to be safe
+      const createCustomerOption = typeof req.query.email === 'string' ? { email: req.query.email } : {};
+      const customer = await stripe.customers.create(createCustomerOption);
+
+      dbCreateCustomer(connection, { id: customer.id, userId });
+
       res.send(customer.id);
     } else res.send(queryResult);
   });
@@ -216,11 +225,11 @@ const formatCreateSessionOption = (args: FormatCreateSessionOptionArgs) => ({
   payment_method_types: ['card' as 'card'],
   // TODO: the url here should depend on the developent stage
   success_url: `http://localhost:8000/success/?session_id={CHECKOUT_SESSION_ID}`,
-  cancel_url: `http://localhost:8000/success/cancelled`,
+  cancel_url: `http://localhost:8000/cancelled`,
 });
 
 app.get(
-  '/checkoutSession',
+  '/api/checkoutSession',
   runAsyncWrapper(async (req: Request<any>, res: Response<any>) => {
     const session = await stripe.checkout.sessions.create(formatCreateSessionOption(req.query as FormatCreateSessionOptionArgs));
 
@@ -228,18 +237,40 @@ app.get(
   })
 );
 
-
-const endpointSecret = 'whsec_...';
+// the keys map to the columns of the BuyingHistory table
+type Transaction = {
+  payment_intent_id: string;
+  customer_id: string;
+  product_id: string;
+};
 
 // handle post-payments, in this case, record the user's transaction in buying history
 const onCheckoutSessionCompleted = (session: any) => {
-  const { payment_intent, metadata, customer } = session
-  const { productId } = metadata
-  const query = ''
-  connection.query(query)
-}
+  const { payment_intent, metadata, customer } = session;
+  const { productId } = metadata;
 
-app.post('/webhook/stripe', (req, ress) => {
+  const transaction: Transaction = {
+    payment_intent_id: payment_intent,
+    customer_id: customer,
+    product_id: productId,
+  };
+
+  const createTransactionQuery = formatInsertAllColumnsQuery('BuyingHistory', transaction);
+  connection.query(createTransactionQuery, (err) => {
+    if (err) throw new Error(`Error recording the transaction in BuyingHistory: ${err.message}`);
+  });
+};
+
+// use the secret defined from the dashboard
+const endpointSecret = 'whsec_BbHe6gRugqTRQUkBMShDJBxGBdwLksdG';
+
+// the user will be redirected to the success url when we acknowledge
+// that we have recieved the event by responding with the 200 status code
+
+
+// Use body-parser to retrieve the raw body as a buffer
+// match the raw body to content type application/json
+app.post('/webhook/stripe', bodyParser.raw({ type: 'application/json' }), (req, res) => {
   const sig = req.headers['stripe-signature']!;
 
   let event;
@@ -247,21 +278,21 @@ app.post('/webhook/stripe', (req, ress) => {
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
-    return response.status(400).send(`Webhook Error: ${err.message}`);
+    console.log(err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Handle the checkout.session.completed event
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
 
-    // Fulfill the purchase...
+    // record the transaction in the buying history
     onCheckoutSessionCompleted(session);
   }
 
   // Return a response to acknowledge receipt of the event
-  response.json({received: true});
+  res.json({ received: true });
 });
-
 
 const PORT = 4000;
 app.listen(PORT, () => console.log('Listening at', `http://localhost:${PORT}`));
