@@ -46,6 +46,13 @@ const formatValues = (obj: { [key: string]: string | number }) => {
   return doubleQuoteVals.join(', ');
 };
 
+// TODO:
+// how can I make my database interaction code-first, i.e. my code defines the schema of the table
+// rather than having to change the schema of the table, then come back and change the relevant area of the code?
+
+// how do I manage db migration, i.e. keep the history of different versions of the db
+
+// test is necessary to make sure the query works, it does what we expect it to do
 const connection = mysql.createConnection({
   host: process.env.host,
   user: process.env.user,
@@ -92,11 +99,11 @@ const makeDeepCopy = (obj: { [key: string]: any }) => {
  *
  * if there exists any error during the callback, it passes the
  * first error message to the next middleware router to handle
+ *
+ * NOTE: in express 5.X, the errors in async middleware handlers will be automatically handled,
+ * therefore there is no need for this custom wrapper when the express module gets updated
  */
-const runAsyncWrapper = (cb: any) => (res: Response<any>, req: Request<any>, next: any) => {
-  if (hasValidBody(req)) return cb(res, req, next).catch(next);
-  else throw new Error('Recieved invalid body');
-};
+const runAsyncWrapper = (cb: any) => (res: Response<any>, req: Request<any>, next: any) => cb(res, req, next).catch(next);
 
 const formatSneakerMetaData = (shoe: Sneaker) => {
   const sneakerMetaData = makeDeepCopy(shoe);
@@ -118,31 +125,33 @@ const formatDbSneaker = (shoe: Sneaker, productId: string, priceId: string) => {
 app.post(
   '/product',
   runAsyncWrapper(async (req: Request<any>, res: Response<any>) => {
-    const sneaker = req.body;
-    sneaker.price = Number(sneaker.price);
-    sneaker.size = Number(sneaker.size);
+    if (hasValidBody(req)) {
+      const sneaker = req.body;
+      sneaker.price = Number(sneaker.price);
+      sneaker.size = Number(sneaker.size);
 
-    // name is the required parameter to create a product
-    // use the optional description parameter, then the rest goes into the meta data field
-    const sneakerMetaData = formatSneakerMetaData(sneaker);
+      // name is the required parameter to create a product
+      // use the optional description parameter, then the rest goes into the meta data field
+      const sneakerMetaData = formatSneakerMetaData(sneaker);
 
-    const stripeProduct = await stripe.products.create({
-      name: sneaker.name,
-      description: sneaker.description,
-      metadata: sneakerMetaData,
-    });
+      const stripeProduct = await stripe.products.create({
+        name: sneaker.name,
+        description: sneaker.description,
+        metadata: sneakerMetaData,
+      });
 
-    const stripePrice = await stripe.prices.create({
-      unit_amount: dollarToCent(sneaker.price),
-      currency: 'nzd', // convert nzd to an environment variabl
-      product: stripeProduct.id,
-    });
+      const stripePrice = await stripe.prices.create({
+        unit_amount: dollarToCent(sneaker.price),
+        currency: 'nzd', // convert nzd to an environment variabl
+        product: stripeProduct.id,
+      });
 
-    // NOTE: remember the order the parameters, e.g. don't assign productId to the priceId parameter
-    const dbSneaker = formatDbSneaker(sneaker, stripeProduct.id, stripePrice.id);
-    dbCreateProduct(connection, dbSneaker);
+      // NOTE: remember the order the parameters, e.g. don't assign productId to the priceId parameter
+      const dbSneaker = formatDbSneaker(sneaker, stripeProduct.id, stripePrice.id);
+      dbCreateProduct(connection, dbSneaker);
 
-    res.send('A product is created in stripe and the database');
+      res.send('A product is created in stripe and the database');
+    } else throw new Error('Recieved invalid body');
   })
 );
 
@@ -176,6 +185,8 @@ app.get('/user/:id', (req, res, next) => {
     if (err) next(err);
 
     if (!queryResult) {
+      // TODO: the route will accept the user's email address in the query string
+      // so it will be passed by argument to create the user in stripe
       // create a customer in stripe ->  create a user in the table
       const customer = await stripe.customers.create();
       dbCreateUser(connection, { id: userId, stripe_customer_id: customer.id });
@@ -183,6 +194,74 @@ app.get('/user/:id', (req, res, next) => {
     } else res.send(queryResult);
   });
 });
+
+type FormatCreateSessionOptionArgs = {
+  priceId: string;
+  productId: string;
+  customerId: string;
+};
+
+// TODO: mannualy type the return object or install the type from somewhere
+const formatCreateSessionOption = (args: FormatCreateSessionOptionArgs) => ({
+  line_items: [
+    {
+      price: args.priceId,
+      quantity: 1,
+    },
+  ],
+  customer: args.customerId,
+  // customer_email: '', // TODO: provide this field so we can prefill the email field in checkout
+  mode: 'payment' as 'payment',
+  metadata: { productId: args.productId }, // this field will be used to create a record in the user's buying history when the checkout session is completed
+  payment_method_types: ['card' as 'card'],
+  // TODO: the url here should depend on the developent stage
+  success_url: `http://localhost:8000/success/?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `http://localhost:8000/success/cancelled`,
+});
+
+app.get(
+  '/checkoutSession',
+  runAsyncWrapper(async (req: Request<any>, res: Response<any>) => {
+    const session = await stripe.checkout.sessions.create(formatCreateSessionOption(req.query as FormatCreateSessionOptionArgs));
+
+    res.json({ sessionId: session.id });
+  })
+);
+
+
+const endpointSecret = 'whsec_...';
+
+// handle post-payments, in this case, record the user's transaction in buying history
+const onCheckoutSessionCompleted = (session: any) => {
+  const { payment_intent, metadata, customer } = session
+  const { productId } = metadata
+  const query = ''
+  connection.query(query)
+}
+
+app.post('/webhook/stripe', (req, ress) => {
+  const sig = req.headers['stripe-signature']!;
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    return response.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the checkout.session.completed event
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+
+    // Fulfill the purchase...
+    onCheckoutSessionCompleted(session);
+  }
+
+  // Return a response to acknowledge receipt of the event
+  response.json({received: true});
+});
+
 
 const PORT = 4000;
 app.listen(PORT, () => console.log('Listening at', `http://localhost:${PORT}`));
