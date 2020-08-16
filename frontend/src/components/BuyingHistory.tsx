@@ -1,31 +1,10 @@
 import React from 'react';
 import { CustomerContext } from 'providers/CustomerContextProvider';
 import { API_BASE_URL } from 'routes';
-import { DbSneaker } from './Products';
+import { BoughtSneaker, TransactionStatus } from '../../../shared'
 
-/**
- * TODO
- * 
- * change the KeyWords in the query statement to uppercase
- * 
- * combine the 2 repositories together
- * - is it possible to preserve the commit history of the 2
- * - do I have to create an individual repo and do it from there?
- * 
- * review what I have done and prioritze the things I need to do from the to-do list
- */
+ // review what I have done and prioritze the things I need to do from the to-do list
 
-type TransactionStatus = 'completed' | 'refunded';
-
-// after the server successfully refunds the shoe, it would change the status from 'completed' to 'refunded'
-type BuyingHistory = {
-  payment_intent_id: string;
-  customer_id: string;
-  product_id: string;
-  status: TransactionStatus;
-};
-
-type BoughtSneaker = BuyingHistory & DbSneaker;
 
 const getUserBuyingHistory = async (customerId: string): Promise<BoughtSneaker[]> => {
   if (customerId) {
@@ -61,7 +40,7 @@ const BuyingHistory = () => {
   return (
     <React.Fragment>
       {boughtSneakers.map((transaction, idx) => (
-        <BoughtSneaker key={idx} {...transaction} />
+        <BoughtSneakerItem key={idx} {...transaction} />
       ))}
     </React.Fragment>
   );
@@ -85,7 +64,7 @@ interface BoughtSneakerProps {
 // available keys from the get all buying history query result, payment_intent_id, customer_id,
 // product_id, status, id, size, brand, color_way, serial_number, price, price_id, description, name, image_url
 // TODO: add a button to refund the sneaker
-const BoughtSneaker = (props: BoughtSneakerProps) => {
+const BoughtSneakerItem = (props: BoughtSneakerProps) => {
   const { paymentIntentId, name, price, status } = props;
 
   return (

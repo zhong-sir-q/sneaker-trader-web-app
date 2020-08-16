@@ -1,0 +1,12 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "buildAll": "tsc -b frontend backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,5 +1,7 @@
 import { Response, Request } from 'express';
-import { FormatCreateSessionOptionArgs, BuyingHistory } from '../declarations';
+import { FormatCreateSessionOptionArgs } from '../@types/utils';
+import { BuyingHistory } from '../../../shared';
+
 
 // TODO: type guard to check the query must specify all columns that we have in the database
 // a simple check to make sure the request body is an object

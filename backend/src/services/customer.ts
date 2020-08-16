@@ -1,6 +1,6 @@
 import { Connection } from 'mysql';
 import { formatInsertAllColumnsQuery } from '../utils/formatDbQuery';
-import { FetchDbDataCallback } from '../declarations';
+import { FetchDbDataCallback } from '../@types/utils';
 
 type CustomerIdentity = {
   id: string;

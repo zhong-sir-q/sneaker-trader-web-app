@@ -1,5 +1,5 @@
 import { makeDeepCopy } from ".";
-import { DbSneaker } from "../declarations";
+import { DbSneaker } from "../../../shared";
 
 export const formatSneakerMetaData = (shoe: DbSneaker) => {
   const sneakerMetaData = makeDeepCopy(shoe);

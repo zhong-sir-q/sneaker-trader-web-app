@@ -2,7 +2,7 @@ import { Router } from 'express';
 import CustomerService from '../../services/customer';
 import { getMysqlDb } from '../../config/mysql';
 import stripe from '../../config/stripe';
-import { FetchDbDataCallback } from '../../declarations';
+import { FetchDbDataCallback } from '../../@types/utils';
 
 const route = Router();
 

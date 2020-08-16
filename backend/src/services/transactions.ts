@@ -1,6 +1,7 @@
 import { Connection } from 'mysql';
-import { FetchDbDataCallback, BuyingHistory } from '../declarations';
 import { formatInsertAllColumnsQuery } from '../utils/formatDbQuery';
+import { BuyingHistory } from '../../../shared';
+import { FetchDbDataCallback } from '../@types/utils';
 
 class TransactionService {
   conneciton: Connection;

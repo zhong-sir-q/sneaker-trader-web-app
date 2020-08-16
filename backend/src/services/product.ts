@@ -1,6 +1,8 @@
 import { Connection } from 'mysql';
-import { DbSneaker, FetchDbDataCallback } from '../declarations';
 import { formatInsertAllColumnsQuery } from '../utils/formatDbQuery';
+import { FetchDbDataCallback } from '../@types/utils';
+
+import { DbSneaker } from "../../../shared"
 
 class ProductService {
   connection: Connection;
