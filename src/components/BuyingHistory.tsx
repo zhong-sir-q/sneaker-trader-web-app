@@ -1,29 +1,46 @@
 import React from 'react';
 import { CustomerContext } from 'providers/CustomerContextProvider';
 import { API_BASE_URL } from 'routes';
+import { DbSneaker } from './Products';
 
 /**
- * - remove the gatsby framework
- * - update the gatsby dependent logic, e.g. would the api route still work? The logic of pulling the data from express
- * - carry on with the features below
+ * TODO
+ * 
+ * change the KeyWords in the query statement to uppercase
+ * 
+ * combine the 2 repositories together
+ * - is it possible to preserve the commit history of the 2
+ * - do I have to create an individual repo and do it from there?
+ * 
+ * review what I have done and prioritze the things I need to do from the to-do list
  */
 
-// Final workflow
-// the client can create the refund from that view, it sends a request along with the payment_intent id to express
+type TransactionStatus = 'completed' | 'refunded';
 
 // after the server successfully refunds the shoe, it would change the status from 'completed' to 'refunded'
+type BuyingHistory = {
+  payment_intent_id: string;
+  customer_id: string;
+  product_id: string;
+  status: TransactionStatus;
+};
 
-// NOTE: An ideal option would be to store the result in a global state store, so I do not have to make an API call
-// every time the user visits the buying history section. Hence the current solution may not be the most optimal one.
-const getUserBuyingHistory = async (customerId: string): Promise<BoughtSneakerProps[]> => {
-  // NOTE: sometimes this function will get called twice inside useEffect, the second the function
-  // is called will raise a 404 NOT FOUND error. I have not investigated the reason yet.
-  const buyingHistoryEndpoint = API_BASE_URL + `buying_history/${customerId}`;
+type BoughtSneaker = BuyingHistory & DbSneaker;
 
-  const response = await fetch(buyingHistoryEndpoint);
-  const data = await response.json();
+const getUserBuyingHistory = async (customerId: string): Promise<BoughtSneaker[]> => {
+  if (customerId) {
+    const buyingHistoryEndpoint = API_BASE_URL + `buying_history/${customerId}`;
+    const response = await fetch(buyingHistoryEndpoint);
+    const { transactions } = await response.json();
 
-  return data.transactions;
+    return transactions;
+  } else return [];
+};
+
+const extractBoughtSneakerProps = (sneakerTransaction: BoughtSneaker): BoughtSneakerProps => {
+  const { name, status, size, price, payment_intent_id, image_url } = sneakerTransaction;
+
+  return { name, status, size, price, paymentIntentId: payment_intent_id, imageUrl: image_url };
 };
 
 const BuyingHistory = () => {
@@ -32,9 +49,13 @@ const BuyingHistory = () => {
 
   React.useEffect(() => {
     (async () => {
-      const transactions: BoughtSneakerProps[] = await getUserBuyingHistory(customerId);
-      setBoughtSneakers(transactions);
+      const sneakerTransactions = await getUserBuyingHistory(customerId);
+      const allBoughtSneakers = sneakerTransactions.map((st) => extractBoughtSneakerProps(st));
+      setBoughtSneakers(allBoughtSneakers);
     })();
+
+    // useEffect depends on the state of the customerId because it will
+    // not be fetched using the context api immediately
   }, [customerId, setBoughtSneakers]);
 
   return (
@@ -46,9 +67,15 @@ const BuyingHistory = () => {
   );
 };
 
+const createRefund = async (paymentIntentId: string) => {
+  const refundEndpoint = API_BASE_URL + `refund/${paymentIntentId}`;
+
+  return fetch(refundEndpoint);
+};
+
 interface BoughtSneakerProps {
   name: string;
-  status: string;
+  status: TransactionStatus;
   size: number;
   price: number;
   paymentIntentId: string;
@@ -59,9 +86,31 @@ interface BoughtSneakerProps {
 // product_id, status, id, size, brand, color_way, serial_number, price, price_id, description, name, image_url
 // TODO: add a button to refund the sneaker
 const BoughtSneaker = (props: BoughtSneakerProps) => {
-  const { name, price } = props;
+  const { paymentIntentId, name, price, status } = props;
 
-  return <div />;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <p>{name}</p>
+      <p>{price}</p>
+      <p>{status}</p>
+      <button
+        disabled={status === 'refunded'}
+        onClick={() =>
+          createRefund(paymentIntentId)
+            .then((res) => res.json())
+            .then((j) => alert(j))
+            .catch((err) => alert(err.message))
+        }
+      >
+        Get Refund
+      </button>
+    </div>
+  );
 };
 
 export default BuyingHistory;

@@ -28,9 +28,9 @@ const App = () => {
             <strong>Sneaker Trader</strong>
           </p>
           <AmplifyAuthApp />
-          {/* <BuyingHistory /> */}
+          <BuyingHistory />
           <NewProductForm />
-          <Products />
+          <Products /> 
         </Layout>
       </AuthStateProvider>
     </CustomerContextProvider>

@@ -1,48 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Checkout from './Checkout';
+import { API_BASE_URL } from 'routes';
 
-// TODO: pull data from api calls in here
-
-// if the id is the primary key in the gatsby-mysql-plugin, it adds mysql__Products__ as the prefix to the pk
-const rmPluginPrimaryKeyPrefix = (pk: string) => {
-  const doubleUnderScoreSplit = pk.split('__');
-  const result = doubleUnderScoreSplit[doubleUnderScoreSplit.length - 1];
-  return result;
+// TODO: the type is copied and pasted from the server directory.
+// Need to put the schema in some shared repository.
+export type DbSneaker = {
+  id: string;
+  size: number;
+  brand: string;
+  color_way: string;
+  serial_number: string;
+  price: number;
+  price_id: string;
+  description: string;
+  name: string;
+  image_url?: string;
 };
 
-// TODO: handle the query error if the table in the database is empty
-const Products = () => (
-  <StaticQuery
-    query={graphql`
-      query allProducts {
-        allMysqlProducts {
-          edges {
-            node {
-              price
-              price_id
-              serial_number
-              brand
-              color_way
-              description
-              id
-              name
-              size
-            }
-          }
-        }
-      }
-    `}
-    render={(data) =>
-      data.allMysqlProducts.edges.map((e: { node: any }) => {
-        const id = rmPluginPrimaryKeyPrefix(e.node.id);
-        const { price_id, name, description } = e.node;
+const fetchAllProducts = async (): Promise<DbSneaker[]> => {
+  const endpoint = API_BASE_URL + 'products';
+  const response = await fetch(endpoint);
+  const { products } = await response.json();
 
-        return <Product key={e.node.id} id={id} priceId={price_id} name={name} description={description} />;
-      })
-    }
-  />
-);
+  return products;
+};
 
+const Products = () => {
+  const [products, setProducts] = useState<DbSneaker[]>([]);
+
+  useEffect(() => {
+    (async () => setProducts(await fetchAllProducts()))();
+  }, [products, setProducts]);
+
+  return (
+    <React.Fragment>
+      {products.map((p) => (
+        <Product key={p.id} {...p} priceId={p.price_id} />
+      ))}
+    </React.Fragment>
+  );
+};
 
 interface ProductProps {
   priceId: string;
