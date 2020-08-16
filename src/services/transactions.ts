@@ -18,7 +18,7 @@ class TransactionService {
   getCustomerBuyingHistory(customerId: string, cb: FetchDbDataCallback) {
     // get all the products one customer have bought
     const customerBuyingHistoryQuery =
-      'select * from BuyingHistory left join Products on BuyingHistory.product_id = Products.id where BuyingHistory.customer_id = ?';
+      'SELECT * FROM BuyingHistory LEFT JOIN Products ON BuyingHistory.product_id = Products.id WHERE BuyingHistory.customer_id = ?';
 
     this.conneciton.query(customerBuyingHistoryQuery, customerId, (err, res) => {
       if (err) cb(err, undefined);

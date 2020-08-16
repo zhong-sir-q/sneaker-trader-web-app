@@ -24,7 +24,7 @@ class CustomerService {
   // pass the fetched data if any, to the callback function
   getCustomerId(userId: string, cb: FetchDbDataCallback) {
       // fetch the customerId using the userId
-    const query = 'select id from Customers where userId = ?';
+    const query = 'SELECT id FROM Customers WHERE userId = ?';
 
     this.connection.query(query, userId, (err, data: { id: string }[]) => {
       if (err) cb(err, undefined);

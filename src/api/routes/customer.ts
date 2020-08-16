@@ -8,10 +8,11 @@ const route = Router();
 
 export default (app: Router) => {
   app.use('/customer', route);
-  
+
   // if the customer does not already exists in db, then create a customer in stripe ->  create a user in the table
   route.get('/:userId', (req, res, next) => {
     const userId = req.params.userId;
+
     const mysqlConnection = getMysqlDb();
     const CustomerServiceInstance = new CustomerService(mysqlConnection);
 

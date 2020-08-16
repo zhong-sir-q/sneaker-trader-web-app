@@ -54,6 +54,7 @@ export const formatTransaction = (checkoutSession: any) => {
     payment_intent_id: payment_intent,
     customer_id: customer,
     product_id: productId,
+    status: 'completed'
   };
 
   return transaction;
