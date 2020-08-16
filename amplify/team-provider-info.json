@@ -1,0 +1,22 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-sneakertrader-dev-201005-authRole",
+            "UnauthRoleArn": "arn:aws:iam::290345460194:role/amplify-sneakertrader-dev-201005-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::290345460194:role/amplify-sneakertrader-dev-201005-authRole",
+            "Region": "ap-southeast-2",
+            "DeploymentBucketName": "amplify-sneakertrader-dev-201005-deployment",
+            "UnauthRoleName": "amplify-sneakertrader-dev-201005-unauthRole",
+            "StackName": "amplify-sneakertrader-dev-201005",
+            "StackId": "arn:aws:cloudformation:ap-southeast-2:290345460194:stack/amplify-sneakertrader-dev-201005/e41cbec0-dae0-11ea-8b33-0ad2fa41fde2",
+            "AmplifyAppId": "d3pa3whjdprc96"
+        },
+        "categories": {
+            "auth": {
+                "sneakertrader911d2426": {
+                    "hostedUIProviderCreds": "[]"
+                }
+            }
+        }
+    }
+}

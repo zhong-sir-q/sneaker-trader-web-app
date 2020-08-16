@@ -1,26 +1,40 @@
+import Amplify, { Auth } from 'aws-amplify';
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+import Layout from 'components/Layout';
+import Products from 'components/Products';
+import BuyingHistory from 'components/BuyingHistory';
+import NewProductForm from 'components/NewProductForm';
+import AmplifyAuthApp from 'components/auth/AmplifyAuthApp';
+
+import AuthStateProvider from 'providers/AuthStateProvider';
+import CustomerContextProvider from 'providers/CustomerContextProvider';
+
+import 'css/global.css';
+
+// @ts-ignore
+import awsconfig from 'aws-exports';
+
+Amplify.configure(awsconfig);
+
+
+const App = () => {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CustomerContextProvider>
+      <AuthStateProvider>
+        <Layout>
+          <p>
+            <strong>Sneaker Trader</strong>
+          </p>
+          <AmplifyAuthApp />
+          {/* <BuyingHistory /> */}
+          <NewProductForm />
+          <Products />
+        </Layout>
+      </AuthStateProvider>
+    </CustomerContextProvider>
   );
-}
+};
 
 export default App;
