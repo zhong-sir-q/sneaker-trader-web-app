@@ -1,5 +1,5 @@
 import { Connection } from 'mysql';
-import { formatInsertAllColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery } from '../utils/formatDbQuery';
 import { BuyingHistory } from '../../../shared';
 import { FetchDbDataCallback } from '../@types/utils';
 
@@ -10,7 +10,7 @@ class TransactionService {
   }
 
   create(transaction: BuyingHistory) {
-    const createTransactionQuery = formatInsertAllColumnsQuery('BuyingHistory', transaction);
+    const createTransactionQuery = formatInsertColumnsQuery('BuyingHistory', transaction);
     this.conneciton.query(createTransactionQuery, (err) => {
       if (err) throw new Error(`Error recording the transaction in BuyingHistory: ${err.message}`);
     });

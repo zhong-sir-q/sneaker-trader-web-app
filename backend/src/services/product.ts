@@ -1,5 +1,5 @@
 import { Connection } from 'mysql';
-import { formatInsertAllColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery } from '../utils/formatDbQuery';
 import { FetchDbDataCallback } from '../@types/utils';
 
 import { DbSneaker } from "../../../shared"
@@ -14,7 +14,7 @@ class ProductService {
   }
 
   create(product: DbSneaker) {
-    const createProductQuery = formatInsertAllColumnsQuery(this.tableName, product);
+    const createProductQuery = formatInsertColumnsQuery(this.tableName, product);
     this.connection.query(createProductQuery, (err) => {
       if (err) throw new Error(`Error creating the product in the database: ${err.message}`);
     });

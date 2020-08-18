@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "sneakertrader911d2426_identitypool_911d2426",
+    "identityPoolName": "sneakertrader71d06a4f_identitypool_71d06a4f",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "sneake911d2426",
-    "userPoolName": "sneakertrader911d2426_userpool_911d2426",
+    "resourceNameTruncated": "sneake71d06a4f",
+    "userPoolName": "sneakertrader71d06a4f_userpool_71d06a4f",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -18,7 +18,9 @@
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
-        "email"
+        "email",
+        "name",
+        "phone_number"
     ],
     "userpoolClientGenerateSecret": true,
     "userpoolClientRefreshTokenValidity": 30,
@@ -28,10 +30,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "sneake911d2426_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "sneake71d06a4f_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "911d2426",
-    "resourceName": "sneakertrader911d2426",
+    "sharedId": "71d06a4f",
+    "resourceName": "sneakertrader71d06a4f",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -45,16 +47,11 @@
             "Arn"
         ]
     },
-    "useDefault": "defaultSocial",
-    "hostedUI": true,
+    "useDefault": "default",
     "usernameAttributes": [
         "email"
     ],
     "triggers": "{}",
-    "hostedUIDomainName": "sneakertrader",
-    "authProvidersUserPool": [],
-    "hostedUIProviderMeta": "[]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:8000/\"],\"LogoutURLs\":[\"http://localhost:8000/\"]}",
     "userPoolGroupList": [],
     "parentStack": {
         "Ref": "AWS::StackId"

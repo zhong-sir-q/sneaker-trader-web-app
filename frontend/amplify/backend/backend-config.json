@@ -1,6 +1,6 @@
 {
 	"auth": {
-		"sneakertrader911d2426": {
+		"sneakertrader71d06a4f": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": []

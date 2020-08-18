@@ -17,6 +17,7 @@ export default (app: Router) => {
     '/',
     runAsyncWrapper(async (req: Request<any>, res: Response<any>) => {
       if (hasValidBody(req)) {
+        // TODO: give the variable a type
         const sneaker = req.body;
         sneaker.price = Number(sneaker.price);
         sneaker.size = Number(sneaker.size);

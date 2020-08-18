@@ -38,13 +38,13 @@ export const formatCreateSessionOption = (args: FormatCreateSessionOptionArgs) =
     },
   ],
   customer: args.customerId,
-  // customer_email: '', // TODO: provide this field so we can prefill the email field in checkout
   mode: 'payment' as 'payment',
-  metadata: { productId: args.productId }, // this field will be used to create a record in the user's buying history when the checkout session is completed
+  // this field will be used to create a record in the user's 
+  // buying history when the checkout session is completed
+  metadata: { productId: args.productId },
   payment_method_types: ['card' as 'card'],
-  // TODO: the url here should depend on the developent stage
-  success_url: `http://localhost:8000/success/?session_id={CHECKOUT_SESSION_ID}`,
-  cancel_url: `http://localhost:8000/cancelled`,
+  success_url: process.env.CLIENT_BASE_URI + `success/?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: process.env.CLIENT_BASE_URI + `cancelled`,
 });
 
 // the argument is recieved from the stripe webhook evet

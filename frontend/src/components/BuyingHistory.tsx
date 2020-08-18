@@ -3,8 +3,6 @@ import { CustomerContext } from 'providers/CustomerContextProvider';
 import { API_BASE_URL } from 'routes';
 import { BoughtSneaker, TransactionStatus } from '../../../shared'
 
- // review what I have done and prioritze the things I need to do from the to-do list
-
 
 const getUserBuyingHistory = async (customerId: string): Promise<BoughtSneaker[]> => {
   if (customerId) {

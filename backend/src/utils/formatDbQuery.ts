@@ -7,13 +7,33 @@ export const formatColumns = (obj: QueryObject) => {
   return columns.join(', ');
 };
 
-export const formatValues = (obj: QueryObject) => {
+export const doubleQuotedValues = (obj: QueryObject) => {
   const values = Object.values(obj);
   // only add double quotes around the values that do not have the type of string
-  const doubleQuoteVals = values.map((val) => (typeof val === 'string' || typeof val === 'undefined' ? `"${val}"` : val));
+  const doubleQuoteVals = values.map((val) => (typeof val === 'number' ? val : `"${val}"`));
 
-  return doubleQuoteVals.join(', ');
+  return doubleQuoteVals;
 };
 
-export const formatInsertAllColumnsQuery = (tableName: string, obj: QueryObject) =>
-  `insert into ${tableName} (${formatColumns(obj)}) values (${formatValues(obj)})`;
+export const formatInsertColumnsQuery = (tableName: string, obj: QueryObject) =>
+  `insert into ${tableName} (${formatColumns(obj)}) values (${doubleQuotedValues(obj).join(', ')})`;
+
+// output look likes, key_one = val_one, key_two = val_two ...,
+// where the value should be double quoted if it is not a number
+const formatSetQuery = (obj: QueryObject) => {
+  const doubleQuoteVals = doubleQuotedValues(obj);
+  let output = '';
+  const length = Object.keys(obj).length
+
+  Object.keys(obj).forEach((column, idx) => {
+    const end = idx < length - 1 ? ', ' : ' '
+    const temp = column + '=' + doubleQuoteVals[idx] + end;
+    output += temp;
+  });
+
+  return output;
+};
+
+// condition is the WHERE statement
+export const formatUpdateColumnsQuery = (tableName: string, obj: QueryObject, condition: string) =>
+  `UPDATE ${tableName} SET ${formatSetQuery(obj)}` + condition;
