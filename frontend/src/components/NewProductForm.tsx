@@ -1,25 +1,12 @@
 import React from 'react';
 
 import { AuthStateContext } from 'providers/AuthStateProvider';
-import { API_BASE_URL } from 'routes';
+
 
 /**
  * TODO:
  * - delete the commit history credentials that I have stored on devops
  */
-
-const stripeCreateProductPromise = (formSneakerData: SneakerFormData) => {
-  const productEndpoint = API_BASE_URL + 'product';
-
-  return fetch(productEndpoint, {
-    method: 'POST',
-    body: JSON.stringify(formSneakerData),
-    headers: {
-      // necessary header to make sure express parses the data correctly
-      'Content-Type': 'application/json',
-    },
-  });
-};
 
 const INIT_STATE = {
   size: '',
@@ -52,7 +39,7 @@ type SneakerFormData = typeof INIT_STATE;
  * - shoe brand will be a dropdown and auto-suggestion, same with the color way
  * - shoe size will be a dropdown select
  */
-const validSneakerInfo = (sneaker: SneakerFormData) => true;
+const validSneakerInfo = (sneakerFormaData: SneakerFormData) => true;
 
 const NewProductForm = () => {
   const { isUserSignedIn } = React.useContext(AuthStateContext);
@@ -73,18 +60,6 @@ const NewProductForm = () => {
     }
 
     if (validSneakerInfo(sneakerInfo)) {
-      stripeCreateProductPromise(sneakerInfo)
-        .then((res) => {
-          if (res.status === 200) {
-            console.log('Successfully created the product');
-            setSneakerInfo(INIT_STATE);
-          } else {
-            // because the sneaker form data is valid
-            alert('Sorry, there maybe some error with our server');
-            throw new Error('Unsuccessful request to create the product');
-          }
-        })
-        .catch((err) => console.log('Error when creating the product', err));
     } else alert('Some of the fields is invalid');
   };
 

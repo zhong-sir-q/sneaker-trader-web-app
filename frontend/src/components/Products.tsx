@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Checkout from './Checkout';
 import { API_BASE_URL } from 'routes';
 import { DbSneaker } from '../../../shared';
 
@@ -21,27 +20,25 @@ const Products = () => {
   return (
     <React.Fragment>
       {products.map((p) => (
-        <Product key={p.id} {...p} priceId={p.price_id} />
+        <Product key={p.id} {...p} />
       ))}
     </React.Fragment>
   );
 };
 
 interface ProductProps {
-  priceId: string;
   name: string;
   description: string;
   id: string;
 }
 
 const Product = (props: ProductProps) => {
-  const { id, name, description, priceId } = props;
+  const { name, description } = props;
 
   return (
     <div>
       <p>{name}</p>
       <p>{description}</p>
-      <Checkout priceId={priceId} productId={id} />
     </div>
   );
 };

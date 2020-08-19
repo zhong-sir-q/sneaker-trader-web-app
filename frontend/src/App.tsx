@@ -3,49 +3,36 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Layout from 'components/Layout';
+import Profile from 'components/Profile';
 import Products from 'components/Products';
-import BuyingHistory from 'components/BuyingHistory';
 import NewProductForm from 'components/NewProductForm';
 import AmplifyAuthApp from 'components/auth/AmplifyAuthApp';
-import CheckoutSuccess from 'components/CheckoutSuccess';
-import CheckoutCancelled from 'components/CheckoutCancelled';
 
 import AuthStateProvider from 'providers/AuthStateProvider';
-import CustomerContextProvider from 'providers/CustomerContextProvider';
-
-import 'css/global.css';
 
 // @ts-ignore
 import awsconfig from 'aws-exports';
-import Profile from 'components/Profile';
+
+import 'css/global.css';
 
 Amplify.configure(awsconfig);
 
 const App = () => {
   return (
-    <CustomerContextProvider>
-      <AuthStateProvider>
-        <Router>
-          <Switch>
-            <Route path="/success">
-              <CheckoutSuccess />
-            </Route>
-            <Route path="/cancelled">
-              <CheckoutCancelled />
-            </Route>
-            <Route path="/">
-              <Layout>
-                <Profile />
-                <BuyingHistory />
-                <AmplifyAuthApp />
-                <NewProductForm />
-                <Products />
-              </Layout>
-            </Route>
-          </Switch>
-        </Router>
-      </AuthStateProvider>
-    </CustomerContextProvider>
+    <Router>
+      <Switch>
+        <Route path="/">
+          <AuthStateProvider>
+            <Layout>
+              <Profile />
+              <AmplifyAuthApp />
+              <NewProductForm />
+              <Products />
+            </Layout>
+          </AuthStateProvider>
+        </Route>
+      </Switch>
+    </Router>
   );
 };
 
