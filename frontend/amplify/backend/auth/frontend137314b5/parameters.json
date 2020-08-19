@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "sneakertrader71d06a4f_identitypool_71d06a4f",
+    "identityPoolName": "frontend137314b5_identitypool_137314b5",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "sneake71d06a4f",
-    "userPoolName": "sneakertrader71d06a4f_userpool_71d06a4f",
+    "resourceNameTruncated": "fronte137314b5",
+    "userPoolName": "frontend137314b5_userpool_137314b5",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -19,7 +19,8 @@
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
         "email",
-        "name",
+        "family_name",
+        "given_name",
         "phone_number"
     ],
     "userpoolClientGenerateSecret": true,
@@ -30,10 +31,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "sneake71d06a4f_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "fronte137314b5_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "71d06a4f",
-    "resourceName": "sneakertrader71d06a4f",
+    "sharedId": "137314b5",
+    "resourceName": "frontend137314b5",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -51,11 +52,22 @@
     "usernameAttributes": [
         "email"
     ],
-    "triggers": "{}",
+    "triggers": "{\"CustomMessage\":[\"verification-link\"]}",
     "userPoolGroupList": [],
+    "verificationBucketName": "frontend137314b5verificationbucket",
     "parentStack": {
         "Ref": "AWS::StackId"
     },
     "permissions": [],
-    "dependsOn": []
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "frontend137314b5CustomMessage",
+            "triggerProvider": "Cognito",
+            "attributes": [
+                "Arn",
+                "Name"
+            ]
+        }
+    ]
 }

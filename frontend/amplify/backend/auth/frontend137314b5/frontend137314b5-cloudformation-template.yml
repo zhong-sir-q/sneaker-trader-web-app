@@ -9,6 +9,18 @@ Parameters:
     Type: String
   
   
+  
+  
+  functionfrontend137314b5CustomMessageArn: 
+    Type: String
+    Default: functionfrontend137314b5CustomMessageArn
+  
+  functionfrontend137314b5CustomMessageName: 
+    Type: String
+    Default: functionfrontend137314b5CustomMessageName
+  
+  
+  
 
     
   identityPoolName:
@@ -94,7 +106,10 @@ Parameters:
                       
   userPoolGroupList:
     Type: CommaDelimitedList
-                        
+                  
+  verificationBucketName:
+    Type: String
+                    
   parentStack:
     Type: String
                 
@@ -109,13 +124,34 @@ Conditions:
 
 Resources:
   
+  CustomMessageConfirmationBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: "Retain"
+    Properties:
+      BucketName:  !If [ShouldNotCreateEnvResources, !Ref verificationBucketName, !Join ['',[!Ref verificationBucketName, '-', !Ref env]]]
+      AccessControl: "Private"
+      WebsiteConfiguration:
+        IndexDocument: "index.html"
+        ErrorDocument: "index.html"
+      CorsConfiguration:
+        CorsRules:
+          - 
+            AllowedHeaders:
+              - "Authorization" 
+              - "Content-Length"
+            AllowedMethods:
+              - "GET"
+            AllowedOrigins:
+              - "*"
+            MaxAge: 3000
+  
   
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, 'sneake71d06a4f_sns-role', !Join ['',[ 'sns', '71d06a4f', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, 'fronte137314b5_sns-role', !Join ['',[ 'sns', '137314b5', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -127,10 +163,10 @@ Resources:
               - "sts:AssumeRole"
             Condition: 
               StringEquals:
-                sts:ExternalId: sneake71d06a4f_role_external_id
+                sts:ExternalId: fronte137314b5_role_external_id
       Policies: 
         - 
-          PolicyName: sneake71d06a4f-sns-policy
+          PolicyName: fronte137314b5-sns-policy
           PolicyDocument: 
             Version: "2012-10-17"
             Statement: 
@@ -156,7 +192,12 @@ Resources:
           Mutable: true
         
         -
-          Name: name
+          Name: family_name
+          Required: true
+          Mutable: true
+        
+        -
+          Name: given_name
           Required: true
           Mutable: true
         
@@ -166,6 +207,19 @@ Resources:
           Mutable: true
         
       
+      
+      LambdaConfig:
+        
+        
+          CustomMessage: !Ref functionfrontend137314b5CustomMessageArn
+        
+        
+        
+        
+        
+        
+        
+        
       
       
       AutoVerifiedAttributes: !Ref autoVerifiedAttributes
@@ -188,10 +242,19 @@ Resources:
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: sneake71d06a4f_role_external_id
+        ExternalId: fronte137314b5_role_external_id
     
   
     
+  
+  UserPoolCustomMessageLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref functionfrontend137314b5CustomMessageName
+      SourceArn: !GetAtt UserPool.Arn
     
   
     
@@ -208,7 +271,7 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: sneake71d06a4f_app_clientWeb
+      ClientName: fronte137314b5_app_clientWeb
       
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
@@ -218,7 +281,7 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: sneake71d06a4f_app_client
+      ClientName: fronte137314b5_app_client
       
       GenerateSecret: !Ref userpoolClientGenerateSecret
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
@@ -229,7 +292,7 @@ Resources:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',['upClientLambdaRole', '71d06a4f', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',['upClientLambdaRole', '137314b5', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -283,7 +346,7 @@ Resources:
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: sneake71d06a4f_userpoolclient_lambda_iam_policy
+      PolicyName: fronte137314b5_userpoolclient_lambda_iam_policy
       Roles: 
         - !Ref UserPoolClientRole
       PolicyDocument:
@@ -300,7 +363,7 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: sneake71d06a4f_userpoolclient_lambda_log_policy
+      PolicyName: fronte137314b5_userpoolclient_lambda_log_policy
       Roles: 
         - !Ref UserPoolClientRole
       PolicyDocument:
@@ -340,7 +403,7 @@ Resources:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'sneakertrader71d06a4f_identitypool_71d06a4f', !Join ['',['sneakertrader71d06a4f_identitypool_71d06a4f', '__', !Ref env]]]
+      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'frontend137314b5_identitypool_137314b5', !Join ['',['frontend137314b5_identitypool_137314b5', '__', !Ref env]]]
       
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient

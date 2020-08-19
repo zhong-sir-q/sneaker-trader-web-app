@@ -1,9 +1,26 @@
 {
+	"function": {
+		"frontend137314b5CustomMessage": {
+			"build": true,
+			"providerPlugin": "awscloudformation",
+			"service": "Lambda"
+		}
+	},
 	"auth": {
-		"sneakertrader71d06a4f": {
+		"frontend137314b5": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
-			"dependsOn": []
+			"dependsOn": [
+				{
+					"category": "function",
+					"resourceName": "frontend137314b5CustomMessage",
+					"triggerProvider": "Cognito",
+					"attributes": [
+						"Arn",
+						"Name"
+					]
+				}
+			]
 		}
 	}
 }
