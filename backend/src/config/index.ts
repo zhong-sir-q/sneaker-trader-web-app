@@ -10,7 +10,6 @@ const config = {
     password: process.env.dbPassword,
     database: process.env.database,
   },
-  stripeSecretKey: process.env.stripeSecretKey as string,
   userPoolId: process.env.USER_POOL_ID as string,
   region: process.env.REGION as string
 };

@@ -9,12 +9,11 @@ import apiRoutes from './api';
 const app = express();
 
 // register all middleware, refer to the guide for loader best practices
-// enable cors
-app.use(cors());
+app.use(cors()); // enable cors
 app.use('/api', express.json()); // parsing application/json
 app.use('/api', apiRoutes());
 
-app.get('/', (_req, res) => res.send('Homepage is here'));
+app.get('/', (_req, res) => res.send('Hello, this is the home page of SneakerTrader server'));
 
 const PORT = 4000;
 app.listen(PORT, () => {

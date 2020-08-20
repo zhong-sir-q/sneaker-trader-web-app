@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "buildAll": "tsc -b frontend backend"
+    "buildAll": "tsc -b frontend backend",
+    "buildBackend": "tsc -b backend"
   },
   "keywords": [],
   "author": "",

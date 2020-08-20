@@ -7,7 +7,7 @@ const productsRoute = Router();
 export default (app: Router) => {
   app.use('/products', productsRoute);
 
-  productsRoute.get('/', (req, res) => {
+  productsRoute.get('/', (_req, res) => {
     const mySqlConnection = getMysqlDb();
     const ProductServiceInstance = new ProductService(mySqlConnection);
 

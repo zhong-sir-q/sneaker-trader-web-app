@@ -12,5 +12,3 @@ export type DbSneaker = {
   name: string;
   image_url?: string;
 };
-
-export type StripeSneaker = Omit<Omit<DbSneaker, 'id'>, 'price_id'>;

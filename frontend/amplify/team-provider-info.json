@@ -16,7 +16,7 @@
                 "frontend137314b5CustomMessage": {
                     "REDIRECTURL": "http://localhost:3000/",
                     "EMAILSUBJECT": "Verify your email at SneakerTrader",
-                    "EMAILMESSAGE": ""
+                    "EMAILMESSAGE": "Thank you for signing up with SneakerTrader!"
                 }
             },
             "auth": {

@@ -5,7 +5,6 @@
   "dependencies": {
     "@aws-amplify/ui-components": "^0.6.1",
     "@aws-amplify/ui-react": "^0.2.14",
-    "@stripe/stripe-js": "^1.8.0",
     "aws-amplify": "^3.0.23",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -17,7 +16,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "aws s3 sync build/ s3://sneaker-trader-app --acl public-read"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",

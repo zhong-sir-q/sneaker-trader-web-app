@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { AmplifyAuthenticator, AmplifySignUp, AmplifySignIn, AmplifySignOut } from '@aws-amplify/ui-react';
-import { onAuthUIStateChange, FederatedConfig } from '@aws-amplify/ui-components';
+import { onAuthUIStateChange, FederatedConfig, FormFieldType } from '@aws-amplify/ui-components';
 
 import { AuthStateContext } from 'providers/AuthStateProvider';
-
 
 const SignIn = () => {
   const federated: FederatedConfig = {
@@ -14,22 +13,24 @@ const SignIn = () => {
   return <AmplifySignIn federated={federated} slot="sign-in" usernameAlias="email" />;
 };
 
-const SignUp = () => (
-  <AmplifySignUp
-    slot="sign-up"
-    usernameAlias="email"
-    formFields={[
-      {
-        type: 'name',
-        label: 'Name',
-        placeholder: 'Enter your full name',
-      },
-      { type: 'phone_number', placeholder: 'Enter your phone number' },
-      { type: 'email' },
-      { type: 'password' },
-    ]}
-  />
-);
+const signUpFormFields: FormFieldType[] = [
+  {
+    type: 'given_name',
+    label: 'Given Name',
+    placeholder: 'Enter your given name',
+  },
+  {
+    type: 'family_name',
+    label: 'Family Name',
+    placeholder: 'Enter your family name',
+  },
+  { type: 'phone_number', placeholder: 'Enter your phone number' },
+  { type: 'email' },
+  { type: 'password' },
+];
+
+// the email conirmation link does not redirect back to the localhost straight away
+const SignUp = () => <AmplifySignUp slot="sign-up" usernameAlias="email" formFields={signUpFormFields} />;
 
 /**
  * NOTE: the error message "Custom auth lambda trigger is not configured for the user pool."

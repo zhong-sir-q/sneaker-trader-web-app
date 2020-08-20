@@ -6,6 +6,8 @@ const productRoute = Router();
 export default (app: Router) => {
   app.use('/product', productRoute);
 
+  productRoute.get('/', (_req, res) => res.send('Get one product here'))
+
   // create the product in the database
   productRoute.post('/');
 };
