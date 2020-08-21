@@ -32,6 +32,8 @@ const signUpFormFields: FormFieldType[] = [
 // the email conirmation link does not redirect back to the localhost straight away
 const SignUp = () => <AmplifySignUp slot="sign-up" usernameAlias="email" formFields={signUpFormFields} />;
 
+const ConfirmSignUp = () => <div slot="confirm-sign-up">Confirm your account using the link we have sent</div>;
+
 /**
  * NOTE: the error message "Custom auth lambda trigger is not configured for the user pool."
  * shows up but the user is identified and confirmed in the pool
@@ -40,6 +42,7 @@ const CustomAmplifyAuthenticator = () => (
   <AmplifyAuthenticator usernameAlias="email">
     <SignIn />
     <SignUp />
+    <ConfirmSignUp />
   </AmplifyAuthenticator>
 );
 
