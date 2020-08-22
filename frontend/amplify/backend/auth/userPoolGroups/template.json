@@ -1,0 +1,55 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "authsneakertraderclient8857e3a5UserPoolId": {
+            "Type": "String",
+            "Default": "authsneakertraderclient8857e3a5UserPoolId"
+        },
+        
+        "authsneakertraderclient8857e3a5AppClientID": {
+            "Type": "String",
+            "Default": "authsneakertraderclient8857e3a5AppClientID"
+        },
+        "authsneakertraderclient8857e3a5AppClientIDWeb": {
+            "Type": "String",
+            "Default": "authsneakertraderclient8857e3a5AppClientIDWeb"
+        },
+        "AuthRoleArn": {
+            "Type": "String"
+        },
+        "UnauthRoleArn": {
+            "Type": "String"
+        },
+        "env": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
+    "Resources": {
+    
+        "SneakerTraderClientUserGroupGroup": {
+          "Type" : "AWS::Cognito::UserPoolGroup",
+          "Properties" : {
+              "GroupName" : "SneakerTraderClientUserGroup",
+              "Precedence" : 1,
+              
+              "UserPoolId" : {
+                "Ref": "authsneakertraderclient8857e3a5UserPoolId"
+              } 
+            }
+        },
+        
+    
+    
+    },
+    
+}

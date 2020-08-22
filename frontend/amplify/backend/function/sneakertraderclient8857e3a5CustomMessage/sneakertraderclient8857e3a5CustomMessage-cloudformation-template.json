@@ -69,12 +69,12 @@
 				"FunctionName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"frontend137314b5CustomMessage",
+						"sneakertraderclient8857e3a5CustomMessage",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"frontend137314b5CustomMessage",
+									"sneakertraderclient8857e3a5CustomMessage",
 									"-",
 									{
 										"Ref": "env"
@@ -118,8 +118,8 @@
 				"Runtime": "nodejs10.x",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "amplify-frontend-dev-192010-deployment",
-					"S3Key": "amplify-builds/frontend137314b5CustomMessage-67706f7351744c635946-build.zip"
+					"S3Bucket": "amplify-sneakertraderclient-dev-110433-deployment",
+					"S3Key": "amplify-builds/sneakertraderclient8857e3a5CustomMessage-6557785068416f504b30-build.zip"
 				}
 			}
 		},
@@ -129,12 +129,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"frontend137314b5CustomMessage",
+						"sneakertraderclient8857e3a5CustomMessage",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"frontend137314b5CustomMessage",
+									"sneakertraderclient8857e3a5CustomMessage",
 									"-",
 									{
 										"Ref": "env"
