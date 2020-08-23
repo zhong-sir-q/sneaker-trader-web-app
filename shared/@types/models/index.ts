@@ -4,11 +4,20 @@ export type DbSneaker = {
   id: string;
   size: number;
   brand: string;
-  color_way: string;
-  serial_number: string;
+  colorWay: string;
+  serialNumber: string;
   price: number;
-  price_id: string;
+  priceId: string;
   description: string;
   name: string;
-  image_url?: string;
+  imageUrl?: string;
+};
+
+export type User = {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  gender: string;
+  dob: string;
+  email: string;
 };
