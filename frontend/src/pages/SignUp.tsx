@@ -1,8 +1,10 @@
 import Datetime from 'react-datetime';
+import SweetAlert from 'react-bootstrap-sweetalert';
 import React, { useState } from 'react';
-import { Formik, Form as FormikForm, useField, FieldHookConfig, Field } from 'formik';
+import { Auth } from 'aws-amplify';
+import moment, { Moment } from 'moment';
+import { Formik, Form as FormikForm, useField, FieldHookConfig, Field, ErrorMessage, FormikState } from 'formik';
 import * as Yup from 'yup';
-import { Moment } from 'moment';
 
 // reactstrap components
 import {
@@ -21,10 +23,13 @@ import {
   Input,
   Label,
   Button,
+  InputProps,
 } from 'reactstrap';
 
 import bgImage from 'assets/img/bg16.jpg';
-import moment from 'moment';
+
+import { User } from '../../../shared';
+import { API_BASE_URL } from 'routes';
 
 // TODO: This component can be refactored
 const SideContent = () => (
@@ -61,13 +66,14 @@ const SideContent = () => (
   </Col>
 );
 
-const FieldError = (props: { error: string }) => (
+export const FieldError = (props: { error: string }) => (
   <div className="card-category category" style={{ color: 'red', marginLeft: '5px', marginBottom: '10px' }}>
     {props.error}
   </div>
 );
 
-const FormikInput = (props: FieldHookConfig<string> & { iconName: string }) => {
+// TODO:put this in a specific folder
+export const FormikInput = (props: FieldHookConfig<string> & { iconname: string, inputgroupclassname?: string }) => {
   const [field, meta] = useField(props);
   const [focus, setFocus] = useState(false);
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -75,15 +81,19 @@ const FormikInput = (props: FieldHookConfig<string> & { iconName: string }) => {
     setFocus(false);
   };
 
+  // NOTE: the space here is neccessary, assuming the
+  // user inputs the classname value without the space
+  const inputgroupclassname = props.inputgroupclassname ? props.inputgroupclassname + ' ' : ''
+
   return (
     <React.Fragment>
-      <InputGroup className={focus ? 'input-group-focus' : ''}>
+      <InputGroup className={inputgroupclassname + (focus ? 'input-group-focus' : '')}>
         <InputGroupAddon addonType="prepend">
           <InputGroupText>
-            <i className={'now-ui-icons ' + props.iconName} />
+            <i className={'now-ui-icons ' + props.iconname} />
           </InputGroupText>
         </InputGroupAddon>
-        <Input {...field} onFocus={() => setFocus(true)} onBlur={handleBlur} placeholder={props.placeholder} type={props.type as any}>
+        <Input {...field} {...props as InputProps} onFocus={() => setFocus(true)} onBlur={handleBlur}>
           {props.children}
         </Input>
       </InputGroup>
@@ -93,9 +103,8 @@ const FormikInput = (props: FieldHookConfig<string> & { iconName: string }) => {
 };
 
 const DATE_FORMAT = 'MM/DD/YYYY';
-
 // TODO: give th props the proper types
-const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean, placeholder: string }) => {
+const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean; placeholder: string }) => {
   const { form, field, timeFormat, placeholder } = props;
 
   const onFieldChange = (value: Moment | string) => {
@@ -116,42 +125,136 @@ const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean, pla
   return (
     <React.Fragment>
       <div style={{ marginBottom: '10px' }}>
-      <Datetime dateFormat={DATE_FORMAT} timeFormat={timeFormat} onChange={onFieldChange} onBlur={onFieldBlur} inputProps={{ placeholder, style: { padding: '10px 18px 10px 18px' }  }} />
+        <Datetime
+          dateFormat={DATE_FORMAT}
+          timeFormat={timeFormat}
+          onChange={onFieldChange}
+          onBlur={onFieldBlur}
+          inputProps={{ placeholder, style: { padding: '10px 18px 10px 18px' } }}
+        />
       </div>
       {form.touched[field.name] && form.errors[field.name] && <FieldError error={form.errors[field.name]} />}
     </React.Fragment>
   );
 };
 
-const REQUIRD = '* Required';
+// Create the user in the database
+const createDbUser = (user: User) => {
+  const endpoint = API_BASE_URL + 'user';
+  const fetchOptions: RequestInit = {
+    method: 'POST',
+    body: JSON.stringify({ user }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
 
+  return fetch(endpoint, fetchOptions)
+    .then((res) => res.json())
+    .then((resJson) => resJson.user)
+    .catch((err) => err);
+};
+
+// Sign up the user in Cognito using Amplfiy
+const cognitoSignUp = (email: string, pw: string) =>
+  Auth.signUp({ username: email, password: pw })
+    .then((res) => res.user)
+    .catch((err) => err);
+
+const REQUIRED = '* Required';
+
+type FormStateType = User & { password: string; confirmPassword: string; policyAgreed: string };
+
+const INIT_FORM_VALUES: FormStateType = {
+  firstName: '',
+  lastName: '',
+  userName: '',
+  gender: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  dob: '',
+  policyAgreed: '',
+};
+
+// TODO: refactor and put this in a specific folder
 const validationSchema = Yup.object({
-  firstName: Yup.string().max(15, 'Must be 15 characters or less').required(REQUIRD),
-  lastName: Yup.string().max(20, 'Must be 20 characters or less').required(REQUIRD),
-  gender: Yup.string().required(REQUIRD),
-  email: Yup.string().email('Invalid email address').required(REQUIRD),
-  password: Yup.string().min(8, 'Password must be at least 8 characters').required(REQUIRD),
+  firstName: Yup.string().max(20, 'Must be 20 characters or less').required(REQUIRED),
+  lastName: Yup.string().max(20, 'Must be 20 characters or less').required(REQUIRED),
+  userName: Yup.string().max(20, 'Must be 20 characters or less').required(REQUIRED),
+  gender: Yup.string().required(REQUIRED),
+  email: Yup.string().email('Invalid email address').required(REQUIRED),
+  password: Yup.string().min(8, 'Password must be at least 8 characters').required(REQUIRED),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password'), ''], 'Password must match')
-    .required(REQUIRD),
-  dob: Yup.string().required(REQUIRD),
+    .required(REQUIRED),
+  dob: Yup.string()
+    .required(REQUIRED)
+    .test('valid-date', 'Invalid date format', (datevalue) => moment(datevalue, DATE_FORMAT, true).isValid()),
+  // FIXME: this does not work
+  policyAgreed: Yup.string().required('Please read and agree with the terms and conditions'),
 });
 
 const SignupForm = () => {
+  const [confirmSignUpAlert, setConfirmSignUpAlert] = useState<JSX.Element>();
+  const hideAlert = () => setConfirmSignUpAlert(undefined);
+  const showAlert = (alert: JSX.Element) => setConfirmSignUpAlert(alert);
+
+  const handleSubmit = async (formStates: FormStateType) => {
+    const cognitoUser = await cognitoSignUp(formStates.email, formStates.password);
+
+    if (cognitoUser instanceof Error) {
+      const ErrorSignUpAlert = () => (
+        <SweetAlert
+          style={{ display: 'block', marginTop: '-100px' }}
+          title={cognitoUser.message}
+          onConfirm={() => hideAlert()}
+          onCancel={() => hideAlert()}
+          confirmBtnBsStyle="danger"
+        />
+      );
+
+      showAlert(<ErrorSignUpAlert />);
+      return;
+    }
+
+    // WARNING: the states contains fields such as password that is not part of the database
+    // ideally I would want the complier to complain the incompatibility here
+
+    // how do I want to handle it if there is an error creating the user in the database?
+    const dbUser = await createDbUser(formStates);
+    if (dbUser instanceof Error) console.log('Handle error', dbUser.message);
+
+    // create the db user here
+    const ConfirmSignUpAlert = () => (
+      <SweetAlert
+        style={{ display: 'block', marginTop: '-100px' }}
+        title="Please check your email to verify the account"
+        onConfirm={() => hideAlert()}
+        onCancel={() => hideAlert()}
+        confirmBtnBsStyle="info"
+      />
+    );
+
+    showAlert(<ConfirmSignUpAlert />);
+  };
+
   return (
     <React.Fragment>
       <div className="content">
+        {confirmSignUpAlert}
         <div className="register-page">
           <Container>
             <Row className="justify-content-center">
               <SideContent />
               <Col lg={4} md={8} xs={12}>
                 <Formik
-                  initialValues={{ firstName: '', lastName: '', gender: '', email: '', password: '', confirmPassword: '', dob: '' }}
+                  initialValues={INIT_FORM_VALUES}
                   validationSchema={validationSchema}
-                  onSubmit={(values, { setSubmitting }) => {
-                    setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2));
+                  onSubmit={(formStates, { setSubmitting, resetForm }) => {
+                    setTimeout(async () => {
+                      handleSubmit(formStates)
+                      resetForm(INIT_FORM_VALUES as Partial<FormikState<FormStateType>>);
                       setSubmitting(false);
                     }, 400);
                   }}
@@ -162,10 +265,11 @@ const SignupForm = () => {
                         <CardTitle tag="h4">Register</CardTitle>
                       </CardHeader>
                       <CardBody>
-                        <FormikInput name="firstName" placeholder="First Name..." type="text" iconName="users_circle-08" />
-                        <FormikInput name="lastName" placeholder="Last Name..." type="text" iconName="text_caps-small" />
+                        <FormikInput name="firstName" placeholder="First Name..." type="text" iconname="users_circle-08" />
+                        <FormikInput name="lastName" placeholder="Last Name..." type="text" iconname="text_caps-small" />
 
-                        <FormikInput name="gender" type="select" iconName="users_single-02">
+                        {/* FIXME: the text margin is off; not enough right padding on the arrow; how do I gray the color the place holder */}
+                        <FormikInput style={{ paddingLeft: '12px' }} name="gender" type="select" iconname="users_single-02">
                           <option disabled value="">
                             Select a gender
                           </option>
@@ -174,24 +278,28 @@ const SignupForm = () => {
                           <option value="confidential">Prefer not to say</option>
                         </FormikInput>
 
-                        <FormikInput name="email" placeholder="Email..." type="email" iconName="ui-1_email-85" />
-                        <FormikInput name="password" placeholder="Password..." type="password" iconName="ui-1_lock-circle-open" />
+                        <FormikInput name="userName" placeholder="User Name..." type="text" iconname="emoticons_satisfied" />
+                        <FormikInput name="email" placeholder="Email..." type="email" iconname="ui-1_email-85" />
+                        <FormikInput name="password" placeholder="Password..." type="password" iconname="ui-1_lock-circle-open" />
                         <FormikInput
                           name="confirmPassword"
                           placeholder="Confirm Password..."
                           type="password"
-                          iconName="ui-1_lock-circle-open"
+                          iconname="ui-1_lock-circle-open"
                         />
 
-                        <Field name='dob' timeFormat={false} placeholder='Date Of Birth...' component={FormikDatetime} />
+                        {/* FIXME: resetForm in onSubmit does not reset the datevalue */}
+                        <Field name="dob" timeFormat={false} placeholder="Date Of Birth..." component={FormikDatetime} />
 
+                        {/* TODO: check if the terms and condition is checked */}
                         <FormGroup check>
                           <Label check>
-                            <Input type="checkbox" />
+                            <Field name="policyAgreed" type="checkbox" />
                             <span className="form-check-sign" />
                             <div>
                               I agree to the <a href="#policy">terms and conditions</a>.
                             </div>
+                            <ErrorMessage name="policyAgreed" />
                           </Label>
                         </FormGroup>
                       </CardBody>
