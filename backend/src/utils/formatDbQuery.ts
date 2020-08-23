@@ -16,7 +16,7 @@ export const doubleQuotedValues = (obj: QueryObject) => {
 };
 
 export const formatInsertColumnsQuery = (tableName: string, obj: QueryObject) =>
-  `insert into ${tableName} (${formatColumns(obj)}) values (${doubleQuotedValues(obj).join(', ')})`;
+  `INSERT INTO ${tableName} (${formatColumns(obj)}) VALUES (${doubleQuotedValues(obj).join(', ')})`;
 
 // output look likes, key_one = val_one, key_two = val_two ...,
 // where the value should be double quoted if it is not a number
