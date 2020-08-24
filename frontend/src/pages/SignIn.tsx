@@ -7,11 +7,13 @@ import { useHistory, Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, CardFooter, Container, Col, Button } from 'reactstrap';
 import * as Yup from 'yup';
 
-import { FormikInput, FieldError } from './SignUp';
 import { SIGNUP, AUTH, ADMIN, DASHBOARD, FORGOT_PW } from 'routes';
 
 import nowLogo from 'assets/img/now-logo.png';
 import bgImage from 'assets/img/bg14.jpg';
+import InputFieldError from 'components/InputFieldError';
+import FormikInput from 'components/formik/FormikInput';
+import { validEmail, minCharacters } from 'utils/yup';
 
 type SignInFormStateType = {
   email: string;
@@ -23,13 +25,9 @@ const INIT_FORM_STATES: SignInFormStateType = {
   password: '',
 };
 
-// prompt the user that this field is required if they leave it blank
-const REQUIRED = '* Required';
-
-// NOTE: I am reusing the logic and the REQUIRED variable from SignUp.tsx
 const validationSchema = Yup.object({
-  email: Yup.string().email('Invalid email address').required(REQUIRED),
-  password: Yup.string().min(8, 'Password must be at least 8 characters').required(REQUIRED),
+  email: validEmail(),
+  password: minCharacters(8),
 });
 
 const cognitoSignIn = (email: string, pw: string) =>
@@ -42,6 +40,7 @@ const SignIn = () => {
   const history = useHistory();
 
   useEffect(() => {
+    // use the hub to redirect the user when they sign in using social logins
     (async () => {
       Hub.listen('auth', (data) => {
         if (data.payload.event === 'signIn') {
@@ -56,6 +55,7 @@ const SignIn = () => {
 
       if (user) history.push(ADMIN + DASHBOARD);
 
+      // unsubscribe the Hub
       return () => Hub.remove('auth', () => {});
     })();
   }, [history]);
@@ -90,12 +90,12 @@ const SignIn = () => {
                       <div className='logo-container'>
                         <img src={nowLogo} alt='now-logo' />
                       </div>
-                      {/* Use own button for better customizations */}
+                      {/* TODO: Use own button for better customizations */}
                       <AmplifyGoogleButton clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID} />
                       <AmplifyFacebookButton appId={process.env.REACT_APP_FB_APP_ID} />
                     </CardHeader>
                     <CardBody>
-                      {loginError && <FieldError error={loginError} />}
+                      {loginError && <InputFieldError error={loginError} />}
 
                       <FormikInput
                         placeholder='Email...'

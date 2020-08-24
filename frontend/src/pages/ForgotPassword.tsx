@@ -5,22 +5,17 @@ import { Formik, Form as FormikForm } from 'formik';
 import { Card, CardBody, CardFooter, Button, CardTitle, CardText, Container, Col, Row, CardHeader } from 'reactstrap';
 import * as Yup from 'yup';
 
-import { FormikInput } from './SignUp';
+import FormikInput from 'components/formik/FormikInput';
+import { validEmail, minCharacters, matchingPassword } from 'utils/yup';
+import { obfuscateEmail } from 'utils/obfuscateString';
+
 import { ADMIN, DASHBOARD } from 'routes';
 
 import requestCodeBgimg from 'assets/img/bg13.jpg';
 import confirmCodeBgImg from 'assets/img/bg15.jpg';
 
-const validateEmailSchema = Yup.object({
-  email: Yup.string().email('Invalid email address').required('* Required'),
-});
-
-interface RequestCodeProps {
-  handleSubmitEmail: (email: string) => void;
-  handleCodeSent: () => void;
-}
-
-const formatErrorMessage = (res: { code: string; message: string; name: string }) => {
+// NOTE: this function can potentially used for other components that use Amplify functions
+const formatAmplifyErrorMessage = (res: { code: string; message: string; name: string }) => {
   switch (res.code) {
     case 'UserNotFoundException':
       return 'User does not exist';
@@ -28,6 +23,15 @@ const formatErrorMessage = (res: { code: string; message: string; name: string }
       return res.code;
   }
 };
+
+const validateEmailSchema = Yup.object({
+  email: validEmail(),
+});
+
+interface RequestCodeProps {
+  handleSubmitEmail: (email: string) => void;
+  handleCodeSent: () => void;
+}
 
 const RequestCode = (props: RequestCodeProps) => {
   const [requestCodeError, setRequestCodeError] = useState<string>();
@@ -48,7 +52,7 @@ const RequestCode = (props: RequestCodeProps) => {
                     .catch((err) => err);
 
                   if (forgotPasswordResponse.message) {
-                    setRequestCodeError(formatErrorMessage(forgotPasswordResponse));
+                    setRequestCodeError(formatAmplifyErrorMessage(forgotPasswordResponse));
                     return;
                   }
 
@@ -84,57 +88,15 @@ const RequestCode = (props: RequestCodeProps) => {
   );
 };
 
-// NOTE: reusing the logic from the Signup form
 const validateConfirmCodeSchema = Yup.object({
   code: Yup.string().length(6, 'Code must be 6 characters long').required('* Required'),
-  password: Yup.string().min(8, 'Password must be at least 8 characters').required('* Required'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), ''], 'Password must match')
-    .required('* Required'),
+  password: minCharacters(8),
+  confirmPassword: matchingPassword('password'),
 });
 
 interface ConfirmCodeProps {
   email: string;
 }
-
-const rangeOutOfBounds = (s: string, lo: number, hi: number) => {
-  return lo < 0 || hi >= s.length || lo > hi;
-};
-
-// replace all character in the range (start to end) with the characters specified
-const obfuscate = (text: string, start: number, end: number, repl: string): string => {
-  if (!text || text === '') return '';
-
-  // checking out of bounds
-  if (rangeOutOfBounds(text, start, end)) return text;
-
-  const head = text.slice(0, start);
-  const tail = text.slice(end + 1);
-  // start and end is 0-indexed respectively
-  const body = repl.repeat(end - start + 1);
-
-  return head + body + tail;
-};
-
-// given, dummy@gmail.com, obfuscate it to d***y@g***l.com. That is replace the
-// first to the second to the last characters of the name and the domain with *
-
-// assume the email is always valid
-const obfuscateEmail = (email: string): string => {
-  const emailArray = email.split('@');
-
-  const domainArray = emailArray[emailArray.length - 1].split('.');
-  const name = emailArray[0];
-
-  emailArray[0] = obfuscate(name, 1, name.length - 2, '*');
-
-  const domain = domainArray[0];
-  domainArray[0] = obfuscate(domain, 1, domain.length - 2, '*');
-
-  emailArray[emailArray.length - 1] = domainArray.join('.');
-
-  return emailArray.join('@');
-};
 
 const ConfirmCode = (props: ConfirmCodeProps) => {
   const history = useHistory();
@@ -156,7 +118,7 @@ const ConfirmCode = (props: ConfirmCodeProps) => {
 
                     // handle the error
                     if (error) {
-                      setConfirmCodeError(formatErrorMessage(error));
+                      setConfirmCodeError(formatAmplifyErrorMessage(error));
                       return;
                     }
                     
