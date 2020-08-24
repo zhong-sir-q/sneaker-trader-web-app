@@ -4,27 +4,40 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 
 // layouts
 import AuthLayout from 'layouts/AuthLayout';
+import AdminLayout from 'layouts/AdminLayout';
 
-import { AUTH, SIGNIN } from 'routes';
+// routes
+import { AUTH, ADMIN, DASHBOARD } from 'routes';
 
 // css
 import 'bootstrap/dist/css/bootstrap.css';
 import 'assets/scss/now-ui-dashboard.scss';
 import 'assets/css/demo.css';
-import 'css/global.css';
 
 // @ts-ignore
 import awsconfig from 'aws-exports';
 
-Amplify.configure(awsconfig);
+Amplify.configure({
+  ...awsconfig,
+  Auth: {
+    identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID,
+  },
+});
 
-const App = () => <Router>
-  <Switch>
-    <Route path={AUTH}>
-      <AuthLayout />
-    </Route>
-    <Redirect to={`${AUTH}${SIGNIN}`} />
-  </Switch>
-</Router>
+const App = () => (
+  <Router>
+    <Switch>
+      <Route path={AUTH}>
+        <AuthLayout />
+      </Route>
+
+      <Route path={ADMIN}>
+        <AdminLayout />
+      </Route>
+
+      <Redirect to={ADMIN + DASHBOARD} />
+    </Switch>
+  </Router>
+);
 
 export default App;

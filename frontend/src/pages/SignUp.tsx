@@ -24,12 +24,14 @@ import {
   Label,
   Button,
   InputProps,
+  CardText,
 } from 'reactstrap';
 
 import bgImage from 'assets/img/bg16.jpg';
 
 import { User } from '../../../shared';
-import { API_BASE_URL } from 'routes';
+import { API_BASE_URL, SIGNIN, AUTH } from 'routes';
+import { Link } from 'react-router-dom';
 
 // TODO: This component can be refactored
 const SideContent = () => (
@@ -155,6 +157,7 @@ const createDbUser = (user: User) => {
     .catch((err) => err);
 };
 
+// Note err may not be an Error object
 // Sign up the user in Cognito using Amplfiy
 const cognitoSignUp = (email: string, pw: string) =>
   Auth.signUp({ username: email, password: pw })
@@ -195,6 +198,8 @@ const validationSchema = Yup.object({
   policyAgreed: Yup.string().required('Please read and agree with the terms and conditions'),
 });
 
+// TODO: discussion, poor UX asking them to fill out so many fields upon sign up.
+// Somehow break up the steps?
 const SignupForm = () => {
   const [confirmSignUpAlert, setConfirmSignUpAlert] = useState<JSX.Element>();
   const hideAlert = () => setConfirmSignUpAlert(undefined);
@@ -263,6 +268,7 @@ const SignupForm = () => {
                     <FormikForm>
                       <CardHeader className="text-center">
                         <CardTitle tag="h4">Register</CardTitle>
+                        <CardText><Link to={AUTH + SIGNIN}>Already have an account?</Link></CardText>
                       </CardHeader>
                       <CardBody>
                         <FormikInput name="firstName" placeholder="First Name..." type="text" iconname="users_circle-08" />
@@ -317,7 +323,7 @@ const SignupForm = () => {
           </Container>
         </div>
       </div>
-      <div className="full-page-background" style={{ backgroundImage: 'url(' + bgImage + ')' }} />
+      <div className="full-page-background" style={{ backgroundImage: `url(${bgImage})` }} />
     </React.Fragment>
   );
 };

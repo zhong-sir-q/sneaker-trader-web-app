@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
-import { Auth } from 'aws-amplify';
-import { Redirect, useHistory } from 'react-router-dom';
-
+import { Auth, Hub } from 'aws-amplify';
+import { AmplifyGoogleButton, AmplifyFacebookButton } from '@aws-amplify/ui-react';
+import { useHistory, Link } from 'react-router-dom';
 // reactstrap components
 import { Card, CardBody, CardHeader, CardFooter, Container, Col, Button } from 'reactstrap';
-
 import * as Yup from 'yup';
 
-import nowLogo from 'assets/img/now-logo.png';
-
-import bgImage from 'assets/img/bg14.jpg';
-import { SIGNUP, AUTH } from 'routes';
 import { FormikInput, FieldError } from './SignUp';
+import { SIGNUP, AUTH, ADMIN, DASHBOARD, FORGOT_PW } from 'routes';
+
+import nowLogo from 'assets/img/now-logo.png';
+import bgImage from 'assets/img/bg14.jpg';
 
 type SignInFormStateType = {
   email: string;
@@ -42,24 +41,35 @@ const SignIn = () => {
   const [loginError, setLoginError] = useState<string>();
   const history = useHistory();
 
+  useEffect(() => {
+    (async () => {
+      Hub.listen('auth', (data) => {
+        if (data.payload.event === 'signIn') {
+          history.push(ADMIN + DASHBOARD);
+          return;
+        }
+      });
+
+      const user = await Auth.currentAuthenticatedUser()
+        .then((user) => user)
+        .catch((err) => console.log(err));
+
+      if (user) history.push(ADMIN + DASHBOARD);
+
+      return () => Hub.remove('auth', () => {});
+    })();
+  }, [history]);
+
   return (
     <React.Fragment>
-      <div className="content">
-        <div className="login-page">
+      <div className='content'>
+        <div className='login-page'>
           <Container>
-            <Col xs={12} md={8} lg={4} className="ml-auto mr-auto">
+            <Col xs={12} md={8} lg={4} className='ml-auto mr-auto'>
               <Formik
                 initialValues={INIT_FORM_STATES}
                 validationSchema={validationSchema}
                 onSubmit={async (formStates) => {
-                  /**
-                   * - login the user
-                   *
-                   * If successful:
-                   * - redirect the user to the dashboard for now
-                   * - persist the login state
-                   */
-
                   const loginResult = await cognitoSignIn(formStates.email, formStates.password);
 
                   if (loginResult.message) {
@@ -71,51 +81,53 @@ const SignIn = () => {
                     return;
                   }
 
-                  // TODO: change to the dashboard page
-                  history.push(AUTH + SIGNUP);
+                  history.push(ADMIN + DASHBOARD);
                 }}
               >
                 <FormikForm>
-                  <Card className="card-login card-plain">
+                  <Card className='card-login card-plain'>
                     <CardHeader>
-                      <div className="logo-container">
-                        <img src={nowLogo} alt="now-logo" />
+                      <div className='logo-container'>
+                        <img src={nowLogo} alt='now-logo' />
                       </div>
+                      {/* Use own button for better customizations */}
+                      <AmplifyGoogleButton clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID} />
+                      <AmplifyFacebookButton appId={process.env.REACT_APP_FB_APP_ID} />
                     </CardHeader>
                     <CardBody>
                       {loginError && <FieldError error={loginError} />}
 
                       <FormikInput
-                        placeholder="Email..."
-                        type="text"
-                        name="email"
-                        iconname="users_circle-08"
-                        inputgroupclassname="no-border form-control-lg"
+                        placeholder='Email...'
+                        type='text'
+                        name='email'
+                        iconname='users_circle-08'
+                        inputgroupclassname='no-border form-control-lg'
                       />
                       <FormikInput
-                        placeholder="Password..."
-                        type="password"
-                        name="password"
-                        iconname="text_caps-small"
-                        inputgroupclassname="no-border form-control-lg"
+                        placeholder='Password...'
+                        type='password'
+                        name='password'
+                        iconname='text_caps-small'
+                        inputgroupclassname='no-border form-control-lg'
                       />
                     </CardBody>
                     <CardFooter>
-                      <Button block type="submit" color="primary" size="lg" className="mb-3 btn-round">
+                      <Button block type='submit' color='primary' size='lg' className='mb-3 btn-round'>
                         Get Started
                       </Button>
-                      <div className="pull-left">
+                      <div className='pull-left'>
                         <h6>
-                          <a href={AUTH + SIGNUP} className="link footer-link">
+                          <Link to={AUTH + SIGNUP} className='link footer-link'>
                             Create Account
-                          </a>
+                          </Link>
                         </h6>
                       </div>
-                      <div className="pull-right">
+                      <div className='pull-right'>
                         <h6>
-                          <a href="#help" className="link footer-link">
-                            Need Help?
-                          </a>
+                          <Link to={AUTH + FORGOT_PW} className='link footer-link'>
+                            Forgot Password?
+                          </Link>
                         </h6>
                       </div>
                     </CardFooter>
@@ -126,7 +138,7 @@ const SignIn = () => {
           </Container>
         </div>
       </div>
-      <div className="full-page-background" style={{ backgroundImage: 'url(' + bgImage + ')' }} />
+      <div className='full-page-background' style={{ backgroundImage: `url(${bgImage})` }} />
     </React.Fragment>
   );
 };
