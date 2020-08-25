@@ -3,7 +3,7 @@ import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 
-import { Formik, Form as FormikForm, Field, ErrorMessage, FormikState, prepareDataForValidation } from 'formik';
+import { Formik, Form as FormikForm, Field, ErrorMessage, FormikState } from 'formik';
 
 import * as Yup from 'yup';
 
@@ -136,10 +136,6 @@ const SignupForm = () => {
       return;
     }
 
-    const dbUser = await createDbUser(convertFormValuesToUser(formStates));
-    // handle create user error in the database
-    if (!dbUser) return;
-
     const ConfirmSignUpAlert = () => (
       <SweetAlert
         style={{ display: 'block', marginTop: '-100px' }}
@@ -151,6 +147,11 @@ const SignupForm = () => {
     );
 
     showAlert(<ConfirmSignUpAlert />);
+
+    const dbUser = await createDbUser(convertFormValuesToUser(formStates));
+    // TODO: discuss with Aaron how we want to handle this error
+    // handle create user error in the database
+    if (!dbUser) console.log('Do something with the error')
   };
 
   return (

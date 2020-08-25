@@ -25,5 +25,33 @@
                 }
             }
         }
+    },
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-sneakertraderclient-prod-182032-authRole",
+            "UnauthRoleArn": "arn:aws:iam::257875578557:role/amplify-sneakertraderclient-prod-182032-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::257875578557:role/amplify-sneakertraderclient-prod-182032-authRole",
+            "Region": "ap-southeast-2",
+            "DeploymentBucketName": "amplify-sneakertraderclient-prod-182032-deployment",
+            "UnauthRoleName": "amplify-sneakertraderclient-prod-182032-unauthRole",
+            "StackName": "amplify-sneakertraderclient-prod-182032",
+            "StackId": "arn:aws:cloudformation:ap-southeast-2:257875578557:stack/amplify-sneakertraderclient-prod-182032/1586b310-e69b-11ea-b28e-0299ab58f908",
+            "AmplifyAppId": "d20mhgf2jpkhiu"
+        },
+        "categories": {
+            "auth": {
+                "sneakertraderclient8857e3a5": {
+                    "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"227838358502788\",\"client_secret\":\"d9f86c1aa4f8e3b46623977e365fd384\"},{\"ProviderName\":\"Google\",\"client_id\":\"1021202892438-u553lbg9ns1k2fkluhhscloutqlmn2o7.apps.googleusercontent.com\",\"client_secret\":\"GObZWr515UuN2xO_-XPdDx_t\"}]"
+                },
+                "userPoolGroups": {}
+            },
+            "function": {
+                "sneakertraderclient8857e3a5CustomMessage": {
+                    "REDIRECTURL": "http://sneaker-trader-app.s3-website-ap-southeast-2.amazonaws.com/auth",
+                    "EMAILSUBJECT": "Verify your account with SneakerTrader",
+                    "EMAILMESSAGE": "Thank you for signing up with SneakerTrader. Click the link below to activate the account"
+                }
+            }
+        }
     }
 }

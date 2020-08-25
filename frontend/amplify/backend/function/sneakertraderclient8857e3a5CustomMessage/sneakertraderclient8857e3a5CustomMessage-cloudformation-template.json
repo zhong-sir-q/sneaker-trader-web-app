@@ -118,7 +118,7 @@
 				"Runtime": "nodejs10.x",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "amplify-sneakertraderclient-dev-110433-deployment",
+					"S3Bucket": "amplify-sneakertraderclient-prod-182032-deployment",
 					"S3Key": "amplify-builds/sneakertraderclient8857e3a5CustomMessage-6557785068416f504b30-build.zip"
 				}
 			}
