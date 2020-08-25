@@ -3,7 +3,7 @@ import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 
-import { Formik, Form as FormikForm, Field, ErrorMessage, FormikState } from 'formik';
+import { Formik, Form as FormikForm, Field, ErrorMessage, FormikState, prepareDataForValidation } from 'formik';
 
 import * as Yup from 'yup';
 
@@ -59,6 +59,7 @@ const createDbUser = (user: User) => {
   const endpoint = API_BASE_URL + 'user';
   const fetchOptions: RequestInit = {
     method: 'POST',
+    // the backend gets the body using the user key
     body: JSON.stringify({ user }),
     headers: {
       'Content-Type': 'application/json',
@@ -68,10 +69,18 @@ const createDbUser = (user: User) => {
   return fetch(endpoint, fetchOptions)
     .then((res) => res.json())
     .then((resJson) => resJson.user)
-    .catch((err) => err);
+    .catch((err) => console.log('Error creating the user in the database', err));
 };
 
 type FormStateType = User & { password: string; confirmPassword: string; policyAgreed: string };
+
+// Typescript does not throw an error when using FormStateType instead of User
+// so I have to manually transform the form values to a User object
+const convertFormValuesToUser = (formValues: FormStateType): User => {
+  const { firstName, lastName, userName, gender, dob, email } = formValues;
+
+  return { firstName, lastName, userName, gender, dob, email };
+};
 
 const INIT_FORM_VALUES: FormStateType = {
   firstName: '',
@@ -127,14 +136,10 @@ const SignupForm = () => {
       return;
     }
 
-    // WARNING: the states contains fields such as password that is not part of the database
-    // ideally I would want the complier to complain the incompatibility here
+    const dbUser = await createDbUser(convertFormValuesToUser(formStates));
+    // handle create user error in the database
+    if (!dbUser) return;
 
-    // how do I want to handle it if there is an error creating the user in the database?
-    const dbUser = await createDbUser(formStates);
-    if (dbUser instanceof Error) console.log('Handle error', dbUser.message);
-
-    // create the db user here
     const ConfirmSignUpAlert = () => (
       <SweetAlert
         style={{ display: 'block', marginTop: '-100px' }}

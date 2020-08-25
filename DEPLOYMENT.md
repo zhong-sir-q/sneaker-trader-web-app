@@ -1,11 +1,14 @@
 ## Deploy the Express App
 
-- Here is a [good guide](https://medium.com/@ariklevliber/aws-fargate-from-start-to-finish-for-a-nodejs-app-9a0e5fbf6361).
+Configure task, container and the service on **ECS with Fargate**, follow the official [AWS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-fargate.html)
 
-caveats
-- I did not use pm2 to start my app in Dockerfile as the author suggested in the guide.
-- I did not manually create the load balancer per the guide, I used the one that came with the sample demo app.
+When creating the task definition, you can use your own image for the container. Follow this [guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html) to create an image and push to ECR. (Note: [install docker]((https://docs.docker.com/get-docker/)) if you haven't alreay)
 
-- Set a resonably long time for the health check grace period , I set it to 300 seconds.
-- Also in the target group under the ec2 service, I updated the health check interval to be 60s
-- make sure the docker port to host mappings are correct (e.g. need more elaborations here)
+
+Note
+
+- Make sure the EC2 instance the app lanuches from **have permission** to connect to the desired AWS RDS.
+- The EC2 may still not work even when the status indicates it is running, we have to wait for it to reach a steady state for it to be fully functional. (The wait time is unknown)
+- Set a resonably long time for the health check grace period , I set it to 60 seconds.
+- In the target group under the **EC2 service**, I updated the health check interval to be 60s
+- Make sure the docker port to host mappings are correct. For example, if you expose port 3000 in the docker container, then the port mapping for when creating the container in ECS should also be 3000.
