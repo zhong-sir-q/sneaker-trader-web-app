@@ -1,26 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // core components
 import Footer from 'components/Footer';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 
-import routes, { SneakerTraderRoute, AUTH, SIGNIN } from 'routes';
+import routes, { SneakerTraderRoute, AUTH, SIGNIN, DASHBOARD, ADMIN } from 'routes';
 import AuthNavbar from 'components/navbars/AuthNavbar';
+import { fetchCurrentUser } from 'utils/auth';
+
+const getRoutes = (_routes: SneakerTraderRoute[]) => {
+  return _routes.map((route, idx) => {
+    if (route.layout === '/auth') return <Route path={route.layout + route.path} component={route.component} key={idx} />;
+    else return null;
+  });
+};
 
 const AuthLayout = () => {
-
-  const getRoutes = (_routes: SneakerTraderRoute[]) => {
-    return _routes.map((route, idx) => {
-      if (route.layout === '/auth') return <Route path={route.layout + route.path} component={route.component} key={idx} />;
-      else return null;
-    });
-  };
+  const history = useHistory()
+  
+  useEffect(() => {
+    (async () => {
+      const user = await fetchCurrentUser()
+      if (user) history.push(ADMIN + DASHBOARD)
+    })()
+  })
 
   return (
     <React.Fragment>
       <AuthNavbar />
-      <div className="wrapper wrapper-full-page">
-        <div className="full-page section-image" filter-color="yellow">
+      <div className='wrapper wrapper-full-page'>
+        <div className='full-page section-image' filter-color='yellow'>
           <Switch>
             {getRoutes(routes)}
             <Redirect from={AUTH} to={`${AUTH}${SIGNIN}`} />

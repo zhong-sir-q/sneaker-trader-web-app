@@ -24,20 +24,23 @@ Amplify.configure({
   },
 });
 
-const App = () => (
-  <Router>
-    <Switch>
-      <Route path={AUTH}>
-        <AuthLayout />
-      </Route>
+const App = () => {
 
-      <Route path={ADMIN}>
-        <AdminLayout />
-      </Route>
+  return (
+    <Router>
+      <Switch>
+        <Route path={AUTH}>
+          <AuthLayout />
+        </Route>
 
-      <Redirect to={ADMIN + DASHBOARD} />
-    </Switch>
-  </Router>
-);
+        <Route path={ADMIN}>
+          <AdminLayout />
+        </Route>
+
+        <Redirect to={ADMIN + DASHBOARD} />
+      </Switch>
+    </Router>
+  );
+};
 
 export default App;

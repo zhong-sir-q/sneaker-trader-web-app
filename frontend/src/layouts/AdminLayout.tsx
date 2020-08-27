@@ -6,7 +6,7 @@ import AdminNavbar from 'components/navbars/AdminNavbar';
 import Footer from 'components/Footer';
 
 import routes, { SneakerTraderRoute, AUTH, SIGNIN } from 'routes';
-import { Auth } from 'aws-amplify';
+import { fetchCurrentUser } from 'utils/auth';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map((route, idx) => {
@@ -46,16 +46,14 @@ const getActiveRoute = (routes: SneakerTraderRoute[]): string => {
 
 const AdminLayout = () => {
   const mainPanel = useRef<HTMLDivElement>(null);
-  const history = useHistory()
+  const history = useHistory();
 
   useEffect(() => {
     (async () => {
-      const user = await Auth.currentAuthenticatedUser().then(res => res).catch(err => console.log(err))
-
-      // user is not logged in
-      if (!user) history.push(AUTH + SIGNIN)
-    })()
-  }, [history])
+      const user = await fetchCurrentUser()
+      if (!user) history.push(AUTH + SIGNIN);
+    })();
+  });
 
   return (
     <div className='wrapper'>

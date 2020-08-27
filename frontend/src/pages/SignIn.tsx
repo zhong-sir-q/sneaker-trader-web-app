@@ -7,13 +7,16 @@ import { useHistory, Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, CardFooter, Container, Col, Button } from 'reactstrap';
 import * as Yup from 'yup';
 
-import { SIGNUP, AUTH, ADMIN, DASHBOARD, FORGOT_PW } from 'routes';
-
-import nowLogo from 'assets/img/now-logo.png';
-import bgImage from 'assets/img/bg14.jpg';
+// components
 import InputFieldError from 'components/InputFieldError';
 import FormikInput from 'components/formik/FormikInput';
+
 import { validEmail, minCharacters } from 'utils/yup';
+
+import { SIGNUP, AUTH, ADMIN, DASHBOARD, FORGOT_PW } from 'routes';
+
+import stLogo from 'assets/img/logo_transparent_background.png';
+import bgImage from 'assets/img/bg14.jpg';
 
 type SignInFormStateType = {
   email: string;
@@ -41,24 +44,13 @@ const SignIn = () => {
 
   useEffect(() => {
     // use the hub to redirect the user when they sign in using social logins
-    (async () => {
-      Hub.listen('auth', (data) => {
-        if (data.payload.event === 'signIn') {
-          history.push(ADMIN + DASHBOARD);
-          return;
-        }
-      });
+    Hub.listen('auth', (data) => {
+      if (data.payload.event === 'signIn') history.push(ADMIN + DASHBOARD);
+    });
 
-      const user = await Auth.currentAuthenticatedUser()
-        .then((user) => user)
-        .catch((err) => console.log(err));
-
-      if (user) history.push(ADMIN + DASHBOARD);
-
-      // unsubscribe the Hub
-      return () => Hub.remove('auth', () => {});
-    })();
-  }, [history]);
+    // unsubscribe the Hub
+    return () => Hub.remove('auth', () => {});
+  });
 
   return (
     <React.Fragment>
@@ -87,10 +79,11 @@ const SignIn = () => {
                 <FormikForm>
                   <Card className='card-login card-plain'>
                     <CardHeader>
-                      <div className='logo-container'>
-                        <img src={nowLogo} alt='now-logo' />
+                      <div className='logo-container' style={{ width: '130px', marginBottom: '35px' }}>
+                        <img src={stLogo} alt='now-logo' />
                       </div>
                       {/* TODO: Use own button for better customizations */}
+                      {/* <Button onClick={() => { Auth.federatedSignIn({ provider: 'Google' }) }}>Sign In With Google</Button> */}
                       <AmplifyGoogleButton clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID} />
                       <AmplifyFacebookButton appId={process.env.REACT_APP_FB_APP_ID} />
                     </CardHeader>
