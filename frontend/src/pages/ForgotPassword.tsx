@@ -20,7 +20,7 @@ const formatAmplifyErrorMessage = (res: { code: string; message: string; name: s
     case 'UserNotFoundException':
       return 'User does not exist';
     default:
-      return res.code;
+      return res.message;
   }
 };
 

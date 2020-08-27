@@ -1,21 +1,21 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "SneakerTrader",
+  "name": "SneakerTrader Web Client App",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "256x256 128x128 64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "dark_logo_transparent_background.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "3400x1538"
     },
     {
-      "src": "logo512.png",
+      "src": "logo_transparent_background.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "3400x1538"
     }
   ],
   "start_url": ".",

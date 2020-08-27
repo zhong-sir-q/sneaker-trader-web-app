@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 
@@ -108,56 +107,66 @@ const validationSchema = Yup.object({
   policyAgreed: customRequired('Please read and agree with the terms and conditions'),
 });
 
+const SignUpSuccess = () => (
+  <React.Fragment>
+    <div className='content'>
+      <section className='register-page'>
+        <Container>
+          <Col xs={12} md={8} lg={4} className='ml-auto mr-auto'>
+            <Card className='card-lock text-center'>
+              <CardHeader>
+                <CardTitle tag='h5'>Thank you for signing up with SneakerTrader</CardTitle>
+              </CardHeader>
+              <CardBody>
+                <CardText>We have sent a account confirmation email, please use that to finish the sign up, xD</CardText>
+              </CardBody>
+              <CardFooter>
+                <Button color='primary'>
+                  <Link style={{ color: 'white' }} to={AUTH + SIGNIN}>
+                    Back to sign in
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </Col>
+        </Container>
+      </section>
+    </div>
+    <div className='full-page-background' style={{ backgroundImage: `url(${bgImage})` }} />
+  </React.Fragment>
+);
+
 // TODO: discussion, poor UX asking them to fill out so many fields upon sign up.
 // Somehow break up the steps?
 const SignupForm = () => {
-  const [confirmSignUpAlert, setConfirmSignUpAlert] = useState<JSX.Element>();
-  const hideAlert = () => setConfirmSignUpAlert(undefined);
-  const showAlert = (alert: JSX.Element) => setConfirmSignUpAlert(alert);
+  const [signUpError, setSignUpError] = useState<string>();
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-  // TODO: refactor the handleSubmit method, maybe there is too much going on here
   const handleSubmit = async (formStates: FormStateType) => {
     const cognitoUser = await Auth.signUp({ username: formStates.email, password: formStates.password })
       .then((res) => res.user)
       .catch((err) => err);
 
+    // handle sign up error
     if (cognitoUser.message) {
-      const ErrorSignUpAlert = () => (
-        <SweetAlert
-          style={{ display: 'block', marginTop: '-100px' }}
-          title={cognitoUser.message}
-          onConfirm={() => hideAlert()}
-          onCancel={() => hideAlert()}
-          confirmBtnBsStyle='danger'
-        />
-      );
-
-      showAlert(<ErrorSignUpAlert />);
+      setSignUpError(cognitoUser.message);
       return;
     }
 
-    const ConfirmSignUpAlert = () => (
-      <SweetAlert
-        style={{ display: 'block', marginTop: '-100px' }}
-        title='Please check your email to verify the account'
-        onConfirm={() => hideAlert()}
-        onCancel={() => hideAlert()}
-        confirmBtnBsStyle='info'
-      />
-    );
-
-    showAlert(<ConfirmSignUpAlert />);
+    // successful sign up, show the user the success message
+    setSignUpSuccess(true);
 
     const dbUser = await createDbUser(convertFormValuesToUser(formStates));
     // TODO: discuss with Aaron how we want to handle this error
     // handle create user error in the database
-    if (!dbUser) console.log('Do something with the error')
+    if (!dbUser) console.log('Do something with the db create user error');
   };
 
-  return (
+  return signUpSuccess ? (
+    <SignUpSuccess />
+  ) : (
     <React.Fragment>
       <div className='content'>
-        {confirmSignUpAlert}
         <div className='register-page'>
           <Container>
             <Row className='justify-content-center'>
@@ -181,6 +190,7 @@ const SignupForm = () => {
                         <CardText>
                           <Link to={AUTH + SIGNIN}>Already have an account?</Link>
                         </CardText>
+                        {signUpError && <CardText style={{ color: 'red' }}>{signUpError}</CardText>}
                       </CardHeader>
                       <CardBody>
                         <FormikInput name='firstName' placeholder='First Name...' type='text' iconname='users_circle-08' />
