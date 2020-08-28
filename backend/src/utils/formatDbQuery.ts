@@ -1,3 +1,5 @@
+// TODO: find out what C# uses to abstract all the sql queries,
+// i.e. what it uses so developers do not have to write queries
 type QueryObject = { [key: string]: string | number | undefined };
 
 // the keys of the object will be the columns in the corresponding database
@@ -7,10 +9,12 @@ export const formatColumns = (obj: QueryObject) => {
   return columns.join(', ');
 };
 
+export const doubleQuotedValue = (s: string) => `"${s}"`
+
 export const doubleQuotedValues = (obj: QueryObject) => {
   const values = Object.values(obj);
   // only add double quotes around the values that do not have the type of string
-  const doubleQuoteVals = values.map((val) => (typeof val === 'number' ? val : `"${val}"`));
+  const doubleQuoteVals = values.map((val) => (typeof val === 'number' ? val : doubleQuotedValue(val!)));
 
   return doubleQuoteVals;
 };
@@ -36,4 +40,7 @@ const formatSetQuery = (obj: QueryObject) => {
 
 // condition is the WHERE statement
 export const formatUpdateColumnsQuery = (tableName: string, obj: QueryObject, condition: string) =>
-  `UPDATE ${tableName} SET ${formatSetQuery(obj)}` + condition;
+  `UPDATE ${tableName} SET ${formatSetQuery(obj)} WHERE ${condition}`;
+
+export const formateGetColumnsQuery = (tableName: string, condition: string) => 
+`SELECT * FROM ${tableName} WHERE ${condition}`

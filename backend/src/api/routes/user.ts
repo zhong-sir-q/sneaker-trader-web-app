@@ -8,17 +8,7 @@ const userRoute = Router();
 export default (app: Router) => {
   app.use('/user', userRoute)
 
-  userRoute.post('/', (req, res, next) => {
-    const { user } = req.body
-    
-    const dbConnection = getMysqlDb()
-    const UserServiceInstance = new UserService(dbConnection)
-    
-    const createUserCallback: FetchDbDataCallback = (err, queryResult) => {
-        if (err) next(err)
-        else res.json({ user: queryResult })
-    }
+  userRoute.post('/', new UserService(getMysqlDb()).handleCreate)
 
-    UserServiceInstance.create(user, createUserCallback)
-  })
+  userRoute.get('/:email', new UserService(getMysqlDb()).handleGetByEmail)
 };
