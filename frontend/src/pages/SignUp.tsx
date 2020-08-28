@@ -9,14 +9,16 @@ import * as Yup from 'yup';
 // reactstrap components
 import { Card, CardHeader, CardTitle, CardBody, CardFooter, Container, Row, Col, FormGroup, Label, Button, CardText } from 'reactstrap';
 
-import bgImage from 'assets/img/bg16.jpg';
-
-import { User } from '../../../shared';
-import { API_BASE_URL, SIGNIN, AUTH } from 'routes';
-
-import { maxCharacters, required, validEmail, minCharacters, matchingPassword, validDate, customRequired } from 'utils/yup';
 import FormikInput from 'components/formik/FormikInput';
 import FormikDatetime from 'components/formik/FormikDatetime';
+
+import { maxCharacters, required, validEmail, minCharacters, matchingPassword, validDate, customRequired } from 'utils/yup';
+import { createUser } from 'api/api'
+
+import { SIGNIN, AUTH } from 'routes';
+import { User } from '../../../shared';
+
+import bgImage from 'assets/img/bg16.jpg';
 
 // TODO: This component can be refactored
 const SideContent = () => (
@@ -52,24 +54,6 @@ const SideContent = () => (
     </div>
   </Col>
 );
-
-// Create the user in the database
-const createDbUser = (user: User) => {
-  const endpoint = API_BASE_URL + 'user';
-  const fetchOptions: RequestInit = {
-    method: 'POST',
-    // the backend gets the body using the user key
-    body: JSON.stringify({ user }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  return fetch(endpoint, fetchOptions)
-    .then((res) => res.json())
-    .then((resJson) => resJson.user)
-    .catch((err) => console.log('Error creating the user in the database', err));
-};
 
 type FormStateType = User & { password: string; confirmPassword: string; policyAgreed: string };
 
@@ -156,7 +140,7 @@ const SignupForm = () => {
     // successful sign up, show the user the success message
     setSignUpSuccess(true);
 
-    const dbUser = await createDbUser(convertFormValuesToUser(formStates));
+    const dbUser = await createUser(convertFormValuesToUser(formStates));
     // TODO: discuss with Aaron how we want to handle this error
     // handle create user error in the database
     if (!dbUser) console.log('Do something with the db create user error');

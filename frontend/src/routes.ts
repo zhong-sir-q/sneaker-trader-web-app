@@ -2,6 +2,7 @@ import SignUp from 'pages/SignUp';
 import SignIn from 'pages/SignIn';
 import Dashboard from 'components/Dashboard';
 import ForgotPassword from 'pages/ForgotPassword';
+import UserProfile from 'pages/UserProfile';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -9,6 +10,7 @@ export const SIGNIN = '/signin';
 export const SIGNUP = '/signup';
 export const DASHBOARD = '/dashboard';
 export const FORGOT_PW = '/reset';
+export const USER_PROFILE = '/profile'
 
 type AppLayout = '/auth' | '/admin';
 
@@ -80,6 +82,12 @@ const routes: SneakerTraderRoute[] = [
     component: Dashboard,
     layout: ADMIN,
   },
+  {
+    path: USER_PROFILE,
+    name: 'User Profile',
+    component: UserProfile,
+    layout: ADMIN
+  }
 ];
 
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;

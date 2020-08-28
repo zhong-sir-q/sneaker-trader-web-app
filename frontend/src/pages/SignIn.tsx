@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
-import { Auth, Hub } from 'aws-amplify';
+import { Hub } from 'aws-amplify';
 import { AmplifyGoogleButton, AmplifyFacebookButton } from '@aws-amplify/ui-react';
 import { useHistory, Link } from 'react-router-dom';
 // reactstrap components
@@ -17,6 +17,8 @@ import { SIGNUP, AUTH, ADMIN, DASHBOARD, FORGOT_PW } from 'routes';
 
 import stLogo from 'assets/img/logo_transparent_background.png';
 import bgImage from 'assets/img/bg14.jpg';
+import { fetchUserByEmail } from 'api/api';
+import { cognitoSignIn } from 'utils/auth';
 
 type SignInFormStateType = {
   email: string;
@@ -33,19 +35,26 @@ const validationSchema = Yup.object({
   password: minCharacters(8),
 });
 
-const cognitoSignIn = (email: string, pw: string) =>
-  Auth.signIn(email, pw)
-    .then((user) => user)
-    .catch((err) => err);
-
 const SignIn = () => {
   const [loginError, setLoginError] = useState<string>();
   const history = useHistory();
 
   useEffect(() => {
     // use the hub to redirect the user when they sign in using social logins
-    Hub.listen('auth', (data) => {
-      if (data.payload.event === 'signIn') history.push(ADMIN + DASHBOARD);
+    // TODO: create the user in the database if not exists, it will have to be a federated user
+    // so call a API route such as /api/federatedUser
+    Hub.listen('auth', async ({ payload: { event, data } }) => {
+      if (event === 'signIn') {
+        // NOTE: edge case, this email may be the same acroos
+        // social media and the one user uses to signin
+        // this case HAS NOT BEEN handled
+        const user = await fetchUserByEmail(data.email).catch((err) => console.log(err));
+        // handle the error
+        if (!user) {
+        }
+
+        history.push(ADMIN + DASHBOARD);
+      }
     });
 
     // unsubscribe the Hub

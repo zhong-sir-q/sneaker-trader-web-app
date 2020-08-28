@@ -2,11 +2,16 @@ import React, { useRef, ReactNode, useEffect } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 
 // core components
+// NOTE: an unpopular react component, consider switching it out
+import NotificationAlert from 'react-notification-alert';
+import PerfectScrollbar from 'perfect-scrollbar';
+
 import AdminNavbar from 'components/navbars/AdminNavbar';
 import Footer from 'components/Footer';
 
 import routes, { SneakerTraderRoute, AUTH, SIGNIN } from 'routes';
 import { fetchCurrentUser } from 'utils/auth';
+import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map((route, idx) => {
@@ -44,22 +49,60 @@ const getActiveRoute = (routes: SneakerTraderRoute[]): string => {
   return activeRoute;
 };
 
+let ps: PerfectScrollbar;
+
 const AdminLayout = () => {
   const mainPanel = useRef<HTMLDivElement>(null);
+  const notificationAlert = useRef<any>(null);
   const history = useHistory();
 
   useEffect(() => {
+    if (navigator.platform.indexOf('Win') > -1) {
+      document.documentElement.className += ' perfect-scrollbar-on';
+      document.documentElement.classList.remove('perfect-scrollbar-off');
+      ps = new PerfectScrollbar(mainPanel.current!);
+    }
+
+    return () => {
+      if (navigator.platform.indexOf('Win') > -1) {
+        ps.destroy();
+        document.documentElement.className += ' perfect-scrollbar-off';
+        document.documentElement.classList.remove('perfect-scrollbar-on');
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     (async () => {
-      const user = await fetchCurrentUser()
+      const user = await fetchCurrentUser();
       if (!user) history.push(AUTH + SIGNIN);
     })();
   });
 
+  const minimizeSideBar = () => {
+    let message = 'Sidebar mini ';
+    if (document.body.classList.contains('sidebar-mini')) message += 'deactivated...';
+    else message += 'activated...';
+
+    document.body.classList.toggle('sidebar-mini');
+    const options = {
+      place: 'tr',
+      message,
+      type: 'info',
+      icon: 'now-ui-icons ui-1_bell-53',
+      autoDismiss: 7,
+    };
+
+    notificationAlert.current.notificationAlert(options);
+  };
+
   return (
     <div className='wrapper'>
-      {/* NOTE: the Sidebar is not fully typed */}
-      {/* <Sidebar routes={routes} minimizeSidebar={minimizeSidebar} backgroundColor={'blue'} /> */}
-      <div className='main-panel' ref={mainPanel}>
+      <NotificationAlert ref={notificationAlert} />
+      <Sidebar {...defaultSideBarProps} minimizeSidebar={minimizeSideBar} routes={routes} />
+      {/* NOTE: a temporary solution to make the panel scrollable, would
+          not need it when the dashboard is properly implemented */}
+      <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>
         <AdminNavbar brandText={getActiveRoute(routes)} />
         <Switch>
           {getRoutes(routes)}
