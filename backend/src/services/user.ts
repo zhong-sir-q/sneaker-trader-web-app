@@ -1,6 +1,6 @@
 import { Connection } from 'mysql';
 import { FetchDbDataCallback } from '../@types/utils';
-import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
 import { User } from '../../../shared';
 import { RequestHandler } from 'express';
 
@@ -36,6 +36,17 @@ class UserService {
 
     this.getByEmail(email, getByEmailCallback);
   };
+
+  handleUpdate: RequestHandler = (req, res, next) => {
+    const { user } = req.body
+    const condition = 'email = ' + doubleQuotedValue(user.email)
+
+    const updateUserQuery = formatUpdateColumnsQuery(this.tableName, user, condition)
+    this.connection.query(updateUserQuery, (err, result) => {
+      if (err) next(err)
+      else res.json(result)
+    })
+  }
 
   create(user: User, cb: FetchDbDataCallback) {
     const query = formatInsertColumnsQuery(this.tableName, user);

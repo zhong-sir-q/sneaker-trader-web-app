@@ -8,7 +8,9 @@ const userRoute = Router();
 export default (app: Router) => {
   app.use('/user', userRoute)
 
+  userRoute.get('/:email', new UserService(getMysqlDb()).handleGetByEmail)
+
   userRoute.post('/', new UserService(getMysqlDb()).handleCreate)
 
-  userRoute.get('/:email', new UserService(getMysqlDb()).handleGetByEmail)
+  userRoute.post('/update', new UserService(getMysqlDb()).handleUpdate)
 };
