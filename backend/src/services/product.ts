@@ -1,8 +1,7 @@
 import { Connection } from 'mysql';
+import { Sneaker } from '../../../shared';
+import { RequestHandler } from 'express';
 import { formatInsertColumnsQuery } from '../utils/formatDbQuery';
-import { FetchDbDataCallback } from '../@types/utils';
-
-import { DbSneaker } from "../../../shared"
 
 class ProductService {
   connection: Connection;
@@ -13,20 +12,16 @@ class ProductService {
     this.tableName = 'Products';
   }
 
-  create(product: DbSneaker) {
-    const createProductQuery = formatInsertColumnsQuery(this.tableName, product);
-    this.connection.query(createProductQuery, (err) => {
-      if (err) throw new Error(`Error creating the product in the database: ${err.message}`);
-    });
-  }
+  handleCreate: RequestHandler = (req, res, next) => {
+    const product: Sneaker = req.body;
 
-  getAllProducts(cb: FetchDbDataCallback) {
-    const getAllProductsQuery = `SELECT * FROM ${this.tableName}`;
-    this.connection.query(getAllProductsQuery, (err, rowsData) => {
-      if (err) cb(err, undefined);
-      else cb(undefined, rowsData);
+    const createProductQuery = formatInsertColumnsQuery(this.tableName, product);
+
+    this.connection.query(createProductQuery, (err, queryResult) => {
+      if (err) next(err);
+      else res.json(queryResult);
     });
-  }
+  };
 }
 
 export default ProductService;

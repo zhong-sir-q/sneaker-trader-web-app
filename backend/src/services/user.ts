@@ -15,12 +15,12 @@ class UserService {
   }
 
   handleCreate: RequestHandler = (req, res, next) => {
-    const { user } = req.body;
+    const user = req.body;
 
     // refactor the callbacks, general and do soemthing if result not found
     const createUserCallback: FetchDbDataCallback = (err, queryResult) => {
       if (err) next(err);
-      else res.json({ user: queryResult });
+      else res.json(queryResult);
     };
 
     this.create(user, createUserCallback);
@@ -38,7 +38,7 @@ class UserService {
   };
 
   handleUpdate: RequestHandler = (req, res, next) => {
-    const { user } = req.body
+    const user = req.body
     const condition = 'email = ' + doubleQuotedValue(user.email)
 
     const updateUserQuery = formatUpdateColumnsQuery(this.tableName, user, condition)

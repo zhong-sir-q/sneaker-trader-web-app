@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import ProductService from '../../services/product';
+import { getMysqlDb } from '../../config/mysql';
 
 const productRoute = Router();
 
@@ -9,5 +11,5 @@ export default (app: Router) => {
   productRoute.get('/', (_req, res) => res.send('Get one product here'))
 
   // create the product in the database
-  productRoute.post('/');
+  productRoute.post('/', new ProductService(getMysqlDb()).handleCreate);
 };
