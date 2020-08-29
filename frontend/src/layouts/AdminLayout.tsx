@@ -10,7 +10,7 @@ import AdminNavbar from 'components/navbars/AdminNavbar';
 import Footer from 'components/Footer';
 
 import routes, { SneakerTraderRoute, AUTH, SIGNIN } from 'routes';
-import { fetchCurrentUser } from 'utils/auth';
+import { fetchCognitoUser } from 'utils/auth';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
@@ -74,7 +74,7 @@ const AdminLayout = () => {
 
   useEffect(() => {
     (async () => {
-      const user = await fetchCurrentUser();
+      const user = await fetchCognitoUser();
       if (!user) history.push(AUTH + SIGNIN);
     })();
   });

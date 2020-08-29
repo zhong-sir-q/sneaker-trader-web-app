@@ -1,6 +1,6 @@
 import { Auth } from 'aws-amplify';
 
-export const fetchCurrentUser = () =>
+export const fetchCognitoUser = () =>
   Auth.currentAuthenticatedUser()
     .then((user) => user)
     .catch((err) => console.log(err));

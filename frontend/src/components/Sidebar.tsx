@@ -11,7 +11,7 @@ import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
 import { SneakerTraderRoute, View, RouteState, ADMIN, USER_PROFILE } from 'routes';
-import { fetchCurrentUser } from 'utils/auth';
+import { fetchCognitoUser } from 'utils/auth';
 import { fetchUserByEmail } from 'api/api';
 import { User } from '../../../shared';
 
@@ -81,7 +81,7 @@ const Sidebar = (props: SideBarProps) => {
 
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCurrentUser();
+      const cognitoUser = await fetchCognitoUser();
       const cognitoFullName = cognitoUser.name;
 
       const dbUser: User = await fetchUserByEmail(cognitoUser.email);

@@ -13,7 +13,7 @@ import FormikInput from 'components/formik/FormikInput';
 import FormikDatetime from 'components/formik/FormikDatetime';
 
 import { maxCharacters, required, validEmail, minCharacters, matchingPassword, validDate, customRequired } from 'utils/yup';
-import { createUser } from 'api/api'
+import { createUser } from 'api/api';
 
 import { SIGNIN, AUTH } from 'routes';
 import { User } from '../../../shared';
@@ -140,7 +140,9 @@ const SignupForm = () => {
     // successful sign up, show the user the success message
     setSignUpSuccess(true);
 
-    const dbUser = await createUser(convertFormValuesToUser(formStates));
+    const dbUser = await createUser(convertFormValuesToUser(formStates)).catch((err) =>
+      console.log('Error creating the user in the database', err)
+    );
     // TODO: discuss with Aaron how we want to handle this error
     // handle create user error in the database
     if (!dbUser) console.log('Do something with the db create user error');
