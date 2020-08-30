@@ -28,7 +28,7 @@ const validateEmailSchema = Yup.object({
   email: validEmail(),
 });
 
-interface RequestCodeProps {
+type RequestCodeProps = {
   handleSubmitEmail: (email: string) => void;
   handleCodeSent: () => void;
 }
@@ -94,7 +94,7 @@ const validateConfirmCodeSchema = Yup.object({
   confirmPassword: matchingPassword('password'),
 });
 
-interface ConfirmCodeProps {
+type ConfirmCodeProps = {
   email: string;
 }
 

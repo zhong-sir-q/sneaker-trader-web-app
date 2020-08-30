@@ -24,7 +24,7 @@ import { SIGNIN, AUTH } from 'routes';
 
 type NavbarColor = 'transparent' | 'white';
 
-interface AdminNavbarProps {
+type AdminNavbarProps = {
   // string for the page name
   brandText: string;
 }

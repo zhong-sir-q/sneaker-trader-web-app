@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 
-interface PanelHeaderProps {
+type PanelHeaderProps = {
   content?: ReactNode;
   size?: 'sm' | 'lg';
 }

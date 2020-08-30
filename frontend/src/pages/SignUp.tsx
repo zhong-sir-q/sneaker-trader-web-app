@@ -143,6 +143,7 @@ const SignupForm = () => {
     const dbUser = await createUser(convertFormValuesToUser(formStates)).catch((err) =>
       console.log('Error creating the user in the database', err)
     );
+
     // TODO: discuss with Aaron how we want to handle this error
     // handle create user error in the database
     if (!dbUser) console.log('Do something with the db create user error');

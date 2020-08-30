@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { Container } from 'reactstrap';
 
-interface FooterProps {
+type FooterProps = {
   default: boolean;
   fluid: boolean;
 }

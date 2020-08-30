@@ -3,6 +3,7 @@ import SignIn from 'pages/SignIn';
 import Dashboard from 'components/Dashboard';
 import ForgotPassword from 'pages/ForgotPassword';
 import UserProfile from 'pages/UserProfile';
+import ProductListingForm from 'pages/ProductListingForm';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -10,7 +11,8 @@ export const SIGNIN = '/signin';
 export const SIGNUP = '/signup';
 export const DASHBOARD = '/dashboard';
 export const FORGOT_PW = '/reset';
-export const USER_PROFILE = '/profile'
+export const USER_PROFILE = '/profile';
+export const PRODUCT_LISTING = '/product/listing';
 
 type AppLayout = '/auth' | '/admin';
 
@@ -86,9 +88,14 @@ const routes: SneakerTraderRoute[] = [
     path: USER_PROFILE,
     name: 'User Profile',
     component: UserProfile,
-    layout: ADMIN
-  }
+    layout: ADMIN,
+  },
+  {
+    path: PRODUCT_LISTING,
+    name: 'Product Listing',
+    component: ProductListingForm,
+    layout: ADMIN,
+  },
 ];
-
 
 export default routes;

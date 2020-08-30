@@ -17,6 +17,7 @@
     "react-dom": "^16.13.1",
     "react-notification-alert": "0.0.12",
     "react-router-dom": "^5.2.0",
+    "react-s3-uploader": "^4.9.3",
     "react-scripts": "3.4.3",
     "reactstrap": "^8.5.1",
     "typescript": "^3.9.7",

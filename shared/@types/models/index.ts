@@ -21,3 +21,13 @@ export type User = {
   dob: string;
   email: string;
 };
+
+export type Sneaker = {
+  name: string;
+  brand: string;
+  colorWay: string;
+  size: number;
+  price: number;
+  imageUrls: string;
+  description?: string;
+};

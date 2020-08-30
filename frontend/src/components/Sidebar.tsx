@@ -17,7 +17,7 @@ import { User } from '../../../shared';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
-interface SideBarProps {
+type SideBarProps = {
   // TODO: type this
   routes: any[];
   showNotification: boolean;
