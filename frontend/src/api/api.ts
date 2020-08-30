@@ -3,13 +3,14 @@ import { User, Sneaker } from '../../../shared';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;
 const USER_API_URL = API_BASE_URL + 'user/';
 const PRODUCT_API_URL = API_BASE_URL + 'product/';
+const AWS_API_URL = API_BASE_URL + 'aws/';
 
 // RULE: NEVER assign keys, IF I ONLY HAVE ONE JSON body
-const formatPostRequestOptions = (data: any): RequestInit => ({
+const formatPostRequestOptions = (data: any, contentType?: string): RequestInit => ({
   method: 'POST',
   body: JSON.stringify(data),
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': contentType || 'application/json',
   },
 });
 
@@ -25,3 +26,15 @@ export const updateUser = async (user: User) => fetch(USER_API_URL + 'update', f
 // product apis
 export const createProduct = (product: Sneaker): Promise<Sneaker> =>
   fetch(PRODUCT_API_URL, formatPostRequestOptions(product)).then((res) => res.json());
+
+type SignS3ResultType = {
+  signedRequestUrl: string;
+  accessImageUrl: string;
+};
+
+export const uploadS3Image = async (formData: FormData) => {
+  return fetch(AWS_API_URL + 'upload', {
+    method: 'POST',
+    body: formData
+  }).then(res => res.json())
+}

@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import { Col, Container } from 'reactstrap';
 
 import PanelHeader from 'components/PanelHeader';
+import SubmissionSuccess from 'components/SubmissionSuccess';
+import PreviewSneaker from 'components/PreviewSneaker';
+import SneakerInfoForm from 'components/SneakerInfoForm';
 
 import { createProduct } from 'api/api';
 
 import { Sneaker } from '../../../shared';
 
 import aj12Retro from 'assets/img/aj12_retro.jpg';
-import SubmissionSuccess from 'components/SubmissionSuccess';
-import PreviewSneaker from 'components/PreviewSneaker';
-import SneakerInfoForm from 'components/SneakerInfoForm';
 
 const INIT_SNEAKER_STATE: Sneaker = {
   name: '',
