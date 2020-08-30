@@ -1,14 +1,13 @@
-import React, { ChangeEvent, useRef, useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import { Formik, Form as FormikForm } from 'formik';
 import { required, requiredPositiveNumber } from 'utils/yup';
 
 import { useDropzone, DropzoneState } from 'react-dropzone';
-import { Col, Card, CardHeader, CardBody, Row, FormGroup, CardFooter, Button, Input, CardText } from 'reactstrap';
+import { Col, Card, CardHeader, CardBody, Row, FormGroup, CardFooter, Button } from 'reactstrap';
 import FormikLabelInput from './formik/FormikLabelInput';
 
 import { Sneaker } from '../../../shared';
-import { uploadS3Image } from 'api/api';
 
 import styled from 'styled-components';
 

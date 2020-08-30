@@ -10,8 +10,8 @@ const config = {
     password: process.env.dbPassword,
     database: process.env.database,
   },
-  userPoolId: process.env.USER_POOL_ID as string,
-  region: process.env.REGION as string
+  region: process.env.REGION as string,
+  imageBucket: process.env.IMAGE_UPLOADS_BUCKET as string
 };
 
 export default config;
