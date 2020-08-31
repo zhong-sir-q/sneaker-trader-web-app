@@ -9,6 +9,7 @@ type PreviewSneakerProps = {
   sneaker: Sneaker;
   onPrevStep: () => void;
   onSubmit: () => void;
+  previewUrl?: string;
 };
 
 type SneakerInfoListGroupProps = {
@@ -28,20 +29,17 @@ const SneakerInfoListGroup = (props: SneakerInfoListGroupProps) => {
   );
 };
 
-// % is not allowed in an url, so use it to separate the urls
-const firstImgUrl = (urls: string) => urls.split('%')[0]
-
 const PreviewSneaker = (props: PreviewSneakerProps) => {
   const { sneaker, onPrevStep, onSubmit } = props;
 
   return (
     <Card className='text-center' style={{ maxWidth: '365px' }}>
-      <CardHeader>
+      <CardHeader>  
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
       {/* TODO: the image url should be dynamic */}
       <CardBody>
-        <SneakerCard sneaker={{ ...sneaker, imageUrls: firstImgUrl(sneaker.imageUrls) }} />
+        <SneakerCard sneaker={{ ...sneaker }} />
         <SneakerInfoListGroup sneaker={sneaker} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>

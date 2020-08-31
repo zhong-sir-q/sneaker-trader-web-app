@@ -7,21 +7,27 @@ import SubmissionSuccess from 'components/SubmissionSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
 
-import { createProduct } from 'api/api';
+import { createProduct, uploadS3MultipleImages } from 'api/api';
 
 import { Sneaker } from '../../../shared';
 
-import aj12Retro from 'assets/img/aj12_retro.jpg';
+import PreviewImagesDropZone from 'components/PreviewImagesDropZone';
 
-const INIT_SNEAKER_STATE: Sneaker = {
+export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls'>;
+
+const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   name: '',
   brand: '',
-  size: Number.NaN,
+  size: undefined,
   colorWay: '',
-  price: Number.NaN,
+  price: undefined,
   description: '',
-  // TODO: this should be an empty string, change the hard coded value later
-  imageUrls: aj12Retro,
+};
+
+// NOTE: the type is defined in  PreviewImageDropZone, too
+type PreviewFile = File & {
+  preview: string;
+  id: string;
 };
 
 // A 4-step form, first to submit the basic info, second to preview with the
@@ -32,35 +38,90 @@ const ProductListingForm = () => {
   const [sneaker, setSneaker] = useState(INIT_SNEAKER_STATE);
   // not part of the sneaker, so separate the state out
   const [billingInfo, setBillingInfo] = useState('');
+  // images
+  const [files, setFiles] = useState<PreviewFile[]>([]);
+  // use this as the specific ID of the file
+  const [mainFileId, setMainFileId] = useState<string>();
+
   const [step, setStep] = useState(0);
 
-  const onPrevStep = () => setStep(step - 1);
-  const onNextStep = () => setStep(step + 1);
+  // TODO: where is a good place to revoke the urls while maintaing a good UX
+  // i.e. the user can still see the images when they reverse the step
+  // useEffect(
+  //   () => () => {
+  //     // Make sure to revoke the data uris to avoid memory leaks
+  //     files.forEach((file) => URL.revokeObjectURL(file.preview));
+  //   },
+  //   [files]
+  // );
 
-  const onStepSubmit = (sneakerStates: Sneaker, billingInfoInput: string) => {
+  const onPrevStep = () => setStep(step - 1);
+
+  const onNextStep = () => {
+    console.log(mainFileId);
+    setStep(step + 1);
+  };
+
+  const onSubmitForm = (sneakerStates: ListingFormSneakerStateType, billingInfoInput: string) => {
     onNextStep();
+
     setSneaker(sneakerStates);
     setBillingInfo(billingInfoInput);
   };
 
-  // steps: create the product in the backend -> display
-  // successful message -> redirect to the homepage
+  const onDropFile = (newFiles: PreviewFile[]) => setFiles(newFiles);
+
+  const onRemoveFile = (fileId: string) => {
+    // NOTE: this actually does not reset the file id for some reason
+    // I CANNOT DEBUG THIS, come back to it later
+    if (mainFileId === fileId) setMainFileId(undefined);
+
+    const filesAfterRemoval = files.filter((file) => file.id !== fileId);
+    setFiles(filesAfterRemoval);
+  };
+
+  const onClickImage = (fileId: string) => setMainFileId(fileId);
+
+  const getMainDisplayFile = () => files.filter((f) => f.id === mainFileId)[0];
+
+  const formDataFromFiles = () => {
+    const formData = new FormData();
+
+    for (const f of files) formData.append('files', f);
+
+    return formData;
+  };
+
+  // TODO: add loading animation while uploading the files
+  // steps: upload all the images to S3 -> create the product in the
+  // backend -> display successful message
   const onFinishSubmit = async () => {
-    const product = await createProduct(sneaker).catch((err) => console.log(err));
+    const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles()).catch((err) => console.log(err));
+    if (!uploadedUrls) return;
+
+    const formattedUrls = uploadedUrls.join(',');
+    const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
+
+    const product = await createProduct(createSneakerPayload).catch((err) => console.log(err));
 
     // handle db create product error
     if (!product) return;
 
+    // Go to the success message
     onNextStep();
   };
 
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onStepSubmit} />;
+        // NOTE: files should ba a state, so the form can preserve the values
+        return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitForm} />;
       case 1:
-        return <PreviewSneaker {...{ sneaker, onPrevStep, onSubmit: onFinishSubmit }} />;
+        return <PreviewImagesDropZone {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage }} />;
       case 2:
+        const previewSneaker = { ...sneaker, imageUrls: getMainDisplayFile().preview };
+        return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep, onSubmit: onFinishSubmit }} />;
+      case 3:
         return <SubmissionSuccess />;
       default:
         return undefined;

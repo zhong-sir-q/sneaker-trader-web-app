@@ -32,8 +32,15 @@ type SignS3ResultType = {
   accessImageUrl: string;
 };
 
-export const uploadS3Image = async (formData: FormData) => {
+export const uploadS3SignleImage = async (formData: FormData) => {
   return fetch(AWS_API_URL + 'upload', {
+    method: 'POST',
+    body: formData
+  }).then(res => res.body)
+}
+
+export const uploadS3MultipleImages = async (formData: FormData): Promise<string[]> => {
+  return fetch(AWS_API_URL + 'uploads', {
     method: 'POST',
     body: formData
   }).then(res => res.json())

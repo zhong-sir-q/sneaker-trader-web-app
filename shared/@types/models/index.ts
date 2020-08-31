@@ -26,8 +26,8 @@ export type Sneaker = {
   name: string;
   brand: string;
   colorWay: string;
-  size: number;
-  price: number;
+  size: number | undefined;
+  price: number | undefined;
   imageUrls: string;
   description?: string;
 };

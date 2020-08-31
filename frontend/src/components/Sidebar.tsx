@@ -81,10 +81,14 @@ const Sidebar = (props: SideBarProps) => {
 
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCognitoUser();
+      const cognitoUser = await fetchCognitoUser().catch(err => console.log(err));
+      // handle get cognito user error
+      if (!cognitoUser) return
       const cognitoFullName = cognitoUser.name;
 
-      const dbUser: User = await fetchUserByEmail(cognitoUser.email);
+      const dbUser: User | void = await fetchUserByEmail(cognitoUser.email).catch(err => console.log(err));
+      // handle fetch db user error
+      if (!dbUser) return
       const { firstName, lastName } = dbUser;
       const dbFullName = firstName && lastName ? firstName + ' ' + lastName : undefined;
 

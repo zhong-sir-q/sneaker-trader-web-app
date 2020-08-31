@@ -9,7 +9,7 @@ const FormikLabelInput = (props: FieldHookConfig<string> & { label: string }) =>
     <React.Fragment>
       <label>{props.label}</label>
       <Input {...field} {...props as InputProps} />
-      {meta.error && <span className='category' style={{ color: 'red', marginLeft: '10px', marginTop: '10px' }}>{meta.error}</span>}
+      {meta.touched && meta.error && <span className='category' style={{ color: 'red', marginLeft: '10px', marginTop: '10px' }}>{meta.error}</span>}
     </React.Fragment>
   );
 };
