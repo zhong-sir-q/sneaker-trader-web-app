@@ -19,4 +19,4 @@ app.use('/api', apiRoutes());
 app.get('/', (_req, res) => res.send('Hello, this is the home page of SneakerTrader server'));
 
 const PORT = 4000;
-app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log('Listening at port', PORT));

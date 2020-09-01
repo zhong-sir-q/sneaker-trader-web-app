@@ -1,9 +1,9 @@
-import { v4 as uuidV4 } from 'uuid';
 import React from 'react';
+import { v4 as uuidV4 } from 'uuid';
 import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
-import { Button } from 'reactstrap';
+import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {
@@ -19,18 +19,10 @@ const getColor = (props: DropzoneState) => {
 };
 
 const DropZoneContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
-  border-width: 2px;
-  border-radius: 2px;
-  border-color: ${(props: any) => getColor(props)};
-  border-style: dashed;
+  border: 2px dashed ${(props: any) => getColor(props)};
   background-color: #fafafa;
   color: #bdbdbd;
-  outline: none;
   transition: border 0.24s ease-in-out;
 `;
 
@@ -38,15 +30,22 @@ const PreviewAside = styled.aside`
   display: flex;
 `;
 
-const Thumb = styled.div`
+type ThumbProps = {
+  isImageSelected: boolean;
+  isFirstChild: boolean;
+};
+
+const Thumb = styled.div<ThumbProps>`
   display: flex;
+  flex: 1 1 0;
+  padding: 4px 8px;
   flex-direction: column;
   align-items: center;
-  border-radius: 2;
-  border: '1px solid #eaeaea';
-  margin-bottom: 8;
-  margin-right: 8;
-  padding: 4;
+  border: 1px solid;
+  margin-top: 10px;
+  max-width: 185px;
+  margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
+  border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;
 
 const PreviewImage = styled.img`
@@ -80,15 +79,20 @@ type PreviewImagesDropZoneProps = {
   onClickImage: (fileId: string) => void;
 };
 
-// TODO: restyle the component, improve the UI
-// TODO: set a max limit of 5 files;
 const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
   const { files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage } = props;
-  // const [exceedLimitError, setExceedLimitError] = useState('')
+
+  const UPLOAD_LIMIT = 5;
+  const isFileUploadLimit = () => files.length === UPLOAD_LIMIT;
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     accept: 'image/*',
     onDrop: (acceptedFiles) => {
+      if (isFileUploadLimit()) {
+        alert('Maximum upload of 5 images!');
+        return;
+      }
+
       const filesAfterAddition = files.concat(
         acceptedFiles.map((file: any) => {
           const previewBlob = URL.createObjectURL(file);
@@ -102,9 +106,7 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
 
   // reject user if the main image has not be selected yet
   const onPreview = () => {
-    // TODO: DEBUG WHY AFTER REMOVING THE SELECT FILE, 
-    // the main file id does not reset to undefined
-    if (!mainFileId || mainFileId.length === 0) {
+    if (!mainFileId) {
       alert('Select a main image to display');
       return;
     }
@@ -112,33 +114,38 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
     onNextStep();
   };
 
-  const thumbs = files.map((file) => (
-    <Thumb onClick={() => onClickImage(file.id)} key={file.preview}>
-      {/* TODO: find out how to do conditional styling to styled component */}
-      <PreviewImage style={{ border: mainFileId === file.id ? 'solid 1px green' : '' }} src={file.preview} alt={file.name} />
-      {/* TODO: replace this with a cross or a bin icon */}
-      <Button onClick={() => onRemoveFile(file.id)}>
-        <i className='now-ui-icons design_bullet-list-67' />
-      </Button>
+  const thumbs = files.map((file, idx) => (
+    <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.preview}>
+      <PreviewImage onClick={() => onClickImage(file.id)} src={file.preview} alt={file.name} />
+      <i style={{ cursor: 'pointer' }} onClick={() => onRemoveFile(file.id)} className='now-ui-icons ui-1_simple-remove' />
     </Thumb>
   ));
 
   return (
-    <section>
-      <p className='category' style={{ fontSize: '0.95em' }}>
-        <GreenDot /> Main Display Image, Click To Select One
-      </p>
-      <DropZoneContainer {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
-        <input {...getInputProps()} name='files' />
-        <span>Drag 'n' drop some files here, or click to select files</span>
-      </DropZoneContainer>
-      {/* TODO: styling. Each card should occupy a specific proportion and give it some margin */}
-      <PreviewAside>{thumbs}</PreviewAside>
-      <Button onClick={onPrevStep}>Previous</Button>
-      <Button color='primary' onClick={onPreview}>
-        Preview
-      </Button>
-    </section>
+    <Card style={{ padding: '15px 15px 0px 15px' }}>
+      <CardHeader>
+        <p className='category' style={{ fontSize: '0.95em' }}>
+          <GreenDot /> Click the image to select the main display image
+        </p>
+        <p>Upload maximum of 5 images</p>
+      </CardHeader>
+
+      <CardBody>
+        <DropZoneContainer {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
+          <input {...getInputProps()} name='files' />
+          <span>Drag 'n' drop some files here, or click to select files</span>
+        </DropZoneContainer>
+
+        <PreviewAside>{thumbs}</PreviewAside>
+      </CardBody>
+
+      <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
+        <Button onClick={onPrevStep}>Previous</Button>
+        <Button color='primary' onClick={onPreview}>
+          Preview
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 

@@ -33,7 +33,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
   return (
     <Formik
       initialValues={props.formValues}
-      // validationSchema={sneakerInfoValidation}
+      validationSchema={sneakerInfoValidation}
       onSubmit={(formStates) => {
         const { billingInfo, ...sneaker } = formStates;
         props.onSubmit(sneaker, billingInfo);

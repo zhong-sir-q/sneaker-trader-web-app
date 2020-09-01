@@ -57,10 +57,7 @@ const ProductListingForm = () => {
 
   const onPrevStep = () => setStep(step - 1);
 
-  const onNextStep = () => {
-    console.log(mainFileId);
-    setStep(step + 1);
-  };
+  const onNextStep = () => setStep(step + 1);
 
   const onSubmitForm = (sneakerStates: ListingFormSneakerStateType, billingInfoInput: string) => {
     onNextStep();
@@ -72,8 +69,6 @@ const ProductListingForm = () => {
   const onDropFile = (newFiles: PreviewFile[]) => setFiles(newFiles);
 
   const onRemoveFile = (fileId: string) => {
-    // NOTE: this actually does not reset the file id for some reason
-    // I CANNOT DEBUG THIS, come back to it later
     if (mainFileId === fileId) setMainFileId(undefined);
 
     const filesAfterRemoval = files.filter((file) => file.id !== fileId);
@@ -114,7 +109,6 @@ const ProductListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        // NOTE: files should ba a state, so the form can preserve the values
         return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitForm} />;
       case 1:
         return <PreviewImagesDropZone {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage }} />;

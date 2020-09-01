@@ -1,6 +1,6 @@
 import React from 'react';
-
-import { CardBody, CardHeader, Card } from 'reactstrap';
+import styled from 'styled-components';
+import { Card } from 'reactstrap';
 
 import { Sneaker } from '../../../shared';
 
@@ -9,19 +9,51 @@ type SneakerCardProps = {
   maxWidth?: string;
 };
 
+const ImageContainer = styled.div`
+  position: relative;
+  padding-top: 75%;
+`;
+
+const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const InfoContainer = styled.div`
+  padding: 0px 15px;
+  & > * {
+    margin-bottom: 5px;
+  }
+`;
+
+const SneakerName = styled.div`
+  font-size: 1.35em;
+`;
+
+const SneakerPrice = styled.div`
+  font-weight: bold;
+  font-size: 1.75em;
+`;
+
 const SneakerCard = (props: SneakerCardProps) => {
-  const { imageUrls, name, price } = props.sneaker;
+  const { imageUrls, name, price, brand, size, colorWay } = props.sneaker;
   const firstImageUrl = () => imageUrls.split(',')[0];
 
+  const formatSneakerName = () => [colorWay, brand, name].join(' ');
+
   return (
-    <Card style={{ maxWidth: props.maxWidth }}>
-      <CardHeader style={{ position: 'relative', paddingTop: '58%', margin: '15px' }}>
-        <img style={{ position: 'absolute', top: 0, left: 0 }} src={firstImageUrl()} alt={name} />
-      </CardHeader>
-      <CardBody className='text-left' style={{ padding: '12px' }}>
-        <h5>{name}</h5>
-        <h3 className='title'>${price}</h3>
-      </CardBody>
+    <Card className='text-left' style={{ maxWidth: props.maxWidth }}>
+      <ImageContainer>
+        <Image src={firstImageUrl()} alt={name} />
+      </ImageContainer>
+      <InfoContainer>
+        <SneakerName>{formatSneakerName()}</SneakerName>
+        <SneakerPrice>${price}</SneakerPrice>
+        <div className='category' style={{ fontSize: '1.15em' }}>
+          Size: {size}
+        </div>
+      </InfoContainer>
     </Card>
   );
 };
