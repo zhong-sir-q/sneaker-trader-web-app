@@ -1,6 +1,6 @@
 // TODO: find out what C# uses to abstract all the sql queries,
 // i.e. what it uses so developers do not have to write queries
-type QueryObject = { [key: string]: string | number | undefined };
+type QueryObject = { [key: string]: any };
 
 // the keys of the object will be the columns in the corresponding database
 export const formatColumns = (obj: QueryObject) => {
@@ -9,7 +9,7 @@ export const formatColumns = (obj: QueryObject) => {
   return columns.join(', ');
 };
 
-export const doubleQuotedValue = (s: string) => `"${s}"`
+export const doubleQuotedValue = (s: string) => `"${s}"`;
 
 export const doubleQuotedValues = (obj: QueryObject) => {
   const values = Object.values(obj);
@@ -27,10 +27,10 @@ export const formatInsertColumnsQuery = (tableName: string, obj: QueryObject) =>
 const formatSetQuery = (obj: QueryObject) => {
   const doubleQuoteVals = doubleQuotedValues(obj);
   let output = '';
-  const length = Object.keys(obj).length
+  const length = Object.keys(obj).length;
 
   Object.keys(obj).forEach((column, idx) => {
-    const end = idx < length - 1 ? ', ' : ' '
+    const end = idx < length - 1 ? ', ' : ' ';
     const temp = column + '=' + doubleQuoteVals[idx] + end;
     output += temp;
   });
@@ -42,5 +42,5 @@ const formatSetQuery = (obj: QueryObject) => {
 export const formatUpdateColumnsQuery = (tableName: string, obj: QueryObject, condition: string) =>
   `UPDATE ${tableName} SET ${formatSetQuery(obj)} WHERE ${condition}`;
 
-export const formateGetColumnsQuery = (tableName: string, condition: string) => 
-`SELECT * FROM ${tableName} WHERE ${condition}`
+export const formateGetColumnsQuery = (tableName: string, condition?: string) =>
+  condition ? `SELECT * FROM ${tableName} WHERE ${condition}` : `SELECT * FROM ${tableName}`;

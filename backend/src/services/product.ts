@@ -19,7 +19,7 @@ class ProductService {
 
     this.connection.query(createProductQuery, (err, queryResult) => {
       if (err) next(err);
-      else res.json(queryResult);
+      else res.json(queryResult.insertId);
     });
   };
 }
