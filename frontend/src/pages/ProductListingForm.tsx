@@ -7,11 +7,12 @@ import SubmissionSuccess from 'components/SubmissionSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
 
-import { createProduct, uploadS3MultipleImages } from 'api/api';
+import { createProduct, uploadS3MultipleImages, fetchUserByEmail, createListedProduct } from 'api/api';
 
-import { Sneaker } from '../../../shared';
+import { Sneaker, ListedProduct } from '../../../shared';
 
 import PreviewImagesDropZone from 'components/PreviewImagesDropZone';
+import { fetchCognitoUser } from 'utils/auth';
 
 export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls'>;
 
@@ -87,20 +88,46 @@ const ProductListingForm = () => {
     return formData;
   };
 
+  const formatListedProduct = (askingPrice: number, userId: number, productId: number, quantity?: number): ListedProduct => ({
+    userId,
+    productId,
+    askingPrice,
+    // default quantity. Enable the user to select the
+    // quantity of shoes they want to sell in the future
+    quantity: quantity || 1,
+    sold: false,
+  });
+
   // TODO: add loading animation while uploading the files
-  // steps: upload all the images to S3 -> create the product in the
-  // backend -> display successful message
+
+  // steps:
+  // upload all the images to S3 -> insert the product in the
+  // Products and the ListedProducts table -> display successful message
   const onFinishSubmit = async () => {
     const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles()).catch((err) => console.log(err));
+    // handle upload error
     if (!uploadedUrls) return;
 
     const formattedUrls = uploadedUrls.join(',');
     const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
 
-    const product = await createProduct(createSneakerPayload).catch((err) => console.log(err));
+    const productId = await createProduct(createSneakerPayload).catch((err) => console.log(err));
 
     // handle db create product error
-    if (!product) return;
+    if (!productId) return;
+
+    const cognitoUser = await fetchCognitoUser().catch((err) => console.log(err));
+    // handle error
+    if (!cognitoUser) return;
+
+    const user = await fetchUserByEmail(cognitoUser.email).catch((err) => console.log(err));
+    // handle error
+    if (!user) return;
+
+    // NOTE: the argument has to be the product value returned from the db
+    // because we need to access the product id
+    const listedProductPayload = formatListedProduct(sneaker.price!, user.id!, productId)
+    await createListedProduct(listedProductPayload);
 
     // Go to the success message
     onNextStep();

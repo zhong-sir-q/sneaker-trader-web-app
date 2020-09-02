@@ -122,6 +122,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
                   tag='a'
                   onClick={async () => {
                     await signOut();
+                    // NOTE: should push the home page in the future
                     history.push(AUTH + SIGNIN);
                   }}
                 >

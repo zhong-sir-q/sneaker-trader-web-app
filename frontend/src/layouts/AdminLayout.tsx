@@ -9,40 +9,30 @@ import PerfectScrollbar from 'perfect-scrollbar';
 import AdminNavbar from 'components/navbars/AdminNavbar';
 import Footer from 'components/Footer';
 
-import routes, { SneakerTraderRoute, AUTH, SIGNIN } from 'routes';
 import { fetchCognitoUser } from 'utils/auth';
+import routes, { SneakerTraderRoute, AUTH, SIGNIN, siderbarRoutes } from 'routes';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
-  return routes.map((route, idx) => {
-    if (route.collapse) {
-      return getRoutes(route.views);
-    }
+  return routes.map(({ collapse, views, layout, path, component }, idx) => {
+    if (collapse) return getRoutes(views!);
 
-    if (route.layout === '/admin') {
-      return <Route path={route.layout + route.path} component={route.component} key={idx} />;
-    } else {
-      return null;
-    }
+    if (layout === '/admin') return <Route path={layout + path} component={component} key={idx} />;
+    else return null;
   });
 };
 
 const getActiveRoute = (routes: SneakerTraderRoute[]): string => {
-  let activeRoute = 'Default Brand Text';
+  const activeRoute = 'Sneaker Trader';
 
-  for (let i = 0; i < routes.length; i++) {
-    if (routes[i].collapse) {
-      const { views } = routes[i];
-      if (views) {
-        const collapseActiveRoute = getActiveRoute(views);
-        if (collapseActiveRoute !== activeRoute) {
-          return collapseActiveRoute;
-        }
+  for (const { name, views, collapse, layout, path } of routes) {
+    if (collapse && views) {
+      const collapseActiveRoute = getActiveRoute(views);
+      if (collapseActiveRoute !== activeRoute) {
+        return collapseActiveRoute;
       }
     } else {
-      if (window.location.pathname.indexOf(routes[i].layout + routes[i].path) !== -1) {
-        return routes[i].name;
-      }
+      if (window.location.pathname.indexOf(layout + path) !== -1) return name;
     }
   }
 
@@ -99,7 +89,7 @@ const AdminLayout = () => {
   return (
     <div className='wrapper'>
       <NotificationAlert ref={notificationAlert} />
-      <Sidebar {...defaultSideBarProps} minimizeSidebar={minimizeSideBar} routes={routes} />
+      <Sidebar {...defaultSideBarProps} minimizeSidebar={minimizeSideBar} routes={siderbarRoutes} />
       {/* NOTE: a temporary solution to make the panel scrollable, would
           not need it when the dashboard is properly implemented */}
       <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>

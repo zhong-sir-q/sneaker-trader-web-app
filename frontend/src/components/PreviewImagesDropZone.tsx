@@ -38,10 +38,9 @@ type ThumbProps = {
 const Thumb = styled.div<ThumbProps>`
   display: flex;
   flex: 1 1 0;
-  padding: 4px 8px;
   flex-direction: column;
   align-items: center;
-  border: 1px solid;
+  border: 2.5px solid;
   margin-top: 10px;
   max-width: 185px;
   margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};

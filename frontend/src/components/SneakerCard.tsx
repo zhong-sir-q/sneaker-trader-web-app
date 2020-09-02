@@ -3,11 +3,8 @@ import styled from 'styled-components';
 import { Card } from 'reactstrap';
 
 import { Sneaker } from '../../../shared';
-
-type SneakerCardProps = {
-  sneaker: Sneaker;
-  maxWidth?: string;
-};
+import { useHistory } from 'react-router-dom';
+import { formatSneakerPathName } from 'utils/utils';
 
 const ImageContainer = styled.div`
   position: relative;
@@ -21,36 +18,45 @@ const Image = styled.img`
 `;
 
 const InfoContainer = styled.div`
-  padding: 0px 15px;
+  padding: 0px 6%;
   & > * {
     margin-bottom: 5px;
   }
 `;
 
-const SneakerName = styled.div`
-  font-size: 1.35em;
-`;
-
-const SneakerPrice = styled.div`
-  font-weight: bold;
-  font-size: 1.75em;
-`;
+type SneakerCardProps = {
+  sneaker: Sneaker;
+  maxWidth?: string;
+  // if isListed then clicking on the card will redirect to the buy page
+  isListed?: boolean;
+  style?: React.CSSProperties;
+};
 
 const SneakerCard = (props: SneakerCardProps) => {
-  const { imageUrls, name, price, brand, size, colorWay } = props.sneaker;
+  const { sneaker, isListed, maxWidth } = props;
+  const { imageUrls, name, price, size, colorWay } = sneaker;
+
+  const history = useHistory();
+
+  const onClick = () => {
+    // TODO: use the name of shoes as the route
+    // using the hard coded value for now
+    if (isListed) history.push(formatSneakerPathName(sneaker.name));
+  };
+
   const firstImageUrl = () => imageUrls.split(',')[0];
 
-  const formatSneakerName = () => [colorWay, brand, name].join(' ');
+  const formatSneakerName = () => [colorWay, name].join(' ');
 
   return (
-    <Card className='text-left' style={{ maxWidth: props.maxWidth }}>
+    <Card className='text-left' onClick={onClick} style={{ ...props.style, maxWidth, cursor: isListed ? 'pointer' : '' }}>
       <ImageContainer>
         <Image src={firstImageUrl()} alt={name} />
       </ImageContainer>
       <InfoContainer>
-        <SneakerName>{formatSneakerName()}</SneakerName>
-        <SneakerPrice>${price}</SneakerPrice>
-        <div className='category' style={{ fontSize: '1.15em' }}>
+        <div style={{ fontSize: isListed ? '1.5vw' : '1.55em' }}>{formatSneakerName()}</div>
+        <div style={{ fontSize: isListed ? '1.7vw' : '1.75em', fontWeight: 'bold' }}>${price}</div>
+        <div className='category' style={{ fontSize: isListed ? '1.2vw' : '1.15em' }}>
           Size: {size}
         </div>
       </InfoContainer>
