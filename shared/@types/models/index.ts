@@ -20,6 +20,7 @@ export type User = {
   gender: string;
   dob: string;
   email: string;
+  id?: number;
 };
 
 export type Sneaker = {
@@ -29,5 +30,16 @@ export type Sneaker = {
   size: number | undefined;
   price: number | undefined;
   imageUrls: string;
+  id?: number;
   description?: string;
+};
+
+export type ListedProduct = {
+  // fk to Products table
+  productId: number;
+  // fk to Users table
+  userId: number;
+  askingPrice: number;
+  quantity: number;
+  sold: boolean;
 };
