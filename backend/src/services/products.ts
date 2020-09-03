@@ -1,23 +1,25 @@
-import { Connection } from 'mysql';
 import { formateGetColumnsQuery } from '../utils/formatDbQuery';
 import { RequestHandler } from 'express';
+import { PromisifiedConnection } from '../config/mysql';
 
 class ProductsService {
-  conneciton: Connection;
+  conneciton: PromisifiedConnection;
   tableName: string;
 
-  constructor(conn: Connection) {
+  constructor(conn: PromisifiedConnection) {
     this.conneciton = conn;
     this.tableName = 'Products';
   }
 
-  get: RequestHandler = (req, res, next) => {
-    const getAllColumnsQuery = formateGetColumnsQuery(this.tableName);
+  get: RequestHandler = (_req, res, next) => {
+    const getProductsQuery = formateGetColumnsQuery(this.tableName);
 
-    this.conneciton.query(getAllColumnsQuery, (err, queryResult) => {
-      if (err) next(err);
-      else res.json(queryResult);
-    });
+    try {
+      const products = this.conneciton.query(getProductsQuery);
+      res.json(products);
+    } catch (err) {
+      next(err);
+    }
   };
 }
 

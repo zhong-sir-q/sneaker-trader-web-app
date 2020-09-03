@@ -1,7 +1,26 @@
-import mysql, { Connection } from 'mysql';
+import util from 'util'
+import mysql from 'mysql';
 import config from '.';
 
-let _db: Connection;
+export type PromisifiedConnection = {
+  query(sql: string | mysql.QueryOptions): Promise<any>;
+  close(): Promise<void>;
+};
+
+let _db: PromisifiedConnection
+
+const makeDb = () => {
+  const sqlConnection = mysql.createConnection(config.sqlConnectionConfig)
+  
+  return {
+   query(sql: string | mysql.QueryOptions) {
+     return util.promisify(sqlConnection.query).call(sqlConnection, sql)
+   },
+   close() {
+     return util.promisify(sqlConnection.end).call(sqlConnection)
+   }
+  }
+}
 
 // TODO:
 // how can I make my database interaction code-first, i.e. my code defines the schema of the table
@@ -14,10 +33,11 @@ let _db: Connection;
 export const initMysqlDb = () => {
   if (_db) console.warn('Already established connection');
   else {
-    _db = mysql.createConnection(config.sqlConnectionConfig);
+    _db = makeDb();
     // TODO: when should I end the connection?
     // would using a connection pool here be better?
-    _db.connect();
+    // doI need connect here
+    // _db.connect();
   }
 };
 

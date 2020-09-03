@@ -1,26 +1,33 @@
-import { Connection } from 'mysql';
 import { Sneaker } from '../../../shared';
 import { RequestHandler } from 'express';
-import { formatInsertColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
+import { FetchDbDataCallback } from '../@types/utils';
+import { PromisifiedConnection } from '../config/mysql';
 
 class ProductService {
-  connection: Connection;
+  connection: PromisifiedConnection;
   tableName: string;
 
-  constructor(conn: Connection) {
+  constructor(conn: PromisifiedConnection) {
     this.connection = conn;
     this.tableName = 'Products';
   }
 
-  handleCreate: RequestHandler = (req, res, next) => {
+  getById(id: number, cb: FetchDbDataCallback) {
+    const getByIdQuery = formateGetColumnsQuery(this.tableName, `id = ${id}`);
+  }
+
+  handleCreate: RequestHandler = async (req, res, next) => {
     const product: Sneaker = req.body;
 
     const createProductQuery = formatInsertColumnsQuery(this.tableName, product);
 
-    this.connection.query(createProductQuery, (err, queryResult) => {
-      if (err) next(err);
-      else res.json(queryResult.insertId);
-    });
+    try {
+      const { insertId } = await this.connection.query(createProductQuery);
+      res.json(insertId);
+    } catch (err) {
+      next(err);
+    }
   };
 }
 

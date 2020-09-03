@@ -1,27 +1,39 @@
-import { RequestHandler } from "express";
-import { Connection } from "mysql";
-import { ListedProduct } from "../../../shared";
-import { formatInsertColumnsQuery } from "../utils/formatDbQuery";
+import { RequestHandler } from 'express';
+import { ListedProduct } from '../../../shared';
+import { formatInsertColumnsQuery } from '../utils/formatDbQuery';
+import { PromisifiedConnection } from '../config/mysql';
+
+// type GallerySneakersType = {
+//   [brand: string]: {
+//     [size: number]: { [colorName: string]: Sneaker & { lowestAskingPrice: number } };
+//   };
+// };
 
 class ListedProductService {
-  connection: Connection
-  tableName: string
+  connection: PromisifiedConnection;
+  tableName: string;
 
-  constructor(conn: Connection) {
+  constructor(conn: PromisifiedConnection) {
     this.connection = conn;
-    this.tableName = 'ListedProducts'
+    this.tableName = 'ListedProducts';
   }
 
-  handleCreate: RequestHandler = (req, res, next) => {
+  formatGallerySneakers(_listedProducts: ListedProduct[]) {}
+
+  getGallerySneakers: RequestHandler = (_req, res, next) => {};
+
+  handleCreate: RequestHandler = async (req, res, next) => {
     const listedProduct: ListedProduct = req.body;
 
     const createProductQuery = formatInsertColumnsQuery(this.tableName, listedProduct);
 
-    this.connection.query(createProductQuery, (err, queryResult) => {
-      if (err) next(err);
-      else res.json(queryResult);
-    });
-  }
+    try {
+      const result = await this.connection.query(createProductQuery);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 export default ListedProductService;
