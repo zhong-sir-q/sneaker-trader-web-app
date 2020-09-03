@@ -8,7 +8,7 @@ import { formatSneakerPathName } from 'utils/utils';
 
 const ImageContainer = styled.div`
   position: relative;
-  padding-top: 75%;
+  padding-top: 68%;
 `;
 
 const Image = styled.img`
@@ -18,7 +18,8 @@ const Image = styled.img`
 `;
 
 const InfoContainer = styled.div`
-  padding: 0px 3%;
+  padding: 5%;
+  background-color: rgb(250, 250, 250);
   & > * {
     margin-bottom: 5px;
   }
@@ -47,17 +48,25 @@ const SneakerCard = (props: SneakerCardProps) => {
   const formatSneakerName = () => [colorWay, name].join(' ');
 
   return (
-    <Card className='text-left' onClick={onClick} style={{ ...props.style, maxWidth, cursor: isListed ? 'pointer' : '' }}>
+    <Card
+      className='text-left'
+      onClick={onClick}
+      style={{ ...props.style, maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none' }}
+    >
       <ImageContainer>
         <Image src={firstImageUrl()} alt={name} />
       </ImageContainer>
       <InfoContainer>
-        <div style={{ marginBottom: '4px', height: '38px', lineHeight: '1.3', overflow: 'hidden', fontSize: isListed ? '16px' : '1.55em' }}>{formatSneakerName()}</div>
+        <div style={{ marginBottom: '4px', height: '38px', lineHeight: '1.3', overflow: 'hidden', fontSize: isListed ? '16px' : '1.55em' }}>
+          {formatSneakerName()}
+        </div>
         <div>
           <div style={{ fontSize: isListed ? '18px' : '1.75em', fontWeight: 600 }}>Lowest: ${price}</div>
-          {size && <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em' }}>
-            Size: {size}
-          </div>}
+          {size && (
+            <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em' }}>
+              Size: {size}
+            </div>
+          )}
         </div>
       </InfoContainer>
     </Card>

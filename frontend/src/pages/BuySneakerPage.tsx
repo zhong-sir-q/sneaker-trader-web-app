@@ -1,22 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
-import { Container, Button, Row, Col } from 'reactstrap';
+import { Container, Button, Row, Col, Spinner } from 'reactstrap';
 
 import SneakerCard from 'components/SneakerCard';
 import { Sneaker, UserSizeGroupedPriceType } from '../../../shared';
-import SneakerCardProps from '__tests__/data/SneakerCardProps';
+import { getUserSizeGroupedPrice } from 'api/api';
 
 const CenterContainer = styled(Container)`
   text-align: center;
 `;
-
-const mockSneakerMerchs: UserSizeGroupedPriceType = {
-  1.5: { 2: 100, 4: 500, lowestAsk: 100 },
-  3: { 2: 200, 4: 150, lowestAsk: 150 },
-  5: { 2: 100, 4: 500, lowestAsk: 100 },
-  9: { 10: 400, lowestAsk: 400 },
-};
 
 const GridTile = styled.div`
   display: flex;
@@ -61,11 +54,26 @@ const colorAndNameFromPath = () => {
 
 // use the path name to query the sneaker
 const BuySneakerPage = () => {
-  delete SneakerCardProps.size
-
-  const [defaultSneaker, setDefaultSneaker] = useState<Sneaker>(SneakerCardProps);
-  const [displaySneaker, setDisplaySneaker] = useState<Sneaker>(SneakerCardProps);
   const [selectedIdx, setSelectedIdx] = useState<number>();
+  const [defaultSneaker, setDefaultSneaker] = useState<Sneaker>();
+  const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
+  const [userSizeGroupedPrice, setUserSizeGroupedPrice] = useState<UserSizeGroupedPriceType>();
+
+  const onComponentMounted = async () => {
+    const shoeName = colorAndNameFromPath();
+    const { payload, ...sneaker } = await getUserSizeGroupedPrice(shoeName);
+
+    // no size is selected initially
+    delete sneaker.size;
+
+    setDefaultSneaker(sneaker);
+    setDisplaySneaker(sneaker);
+    setUserSizeGroupedPrice(payload);
+  };
+
+  useEffect(() => {
+    onComponentMounted();
+  }, []);
 
   const onClick = (idx: number, price: number, size: number) => {
     if (selectedIdx === idx) {
@@ -73,22 +81,21 @@ const BuySneakerPage = () => {
       setDisplaySneaker(defaultSneaker);
     } else {
       setSelectedIdx(idx);
-      setDisplaySneaker({ ...displaySneaker, price, size });
+      setDisplaySneaker({ ...displaySneaker!, price, size });
     }
   };
 
-  const shoeName = colorAndNameFromPath();
-
   const SizesGrid = () => {
     const renderTiles = () =>
-      Object.keys(mockSneakerMerchs).map((shoeSize, idx) => {
+      userSizeGroupedPrice &&
+      Object.keys(userSizeGroupedPrice).map((shoeSize, idx) => {
         const size = Number(shoeSize);
 
         return (
-          <GridTile onClick={() => onClick(idx, mockSneakerMerchs[size].lowestAsk, size)} key={idx}>
+          <GridTile onClick={() => onClick(idx, userSizeGroupedPrice[size].lowestAsk, size)} key={idx}>
             <InnerTile style={{ border: selectedIdx === idx ? '2px solid green' : '' }}>
               <ShoeSize>US {shoeSize}</ShoeSize>
-              <ShoePrice>${mockSneakerMerchs[size].lowestAsk}</ShoePrice>
+              <ShoePrice>${userSizeGroupedPrice[size].lowestAsk}</ShoePrice>
             </InnerTile>
           </GridTile>
         );
@@ -101,16 +108,25 @@ const BuySneakerPage = () => {
     );
   };
 
-  return (
+  return !displaySneaker ? (
+    <Row style={{ minHeight: 'calc(95vh - 96px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Spinner style={{ width: '3rem', height: '3rem' }} />
+    </Row>
+  ) : (
     <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
       <Col md='6'>
         <SizesGrid />
       </Col>
       <Col md='6'>
         <CenterContainer>
-          <SneakerCard sneaker={displaySneaker} maxWidth='400px' style={{ padding: '25px' }} />
+          <SneakerCard sneaker={displaySneaker} maxWidth='400px' />
           {/* TODO: implement the logic for checkout */}
-          <Button disabled={selectedIdx === undefined} style={{ display: 'block', margin: 'auto' }} color='primary' onClick={() => console.log('BUY ME!')}>
+          <Button
+            disabled={selectedIdx === undefined}
+            style={{ display: 'block', margin: 'auto' }}
+            color='primary'
+            onClick={() => console.log('BUY ME!')}
+          >
             Buy
           </Button>
         </CenterContainer>
