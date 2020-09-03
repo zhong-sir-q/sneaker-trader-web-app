@@ -1,7 +1,6 @@
 import { Sneaker } from '../../../shared';
 import { RequestHandler } from 'express';
 import { formatInsertColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
-import { FetchDbDataCallback } from '../@types/utils';
 import { PromisifiedConnection } from '../config/mysql';
 
 class ProductService {
@@ -13,8 +12,10 @@ class ProductService {
     this.tableName = 'Products';
   }
 
-  getById(id: number, cb: FetchDbDataCallback) {
+  async getById(id: number): Promise<Sneaker> {
     const getByIdQuery = formateGetColumnsQuery(this.tableName, `id = ${id}`);
+
+    return (await this.connection.query(getByIdQuery))[0];
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {

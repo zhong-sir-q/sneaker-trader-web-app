@@ -3,20 +3,39 @@ import { Container, Col, Row } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
 
-import { getProducts } from 'api/api';
+import { getGallerySneakers } from 'api/api';
 
-import { Sneaker } from '../../../shared';
+import { Sneaker, GallerySneakersType } from '../../../shared';
 
-// TODO: optimize performance, store the fetched result in a cache and render from there
+const formatSneakers = (gallerySneakers: GallerySneakersType): Sneaker[] => {
+  const sneakersBySize = Object.values(gallerySneakers);
+
+  const result: Sneaker[] = [];
+
+  for (const obj of sneakersBySize) {
+    const sneakersByName = Object.values(obj);
+    for (const o of sneakersByName) {
+      for (const sneaker of Object.values(o)) result.push(sneaker);
+    }
+  }
+
+  return result;
+};
+
 const SneakerGallery = () => {
   const [sneakers, setSneakers] = useState<Sneaker[]>([]);
+  // const [filterSneakers, setFilterSneakers] = useState<Sneaker[]>([]);
 
   useEffect(() => {
     (async () => {
-      const allSneakers = await getProducts();
+      const gallerySneakers = await getGallerySneakers();
+      const allSneakers = formatSneakers(gallerySneakers);
+
       setSneakers(allSneakers);
     })();
   }, []);
+
+  const CARDS_PER_ROW = 4;
 
   const populateCards = () => {
     const cards: JSX.Element[] = [];
@@ -25,7 +44,7 @@ const SneakerGallery = () => {
     for (let idx = -1; sneakers.length > 0 && idx < sneakers.length; ) {
       cards.push(
         <Row>
-          {Array(4)
+          {Array(CARDS_PER_ROW)
             .fill(0)
             .map((_) => {
               if (idx++ < sneakers.length && sneakers[idx])

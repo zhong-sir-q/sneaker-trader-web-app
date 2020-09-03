@@ -7,6 +7,7 @@ const listedProductRoute = Router();
 export default (app: Router) => {
   app.use('/listed_product', listedProductRoute);
 
-  // create the product in the database
+  listedProductRoute.get('/', new ListedProductService(getMysqlDb()).getGallerySneakers);
+
   listedProductRoute.post('/', new ListedProductService(getMysqlDb()).handleCreate);
 };

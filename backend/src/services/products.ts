@@ -11,11 +11,11 @@ class ProductsService {
     this.tableName = 'Products';
   }
 
-  get: RequestHandler = (_req, res, next) => {
+  get: RequestHandler = async (_req, res, next) => {
     const getProductsQuery = formateGetColumnsQuery(this.tableName);
 
     try {
-      const products = this.conneciton.query(getProductsQuery);
+      const products = await this.conneciton.query(getProductsQuery);
       res.json(products);
     } catch (err) {
       next(err);

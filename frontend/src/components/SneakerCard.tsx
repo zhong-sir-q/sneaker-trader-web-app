@@ -54,10 +54,12 @@ const SneakerCard = (props: SneakerCardProps) => {
         <Image src={firstImageUrl()} alt={name} />
       </ImageContainer>
       <InfoContainer>
-        <div style={{ fontSize: isListed ? '1.5vw' : '1.55em' }}>{formatSneakerName()}</div>
-        <div style={{ fontSize: isListed ? '1.7vw' : '1.75em', fontWeight: 'bold' }}>${price}</div>
-        <div className='category' style={{ fontSize: isListed ? '1.2vw' : '1.15em' }}>
-          Size: {size}
+        <div style={{ marginBottom: '6px', height: '38px', lineHeight: '1.3', overflow: 'hidden', fontSize: isListed ? '1rem' : '1.55em' }}>{formatSneakerName()}</div>
+        <div>
+          <div style={{ fontSize: isListed ? '1.275rem' : '1.75em', fontWeight: 'bold' }}>${price}</div>
+          <div className='category' style={{ fontSize: isListed ? '0.875rem' : '1.15em' }}>
+            Size: {size}
+          </div>
         </div>
       </InfoContainer>
     </Card>

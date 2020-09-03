@@ -95,7 +95,7 @@ const ProductListingForm = () => {
     // default quantity. Enable the user to select the
     // quantity of shoes they want to sell in the future
     quantity: quantity || 1,
-    sold: false,
+    sold: 0,
   });
 
   // TODO: add loading animation while uploading the files
