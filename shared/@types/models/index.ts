@@ -36,3 +36,7 @@ export type GallerySneakersType = {
 };
 
 export type UserSizeGroupedPriceType = { [size: number]: { [userId: number]: number } & { lowestAsk: number } };
+
+export type GetUserSizeGroupedPriceType = Sneaker & {
+  payload: UserSizeGroupedPriceType;
+};

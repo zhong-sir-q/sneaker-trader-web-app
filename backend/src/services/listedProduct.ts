@@ -1,13 +1,9 @@
 import { RequestHandler } from 'express';
-import { ListedProduct, Sneaker, GallerySneakersType, UserSizeGroupedPriceType } from '../../../shared';
+import { ListedProduct, Sneaker, GallerySneakersType, GetUserSizeGroupedPriceType } from '../../../shared';
 import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
 import { PromisifiedConnection } from '../config/mysql';
 import ProductService from './product';
 import ProductsService from './products';
-
-type GetUserSizeGroupedPriceType = Sneaker & {
-  payload: UserSizeGroupedPriceType;
-};
 
 class ListedProductService {
   connection: PromisifiedConnection;

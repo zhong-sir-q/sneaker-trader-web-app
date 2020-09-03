@@ -1,8 +1,5 @@
 #!/usr/bin/bash
-<<<<<<< HEAD
 # docker deployment configuration script
-=======
->>>>>>> 450a6aa05cd655a0481ac1e51bcdaa9a8f590a48
 
 ECR_URL="257875578557.dkr.ecr.ap-southeast-2.amazonaws.com/sneakertrader/express"
 TAG_NAME="prod"
