@@ -34,3 +34,5 @@ export type GallerySneakersType = {
     [size: number]: { [colorName: string]: Sneaker };
   };
 };
+
+export type UserSizeGroupedPriceType = { [size: number]: { [userId: number]: number } & { lowestAsk: number } };

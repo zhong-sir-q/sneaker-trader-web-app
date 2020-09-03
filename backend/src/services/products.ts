@@ -1,6 +1,7 @@
 import { formateGetColumnsQuery } from '../utils/formatDbQuery';
 import { RequestHandler } from 'express';
 import { PromisifiedConnection } from '../config/mysql';
+import { Sneaker } from '../../../shared';
 
 class ProductsService {
   conneciton: PromisifiedConnection;
@@ -11,11 +12,16 @@ class ProductsService {
     this.tableName = 'Products';
   }
 
-  get: RequestHandler = async (_req, res, next) => {
-    const getProductsQuery = formateGetColumnsQuery(this.tableName);
+  async getByCondition(condition?: string): Promise<Sneaker[]> {
+    const getQuery = formateGetColumnsQuery(this.tableName, condition)
 
+    return this.conneciton.query(getQuery)
+  }
+
+  get: RequestHandler = async (_req, res, next) => {
     try {
-      const products = await this.conneciton.query(getProductsQuery);
+      const products = await this.getByCondition()
+
       res.json(products);
     } catch (err) {
       next(err);

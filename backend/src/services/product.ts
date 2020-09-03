@@ -12,6 +12,13 @@ class ProductService {
     this.tableName = 'Products';
   }
 
+  // a function that gets the product based on general conditions
+  async get(condition: string) {
+    const getQuery = formateGetColumnsQuery(this.tableName, condition)
+
+    return (await this.connection.query(getQuery))[0]
+  }
+
   async getById(id: number): Promise<Sneaker> {
     const getByIdQuery = formateGetColumnsQuery(this.tableName, `id = ${id}`);
 

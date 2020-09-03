@@ -46,7 +46,7 @@ const HomeLayout = () => {
   const renderBuySneakerRoutes = async () => {
     const sneakers: Sneaker[] = await getProducts();
 
-    return sneakers.map((s) => <Route path={formatSneakerPathName(s.name)} component={BuySneakerPage} />);
+    return sneakers.map((s) => <Route path={`/${formatSneakerPathName(s.colorWay + ' ' + s.name)}`} component={BuySneakerPage} />);
   };
 
   useEffect(() => {

@@ -18,14 +18,14 @@ const Image = styled.img`
 `;
 
 const InfoContainer = styled.div`
-  padding: 0px 6%;
+  padding: 0px 3%;
   & > * {
     margin-bottom: 5px;
   }
 `;
 
 type SneakerCardProps = {
-  sneaker: Sneaker;
+  sneaker: Partial<Sneaker>;
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
@@ -39,12 +39,10 @@ const SneakerCard = (props: SneakerCardProps) => {
   const history = useHistory();
 
   const onClick = () => {
-    // TODO: use the name of shoes as the route
-    // using the hard coded value for now
-    if (isListed) history.push(formatSneakerPathName(sneaker.name));
+    if (isListed) history.push(formatSneakerPathName(sneaker.colorWay + ' ' + sneaker.name));
   };
 
-  const firstImageUrl = () => imageUrls.split(',')[0];
+  const firstImageUrl = () => imageUrls!.split(',')[0];
 
   const formatSneakerName = () => [colorWay, name].join(' ');
 
@@ -54,12 +52,12 @@ const SneakerCard = (props: SneakerCardProps) => {
         <Image src={firstImageUrl()} alt={name} />
       </ImageContainer>
       <InfoContainer>
-        <div style={{ marginBottom: '6px', height: '38px', lineHeight: '1.3', overflow: 'hidden', fontSize: isListed ? '1rem' : '1.55em' }}>{formatSneakerName()}</div>
+        <div style={{ marginBottom: '4px', height: '38px', lineHeight: '1.3', overflow: 'hidden', fontSize: isListed ? '16px' : '1.55em' }}>{formatSneakerName()}</div>
         <div>
-          <div style={{ fontSize: isListed ? '1.275rem' : '1.75em', fontWeight: 'bold' }}>${price}</div>
-          <div className='category' style={{ fontSize: isListed ? '0.875rem' : '1.15em' }}>
+          <div style={{ fontSize: isListed ? '18px' : '1.75em', fontWeight: 600 }}>Lowest: ${price}</div>
+          {size && <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em' }}>
             Size: {size}
-          </div>
+          </div>}
         </div>
       </InfoContainer>
     </Card>

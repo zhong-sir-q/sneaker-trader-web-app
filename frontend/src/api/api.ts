@@ -36,7 +36,7 @@ export const getProducts = (): Promise<Sneaker[]> => fetch(PRODUCTS_API_URL).the
 export const createListedProduct = async (listedProduct: ListedProduct) =>
   fetch(LISTED_PRODUCT_API_URL, formatPostRequestOptions(listedProduct)).then((res) => res.json());
 
-export const getGallerySneakers = async (): Promise<GallerySneakersType> => fetch(LISTED_PRODUCT_API_URL).then((res) => res.json());
+export const getGallerySneakers = async (): Promise<GallerySneakersType> => fetch(LISTED_PRODUCT_API_URL + 'gallery').then((res) => res.json());
 
 // s3
 export const uploadS3SignleImage = async (formData: FormData) => {
