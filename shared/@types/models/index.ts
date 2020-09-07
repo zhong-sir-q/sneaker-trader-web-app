@@ -29,14 +29,4 @@ export type ListedProduct = {
   sold: 0 | 1;
 };
 
-export type GallerySneakersType = {
-  [brand: string]: {
-    [size: number]: { [colorName: string]: Sneaker };
-  };
-};
-
-export type UserSizeGroupedPriceType = { [size: number]: { [userId: number]: number } & { lowestAsk: number } };
-
-export type GetUserSizeGroupedPriceType = Sneaker & {
-  payload: UserSizeGroupedPriceType;
-};
+export type SizeMinPriceGroupType = { size: number, minPrice: number }[]

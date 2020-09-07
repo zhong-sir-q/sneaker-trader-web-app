@@ -9,12 +9,20 @@ export default (app: Router) => {
 
   // TODO: NAME THE ROUTE
   listedProductRoute.get('/', async (req, res) => {
-    const sneakerColorName = req.query.colorName;
+    const sneakerSize = req.query.sizes as string
+    const sneakerName = req.query.name as string;
+    const ListedProductServiceInstance = new ListedProductService(getMysqlDb());
 
-    if (sneakerColorName) {
-      const ListedProductServiceInstance = new ListedProductService(getMysqlDb());
-      const userSizeGroupedPrice = await ListedProductServiceInstance.getUserSizeGroupedPriceByColorName(sneakerColorName as string);
-      res.json(userSizeGroupedPrice);
+    if (sneakerName) {
+      try {
+        const sizeMinPriceGroup = await ListedProductServiceInstance.getSizeMinPriceGroupByName(sneakerName);
+        res.json(sizeMinPriceGroup);
+      } catch (err) {
+        res.status(404).json(err.message);
+      }
+    } else if (sneakerSize) {
+      const sneakersBySize = await ListedProductServiceInstance.getBySize(sneakerSize);
+      res.json(sneakersBySize);
     } else {
       res.status(404).json('Recieved invalid parameters');
     }
