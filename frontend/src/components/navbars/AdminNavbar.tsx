@@ -19,17 +19,15 @@ import {
   InputGroupText,
   Input,
 } from 'reactstrap';
-import { Auth } from 'aws-amplify';
-import { SIGNIN, AUTH } from 'routes';
+
+import { signOut } from 'utils/auth';
 
 type NavbarColor = 'transparent' | 'white';
 
 type AdminNavbarProps = {
   // string for the page name
   brandText: string;
-}
-
-const signOut = () => Auth.signOut().catch((err) => console.log(err));
+};
 
 const AdminNavbar = (props: AdminNavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +35,18 @@ const AdminNavbar = (props: AdminNavbarProps) => {
   const [color, setColor] = useState<NavbarColor>('transparent');
   const sidebarToggle = useRef<HTMLButtonElement>(null);
 
-  const history = useHistory();
+  const history = useHistory()
+
+  // function that adds color white/transparent to the navbar on resize (this is for the collapse)
+  const updateColor = () => setColor(window.innerWidth < 993 && isOpen ? 'white' : 'transparent');
+
+  useEffect(() => {
+    // NOTE: currently not implementing what there is in the componentDidUpdate method
+    // of AdminNavbar.js
+    window.addEventListener('resize', updateColor);
+
+    return () => window.removeEventListener('resize', updateColor);
+  });
 
   const toggle = () => {
     setColor(isOpen ? 'transparent' : 'white');
@@ -50,17 +59,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
     document.documentElement.classList.toggle('nav-open');
     if (sidebarToggle.current) sidebarToggle.current.classList.toggle('toggled');
   };
-
-  // function that adds color white/transparent to the navbar on resize (this is for the collapse)
-  const updateColor = () => setColor(window.innerWidth < 993 && isOpen ? 'white' : 'transparent');
-
-  useEffect(() => {
-    // NOTE: currently not implementing what there is in the componentDidUpdate method
-    // of AdminNavbar.js
-    window.addEventListener('resize', updateColor);
-
-    return () => window.removeEventListener('resize', updateColor);
-  });
+  
 
   return (
     // add or remove classes depending if we are on full-screen-maps page or not
@@ -118,14 +117,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
                 </p>
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem
-                  tag='a'
-                  onClick={async () => {
-                    await signOut();
-                    // NOTE: should push the home page in the future
-                    history.push(AUTH + SIGNIN);
-                  }}
-                >
+                <DropdownItem tag='a' onClick={() => signOut(history)}>
                   Sign Out
                 </DropdownItem>
                 <DropdownItem tag='a'>Action</DropdownItem>

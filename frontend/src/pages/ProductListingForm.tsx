@@ -111,6 +111,7 @@ const ProductListingForm = () => {
     const formattedUrls = uploadedUrls.join(',');
     const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
 
+    // TODO: do not create a new product if they have the same name, color and size
     const productId = await createProduct(createSneakerPayload).catch((err) => console.log(err));
 
     // handle db create product error
@@ -124,8 +125,6 @@ const ProductListingForm = () => {
     // handle error
     if (!user) return;
 
-    // NOTE: the argument has to be the product value returned from the db
-    // because we need to access the product id
     const listedProductPayload = formatListedProduct(sneaker.price!, user.id!, productId)
     await createListedProduct(listedProductPayload);
 

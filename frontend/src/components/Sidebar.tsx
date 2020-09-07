@@ -173,9 +173,9 @@ const Sidebar = (props: SideBarProps) => {
               <img src={logo} alt='react-logo' />
             </div>
           </a>
-          <a href='#pablo' className='simple-text logo-normal'>
+          <Link to='/' className='simple-text logo-normal'>
             Sneaker Trader
-          </a>
+          </Link>
           <div className='navbar-minimize'>
             <Button outline className='btn-round btn-icon' color='neutral' id='minimizeSidebar' onClick={() => props.minimizeSidebar()}>
               <i className='now-ui-icons text_align-center visible-on-sidebar-regular' />

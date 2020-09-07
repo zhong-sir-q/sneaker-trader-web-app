@@ -1,6 +1,6 @@
 import Amplify from 'aws-amplify';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 // layouts
 import HomeLayout from 'layouts/HomeLayout';
@@ -8,7 +8,7 @@ import AuthLayout from 'layouts/AuthLayout';
 import AdminLayout from 'layouts/AdminLayout';
 
 // routes
-import { AUTH, ADMIN, MARKET_PLACE } from 'routes';
+import { AUTH, ADMIN } from 'routes';
 
 // css
 import 'bootstrap/dist/css/bootstrap.css';
@@ -37,11 +37,9 @@ const App = () => {
           <AdminLayout />
         </Route>
 
-        <Route path='/'>
+        <Route  path='/'>
           <HomeLayout />
         </Route>
-
-        <Redirect to={MARKET_PLACE} />
       </Switch>
     </Router>
   );

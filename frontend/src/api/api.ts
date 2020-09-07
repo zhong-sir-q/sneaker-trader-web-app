@@ -1,4 +1,4 @@
-import { User, Sneaker, ListedProduct, GallerySneakersType, GetUserSizeGroupedPriceType } from '../../../shared';
+import { User, Sneaker, ListedProduct, SizeMinPriceGroupType } from '../../../shared';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;
 const USER_API_URL = API_BASE_URL + 'user/';
@@ -36,11 +36,13 @@ export const getProducts = (): Promise<Sneaker[]> => fetch(PRODUCTS_API_URL).the
 export const createListedProduct = async (listedProduct: ListedProduct) =>
   fetch(LISTED_PRODUCT_API_URL, formatPostRequestOptions(listedProduct)).then((res) => res.json());
 
-export const getGallerySneakers = async (): Promise<GallerySneakersType> =>
-  fetch(LISTED_PRODUCT_API_URL + 'gallery').then((res) => res.json());
+export const getGallerySneakers = async (): Promise<Sneaker[]> => fetch(LISTED_PRODUCT_API_URL + 'gallery').then((res) => res.json());
 
-export const getUserSizeGroupedPrice = async (sneakerColorName: string): Promise<GetUserSizeGroupedPriceType> =>
-  fetch(LISTED_PRODUCT_API_URL + `?colorName=${sneakerColorName}`).then((res) => res.json());
+export const getUserSizeGroupedPrice = async (sneakerName: string): Promise<SizeMinPriceGroupType> =>
+  fetch(LISTED_PRODUCT_API_URL + `?name=${sneakerName}`).then((res) => res.json());
+
+export const getSneakersBySize = async (size: string): Promise<Sneaker[]> =>
+  fetch(LISTED_PRODUCT_API_URL + `?sizes=${size}`).then((res) => res.json());
 
 // s3
 export const uploadS3SignleImage = async (formData: FormData) => {

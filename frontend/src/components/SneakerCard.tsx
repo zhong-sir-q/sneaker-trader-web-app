@@ -25,12 +25,21 @@ const InfoContainer = styled.div`
   }
 `;
 
+const LowestAsk = styled.div`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.3;
+  color: rgba(0, 0, 0, 0.5);
+  text-transform: capitalize;
+`;
+
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 type SneakerCardProps = {
-  sneaker: Partial<Sneaker>;
+  sneaker: PartialBy<Sneaker, 'size'>;
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
-  style?: React.CSSProperties;
 };
 
 const SneakerCard = (props: SneakerCardProps) => {
@@ -40,18 +49,18 @@ const SneakerCard = (props: SneakerCardProps) => {
   const history = useHistory();
 
   const onClick = () => {
-    if (isListed) history.push(formatSneakerPathName(sneaker.colorWay + ' ' + sneaker.name));
+    if (isListed) history.push(formatSneakerPathName(name, colorWay), sneaker);
   };
 
   const firstImageUrl = () => imageUrls!.split(',')[0];
 
-  const formatSneakerName = () => [colorWay, name].join(' ');
+  const formatSneakerName = () => [name, colorWay].join(' ');
 
   return (
     <Card
       className='text-left'
       onClick={onClick}
-      style={{ ...props.style, maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none' }}
+      style={{ maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none' }}
     >
       <ImageContainer>
         <Image src={firstImageUrl()} alt={name} />
@@ -61,9 +70,10 @@ const SneakerCard = (props: SneakerCardProps) => {
           {formatSneakerName()}
         </div>
         <div>
-          <div style={{ fontSize: isListed ? '18px' : '1.75em', fontWeight: 600 }}>Lowest: ${price}</div>
+          <LowestAsk>Lowest Ask</LowestAsk>
+          <div style={{ fontSize: isListed ? '18px' : '1.75em', lineHeight: '1.3', fontWeight: 700, whiteSpace: 'nowrap' }}>${price}</div>
           {size && (
-            <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em' }}>
+            <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em', lineHeight: '1.3' }}>
               Size: {size}
             </div>
           )}

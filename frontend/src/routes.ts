@@ -5,7 +5,7 @@ import UserProfile from 'pages/UserProfile';
 import ProductListingForm from 'pages/ProductListingForm';
 
 import Dashboard from 'components/Dashboard';
-import SneakerGallery from 'components/SneakerGallery';
+import HomePage from 'pages/HomePage';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -15,7 +15,7 @@ export const DASHBOARD = '/dashboard';
 export const FORGOT_PW = '/reset';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
-export const MARKET_PLACE = '/market';
+export const HOME = '/';
 
 type AppLayout = '/auth' | '/admin' | '/';
 
@@ -77,7 +77,7 @@ export const siderbarRoutes = [
   {
     path: PRODUCT_LISTING,
     name: 'Product Listing',
-    component: SneakerGallery,
+    component: ProductListingForm,
     icon: 'now-ui-icons objects_diamond',
     layout: ADMIN,
   },
@@ -90,8 +90,8 @@ export type HomeRoute = {
 
 export const homeRoutes: HomeRoute[] = [
   {
-    path: MARKET_PLACE,
-    component: SneakerGallery,
+    path: HOME,
+    component: HomePage,
   },
 ];
 

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import styled from 'styled-components';
 import { Container, Button, Row, Col, Spinner } from 'reactstrap';
 
 import SneakerCard from 'components/SneakerCard';
-import { Sneaker, UserSizeGroupedPriceType } from '../../../shared';
+import { Sneaker, SizeMinPriceGroupType } from '../../../shared';
 import { getUserSizeGroupedPrice } from 'api/api';
+import { useHistory } from 'react-router-dom';
 
 const CenterContainer = styled(Container)`
   text-align: center;
@@ -43,6 +44,18 @@ const ShoePrice = styled.div`
   color: #08a05c;
 `;
 
+const StyledSneakerCard = styled(SneakerCard)`
+  max-width: 400px;
+
+  @media (max-width: 549px) {
+    width: 152px;
+  }
+
+  @media (max-width: 767px) {
+    width: 224px;
+  }
+`;
+
 const colorAndNameFromPath = () => {
   const { pathname } = window.location;
 
@@ -57,23 +70,26 @@ const BuySneakerPage = () => {
   const [selectedIdx, setSelectedIdx] = useState<number>();
   const [defaultSneaker, setDefaultSneaker] = useState<Sneaker>();
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
-  const [userSizeGroupedPrice, setUserSizeGroupedPrice] = useState<UserSizeGroupedPriceType>();
+  const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
+  const history = useHistory()
 
-  const onComponentMounted = async () => {
+  const onComponentMounted = useCallback(async () => {
     const shoeName = colorAndNameFromPath();
-    const { payload, ...sneaker } = await getUserSizeGroupedPrice(shoeName);
+    const items = await getUserSizeGroupedPrice(shoeName);
+    // the state is passed through from SneakerCard
+    const sneaker = history.location.state as Sneaker
 
     // no size is selected initially
     delete sneaker.size;
 
     setDefaultSneaker(sneaker);
     setDisplaySneaker(sneaker);
-    setUserSizeGroupedPrice(payload);
-  };
+    setSizeMinPriceGroup(items);
+  }, [history])
 
   useEffect(() => {
     onComponentMounted();
-  }, []);
+  }, [onComponentMounted]);
 
   const onClick = (idx: number, price: number, size: number) => {
     if (selectedIdx === idx) {
@@ -87,19 +103,14 @@ const BuySneakerPage = () => {
 
   const SizesGrid = () => {
     const renderTiles = () =>
-      userSizeGroupedPrice &&
-      Object.keys(userSizeGroupedPrice).map((shoeSize, idx) => {
-        const size = Number(shoeSize);
-
-        return (
-          <GridTile onClick={() => onClick(idx, userSizeGroupedPrice[size].lowestAsk, size)} key={idx}>
-            <InnerTile style={{ border: selectedIdx === idx ? '2px solid green' : '' }}>
-              <ShoeSize>US {shoeSize}</ShoeSize>
-              <ShoePrice>${userSizeGroupedPrice[size].lowestAsk}</ShoePrice>
-            </InnerTile>
-          </GridTile>
-        );
-      });
+      sizeMinPriceGroup!.map(({ size, minPrice }, idx) => (
+        <GridTile onClick={() => onClick(idx, minPrice, size)} key={idx}>
+          <InnerTile style={{ border: selectedIdx === idx ? '2px solid green' : '' }}>
+            <ShoeSize>US {size}</ShoeSize>
+            <ShoePrice>${minPrice}</ShoePrice>
+          </InnerTile>
+        </GridTile>
+      ));
 
     return (
       <Container>
@@ -108,31 +119,34 @@ const BuySneakerPage = () => {
     );
   };
 
-  return !displaySneaker ? (
-    <Row style={{ minHeight: 'calc(95vh - 96px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Spinner style={{ width: '3rem', height: '3rem' }} />
-    </Row>
-  ) : (
-    <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
-      <Col md='6'>
-        <SizesGrid />
-      </Col>
-      <Col md='6'>
-        <CenterContainer>
-          <SneakerCard sneaker={displaySneaker} maxWidth='400px' />
-          {/* TODO: implement the logic for checkout */}
-          <Button
-            disabled={selectedIdx === undefined}
-            style={{ display: 'block', margin: 'auto' }}
-            color='primary'
-            onClick={() => console.log('BUY ME!')}
-          >
-            Buy
-          </Button>
-        </CenterContainer>
-      </Col>
-    </Row>
-  );
+  if (displaySneaker && sizeMinPriceGroup)
+    return (
+      <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
+        <Col md='6'>
+          <SizesGrid />
+        </Col>
+        <Col md='6'>
+          <CenterContainer>
+            <StyledSneakerCard sneaker={displaySneaker} />
+            {/* TODO: implement the logic for checkout */}
+            <Button
+              disabled={selectedIdx === undefined}
+              style={{ display: 'block', margin: 'auto' }}
+              color='primary'
+              onClick={() => console.log('BUY ME!')}
+            >
+              Buy
+            </Button>
+          </CenterContainer>
+        </Col>
+      </Row>
+    );
+  else
+    return (
+      <Row style={{ minHeight: 'calc(95vh - 96px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Spinner style={{ width: '3rem', height: '3rem' }} />
+      </Row>
+    );
 };
 
 export default BuySneakerPage;
