@@ -47,7 +47,6 @@ const Filters = (props: FiltersProps) => {
   const formatQueryParams = (params: URLSearchParams) => `/?${params.toString()}`;
 
   const onSelectFilter = (filter: FilterType) => {
-  
     const params = new URLSearchParams(history.location.search);
 
     if (String(filter) === params.get(title)) {
@@ -88,7 +87,15 @@ const HomePage = () => {
   const [filterSneakers, setFilterSneakers] = useState<Sneaker[]>([]);
   const history = useHistory();
 
-  const handler = async (brands: string, sizes: string) => {
+  useEffect(() => {
+    (async () => {
+      const gallerySneakers = await getGallerySneakers();
+      setDefaultSneakers(gallerySneakers);
+      setFilterSneakers(gallerySneakers);
+    })();
+  }, []);
+
+  const queryHandler = async (brands: string, sizes: string) => {
     if (brands && sizes) {
       const sneakersBySize = await getSneakersBySize(sizes as string);
       setFilterSneakers(sneakersBySize.filter((s) => s.brand === brands));
@@ -100,9 +107,10 @@ const HomePage = () => {
     } else setFilterSneakers(defaultSneakers);
   };
 
-  const filtersHandler = useCallback(handler, [filterSneakers]);
+  const filtersHandler = useCallback(queryHandler, [filterSneakers]);
 
-  // actively listen to the query params changes
+  // TODO: add the functionality such that, without re-rendering forever,
+  // sneakers are filtered after the user enters the path
   useEffect(() => {
     const unlisten = history.listen((location) => {
       const { brands, sizes } = queryString.parse(location.search);
@@ -110,15 +118,7 @@ const HomePage = () => {
     });
 
     return () => unlisten();
-  }, [filterSneakers, filtersHandler, history]);
-
-  useEffect(() => {
-    (async () => {
-      const gallerySneakers = await getGallerySneakers();
-      setDefaultSneakers(gallerySneakers);
-      setFilterSneakers(gallerySneakers);
-    })();
-  }, []);
+  });
 
   return (
     <Container fluid='md' style={{ minHeight: 'calc(100vh - 150px)' }}>
