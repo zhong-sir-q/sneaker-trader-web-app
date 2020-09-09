@@ -11,9 +11,9 @@ export type User = {
 export type Sneaker = {
   name: string;
   brand: string;
-  colorWay: string;
-  size: number | undefined;
-  price: number | undefined;
+  colorway: string;
+  size: number | '';
+  price: number | '';
   imageUrls: string;
   id?: number;
   description?: string;
@@ -28,5 +28,17 @@ export type ListedProduct = {
   quantity: number;
   sold: 0 | 1;
 };
+
+export type Brand = {
+  brand: string
+}
+
+export type Colorway = {
+  colorway: string
+}
+
+export type SneakerName = {
+  name: string
+}
 
 export type SizeMinPriceGroupType = { size: number, minPrice: number }[]

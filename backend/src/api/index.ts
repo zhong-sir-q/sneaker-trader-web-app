@@ -1,10 +1,14 @@
 import { Router } from 'express';
 
-import product from './routes/product';
 import user from './routes/user';
-import aws from './routes/aws';
-import listedProduct from './routes/listedProduct';
 import sellers from './routes/sellers';
+
+import product from './routes/product';
+import listedProduct from './routes/listedProduct';
+
+import aws from './routes/aws';
+
+import helperInfo from './routes/helperInfo';
 
 export default () => {
   const app = Router();
@@ -16,6 +20,7 @@ export default () => {
 
   user(app);
   sellers(app);
+  helperInfo(app)
 
   return app;
 };

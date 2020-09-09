@@ -14,7 +14,7 @@ class SellersService {
         SELECT B.userId, B.askingPrice FROM Products as A INNER JOIN (
           SELECT userId, productId, askingPrice FROM ListedProducts WHERE sold = 0
         ) AS B ON A.id = B.productId
-        WHERE CONCAT(A.name, ' ', A.colorWay) = '${sneakerName}' AND size = ${size}) userSubQuery
+        WHERE CONCAT(A.name, ' ', A.colorway) = '${sneakerName}' AND size = ${size}) userSubQuery
         ON resultQuery.id = userSubQuery.userId;`;
 
     return this.connection.query(sellersQuery);

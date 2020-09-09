@@ -15,9 +15,9 @@ class ListedProductService {
 
   getBySize(size: string): Promise<Sneaker[]> {
     // similar to the get gallery sneakers query, but because the sneakers with different
-    // shoe sizes different products, therefore we don't need to group by the name and colorWay
+    // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
-    SELECT name, colorWay, brand, imageUrls, B.price FROM Products A JOIN (
+    SELECT name, colorway, brand, imageUrls, B.price FROM Products A JOIN (
       SELECT MIN(askingPrice) as price, productId FROM ${this.tableName} 
       WHERE sold = 0 GROUP BY productId
     ) B ON A.id = B.productId WHERE size = ${size}`
@@ -28,11 +28,11 @@ class ListedProductService {
   getGallerySneakers: RequestHandler = async (_req, res, next) => {
     try {
       // get all sneakers grouped by the names and their min price
-      const query = `SELECT name, size, brand, colorWay, imageUrls,
+      const query = `SELECT name, size, brand, colorway, imageUrls,
               MIN(B.minAskingPrice) as price FROM Products A JOIN (
               SELECT MIN(askingPrice) as minAskingPrice, productId FROM ${this.tableName}
               WHERE sold = 0 GROUP BY productId
-            ) B ON A.id = B.productId GROUP BY name, colorWay`;
+            ) B ON A.id = B.productId GROUP BY name, colorway`;
 
       const lowestAskedSneakers: Sneaker[] = await this.connection.query(query);
 
@@ -58,14 +58,14 @@ class ListedProductService {
     const query = `SELECT A.size, B.minPrice FROM Products AS A LEFT JOIN (
         SELECT MIN(askingPrice) as minPrice, productId FROM ${this.tableName}
         WHERE sold = 0 GROUP BY productId
-      ) AS B ON A.id = B.productId WHERE CONCAT(A.name, ' ', A.colorWay) = ${doubleQuotedValue(name)}`;
+      ) AS B ON A.id = B.productId WHERE CONCAT(A.name, ' ', A.colorway) = ${doubleQuotedValue(name)}`;
 
     return this.connection.query(query);
   };
 
   getAllListedProducts = () => {
     const allListedProductsQuery = 
-      `SELECT DISTINCT name, brand, colorWay, size FROM Products A INNER JOIN
+      `SELECT DISTINCT name, brand, colorway, size FROM Products A INNER JOIN
         ListedProducts B ON A.id = B.productId WHERE B.sold = 0`
 
     return this.connection.query(allListedProductsQuery)
