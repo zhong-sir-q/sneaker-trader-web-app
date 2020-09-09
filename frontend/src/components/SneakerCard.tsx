@@ -44,17 +44,17 @@ type SneakerCardProps = {
 
 const SneakerCard = (props: SneakerCardProps) => {
   const { sneaker, isListed, maxWidth } = props;
-  const { imageUrls, name, price, size, colorWay } = sneaker;
+  const { imageUrls, name, price, size, colorway } = sneaker;
 
   const history = useHistory();
 
   const onClick = () => {
-    if (isListed) history.push(formatSneakerPathName(name, colorWay), sneaker);
+    if (isListed) history.push(formatSneakerPathName(name, colorway), sneaker);
   };
 
   const firstImageUrl = () => imageUrls!.split(',')[0];
 
-  const formatSneakerName = () => [name, colorWay].join(' ');
+  const formatSneakerName = () => [name, colorway].join(' ');
 
   return (
     <Card

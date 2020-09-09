@@ -88,7 +88,7 @@ const BuySneakerPage = () => {
     }
 
     // no size is selected initially
-    delete sneaker.size;
+    sneaker.size = ''
 
     setDefaultSneaker(sneaker);
     setDisplaySneaker(sneaker);

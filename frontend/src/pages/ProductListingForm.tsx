@@ -19,9 +19,9 @@ export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls'>;
 const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   name: '',
   brand: '',
-  size: undefined,
-  colorWay: '',
-  price: undefined,
+  size: '',
+  colorway: '',
+  price: '',
   description: '',
 };
 
@@ -125,7 +125,7 @@ const ProductListingForm = () => {
     // handle error
     if (!user) return;
 
-    const listedProductPayload = formatListedProduct(sneaker.price!, user.id!, productId)
+    const listedProductPayload = formatListedProduct(sneaker.price! as number, user.id!, productId)
     await createListedProduct(listedProductPayload);
 
     // Go to the success message

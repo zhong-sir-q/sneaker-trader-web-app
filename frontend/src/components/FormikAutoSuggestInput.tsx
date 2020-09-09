@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Input, ListGroup, ListGroupItem } from 'reactstrap';
+import { Input, ListGroup, ListGroupItem, InputProps } from 'reactstrap';
 import OutsideClickHandler from './OutsideClickHandler';
+import { useField, FieldHookConfig } from 'formik';
 
-type AutoSuggestInputProps = {
+type FormikAutoSuggestInputProps = {
   label: string;
   options: string[];
-};
+} & FieldHookConfig<string>;
 
-const AutoSuggestInput = (props: AutoSuggestInputProps) => {
+const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
   const { options } = props;
 
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
@@ -15,9 +16,13 @@ const AutoSuggestInput = (props: AutoSuggestInputProps) => {
   const [userInput, setUserInput] = useState('');
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
 
+  const [field, meta] = useField(props);
+
   const filter = (val: string) => options.filter((opt) => opt.toLowerCase().indexOf(val.toLowerCase()) > -1);
 
   const onInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    field.onChange(evt);
+
     const { value } = evt.target;
 
     setUserInput(value);
@@ -36,12 +41,12 @@ const AutoSuggestInput = (props: AutoSuggestInputProps) => {
     if (e.keyCode === 13) {
       setActiveSuggestionIdx(0);
       setShowSuggestions(false);
-      setUserInput(filteredSuggestions[activeSuggestionIdx]);
+      if (activeSuggestionIdx < filteredSuggestions.length) setUserInput(filteredSuggestions[activeSuggestionIdx]);
     } else if (e.keyCode === 38) {
       if (activeSuggestionIdx === 0) return;
       setActiveSuggestionIdx(activeSuggestionIdx - 1);
     } else if (e.keyCode === 40) {
-      if (activeSuggestionIdx - 1 === filteredSuggestions.length) return;
+      if (activeSuggestionIdx === filteredSuggestions.length - 1) return;
       setActiveSuggestionIdx(activeSuggestionIdx + 1);
     }
   };
@@ -86,6 +91,8 @@ const AutoSuggestInput = (props: AutoSuggestInputProps) => {
     <React.Fragment>
       <label>{props.label}</label>
       <Input
+        {...field}
+        {...(props as InputProps)}
         type='text'
         onFocus={() => setShowSuggestions(true)}
         value={userInput}
@@ -94,8 +101,13 @@ const AutoSuggestInput = (props: AutoSuggestInputProps) => {
         onKeyDown={onKeyDown}
       />
       <SuggestionsList />
+      {meta.touched && meta.error && (
+        <span className='category' style={{ color: 'red', marginLeft: '10px', marginTop: '10px' }}>
+          {meta.error}
+        </span>
+      )}
     </React.Fragment>
   );
 };
 
-export default AutoSuggestInput;
+export default FormikAutoSuggestInput;

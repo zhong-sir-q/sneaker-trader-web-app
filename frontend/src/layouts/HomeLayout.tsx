@@ -74,8 +74,8 @@ const HomeLayout = () => {
     // prevent duplicate routes from rendering
     const seenPaths: Set<string> = new Set()
 
-    return sneakers.map(({ name, colorWay, size }, idx) => {
-      const path = formatSneakerPathName(name, colorWay)
+    return sneakers.map(({ name, colorway, size }, idx) => {
+      const path = formatSneakerPathName(name, colorway)
 
       const routes = (<React.Fragment key={idx}>
         <Route exact path={`/${path}/${size}`} component={SellersList} />

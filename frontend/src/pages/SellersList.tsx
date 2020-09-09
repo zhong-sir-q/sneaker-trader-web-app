@@ -14,7 +14,7 @@ const SellersList = () => {
   const [sellers, setSellers] = useState<Seller[]>();
   const history = useHistory();
 
-  const fetchSellers = async () => {
+  const fetchSetSellers = async () => {
     const [, hyphenedName, size] = history.location.pathname.split('/');
     const sneakerName = hyphenedName.split('-').join(' ');
 
@@ -22,20 +22,14 @@ const SellersList = () => {
       console.log(err)
     );
 
-    if (!sellersBySneakerNameSize) return undefined;
+    if (!sellersBySneakerNameSize) return;
 
-    return sellersBySneakerNameSize;
+    setSellers(sellersBySneakerNameSize)
   };
 
   useEffect(() => {
-    (async () => {
-      const fetched = await fetchSellers();
-
-      if (!fetched) return;
-
-      setSellers(fetched);
-    })();
-  }, []);
+    fetchSetSellers()
+  });
 
   return !sellers ? (
     <CenterSpinner />

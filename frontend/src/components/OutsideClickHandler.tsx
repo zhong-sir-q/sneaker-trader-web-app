@@ -17,7 +17,7 @@ const OutsideClickHandler = (props: OutsideClickHandlerProps) => {
     document.addEventListener('mousedown', handleOutsideClick);
 
     return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, [wrapperRef]);
+  });
 
   return <div ref={wrapperRef}>{children}</div>;
 };

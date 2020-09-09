@@ -1,4 +1,4 @@
-import { User, Sneaker, ListedProduct, SizeMinPriceGroupType } from '../../../shared';
+import { User, Sneaker, ListedProduct, SizeMinPriceGroupType, Brand, SneakerName, Colorway } from '../../../shared';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;
 const USER_API_URL = API_BASE_URL + 'user/';
@@ -6,6 +6,7 @@ const PRODUCT_API_URL = API_BASE_URL + 'product/';
 const LISTED_PRODUCT_API_URL = API_BASE_URL + 'listed_product/';
 const AWS_API_URL = API_BASE_URL + 'aws/';
 const SELLERS_API_URL = API_BASE_URL + 'sellers/';
+const HELPER_INFO_API_URL = API_BASE_URL + 'helperInfo/'
 
 // RULE: NEVER assign keys, IF I ONLY HAVE ONE JSON body or in the server response
 const formatPostRequestOptions = (data: any, contentType?: string): RequestInit => ({
@@ -64,3 +65,10 @@ export const uploadS3MultipleImages = (formData: FormData): Promise<string[]> =>
     method: 'POST',
     body: formData,
   }).then((res) => res.json());
+
+// helperInfo such as brands, sneaker names and color ways etc.
+export const getBrands = (): Promise<Brand[]> => fetch(HELPER_INFO_API_URL + 'brands').then(res => res.json())
+
+export const getSneakerNames = (): Promise<SneakerName[]> => fetch(HELPER_INFO_API_URL + 'sneakerNames').then(res => res.json())
+
+export const getColorways = (): Promise<Colorway[]> => fetch(HELPER_INFO_API_URL + 'colorways').then(res => res.json())
