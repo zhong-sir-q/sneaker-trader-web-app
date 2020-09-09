@@ -1,29 +1,23 @@
 import { RequestHandler } from 'express';
 import { ListedProduct, Sneaker, SizeMinPriceGroupType } from '../../../shared';
-import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
 import { PromisifiedConnection } from '../config/mysql';
 import ProductService from './product';
 
 class ListedProductService {
-  connection: PromisifiedConnection;
-  tableName: string;
+  private connection: PromisifiedConnection;
+  private tableName: string;
 
   constructor(conn: PromisifiedConnection) {
     this.connection = conn;
     this.tableName = 'ListedProducts';
   }
 
-  async getAll(): Promise<ListedProduct[]> {
-    const getListedProductsQuery = formateGetColumnsQuery(this.tableName);
-
-    return await this.connection.query(getListedProductsQuery);
-  }
-
   getBySize(size: string): Promise<Sneaker[]> {
     // similar to the get gallery sneakers query, but because the sneakers with different
     // shoe sizes different products, therefore we don't need to group by the name and colorWay
     const getBySizeQuery = `
-    SELECT name, colorWay, brand, imageUrls, size, B.price FROM Products A JOIN (
+    SELECT name, colorWay, brand, imageUrls, B.price FROM Products A JOIN (
       SELECT MIN(askingPrice) as price, productId FROM ${this.tableName} 
       WHERE sold = 0 GROUP BY productId
     ) B ON A.id = B.productId WHERE size = ${size}`
@@ -34,7 +28,7 @@ class ListedProductService {
   getGallerySneakers: RequestHandler = async (_req, res, next) => {
     try {
       // get all sneakers grouped by the names and their min price
-      const query = `SELECT name, brand, colorWay, imageUrls,
+      const query = `SELECT name, size, brand, colorWay, imageUrls,
               MIN(B.minAskingPrice) as price FROM Products A JOIN (
               SELECT MIN(askingPrice) as minAskingPrice, productId FROM ${this.tableName}
               WHERE sold = 0 GROUP BY productId
@@ -52,34 +46,29 @@ class ListedProductService {
    * @param name space separated name, e.g. Kobe 4 Black
    */
   getSizeMinPriceGroupByName = async (name: string): Promise<SizeMinPriceGroupType> => {
-    try {
-      // get the size and the minium price of each listedProduct
-      // with distinct product id that are not sold
+    // get the size and the minium price of each listedProduct
+    // with distinct product id that are not sold
 
-      /**
-       * NOTE: here are the BUGS I experenced
-       * - the result column name query does not match the type definition, hence the client
-       * will recieve undefeind values
-       * - incorrect punctuations, e.g. A,id instead of A.id
-       */
-      const query = `SELECT A.size, B.minPrice FROM Products AS A LEFT JOIN (
+    /**
+     * NOTE: here are the BUGS I experenced
+     * - the result column name query does not match the type definition, hence the client
+     * will recieve undefeind values
+     * - incorrect punctuations, e.g. A,id instead of A.id
+     */
+    const query = `SELECT A.size, B.minPrice FROM Products AS A LEFT JOIN (
         SELECT MIN(askingPrice) as minPrice, productId FROM ${this.tableName}
         WHERE sold = 0 GROUP BY productId
       ) AS B ON A.id = B.productId WHERE CONCAT(A.name, ' ', A.colorWay) = ${doubleQuotedValue(name)}`;
 
-      const sizeMinPriceGroup: SizeMinPriceGroupType = await this.connection.query(query);
-
-      return sizeMinPriceGroup;
-    } catch (err) {
-      throw err;
-    }
+    return this.connection.query(query);
   };
 
-  async getAllByCondtion(condition?: string): Promise<ListedProduct[]> {
-    const getQuery = formateGetColumnsQuery(this.tableName, condition);
-    const result = await this.connection.query(getQuery);
+  getAllListedProducts = () => {
+    const allListedProductsQuery = 
+      `SELECT DISTINCT name, brand, colorWay, size FROM Products A INNER JOIN
+        ListedProducts B ON A.id = B.productId WHERE B.sold = 0`
 
-    return result;
+    return this.connection.query(allListedProductsQuery)
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {

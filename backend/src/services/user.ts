@@ -1,9 +1,12 @@
-import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
+import {
+  formatInsertColumnsQuery,
+  formateGetColumnsQuery,
+  doubleQuotedValue,
+  formatUpdateColumnsQuery,
+} from '../utils/formatDbQuery';
 import { User } from '../../../shared';
 import { RequestHandler } from 'express';
 import { PromisifiedConnection } from '../config/mysql';
-
-// TODO: is there a way to refactor all these callbacks?
 
 class UserService {
   connection: PromisifiedConnection;

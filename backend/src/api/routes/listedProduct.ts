@@ -7,7 +7,6 @@ const listedProductRoute = Router();
 export default (app: Router) => {
   app.use('/listed_product', listedProductRoute);
 
-  // TODO: NAME THE ROUTE
   listedProductRoute.get('/', async (req, res) => {
     const sneakerSize = req.query.sizes as string
     const sneakerName = req.query.name as string;
@@ -24,7 +23,8 @@ export default (app: Router) => {
       const sneakersBySize = await ListedProductServiceInstance.getBySize(sneakerSize);
       res.json(sneakersBySize);
     } else {
-      res.status(404).json('Recieved invalid parameters');
+      const allListedProducts = await ListedProductServiceInstance.getAllListedProducts()
+      res.json(allListedProducts)
     }
   });
 
