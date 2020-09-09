@@ -1,5 +1,3 @@
-// TODO: find out what C# uses to abstract all the sql queries,
-// i.e. what it uses so developers do not have to write queries
 type QueryObject = { [key: string]: any };
 
 // the keys of the object will be the columns in the corresponding database

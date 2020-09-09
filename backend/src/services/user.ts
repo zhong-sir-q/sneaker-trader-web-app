@@ -7,14 +7,13 @@ import {
 import { User } from '../../../shared';
 import { RequestHandler } from 'express';
 import { PromisifiedConnection } from '../config/mysql';
+import { USERS } from '../config/tables';
 
 class UserService {
-  connection: PromisifiedConnection;
-  tableName: string;
+  private connection: PromisifiedConnection;
 
   constructor(conn: PromisifiedConnection) {
     this.connection = conn;
-    this.tableName = 'Users';
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {
@@ -43,7 +42,7 @@ class UserService {
     const user = req.body;
     const condition = 'email = ' + doubleQuotedValue(user.email);
 
-    const updateUserQuery = formatUpdateColumnsQuery(this.tableName, user, condition);
+    const updateUserQuery = formatUpdateColumnsQuery(USERS, user, condition);
 
     try {
       const updateResult = await this.connection.query(updateUserQuery);
@@ -54,13 +53,13 @@ class UserService {
   };
 
   async create(user: Partial<User>) {
-    const createUserQuery = formatInsertColumnsQuery(this.tableName, user);
+    const createUserQuery = formatInsertColumnsQuery(USERS, user);
 
     return this.connection.query(createUserQuery);
   }
 
   async getByEmail(email: string): Promise<Partial<User>> {
-    const getUserByEmailQuery = formateGetColumnsQuery(this.tableName, 'email = ' + doubleQuotedValue(email));
+    const getUserByEmailQuery = formateGetColumnsQuery(USERS, 'email = ' + doubleQuotedValue(email));
 
     try {
       const queryResult = await this.connection.query(getUserByEmailQuery);

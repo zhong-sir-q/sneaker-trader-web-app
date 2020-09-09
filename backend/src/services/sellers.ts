@@ -1,4 +1,6 @@
 import { PromisifiedConnection } from '../config/mysql';
+import { USERS, PRODUCTS, LISTED_PRODUCTS } from '../config/tables';
+import { doubleQuotedValue } from '../utils/formatDbQuery';
 
 class SellersService {
   connection: PromisifiedConnection;
@@ -9,13 +11,12 @@ class SellersService {
 
   getSellersBySneakerNameSize = async (sneakerName: string, size: number) => {
     // first get all unsold sneakers by name and size
-    // then get the sellers information using the userId from subquery
-    const sellersQuery = `SELECT userName, email, userSubQuery.askingPrice FROM Users resultQuery INNER JOIN (
-        SELECT B.userId, B.askingPrice FROM Products as A INNER JOIN (
-          SELECT userId, productId, askingPrice FROM ListedProducts WHERE sold = 0
-        ) AS B ON A.id = B.productId
-        WHERE CONCAT(A.name, ' ', A.colorway) = '${sneakerName}' AND size = ${size}) userSubQuery
-        ON resultQuery.id = userSubQuery.userId;`;
+    // then get the sellers information
+    const sellersQuery = `
+      SELECT userName, email, L.askingPrice FROM ${USERS} U, ${LISTED_PRODUCTS} L, ${PRODUCTS} P 
+        WHERE U.id = L.userId AND P.id = L.productId AND L.sold = 0 AND
+          CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(sneakerName)} AND size = ${size}
+    `
 
     return this.connection.query(sellersQuery);
   };
