@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // reactstrap components
 import {
@@ -8,16 +8,12 @@ import {
   NavbarToggler,
   NavbarBrand,
   Nav,
-  NavItem,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Container,
   InputGroup,
   InputGroupAddon,
   InputGroupText,
   Input,
+  Button,
 } from 'reactstrap';
 
 import { signOut } from 'utils/auth';
@@ -31,11 +27,10 @@ type AdminNavbarProps = {
 
 const AdminNavbar = (props: AdminNavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [color, setColor] = useState<NavbarColor>('transparent');
   const sidebarToggle = useRef<HTMLButtonElement>(null);
 
-  const history = useHistory()
+  const history = useHistory();
 
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   const updateColor = () => setColor(window.innerWidth < 993 && isOpen ? 'white' : 'transparent');
@@ -53,13 +48,10 @@ const AdminNavbar = (props: AdminNavbarProps) => {
     setIsOpen(!isOpen);
   };
 
-  const dropdownToggle = () => setDropdownOpen(!dropdownOpen);
-
   const openSidebar = () => {
     document.documentElement.classList.toggle('nav-open');
     if (sidebarToggle.current) sidebarToggle.current.classList.toggle('toggled');
   };
-  
 
   return (
     // add or remove classes depending if we are on full-screen-maps page or not
@@ -101,37 +93,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
             </InputGroup>
           </form>
           <Nav navbar>
-            <NavItem>
-              <Link to='#pablo' className='nav-link'>
-                <i className='now-ui-icons media-2_sound-wave' />
-                <p>
-                  <span className='d-lg-none d-md-block'>Stats</span>
-                </p>
-              </Link>
-            </NavItem>
-            <Dropdown nav isOpen={dropdownOpen} toggle={() => dropdownToggle()}>
-              <DropdownToggle caret nav>
-                <i className='now-ui-icons location_world' />
-                <p>
-                  <span className='d-lg-none d-md-block'>Some Actions</span>
-                </p>
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem tag='a' onClick={() => signOut(history)}>
-                  Sign Out
-                </DropdownItem>
-                <DropdownItem tag='a'>Action</DropdownItem>
-                <DropdownItem tag='a'>Another Action</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <NavItem>
-              <Link to='#pablo' className='nav-link'>
-                <i className='now-ui-icons users_single-02' />
-                <p>
-                  <span className='d-lg-none d-md-block'>Account</span>
-                </p>
-              </Link>
-            </NavItem>
+            <Button onClick={() => signOut(history)}>Log out</Button>
           </Nav>
         </Collapse>
       </Container>

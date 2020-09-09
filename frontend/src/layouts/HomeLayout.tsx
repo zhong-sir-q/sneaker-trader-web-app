@@ -3,9 +3,10 @@ import { Navbar, Nav, NavItem, NavbarBrand } from 'reactstrap';
 import { Link, Route, useHistory } from 'react-router-dom';
 
 import Footer from 'components/Footer';
+import SellersList from 'pages/SellersList';
 import BuySneakerPage from 'pages/BuySneakerPage';
 
-import { getGallerySneakers } from 'api/api';
+import { getAllListedProducts } from 'api/api';
 import { formatSneakerPathName } from 'utils/utils';
 
 import { Sneaker } from '../../../shared';
@@ -54,12 +55,12 @@ const HomeNavbar = () => {
             <i style={{ verticalAlign: 'middle', marginRight: '3px' }} className='now-ui-icons users_circle-08' /> Logout
           </NavItem>
         ) : (
-          <NavItem>
-            <Link style={{ color: 'black' }} to={AUTH + SIGNIN}>
-              <i style={{ verticalAlign: 'middle', marginRight: '3px' }} className='now-ui-icons users_circle-08' /> Login
+            <NavItem>
+              <Link style={{ color: 'black' }} to={AUTH + SIGNIN}>
+                <i style={{ verticalAlign: 'middle', marginRight: '3px' }} className='now-ui-icons users_circle-08' /> Login
             </Link>
-          </NavItem>
-        )}
+            </NavItem>
+          )}
       </Nav>
     </Navbar>
   );
@@ -69,10 +70,21 @@ const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
 
   const renderBuySneakerRoutes = async () => {
-    const sneakers: Sneaker[] = await getGallerySneakers();
+    const sneakers: Sneaker[] = await getAllListedProducts();
+    // prevent duplicate routes from rendering
+    const seenPaths: Set<string> = new Set()
 
-    return sneakers.map((s, idx) => {
-      return <Route path={`/${formatSneakerPathName(s.name, s.colorWay)}`} component={BuySneakerPage} key={idx} />
+    return sneakers.map(({ name, colorWay, size }, idx) => {
+      const path = formatSneakerPathName(name, colorWay)
+
+      const routes = (<React.Fragment key={idx}>
+        <Route exact path={`/${path}/${size}`} component={SellersList} />
+        {!seenPaths.has(path) ? <Route exact path={`/${path}`} component={BuySneakerPage} /> : undefined}
+      </React.Fragment>)
+
+      seenPaths.add(path)
+
+      return routes
     })
   };
 

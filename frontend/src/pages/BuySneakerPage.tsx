@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import styled from 'styled-components';
-import { Container, Button, Row, Col, Spinner } from 'reactstrap';
+import { Container, Button, Row, Col } from 'reactstrap';
 
 import SneakerCard from 'components/SneakerCard';
+import CenterSpinner from 'components/CenterSpinner';
+
 import { Sneaker, SizeMinPriceGroupType } from '../../../shared';
 import { getUserSizeGroupedPrice } from 'api/api';
-import { useHistory } from 'react-router-dom';
 
 const CenterContainer = styled(Container)`
   text-align: center;
@@ -71,6 +73,7 @@ const BuySneakerPage = () => {
   const [defaultSneaker, setDefaultSneaker] = useState<Sneaker>();
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
   const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
+
   const history = useHistory()
 
   const onComponentMounted = useCallback(async () => {
@@ -78,6 +81,11 @@ const BuySneakerPage = () => {
     const items = await getUserSizeGroupedPrice(shoeName);
     // the state is passed through from SneakerCard
     const sneaker = history.location.state as Sneaker
+
+    if (!sneaker) {
+      history.push('/')
+      return
+    }
 
     // no size is selected initially
     delete sneaker.size;
@@ -133,7 +141,7 @@ const BuySneakerPage = () => {
               disabled={selectedIdx === undefined}
               style={{ display: 'block', margin: 'auto' }}
               color='primary'
-              onClick={() => console.log('BUY ME!')}
+              onClick={() => history.push(history.location.pathname + '/' + displaySneaker.size)}
             >
               Buy
             </Button>
@@ -142,11 +150,7 @@ const BuySneakerPage = () => {
       </Row>
     );
   else
-    return (
-      <Row style={{ minHeight: 'calc(95vh - 96px)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Spinner style={{ width: '3rem', height: '3rem' }} />
-      </Row>
-    );
+    return <CenterSpinner />
 };
 
 export default BuySneakerPage;
