@@ -63,7 +63,7 @@ const GreenDot = styled.span`
   margin-right: 3px;
 `;
 
-type PreviewFile = File & {
+export type PreviewFile = File & {
   preview: string;
   id: string;
 };

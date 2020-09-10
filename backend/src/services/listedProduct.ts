@@ -2,7 +2,10 @@ import { RequestHandler } from 'express';
 
 import ProductService from './product';
 
-import { formatInsertColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
+import {
+  formatInsertColumnsQuery,
+  doubleQuotedValue,
+} from '../utils/formatDbQuery';
 
 import { ListedProduct, Sneaker, SizeMinPriceGroupType } from '../../../shared';
 import { PromisifiedConnection } from '../config/mysql';
@@ -67,25 +70,30 @@ class ListedProductService {
   };
 
   getAllListedProducts = () => {
-    const allListedProductsQuery = `SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} A, ${LISTED_PRODUCTS} 
-        WHERE A.id = B.productId AND B.sold = 0`;
+    const allListedProductsQuery = `
+      SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} A, 
+        ${LISTED_PRODUCTS} B WHERE A.id = B.productId AND B.sold = 0`;
 
     return this.connection.query(allListedProductsQuery);
   };
 
   handleCreate: RequestHandler = async (req, res, next) => {
     const listedProduct: ListedProduct = req.body;
-    const createProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedProduct);
+    const { productId, askingPrice } = listedProduct;
+
+    const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedProduct);
 
     try {
-      // TODO: update the minimum price of the product after the successful query
-      const result = await this.connection.query(createProductQuery);
+      const result = await this.connection.query(createListedProductQuery);
+
       const ProductServiceInstance = new ProductService(this.connection);
 
-      const { productId, askingPrice } = listedProduct;
-
+      // NOTE: what is point of having the price column in the Products table?
+      // My assumption below is that the value of the price column represents
+      // the minimum price of that specific product
       const product = await ProductServiceInstance.getByCondition(`id = ${productId}`);
-      if (askingPrice < product.price!) ProductServiceInstance.updatePrice(askingPrice, productId);
+
+      if (askingPrice < product.price) ProductServiceInstance.updatePrice(askingPrice, productId);
 
       res.json(result);
     } catch (err) {

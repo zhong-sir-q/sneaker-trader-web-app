@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { Formik, Form as FormikForm } from 'formik';
 
 import { ListingFormSneakerStateType } from 'pages/ProductListingForm';
-import FormikAutoSuggestInput from './FormikAutoSuggestInput';
+import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 import FormikLabelInput from './formik/FormikLabelInput';
 
 import { DASHBOARD, ADMIN } from 'routes';
@@ -59,8 +59,8 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
       }}
       enableReinitialize
     >
-      {() => (
-        <Col md='12'>
+      {({ setFieldValue }) => (
+        // <Col md='12'>
           <Card className='text-left'>
             <CardHeader>
               <h5 className='text-center title'>Sneaker Listing Form</h5>
@@ -70,17 +70,16 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 <Row>
                   <Col md='4'>
                     <FormGroup>
-                      <FormikAutoSuggestInput name='name' label='Name' options={sneakerNamesOptions} />
+                      <FormikAutoSuggestInput name='name' label='Name' options={sneakerNamesOptions} setfieldvalue={setFieldValue} />
                     </FormGroup>
                   </Col>
                   <Col md='4'>
                     <FormGroup>
-                      <FormikAutoSuggestInput name='brand' label='Brand' options={brandOptions} />
+                      <FormikAutoSuggestInput name='brand' label='Brand' options={brandOptions} setfieldvalue={setFieldValue} />
                     </FormGroup>
                   </Col>
                   <Col md='4'>
                     <FormGroup>
-                      {/* TODO: this should be a select */}
                       <FormikLabelInput name='size' placeholder='Size' type='number' label='Shoe Size' />
                     </FormGroup>
                   </Col>
@@ -88,7 +87,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 <Row>
                   <Col md='4'>
                     <FormGroup>
-                      <FormikAutoSuggestInput name='colorway' label='Color Way' options={colorwayOptions} />
+                      <FormikAutoSuggestInput name='colorway' label='Color Way' options={colorwayOptions} setfieldvalue={setFieldValue} />
                     </FormGroup>
                   </Col>
                   <Col md='4'>
@@ -132,7 +131,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
               </CardFooter>
             </FormikForm>
           </Card>
-        </Col>
+        // </Col>
       )}
     </Formik>
   );

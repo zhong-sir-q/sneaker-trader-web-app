@@ -9,8 +9,8 @@ const SELLERS_API_URL = API_BASE_URL + 'sellers/';
 const HELPER_INFO_API_URL = API_BASE_URL + 'helperInfo/'
 
 // RULE: NEVER assign keys, IF I ONLY HAVE ONE JSON body or in the server response
-const formatPostRequestOptions = (data: any, contentType?: string): RequestInit => ({
-  method: 'POST',
+const formatRequestOptions = (data: any, contentType?: string, method?: 'POST' | 'PUT'): RequestInit => ({
+  method: method || 'POST',
   body: JSON.stringify(data),
   headers: {
     'Content-Type': contentType || 'application/json',
@@ -28,19 +28,19 @@ export const getSellersBySneakerNameSize = (
   fetch(SELLERS_API_URL + `?sneakerName=${sneakerName}&size=${size}`).then((res) => res.json());
 
 // Create the user in the database
-export const createUser = (user: User) => fetch(USER_API_URL, formatPostRequestOptions(user)).then((res) => res.json());
+export const createUser = (user: User) => fetch(USER_API_URL, formatRequestOptions(user)).then((res) => res.json());
 
 export const updateUser = (user: User) =>
-  fetch(USER_API_URL + 'update', formatPostRequestOptions(user)).then((res) => res);
+  fetch(USER_API_URL, formatRequestOptions(user, undefined, 'PUT')).then((res) => res);
 
 // product
 // returns the insert id of the product
 export const createProduct = (product: Sneaker): Promise<number> =>
-  fetch(PRODUCT_API_URL, formatPostRequestOptions(product)).then((res) => res.json());
+  fetch(PRODUCT_API_URL, formatRequestOptions(product)).then((res) => res.json());
 
 // listed product
 export const createListedProduct = (listedProduct: ListedProduct) =>
-  fetch(LISTED_PRODUCT_API_URL, formatPostRequestOptions(listedProduct)).then((res) => res.json());
+  fetch(LISTED_PRODUCT_API_URL, formatRequestOptions(listedProduct)).then((res) => res.json());
 
 export const getAllListedProducts = (): Promise<Sneaker[]> => fetch(LISTED_PRODUCT_API_URL).then((res) => res.json());
 
@@ -72,3 +72,9 @@ export const getBrands = (): Promise<Brand[]> => fetch(HELPER_INFO_API_URL + 'br
 export const getSneakerNames = (): Promise<SneakerName[]> => fetch(HELPER_INFO_API_URL + 'sneakerNames').then(res => res.json())
 
 export const getColorways = (): Promise<Colorway[]> => fetch(HELPER_INFO_API_URL + 'colorways').then(res => res.json())
+
+export const createBrand = (brand: Brand): Promise<any> => fetch(HELPER_INFO_API_URL + 'brands', formatRequestOptions(brand))
+
+export const createSneakerName = (name: SneakerName): Promise<any> => fetch(HELPER_INFO_API_URL + 'sneakerNames', formatRequestOptions(name))
+
+export const createColorway = (colorway: Colorway): Promise<any> => fetch(HELPER_INFO_API_URL + 'colorways', formatRequestOptions(colorway))

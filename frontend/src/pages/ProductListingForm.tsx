@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 
-import { Col, Container } from 'reactstrap';
+import { Col, Container, Progress } from 'reactstrap';
 
 import PanelHeader from 'components/PanelHeader';
 import SubmissionSuccess from 'components/SubmissionSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
 
-import { createProduct, uploadS3MultipleImages, fetchUserByEmail, createListedProduct } from 'api/api';
+import {
+  createProduct,
+  uploadS3MultipleImages,
+  fetchUserByEmail,
+  createListedProduct,
+  createBrand,
+  createSneakerName,
+  createColorway,
+} from 'api/api';
 
 import { Sneaker, ListedProduct } from '../../../shared';
 
-import PreviewImagesDropZone from 'components/PreviewImagesDropZone';
+import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
 import { fetchCognitoUser } from 'utils/auth';
 
 export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls'>;
@@ -23,12 +31,6 @@ const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   colorway: '',
   price: '',
   description: '',
-};
-
-// NOTE: the type is defined in  PreviewImageDropZone, too
-type PreviewFile = File & {
-  preview: string;
-  id: string;
 };
 
 // A 4-step form, first to submit the basic info, second to preview with the
@@ -88,7 +90,12 @@ const ProductListingForm = () => {
     return formData;
   };
 
-  const formatListedProduct = (askingPrice: number, userId: number, productId: number, quantity?: number): ListedProduct => ({
+  const formatListedProduct = (
+    askingPrice: number,
+    userId: number,
+    productId: number,
+    quantity?: number
+  ): ListedProduct => ({
     userId,
     productId,
     askingPrice,
@@ -97,8 +104,6 @@ const ProductListingForm = () => {
     quantity: quantity || 1,
     sold: 0,
   });
-
-  // TODO: add loading animation while uploading the files
 
   // steps:
   // upload all the images to S3 -> insert the product in the
@@ -111,7 +116,6 @@ const ProductListingForm = () => {
     const formattedUrls = uploadedUrls.join(',');
     const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
 
-    // TODO: do not create a new product if they have the same name, color and size
     const productId = await createProduct(createSneakerPayload).catch((err) => console.log(err));
 
     // handle db create product error
@@ -125,8 +129,13 @@ const ProductListingForm = () => {
     // handle error
     if (!user) return;
 
-    const listedProductPayload = formatListedProduct(sneaker.price! as number, user.id!, productId)
+    const listedProductPayload = formatListedProduct(sneaker.price! as number, user.id!, productId);
     await createListedProduct(listedProductPayload);
+
+    // duplicate primary key insertions are handled by the backend
+    await createBrand({ brand: sneaker.brand });
+    await createColorway({ colorway: sneaker.colorway });
+    await createSneakerName({ name: sneaker.name });
 
     // Go to the success message
     onNextStep();
@@ -137,7 +146,11 @@ const ProductListingForm = () => {
       case 0:
         return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitForm} />;
       case 1:
-        return <PreviewImagesDropZone {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage }} />;
+        return (
+          <PreviewImagesDropZone
+            {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage }}
+          />
+        );
       case 2:
         const previewSneaker = { ...sneaker, imageUrls: getMainDisplayFile().preview };
         return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep, onSubmit: onFinishSubmit }} />;
@@ -148,12 +161,20 @@ const ProductListingForm = () => {
     }
   };
 
+  const calcProgress = () => ((step + 1) / 4) * 100;
+
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
-      <div className='content'>
-        <Container>
-          <Col className='text-center'>{renderStep()}</Col>
+      <div className='content' style={{ paddingTop: '2.2rem' }}>
+        <Container style={{ maxWidth: step === 2 ? '500px' : undefined }}>
+          <Col className='text-center'>
+            <p style={{ margin: 0 }}>{calcProgress()}%</p>
+            <div style={{ marginBottom: '1rem' }}>
+              <Progress value={calcProgress()} />
+            </div>
+            {renderStep()}
+          </Col>
         </Container>
       </div>
     </React.Fragment>
