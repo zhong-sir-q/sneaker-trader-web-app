@@ -22,13 +22,13 @@ export const formatInsertColumnsQuery = (tableName: string, obj: QueryObject) =>
 
 // output look likes, key_one = val_one, key_two = val_two ...,
 // where the value should be double quoted if it is not a number
-const formatSetQuery = (obj: QueryObject) => {
+export const formatSetQuery = (obj: QueryObject) => {
   const doubleQuoteVals = doubleQuotedValues(obj);
   let output = '';
   const length = Object.keys(obj).length;
 
   Object.keys(obj).forEach((column, idx) => {
-    const end = idx < length - 1 ? ', ' : ' ';
+    const end = idx < length - 1 ? ', ' : '';
     const temp = column + '=' + doubleQuoteVals[idx] + end;
     output += temp;
   });

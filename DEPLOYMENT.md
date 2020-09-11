@@ -1,3 +1,7 @@
+## Deploy both frontend and backend
+
+In the `main` directory, run `npm run deployAll`.
+
 ## Deploy the Express App
 
 Configure task, container and the service on **ECS with Fargate**, follow the official [AWS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-fargate.html)

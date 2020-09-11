@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ListGroup, ListGroupItem, Container, Button } from 'reactstrap';
-import CenterSpinner from 'components/CenterSpinner';
 import { useHistory } from 'react-router-dom';
-import { getSellersBySneakerNameSize } from 'api/api';
+
+import CenterSpinner from 'components/CenterSpinner';
+
+import { fetchCognitoUser } from 'utils/auth';
+import { getSellersBySneakerNameSize, fetchUserByEmail, contactSellerAfterPurchase } from 'api/api';
+
+import { ContactSellerMailPayload } from '../../../shared';
+import { SIGNIN, AUTH } from 'routes';
 
 type Seller = {
   userName: string;
@@ -16,8 +22,15 @@ const SellersList = () => {
 
   const history = useHistory();
 
+  const sneakerInfo = () => history.location.pathname.split('/');
+
+  const formatProductName = () => {
+    const [, hyphenedName, size] = sneakerInfo();
+    return `Size ${size} ${hyphenedName.split('-').join(' ')}`;
+  };
+
   const fetchSetSellers = async () => {
-    const [, hyphenedName, size] = history.location.pathname.split('/');
+    const [, hyphenedName, size] = sneakerInfo();
     const sneakerName = hyphenedName.split('-').join(' ');
 
     const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerName, Number(size)).catch((err) =>
@@ -29,9 +42,49 @@ const SellersList = () => {
     setSellers(sellersBySneakerNameSize);
   };
 
+  const onComponentLoaded = async () => {
+    const user = await fetchCognitoUser();
+    // handle unauthenticated user
+    if (!user) history.push(AUTH + SIGNIN, history.location.pathname);
+    else fetchSetSellers();
+  };
+
   useEffect(() => {
-    fetchSetSellers();
+    onComponentLoaded();
   });
+
+  const formatMailPayload = async (sellerIdx: number): Promise<ContactSellerMailPayload> => {
+    const { email } = await fetchCognitoUser();
+    const { userName } = await fetchUserByEmail(email);
+
+    const mailPayload: ContactSellerMailPayload = {
+      sellerUserName: sellers![sellerIdx].userName,
+      sellerEmail: sellers![sellerIdx].email,
+      buyerUserName: userName,
+      buyerEmail: email,
+      productName: formatProductName(),
+    };
+
+    return mailPayload;
+  };
+
+  const onConfirm = async () => {
+    if (selectedSellerIdx === undefined) {
+      alert('Please select a seller');
+      return;
+    }
+
+    const mailPayload = await formatMailPayload(selectedSellerIdx);
+
+    contactSellerAfterPurchase(mailPayload)
+      .then(() => {
+        alert('The seller will be in touch with you shortly');
+        history.push('/');
+      })
+      .catch((err) => {
+        // do something after error
+      });
+  };
 
   return !sellers ? (
     <CenterSpinner />
@@ -39,13 +92,18 @@ const SellersList = () => {
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
       <ListGroup>
         {sellers.map(({ userName, email, askingPrice }, idx) => (
-          // do something after on clikc
+          // TODO: when screen size is smaller than 650px,
+          // make the item layout to be column rather than row
           <ListGroupItem
             tag='button'
             key={idx}
             action
             onClick={() => setSelectedSellerIdx(idx)}
-            style={{ borderColor: idx === selectedSellerIdx ? 'green' : undefined, outline: 'none' }}
+            style={{
+              borderColor: idx === selectedSellerIdx ? 'green' : undefined,
+              outline: 'none',
+              borderTopWidth: '1.2px',
+            }}
           >
             <pre style={{ margin: 0 }}>
               User Name: {userName} Email: {email} Asking Price: ${askingPrice}
@@ -54,7 +112,7 @@ const SellersList = () => {
         ))}
       </ListGroup>
       <footer className='text-center'>
-        <Button color='primary' onClick={() => console.log('Contact seller')}>
+        <Button color='primary' onClick={() => onConfirm()}>
           Confirm
         </Button>
         <p className='category' style={{ margin: 0, fontSize: '0.95em' }}>

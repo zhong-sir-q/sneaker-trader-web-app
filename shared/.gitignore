@@ -1,4 +1,4 @@
 # build
-index.js
-index.d.*
+*.js
+*.d.*
 tsconfig.tsbuildinfo

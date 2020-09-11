@@ -3,6 +3,7 @@ import { Form as FormikForm, Formik } from 'formik';
 import { Hub } from 'aws-amplify';
 import { AmplifyGoogleButton, AmplifyFacebookButton } from '@aws-amplify/ui-react';
 import { useHistory, Link } from 'react-router-dom';
+
 // reactstrap components
 import { Card, CardBody, CardHeader, CardFooter, Container, Col, Button } from 'reactstrap';
 import * as Yup from 'yup';
@@ -39,6 +40,12 @@ const SignIn = () => {
   const [loginError, setLoginError] = useState<string>();
   const history = useHistory();
 
+  const redirectAfterLoginSuccess = () => {
+    // the state is the pathname passed from SellerList
+    if (history.location.state) history.push(history.location.state);
+    else history.push('/');
+  };
+
   useEffect(() => {
     // use the hub to redirect the user when they sign in using social logins
     // TODO: create the user in the database if not exists, it will have to be a federated user
@@ -53,7 +60,7 @@ const SignIn = () => {
         if (!user) {
         }
 
-        history.push('/');
+        redirectAfterLoginSuccess();
       }
     });
 
@@ -74,15 +81,11 @@ const SignIn = () => {
                   const loginResult = await signIn(formStates.email, formStates.password);
 
                   if (loginResult.message) {
-                    // TODO; get Aaron's opinion compare to the signup page,
-                    // prefer displaying the message or a pop up alert?
-
-                    // display the error
                     setLoginError(loginResult.message);
                     return;
                   }
 
-                  history.push('/');
+                  redirectAfterLoginSuccess();
                 }}
               >
                 <FormikForm>
