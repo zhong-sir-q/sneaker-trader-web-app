@@ -12,7 +12,7 @@ type SneakerGalleryProps = {
 const SneakerGallery = (props: SneakerGalleryProps) => {
   const render = () => {
     return (
-      <Row xs='4' sm='4' md='4'>
+      <Row xs='2' md='3'>
         {props.sneakers.map((s, idx) => {
           const { size, ...sneaker } = s;
 

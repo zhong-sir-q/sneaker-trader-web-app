@@ -9,7 +9,7 @@ export type PromisifiedConnection = {
 
 let _db: PromisifiedConnection
 
-const makeDb = () => {
+const makeDb = (): PromisifiedConnection => {
   const sqlConnection = mysql.createConnection(config.sqlConnectionConfig)
   
   return {

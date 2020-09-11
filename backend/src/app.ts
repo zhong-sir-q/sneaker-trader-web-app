@@ -18,5 +18,4 @@ app.use('/api', apiRoutes());
 
 app.get('/', (_req, res) => res.send('Test if home page updated'));
 
-const PORT = 4000;
-app.listen(PORT, () => console.log('Listening at port', PORT));
+export default app

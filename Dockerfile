@@ -11,4 +11,4 @@ RUN npm run buildBackend
 # install the dependencies in backend
 RUN npm install --prefix backend
 EXPOSE 4000
-CMD ["node", "./backend/build/src/app.js"]
+CMD ["node", "./backend/build/src/start.js"]

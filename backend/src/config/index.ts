@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 
 // load variables from .env to process.env
-dotenv.config({ path: './.env.' + process.env.environment });
+dotenv.config({ path: './.env.' + process.env.NODE_ENV });
 
 const config = {
   sqlConnectionConfig: {

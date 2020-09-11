@@ -8,32 +8,23 @@ const listedProductRoute = Router();
 export default (app: Router) => {
   app.use('/listed_product', listedProductRoute);
 
-  listedProductRoute.get('/', async (req, res) => {
+  listedProductRoute.get('/', async (req, res, next) => {
     const sneakerSize = req.query.sizes as string;
     const sneakerName = req.query.name as string;
     const ListedProductServiceInstance = new ListedProductService(getMysqlDb());
 
     if (sneakerName) {
-      try {
-        const sizeMinPriceGroup = await ListedProductServiceInstance.getSizeMinPriceGroupByName(sneakerName);
-        res.json(sizeMinPriceGroup);
-      } catch (err) {
-        res.status(404).json(err.message);
-      }
+      ListedProductServiceInstance.getSizeMinPriceGroupByName(sneakerName)
+        .then((r) => res.json(r))
+        .catch(next);
     } else if (sneakerSize) {
-      try {
-        const sneakersBySize = await ListedProductServiceInstance.getBySize(sneakerSize);
-        res.json(sneakersBySize);
-      } catch (err) {
-        res.status(404).json(err.message);
-      }
+      ListedProductServiceInstance.getBySize(sneakerSize)
+        .then((r) => res.json(r))
+        .catch(next);
     } else {
-      try {
-        const allListedProducts = await ListedProductServiceInstance.getAllListedProducts();
-        res.json(allListedProducts);
-      } catch (err) {
-        res.status(404).json(err.message);
-      }
+      ListedProductServiceInstance.getAllListedProducts()
+        .then((r) => res.json(r))
+        .catch(next);
     }
   });
 

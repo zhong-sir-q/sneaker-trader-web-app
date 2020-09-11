@@ -39,9 +39,9 @@ class ListedProductService {
               WHERE sold = 0 GROUP BY productId
             ) B ON A.id = B.productId GROUP BY name, colorway`;
 
-      const lowestAskedSneakers: Sneaker[] = await this.connection.query(query);
+      const sneakersWithLowestAskPrice: Sneaker[] = await this.connection.query(query);
 
-      res.json(lowestAskedSneakers);
+      res.json(sneakersWithLowestAskPrice);
     } catch (err) {
       next(err);
     }

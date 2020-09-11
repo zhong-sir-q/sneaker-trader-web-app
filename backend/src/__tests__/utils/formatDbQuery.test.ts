@@ -1,6 +1,6 @@
-import productOne from '../data/product_1.json'
-import productTwo from '../data/product_2.json'
-import listedProductOne from '../data/listed_product_1.json'
+import productOne from '../../mocks/product_1.json'
+import productTwo from '../../mocks/product_2.json'
+import listedProductOne from '../../mocks/listed_product_1.json'
 
 import { formatUpdateColumnsQuery, doubleQuotedValue, doubleQuotedValues, formatInsertColumnsQuery, formatSetQuery, formatColumns, formateGetColumnsQuery } from '../../utils/formatDbQuery'
 
@@ -15,7 +15,7 @@ describe('Test format db queries dependent util functions', () => {
     const listedProductOneValues = doubleQuotedValues(listedProductOne)
     const productOneValues = doubleQuotedValues(productOne)
 
-    expect(listedProductOneValues).toEqual([3, 3, 250, 1, '"false"'])
+    expect(listedProductOneValues).toEqual([15, 3, 1000, 1, 0])
 
     const imgUrl = '"https://stockx.imgix.net/Air-Jordan-12-Retro-Black-University-Gold-Product.jpg?fit=fill&bg=FFFFFF&w=300&h=214&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1597154086"'
     const name = '"Air Jordan 12 Retro"'
@@ -49,7 +49,7 @@ describe('Format db queries', () => {
   test('Format update columns query', () => {
     const updateColumnsQuery = formatUpdateColumnsQuery('RandomTableName', listedProductOne, 'a = b')
 
-    const expectedQuery = 'UPDATE RandomTableName SET productId=3, userId=3, askingPrice=250, quantity=1, sold="false" WHERE a = b'
+    const expectedQuery = 'UPDATE RandomTableName SET productId=15, userId=3, askingPrice=1000, quantity=1, sold=0 WHERE a = b'
 
     expect(updateColumnsQuery).toBe(expectedQuery)
   })
