@@ -15,3 +15,4 @@ const FormikLabelInput = (props: FieldHookConfig<string> & { label: string }) =>
 };
 
 export default FormikLabelInput;
+

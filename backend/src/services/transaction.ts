@@ -1,12 +1,10 @@
 import { Connection } from 'mysql';
 
 class TransactionService {
-  conneciton: Connection;
-  tableName: string;
+  private conneciton: Connection;
 
   constructor(conn: Connection) {
     this.conneciton = conn;
-    this.tableName = ''
   }
 }
 

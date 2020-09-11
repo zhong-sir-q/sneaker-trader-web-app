@@ -11,7 +11,7 @@ import PanelHeader from './PanelHeader';
 const Dashboard = () => {
   return (
     <React.Fragment>
-      <PanelHeader size='lg' content={undefined} />
+      <PanelHeader size='sm' content={undefined} />
       <div className='content'>
         <Row>
           <Col xs={12} md={12}>

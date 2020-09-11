@@ -15,7 +15,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
   const { sneaker, onPrevStep, onSubmit } = props;
 
   return (
-    <Card className='text-center' style={{ maxWidth: '265px' }}>
+    <Card className='text-center' style={{ maxWidth: '500px' }}>
       <CardHeader>
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>

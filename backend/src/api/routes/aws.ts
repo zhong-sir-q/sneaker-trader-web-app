@@ -23,7 +23,6 @@ const uploadFileToS3 = (file: Express.Multer.File, s3Folder: string) => {
     // An inefficient way of uploading the image
     // because I need to access the file system
     Body: fs.createReadStream(file.path),
-    // should replace this with a uuid name
     Key: s3Folder + file.filename,
   };
 
@@ -33,7 +32,6 @@ const uploadFileToS3 = (file: Express.Multer.File, s3Folder: string) => {
 export default (app: Router) => {
   app.use('/aws', awsRoute);
 
-  // TODO: change both multer and S3 so it can accept and upload multiple files at a time
   awsRoute.post('/upload', upload.single('file'), (req, res, next) => {
     uploadFileToS3(req.file, s3BucketFolder)
       .then((_) => res.send('File uploaded'))

@@ -13,12 +13,12 @@ import FormikInput from 'components/formik/FormikInput';
 
 import { validEmail, minCharacters } from 'utils/yup';
 
-import { SIGNUP, AUTH, ADMIN, DASHBOARD, FORGOT_PW } from 'routes';
+import { SIGNUP, AUTH, FORGOT_PW } from 'routes';
 
 import stLogo from 'assets/img/logo_transparent_background.png';
 import bgImage from 'assets/img/bg14.jpg';
 import { fetchUserByEmail } from 'api/api';
-import { cognitoSignIn } from 'utils/auth';
+import { signIn } from 'utils/auth';
 
 type SignInFormStateType = {
   email: string;
@@ -53,7 +53,7 @@ const SignIn = () => {
         if (!user) {
         }
 
-        history.push(ADMIN + DASHBOARD);
+        history.push('/');
       }
     });
 
@@ -71,7 +71,7 @@ const SignIn = () => {
                 initialValues={INIT_FORM_STATES}
                 validationSchema={validationSchema}
                 onSubmit={async (formStates) => {
-                  const loginResult = await cognitoSignIn(formStates.email, formStates.password);
+                  const loginResult = await signIn(formStates.email, formStates.password);
 
                   if (loginResult.message) {
                     // TODO; get Aaron's opinion compare to the signup page,
@@ -82,7 +82,7 @@ const SignIn = () => {
                     return;
                   }
 
-                  history.push(ADMIN + DASHBOARD);
+                  history.push('/');
                 }}
               >
                 <FormikForm>

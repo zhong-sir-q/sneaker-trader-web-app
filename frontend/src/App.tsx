@@ -1,13 +1,14 @@
 import Amplify from 'aws-amplify';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 // layouts
+import HomeLayout from 'layouts/HomeLayout';
 import AuthLayout from 'layouts/AuthLayout';
 import AdminLayout from 'layouts/AdminLayout';
 
 // routes
-import { AUTH, ADMIN, DASHBOARD } from 'routes';
+import { AUTH, ADMIN } from 'routes';
 
 // css
 import 'bootstrap/dist/css/bootstrap.css';
@@ -25,7 +26,6 @@ Amplify.configure({
 });
 
 const App = () => {
-
   return (
     <Router>
       <Switch>
@@ -37,7 +37,9 @@ const App = () => {
           <AdminLayout />
         </Route>
 
-        <Redirect to={ADMIN + DASHBOARD} />
+        <Route  path='/'>
+          <HomeLayout />
+        </Route>
       </Switch>
     </Router>
   );

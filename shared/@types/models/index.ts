@@ -1,18 +1,3 @@
-// the keys map to the columns of the BuyingHistory table
-
-export type DbSneaker = {
-  id: string;
-  size: number;
-  brand: string;
-  colorWay: string;
-  serialNumber: string;
-  price: number;
-  priceId: string;
-  description: string;
-  name: string;
-  imageUrl?: string;
-};
-
 export type User = {
   firstName: string;
   lastName: string;
@@ -20,14 +5,40 @@ export type User = {
   gender: string;
   dob: string;
   email: string;
+  id?: number;
 };
 
 export type Sneaker = {
   name: string;
   brand: string;
-  colorWay: string;
-  size: number | undefined;
-  price: number | undefined;
+  colorway: string;
+  size: number | '';
+  price: number | '';
   imageUrls: string;
+  id?: number;
   description?: string;
 };
+
+export type ListedProduct = {
+  // fk to Products table
+  productId: number;
+  // fk to Users table
+  userId: number;
+  askingPrice: number;
+  quantity: number;
+  sold: 0 | 1;
+};
+
+export type Brand = {
+  brand: string
+}
+
+export type Colorway = {
+  colorway: string
+}
+
+export type SneakerName = {
+  name: string
+}
+
+export type SizeMinPriceGroupType = { size: number, minPrice: number }[]

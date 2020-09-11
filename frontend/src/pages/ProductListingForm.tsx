@@ -1,33 +1,36 @@
 import React, { useState } from 'react';
 
-import { Col, Container } from 'reactstrap';
+import { Col, Container, Progress } from 'reactstrap';
 
 import PanelHeader from 'components/PanelHeader';
 import SubmissionSuccess from 'components/SubmissionSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
 
-import { createProduct, uploadS3MultipleImages } from 'api/api';
+import {
+  createProduct,
+  uploadS3MultipleImages,
+  fetchUserByEmail,
+  createListedProduct,
+  createBrand,
+  createSneakerName,
+  createColorway,
+} from 'api/api';
 
-import { Sneaker } from '../../../shared';
+import { Sneaker, ListedProduct } from '../../../shared';
 
-import PreviewImagesDropZone from 'components/PreviewImagesDropZone';
+import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
+import { fetchCognitoUser } from 'utils/auth';
 
 export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls'>;
 
 const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   name: '',
   brand: '',
-  size: undefined,
-  colorWay: '',
-  price: undefined,
+  size: '',
+  colorway: '',
+  price: '',
   description: '',
-};
-
-// NOTE: the type is defined in  PreviewImageDropZone, too
-type PreviewFile = File & {
-  preview: string;
-  id: string;
 };
 
 // A 4-step form, first to submit the basic info, second to preview with the
@@ -75,7 +78,7 @@ const ProductListingForm = () => {
     setFiles(filesAfterRemoval);
   };
 
-  const onClickImage = (fileId: string) => setMainFileId(fileId);
+  const updateFileId = (fileId: string) => setMainFileId(fileId);
 
   const getMainDisplayFile = () => files.filter((f) => f.id === mainFileId)[0];
 
@@ -87,20 +90,52 @@ const ProductListingForm = () => {
     return formData;
   };
 
-  // TODO: add loading animation while uploading the files
-  // steps: upload all the images to S3 -> create the product in the
-  // backend -> display successful message
+  const formatListedProduct = (
+    askingPrice: number,
+    userId: number,
+    productId: number,
+    quantity?: number
+  ): ListedProduct => ({
+    userId,
+    productId,
+    askingPrice,
+    // default quantity. Enable the user to select the
+    // quantity of shoes they want to sell in the future
+    quantity: quantity || 1,
+    sold: 0,
+  });
+
+  // steps:
+  // upload all the images to S3 -> insert the product in the
+  // Products and the ListedProducts table -> display successful message
   const onFinishSubmit = async () => {
     const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles()).catch((err) => console.log(err));
+    // handle upload error
     if (!uploadedUrls) return;
 
     const formattedUrls = uploadedUrls.join(',');
     const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
 
-    const product = await createProduct(createSneakerPayload).catch((err) => console.log(err));
+    const productId = await createProduct(createSneakerPayload).catch((err) => console.log(err));
 
     // handle db create product error
-    if (!product) return;
+    if (!productId) return;
+
+    const cognitoUser = await fetchCognitoUser().catch((err) => console.log(err));
+    // handle error
+    if (!cognitoUser) return;
+
+    const user = await fetchUserByEmail(cognitoUser.email).catch((err) => console.log(err));
+    // handle error
+    if (!user) return;
+
+    const listedProductPayload = formatListedProduct(sneaker.price! as number, user.id!, productId);
+    await createListedProduct(listedProductPayload);
+
+    // duplicate primary key insertions are handled by the backend
+    await createBrand({ brand: sneaker.brand });
+    await createColorway({ colorway: sneaker.colorway });
+    await createSneakerName({ name: sneaker.name });
 
     // Go to the success message
     onNextStep();
@@ -111,7 +146,11 @@ const ProductListingForm = () => {
       case 0:
         return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitForm} />;
       case 1:
-        return <PreviewImagesDropZone {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage }} />;
+        return (
+          <PreviewImagesDropZone
+            {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, updateFileId }}
+          />
+        );
       case 2:
         const previewSneaker = { ...sneaker, imageUrls: getMainDisplayFile().preview };
         return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep, onSubmit: onFinishSubmit }} />;
@@ -122,12 +161,20 @@ const ProductListingForm = () => {
     }
   };
 
+  const calcProgress = () => ((step + 1) / 4) * 100;
+
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
-      <div className='content'>
-        <Container>
-          <Col className='text-center'>{renderStep()}</Col>
+      <div className='content' style={{ paddingTop: '2.2rem' }}>
+        <Container style={{ maxWidth: step === 2 ? '500px' : undefined }}>
+          <Col className='text-center'>
+            <p style={{ margin: 0 }}>{calcProgress()}%</p>
+            <div style={{ marginBottom: '1rem' }}>
+              <Progress value={calcProgress()} />
+            </div>
+            {renderStep()}
+          </Col>
         </Container>
       </div>
     </React.Fragment>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 
 // reactstrap components
 import { Nav, Collapse, Button } from 'reactstrap';
@@ -10,7 +10,7 @@ import avatar from 'assets/img/ryan.jpg';
 import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
-import { SneakerTraderRoute, View, RouteState, ADMIN, USER_PROFILE } from 'routes';
+import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE } from 'routes';
 import { fetchCognitoUser } from 'utils/auth';
 import { fetchUserByEmail } from 'api/api';
 import { User } from '../../../shared';
@@ -23,7 +23,7 @@ type SideBarProps = {
   showNotification: boolean;
   backgroundColor: SideBarBackgroundColor;
   minimizeSidebar: () => void;
-}
+};
 
 export const defaultSideBarProps: SideBarProps = {
   routes: [],
@@ -35,13 +35,9 @@ export const defaultSideBarProps: SideBarProps = {
 // this verifies if any of the collapses should be default opened on a rerender of this component
 // for example, on the refresh of the page, while on the src/views/forms/RegularForms.js - route /admin/regular-forms
 const getCollapseInitialState = (routes: SneakerTraderRoute[]) => {
-  for (let i = 0; i < routes.length; i++) {
-    if (routes[i].collapse && getCollapseInitialState(routes[i].views as View[])) {
-      return true;
-    } else if (window.location.href.indexOf(routes[i].path) !== -1) {
-      return true;
-    }
-  }
+  for (const { collapse, views, path } of routes)
+    if ((collapse && views && getCollapseInitialState(views)) || window.location.href.indexOf(path) !== -1) return true;
+
   return false;
 };
 
@@ -75,20 +71,25 @@ type SideBarStateType = CollapseStateType & { openAvatar: boolean };
 const Sidebar = (props: SideBarProps) => {
   const [collapseStates, setCollapseStates] = useState({ openAvatar: false, ...getCollapseStates(props.routes) });
   const [userName, setUserName] = useState<string>();
+  // toggle this state to rerender the component upon route change
+  const [, setReRender] = useState(false);
+  const location = useLocation();
 
   // TODO: type this
   const sidebar = useRef<any>(null);
 
+  useEffect(() => setReRender((val) => !val), [location]);
+
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCognitoUser().catch(err => console.log(err));
+      const cognitoUser = await fetchCognitoUser().catch((err) => console.log(err));
       // handle get cognito user error
-      if (!cognitoUser) return
+      if (!cognitoUser) return;
       const cognitoFullName = cognitoUser.name;
 
-      const dbUser: User | void = await fetchUserByEmail(cognitoUser.email).catch(err => console.log(err));
+      const dbUser: User | void = await fetchUserByEmail(cognitoUser.email).catch((err) => console.log(err));
       // handle fetch db user error
-      if (!dbUser) return
+      if (!dbUser) return;
       const { firstName, lastName } = dbUser;
       const dbFullName = firstName && lastName ? firstName + ' ' + lastName : undefined;
 
@@ -127,7 +128,6 @@ const Sidebar = (props: SideBarProps) => {
                   </p>
                 </React.Fragment>
               ) : (
-                // TODO: examine the route.mini type error
                 <React.Fragment>
                   <span className='sidebar-mini-icon'>{'route.mini'}</span>
                   <span className='sidebar-normal'>
@@ -173,9 +173,9 @@ const Sidebar = (props: SideBarProps) => {
               <img src={logo} alt='react-logo' />
             </div>
           </a>
-          <a href='#pablo' className='simple-text logo-normal'>
+          <Link to='/' className='simple-text logo-normal'>
             Sneaker Trader
-          </a>
+          </Link>
           <div className='navbar-minimize'>
             <Button outline className='btn-round btn-icon' color='neutral' id='minimizeSidebar' onClick={() => props.minimizeSidebar()}>
               <i className='now-ui-icons text_align-center visible-on-sidebar-regular' />

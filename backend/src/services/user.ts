@@ -1,76 +1,80 @@
-import { Connection } from 'mysql';
-import { FetchDbDataCallback } from '../@types/utils';
-import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
+import {
+  formatInsertColumnsQuery,
+  formateGetColumnsQuery,
+  doubleQuotedValue,
+  formatUpdateColumnsQuery,
+} from '../utils/formatDbQuery';
 import { User } from '../../../shared';
 import { RequestHandler } from 'express';
-
-// TODO: is there a way to refactor all these callbacks?
+import { PromisifiedConnection } from '../config/mysql';
+import { USERS } from '../config/tables';
 
 class UserService {
-  connection: Connection;
-  tableName: string;
-  constructor(conn: Connection) {
+  private connection: PromisifiedConnection;
+
+  constructor(conn: PromisifiedConnection) {
     this.connection = conn;
-    this.tableName = 'Users';
   }
 
-  handleCreate: RequestHandler = (req, res, next) => {
+  handleCreate: RequestHandler = async (req, res, next) => {
     const user = req.body;
 
-    // refactor the callbacks, general and do soemthing if result not found
-    const createUserCallback: FetchDbDataCallback = (err, queryResult) => {
-      if (err) next(err);
-      else res.json(queryResult);
-    };
-
-    this.create(user, createUserCallback);
+    try {
+      const createUserResult = await this.create(user);
+      res.json(createUserResult);
+    } catch (err) {
+      next(err);
+    }
   };
 
-  handleGetByEmail: RequestHandler = (req, res, next) => {
+  handleGetByEmail: RequestHandler = async (req, res, next) => {
     const { email } = req.params;
 
-    const getByEmailCallback: FetchDbDataCallback = (err, result) => {
-      if (err) next(err);
-      else res.json(result);
-    };
-
-    this.getByEmail(email, getByEmailCallback);
+    try {
+      const user = await this.getByEmail(email);
+      res.json(user);
+    } catch (err) {
+      next(err);
+    }
   };
 
-  handleUpdate: RequestHandler = (req, res, next) => {
-    const user = req.body
-    const condition = 'email = ' + doubleQuotedValue(user.email)
+  handleUpdate: RequestHandler = async (req, res, next) => {
+    const user = req.body;
+    const condition = 'email = ' + doubleQuotedValue(user.email);
 
-    const updateUserQuery = formatUpdateColumnsQuery(this.tableName, user, condition)
-    this.connection.query(updateUserQuery, (err, result) => {
-      if (err) next(err)
-      else res.json(result)
-    })
+    const updateUserQuery = formatUpdateColumnsQuery(USERS, user, condition);
+
+    try {
+      const updateResult = await this.connection.query(updateUserQuery);
+      res.json(updateResult);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  async create(user: Partial<User>) {
+    const createUserQuery = formatInsertColumnsQuery(USERS, user);
+
+    return this.connection.query(createUserQuery);
   }
 
-  create(user: User, cb: FetchDbDataCallback) {
-    const query = formatInsertColumnsQuery(this.tableName, user);
+  async getByEmail(email: string): Promise<Partial<User>> {
+    const getUserByEmailQuery = formateGetColumnsQuery(USERS, 'email = ' + doubleQuotedValue(email));
 
-    this.connection.query(query, (err, result) => {
-      if (err) cb(err, undefined);
-      else cb(undefined, result);
-    });
-  }
-
-  getByEmail(email: string, cb: FetchDbDataCallback) {
-    const query = formateGetColumnsQuery(this.tableName, 'email = ' + doubleQuotedValue(email));
-
-    this.connection.query(query, (err, getUserResult) => {
-      if (err) cb(err, undefined);
-      else if (getUserResult.length === 0) {
+    try {
+      const queryResult = await this.connection.query(getUserByEmailQuery);
+      if (queryResult.length === 0) {
         // create the user
-        const user = { email };
-        this.create(user as User, (error, createUserResult) => {
-          if (error) cb(error, undefined);
-          else cb(undefined, createUserResult);
-        });
-      } else cb(undefined, getUserResult[0]);
-    });
+        try {
+          const createUserResult = await this.create({ email });
+          return createUserResult;
+        } catch (err) {
+          throw err;
+        }
+      } else return queryResult[0];
+    } catch (err) {
+      throw err;
+    }
   }
 }
 

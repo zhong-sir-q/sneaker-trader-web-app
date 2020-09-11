@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import { DropzoneState, useDropzone } from 'react-dropzone';
 
@@ -38,10 +38,9 @@ type ThumbProps = {
 const Thumb = styled.div<ThumbProps>`
   display: flex;
   flex: 1 1 0;
-  padding: 4px 8px;
   flex-direction: column;
   align-items: center;
-  border: 1px solid;
+  border: 2.5px solid;
   margin-top: 10px;
   max-width: 185px;
   margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
@@ -64,7 +63,7 @@ const GreenDot = styled.span`
   margin-right: 3px;
 `;
 
-type PreviewFile = File & {
+export type PreviewFile = File & {
   preview: string;
   id: string;
 };
@@ -76,11 +75,27 @@ type PreviewImagesDropZoneProps = {
   onNextStep: () => void;
   onDropFile: (newFiles: PreviewFile[]) => void;
   onRemoveFile: (fileId: string) => void;
-  onClickImage: (fileId: string) => void;
+  updateFileId: (fileId: string) => void;
 };
 
 const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
-  const { files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage } = props;
+  const { files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, updateFileId } = props;
+
+  const thumbs = files.map((file, idx) => (
+    <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.id}>
+      <PreviewImage onClick={() => updateFileId(file.id)} src={file.preview} alt={file.name} />
+      <i
+        style={{ cursor: 'pointer' }}
+        onClick={() => onRemoveFile(file.id)}
+        className='now-ui-icons ui-1_simple-remove'
+      />
+    </Thumb>
+  ));
+
+  // set the first image to be the default main display
+  useEffect(() => {
+    if (!mainFileId && thumbs.length > 0) updateFileId(thumbs[0].key as string);
+  }, [mainFileId, thumbs, updateFileId]);
 
   const UPLOAD_LIMIT = 5;
   const isFileUploadLimit = () => files.length === UPLOAD_LIMIT;
@@ -114,20 +129,15 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
     onNextStep();
   };
 
-  const thumbs = files.map((file, idx) => (
-    <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.preview}>
-      <PreviewImage onClick={() => onClickImage(file.id)} src={file.preview} alt={file.name} />
-      <i style={{ cursor: 'pointer' }} onClick={() => onRemoveFile(file.id)} className='now-ui-icons ui-1_simple-remove' />
-    </Thumb>
-  ));
-
   return (
     <Card style={{ padding: '15px 15px 0px 15px' }}>
       <CardHeader>
-        <p className='category' style={{ fontSize: '0.95em' }}>
+        <p>
           <GreenDot /> Click the image to select the main display image
         </p>
-        <p>Upload maximum of 5 images</p>
+        <p className='category' style={{ fontSize: '0.95em' }}>
+          Upload 5 images max
+        </p>
       </CardHeader>
 
       <CardBody>
