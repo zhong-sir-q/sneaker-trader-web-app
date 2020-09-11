@@ -10,7 +10,7 @@ const helperInfoRoute = Router();
 
 // TODO: ask for advice, is the then catch syntax more clean than the try catch?
 export default (app: Router) => {
-  app.use('/helperInfo', helperInfoRoute);
+  app.use('/helper_info', helperInfoRoute);
 
   helperInfoRoute.get('/sneakerNames', (_req, res, next) => {
     const dbConnection = getMysqlDb();

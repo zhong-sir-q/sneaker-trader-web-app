@@ -16,7 +16,7 @@ app.use(cors()); // enable cors
 app.use(express.json()); // parsing application/json
 app.use('/api', apiRoutes());
 
-app.get('/', (_req, res) => res.send('Hello, the home page'));
+app.get('/', (_req, res) => res.send('Test if home page updated'));
 
 const PORT = 4000;
 app.listen(PORT, () => console.log('Listening at port', PORT));

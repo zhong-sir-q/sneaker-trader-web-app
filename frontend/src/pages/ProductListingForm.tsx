@@ -78,7 +78,7 @@ const ProductListingForm = () => {
     setFiles(filesAfterRemoval);
   };
 
-  const onClickImage = (fileId: string) => setMainFileId(fileId);
+  const updateFileId = (fileId: string) => setMainFileId(fileId);
 
   const getMainDisplayFile = () => files.filter((f) => f.id === mainFileId)[0];
 
@@ -148,7 +148,7 @@ const ProductListingForm = () => {
       case 1:
         return (
           <PreviewImagesDropZone
-            {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, onClickImage }}
+            {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, updateFileId }}
           />
         );
       case 2:

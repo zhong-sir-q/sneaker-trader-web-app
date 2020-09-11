@@ -6,7 +6,7 @@ const PRODUCT_API_URL = API_BASE_URL + 'product/';
 const LISTED_PRODUCT_API_URL = API_BASE_URL + 'listed_product/';
 const AWS_API_URL = API_BASE_URL + 'aws/';
 const SELLERS_API_URL = API_BASE_URL + 'sellers/';
-const HELPER_INFO_API_URL = API_BASE_URL + 'helperInfo/'
+const HELPER_INFO_API_URL = API_BASE_URL + 'helper_info/'
 
 // RULE: NEVER assign keys, IF I ONLY HAVE ONE JSON body or in the server response
 const formatRequestOptions = (data: any, contentType?: string, method?: 'POST' | 'PUT'): RequestInit => ({
@@ -66,7 +66,7 @@ export const uploadS3MultipleImages = (formData: FormData): Promise<string[]> =>
     body: formData,
   }).then((res) => res.json());
 
-// helperInfo such as brands, sneaker names and color ways etc.
+// helper_info such as brands, sneaker names and color ways etc.
 export const getBrands = (): Promise<Brand[]> => fetch(HELPER_INFO_API_URL + 'brands').then(res => res.json())
 
 export const getSneakerNames = (): Promise<SneakerName[]> => fetch(HELPER_INFO_API_URL + 'sneakerNames').then(res => res.json())

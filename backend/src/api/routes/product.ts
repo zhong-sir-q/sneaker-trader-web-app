@@ -8,7 +8,7 @@ const productRoute = Router();
 export default (app: Router) => {
   app.use('/product', productRoute);
 
-  productRoute.get('/', (_req, res) => res.send('Get one product here'))
+  productRoute.get('/', (_req, res) => res.send('One product'))
 
   // create the product in the database
   productRoute.post('/', new ProductService(getMysqlDb()).handleCreate);

@@ -13,3 +13,5 @@ aws ecr get-login-password | sudo docker login --username AWS --password-stdin 2
 sudo docker build -t "${LOCAL_IMAGE_NAME}:${TAG_NAME}" .
 sudo docker tag "${LOCAL_IMAGE_NAME}:${TAG_NAME}" "${ECR_URL}:${TAG_NAME}"
 sudo docker push "${ECR_URL}:${TAG_NAME}"
+
+aws ecs update-service --cluster sneaker-trader-cluster --service express-alb-service-prod --force-new-deployment
