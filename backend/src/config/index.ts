@@ -11,7 +11,8 @@ const config = {
     database: process.env.database,
   },
   region: process.env.REGION as string,
-  imageBucket: process.env.IMAGE_UPLOADS_BUCKET as string
+  imageBucket: process.env.IMAGE_UPLOADS_BUCKET as string,
+  sendgridApiKey: process.env.SENDGRID_API_KEY as string,
 };
 
 export default config;

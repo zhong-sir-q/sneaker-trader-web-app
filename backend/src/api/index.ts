@@ -9,6 +9,7 @@ import listedProduct from './routes/listedProduct';
 import aws from './routes/aws';
 
 import helperInfo from './routes/helperInfo';
+import mail from './routes/mail';
 
 export default () => {
   const app = Router();
@@ -20,7 +21,9 @@ export default () => {
 
   user(app);
   sellers(app);
-  helperInfo(app)
+  helperInfo(app);
+
+  mail(app);
 
   return app;
 };

@@ -9,7 +9,7 @@ import { getGallerySneakers, getSneakersBySize } from 'api/api';
 
 import { Sneaker } from '../../../shared';
 
-const FilterBlock = styled(Col)<{ isSelected: boolean }>`
+const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;
   font-family: BebasNeue;
   text-align: center;
@@ -18,7 +18,7 @@ const FilterBlock = styled(Col)<{ isSelected: boolean }>`
   margin: 2%;
   padding: 1% 0;
   cursor: pointer;
-  color: ${(props) => (props.isSelected ? '#f96332' : '')};
+  color: ${(props) => (props.selected ? '#f96332' : '')};
   flex: 0 0 25%;
 `;
 
@@ -66,7 +66,7 @@ const Filters = (props: FiltersProps) => {
     return (
       <Row>
         {items.map((iVal, idx) => (
-          <FilterBlock onClick={() => onSelectFilter(iVal)} isSelected={isFilterSelected(String(iVal))} key={idx}>
+          <FilterBlock onClick={() => onSelectFilter(iVal)} selected={isFilterSelected(String(iVal))} key={idx}>
             {iVal}
           </FilterBlock>
         ))}
