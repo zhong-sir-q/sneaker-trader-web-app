@@ -7,6 +7,7 @@ import {
   SneakerName,
   Colorway,
   ContactSellerMailPayload,
+  SneakerAsk,
 } from '../../../shared';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;
@@ -62,6 +63,9 @@ export const getUserSizeGroupedPrice = (sneakerName: string): Promise<SizeMinPri
 
 export const getSneakersBySize = (size: string): Promise<Sneaker[]> =>
   fetch(LISTED_PRODUCT_API_URL + `?sizes=${size}`).then((res) => res.json());
+
+export const getAllAsksByNameColorway = (nameColorway: string): Promise<SneakerAsk[]> =>
+  fetch(LISTED_PRODUCT_API_URL + `allAsks?nameColorway=${nameColorway}`).then((res) => res.json());
 
 // s3
 export const uploadS3SignleImage = (formData: FormData) =>

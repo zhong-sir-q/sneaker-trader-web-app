@@ -19,6 +19,8 @@ export type Sneaker = {
   description?: string;
 };
 
+export type SneakerCondition = 'new' | 'used' | 'dead stock'
+
 export type ListedProduct = {
   // fk to Products table
   productId: number;
@@ -26,7 +28,10 @@ export type ListedProduct = {
   userId: number;
   askingPrice: number;
   quantity: number;
+  sizeSystem: string,
+  currencyCode: string,
   sold: 0 | 1;
+  prodCondition: SneakerCondition
 };
 
 export type Brand = {

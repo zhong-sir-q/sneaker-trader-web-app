@@ -20,7 +20,7 @@ const AuthLayout = () => {
   
   useEffect(() => {
     (async () => {
-      const user = await fetchCognitoUser()
+      const user = await fetchCognitoUser().catch(() => undefined)
       if (user) history.push(ADMIN + DASHBOARD)
     })()
   })

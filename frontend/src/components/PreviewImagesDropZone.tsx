@@ -133,7 +133,7 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
     <Card style={{ padding: '15px 15px 0px 15px' }}>
       <CardHeader>
         <p>
-          <GreenDot /> Click the image to select the main display image
+          <GreenDot /> Main Display Image
         </p>
         <p className='category' style={{ fontSize: '0.95em' }}>
           Upload 5 images max
@@ -143,7 +143,7 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
       <CardBody>
         <DropZoneContainer {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
           <input {...getInputProps()} name='files' />
-          <span>Drag 'n' drop some files here, or click to select files</span>
+          <span>Select Images</span>
         </DropZoneContainer>
 
         <PreviewAside>{thumbs}</PreviewAside>

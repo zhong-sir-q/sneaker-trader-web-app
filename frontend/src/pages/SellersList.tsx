@@ -43,7 +43,7 @@ const SellersList = () => {
   };
 
   const onComponentLoaded = async () => {
-    const user = await fetchCognitoUser();
+    const user = await fetchCognitoUser().catch(() => undefined);
     // handle unauthenticated user
     if (!user) history.push(AUTH + SIGNIN, history.location.pathname);
     else fetchSetSellers();

@@ -5,3 +5,9 @@ export type ContactSellerMailPayload = {
   buyerEmail: string;
   productName: string;
 };
+
+export type SneakerAsk = {
+  size: number;
+  askingPrice: number;
+  numsAvailable: number;
+};

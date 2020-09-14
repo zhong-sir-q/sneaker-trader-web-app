@@ -1,13 +1,8 @@
 import { RequestHandler } from 'express';
 
-import ProductService from './product';
+import { formatInsertColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
 
-import {
-  formatInsertColumnsQuery,
-  doubleQuotedValue,
-} from '../utils/formatDbQuery';
-
-import { ListedProduct, Sneaker, SizeMinPriceGroupType } from '../../../shared';
+import { ListedProduct, Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
 import { PromisifiedConnection } from '../config/mysql';
 import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
 
@@ -16,6 +11,17 @@ class ListedProductService {
 
   constructor(conn: PromisifiedConnection) {
     this.connection = conn;
+  }
+
+  getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]> {
+    // if the size is not defined, return all asks of the shoes with the name
+    const getAllAsksQuery = `
+    SELECT size, askingPrice, SUM(A.quantity) as numsAvailable FROM ListedProducts A, Products B 
+      WHERE A.sold = 0 AND A.productId = B.id AND CONCAT(B.name, ' ', B.colorWay) = ${doubleQuotedValue(nameColorway)}
+        GROUP BY askingPrice ORDER BY askingPrice;
+    `
+
+    return this.connection.query(getAllAsksQuery)
   }
 
   getBySize(size: string): Promise<Sneaker[]> {
@@ -59,7 +65,6 @@ class ListedProductService {
      */
 
     // get the size and the minium price of each listedProduct
-    // with distinct product id that are not sold
     const query = `
       SELECT A.size, MIN(B.askingPrice) as minPrice FROM ${PRODUCTS} A, ${LISTED_PRODUCTS} B
         WHERE A.id = B.productId AND B.sold = 0 AND CONCAT(A.name, ' ', A.colorway) = ${doubleQuotedValue(name)}
@@ -79,26 +84,12 @@ class ListedProductService {
 
   handleCreate: RequestHandler = async (req, res, next) => {
     const listedProduct: ListedProduct = req.body;
-    const { productId, askingPrice } = listedProduct;
 
     const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedProduct);
-
-    try {
-      const result = await this.connection.query(createListedProductQuery);
-
-      const ProductServiceInstance = new ProductService(this.connection);
-
-      // NOTE: what is point of having the price column in the Products table?
-      // My assumption below is that the value of the price column represents
-      // the minimum price of that specific product
-      const product = await ProductServiceInstance.getByCondition(`id = ${productId}`);
-
-      if (askingPrice < product.price) ProductServiceInstance.updatePrice(askingPrice, productId);
-
-      res.json(result);
-    } catch (err) {
-      next(err);
-    }
+    this.connection
+      .query(createListedProductQuery)
+      .then(() => res.json('Product is listed'))
+      .catch(next);
   };
 }
 

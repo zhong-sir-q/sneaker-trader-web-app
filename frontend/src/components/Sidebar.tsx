@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 
+import { FormControlLabel, Switch } from '@material-ui/core';
+
 // reactstrap components
 import { Nav, Collapse, Button } from 'reactstrap';
 
@@ -82,14 +84,12 @@ const Sidebar = (props: SideBarProps) => {
 
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCognitoUser().catch((err) => console.log(err));
-      // handle get cognito user error
-      if (!cognitoUser) return;
+      const cognitoUser = await fetchCognitoUser();
+
       const cognitoFullName = cognitoUser.name;
 
-      const dbUser: User | void = await fetchUserByEmail(cognitoUser.email).catch((err) => console.log(err));
-      // handle fetch db user error
-      if (!dbUser) return;
+      const dbUser: User = await fetchUserByEmail(cognitoUser.email);
+
       const { firstName, lastName } = dbUser;
       const dbFullName = firstName && lastName ? firstName + ' ' + lastName : undefined;
 
@@ -168,20 +168,14 @@ const Sidebar = (props: SideBarProps) => {
     <React.Fragment>
       <div className='sidebar' data-color={props.backgroundColor}>
         <div className='logo'>
-          <a href='#pablo' className='simple-text logo-mini'>
+          <Link to='/' className='simple-text logo-mini'>
             <div className='logo-img'>
               <img src={logo} alt='react-logo' />
             </div>
-          </a>
-          <Link to='/' className='simple-text logo-normal'>
-            Sneaker Trader
           </Link>
-          <div className='navbar-minimize'>
-            <Button outline className='btn-round btn-icon' color='neutral' id='minimizeSidebar' onClick={() => props.minimizeSidebar()}>
-              <i className='now-ui-icons text_align-center visible-on-sidebar-regular' />
-              <i className='now-ui-icons design_bullet-list-67 visible-on-sidebar-mini' />
-            </Button>
-          </div>
+          <Link to='/' className='simple-text logo-normal'>
+            Home
+          </Link>
         </div>
 
         <div className='sidebar-wrapper' ref={sidebar}>

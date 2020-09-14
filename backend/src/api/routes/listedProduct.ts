@@ -28,6 +28,15 @@ export default (app: Router) => {
     }
   });
 
+  listedProductRoute.get('/allAsks', (req, res, next) => {
+    const { nameColorway } = req.query;
+
+    const ListedProductServiceInstance = new ListedProductService(getMysqlDb());
+    ListedProductServiceInstance.getAllAsksByNameColorway(nameColorway as string)
+      .then((result) => res.json(result))
+      .catch(next);
+  });
+
   listedProductRoute.get('/gallery', new ListedProductService(getMysqlDb()).getGallerySneakers);
 
   listedProductRoute.post('/', new ListedProductService(getMysqlDb()).handleCreate);

@@ -21,7 +21,7 @@ const HomeNavbar = () => {
 
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCognitoUser();
+      const cognitoUser = await fetchCognitoUser().catch(() => undefined);
       // not signed in
       if (!cognitoUser) return;
 

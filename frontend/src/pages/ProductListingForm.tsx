@@ -17,12 +17,13 @@ import {
   createColorway,
 } from 'api/api';
 
-import { Sneaker, ListedProduct } from '../../../shared';
+import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
 
 import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
 import { fetchCognitoUser } from 'utils/auth';
 
-export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls'>;
+export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls' | 'id'> &
+  Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition'>;
 
 const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   name: '',
@@ -31,7 +32,26 @@ const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   colorway: '',
   price: '',
   description: '',
+  sizeSystem: '',
+  currencyCode: '',
+  prodCondition: '' as SneakerCondition,
 };
+
+const formatListedProduct = (
+  sneaker: ListingFormSneakerStateType,
+  userId: number,
+  productId: number,
+  quantity?: number
+): ListedProduct => ({
+  userId,
+  productId,
+  askingPrice: Number(sneaker.price),
+  sizeSystem: sneaker.sizeSystem,
+  currencyCode: sneaker.currencyCode,
+  prodCondition: sneaker.prodCondition,
+  quantity: quantity || 1,
+  sold: 0,
+});
 
 // A 4-step form, first to submit the basic info, second to preview with the
 // option to go back and change, third to confirm and upload the product. Lastly
@@ -41,6 +61,7 @@ const ProductListingForm = () => {
   const [sneaker, setSneaker] = useState(INIT_SNEAKER_STATE);
   // not part of the sneaker, so separate the state out
   const [billingInfo, setBillingInfo] = useState('');
+
   // images
   const [files, setFiles] = useState<PreviewFile[]>([]);
   // use this as the specific ID of the file
@@ -62,7 +83,7 @@ const ProductListingForm = () => {
 
   const onNextStep = () => setStep(step + 1);
 
-  const onSubmitForm = (sneakerStates: ListingFormSneakerStateType, billingInfoInput: string) => {
+  const onSubmitInfoForm = (sneakerStates: ListingFormSneakerStateType, billingInfoInput: string) => {
     onNextStep();
 
     setSneaker(sneakerStates);
@@ -90,46 +111,23 @@ const ProductListingForm = () => {
     return formData;
   };
 
-  const formatListedProduct = (
-    askingPrice: number,
-    userId: number,
-    productId: number,
-    quantity?: number
-  ): ListedProduct => ({
-    userId,
-    productId,
-    askingPrice,
-    // default quantity. Enable the user to select the
-    // quantity of shoes they want to sell in the future
-    quantity: quantity || 1,
-    sold: 0,
-  });
+  // NOTE: am I doing too much in the onFinishSubmit function???
 
   // steps:
   // upload all the images to S3 -> insert the product in the
   // Products and the ListedProducts table -> display successful message
   const onFinishSubmit = async () => {
-    const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles()).catch((err) => console.log(err));
-    // handle upload error
-    if (!uploadedUrls) return;
+    const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles());
 
     const formattedUrls = uploadedUrls.join(',');
     const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
 
-    const productId = await createProduct(createSneakerPayload).catch((err) => console.log(err));
+    const productId = await createProduct(createSneakerPayload);
 
-    // handle db create product error
-    if (!productId) return;
+    const cognitoUser = await fetchCognitoUser();
+    const user = await fetchUserByEmail(cognitoUser.email);
 
-    const cognitoUser = await fetchCognitoUser().catch((err) => console.log(err));
-    // handle error
-    if (!cognitoUser) return;
-
-    const user = await fetchUserByEmail(cognitoUser.email).catch((err) => console.log(err));
-    // handle error
-    if (!user) return;
-
-    const listedProductPayload = formatListedProduct(sneaker.price! as number, user.id!, productId);
+    const listedProductPayload = formatListedProduct(sneaker, user.id!, productId);
     await createListedProduct(listedProductPayload);
 
     // duplicate primary key insertions are handled by the backend
@@ -144,7 +142,7 @@ const ProductListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitForm} />;
+        return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitInfoForm} />;
       case 1:
         return (
           <PreviewImagesDropZone

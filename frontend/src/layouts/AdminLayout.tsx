@@ -1,5 +1,5 @@
-import React, { useRef, ReactNode, useEffect } from 'react';
-import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import React, { useRef, ReactNode, useEffect, useState } from 'react';
+import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom';
 
 // core components
 // NOTE: an unpopular react component, consider switching it out
@@ -42,9 +42,15 @@ const getActiveRoute = (routes: SneakerTraderRoute[]): string => {
 let ps: PerfectScrollbar;
 
 const AdminLayout = () => {
+  // toggle this state to rerender the component upon route change
+  const [, setReRender] = useState(false);
+
   const mainPanel = useRef<HTMLDivElement>(null);
   const notificationAlert = useRef<any>(null);
   const history = useHistory();
+  const location = useLocation();
+
+  useEffect(() => setReRender((val) => !val), [location]);
 
   useEffect(() => {
     if (navigator.platform.indexOf('Win') > -1) {
@@ -64,7 +70,7 @@ const AdminLayout = () => {
 
   useEffect(() => {
     (async () => {
-      const user = await fetchCognitoUser();
+      const user = await fetchCognitoUser().catch(() => undefined);
       if (!user) history.push(AUTH + SIGNIN);
     })();
   });

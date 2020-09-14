@@ -2,39 +2,30 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import styled from 'styled-components';
-import { Container, Button, Row, Col } from 'reactstrap';
+import { DialogTitle, DialogContent, DialogActions, Dialog } from '@material-ui/core';
+import { Container, Button, Row, Col, Table } from 'reactstrap';
 
 import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
 
-import { Sneaker, SizeMinPriceGroupType } from '../../../shared';
-import { getUserSizeGroupedPrice } from 'api/api';
+import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
+import { getUserSizeGroupedPrice, getAllAsksByNameColorway } from 'api/api';
 
 const CenterContainer = styled(Container)`
   text-align: center;
 `;
 
-const GridTile = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 16px;
-  width: 22%;
-  height: 70px;
-  margin: 4px;
-`;
-
-const InnerTile = styled.div`
+const SizeTile = styled.div`
   background: #fff;
   border: 1px solid #e5e7ea;
-  text-align: center;
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   width: 90px;
   height: 70px;
+  margin: 4px;
 `;
 
 const ShoeSize = styled.div`
@@ -58,7 +49,7 @@ const StyledSneakerCard = styled(SneakerCard)`
   }
 `;
 
-const colorAndNameFromPath = () => {
+const nameColorwayFromPath = () => {
   const { pathname } = window.location;
 
   const pathArray = pathname.split('/');
@@ -69,56 +60,73 @@ const colorAndNameFromPath = () => {
 
 // use the path name to query the sneaker
 const BuySneakerPage = () => {
-  const [selectedIdx, setSelectedIdx] = useState<number>();
-  const [defaultSneaker, setDefaultSneaker] = useState<Sneaker>();
+  const [selectedSize, setSelectedSize] = useState<number | 'all'>('all');
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
   const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
 
-  const history = useHistory()
+  const [allAsks, setAllAsks] = useState<SneakerAsk[]>();
+  const [filterAllAsks, setFilterAllAsks] = useState<SneakerAsk[]>();
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const history = useHistory();
 
   const onComponentMounted = useCallback(async () => {
-    const shoeName = colorAndNameFromPath();
+    const shoeName = nameColorwayFromPath();
     const items = await getUserSizeGroupedPrice(shoeName);
+    const asks = await getAllAsksByNameColorway(shoeName);
+
     // the state is passed through from SneakerCard
-    const sneaker = history.location.state as Sneaker
+    const sneaker = history.location.state as Sneaker;
 
     if (!sneaker) {
-      history.push('/')
-      return
+      history.push('/');
+      return;
     }
 
-    // no size is selected initially
-    sneaker.size = ''
+    setAllAsks(asks);
+    setFilterAllAsks(asks);
 
-    setDefaultSneaker(sneaker);
     setDisplaySneaker(sneaker);
     setSizeMinPriceGroup(items);
-  }, [history])
+  }, [history]);
 
   useEffect(() => {
     onComponentMounted();
   }, [onComponentMounted]);
 
-  const onClick = (idx: number, price: number, size: number) => {
-    if (selectedIdx === idx) {
-      setSelectedIdx(undefined);
-      setDisplaySneaker(defaultSneaker);
-    } else {
-      setSelectedIdx(idx);
-      setDisplaySneaker({ ...displaySneaker!, price, size });
-    }
+  const onClickSize = (price: number, size: number | 'all') => {
+    setSelectedSize(size);
+    setDisplaySneaker({ ...displaySneaker!, price, size: Number(size) });
   };
 
   const SizesGrid = () => {
-    const renderTiles = () =>
-      sizeMinPriceGroup!.map(({ size, minPrice }, idx) => (
-        <GridTile onClick={() => onClick(idx, minPrice, size)} key={idx}>
-          <InnerTile style={{ border: selectedIdx === idx ? '2px solid green' : '' }}>
+    const renderTiles = () => {
+      const minPrice = Math.min(...sizeMinPriceGroup!.map((item) => item.minPrice));
+      const allSize = [
+        <SizeTile
+          onClick={() => onClickSize(minPrice, 'all')}
+          key={-1}
+          style={{ border: selectedSize === 'all' ? '2px solid green' : '' }}
+        >
+          <ShoeSize>US All</ShoeSize>
+          <ShoePrice>${minPrice}</ShoePrice>
+        </SizeTile>,
+      ];
+
+      return allSize.concat(
+        sizeMinPriceGroup!.map(({ size, minPrice }, idx) => (
+          <SizeTile
+            onClick={() => onClickSize(minPrice, size)}
+            key={idx}
+            style={{ border: selectedSize === size ? '2px solid green' : '' }}
+          >
             <ShoeSize>US {size}</ShoeSize>
             <ShoePrice>${minPrice}</ShoePrice>
-          </InnerTile>
-        </GridTile>
-      ));
+          </SizeTile>
+        ))
+      );
+    };
 
     return (
       <Container>
@@ -127,30 +135,75 @@ const BuySneakerPage = () => {
     );
   };
 
-  if (displaySneaker && sizeMinPriceGroup)
+  const onViewAllAsks = () => {
+    setOpenModal(true);
+
+    if (selectedSize === 'all') setFilterAllAsks(allAsks);
+    else setFilterAllAsks(allAsks?.filter((ask) => ask.size === selectedSize));
+  };
+
+  const onBuy = () => {
+    if (selectedSize === 'all') {
+      alert('Please select a size')
+      return
+    }
+
+    history.push(history.location.pathname + '/' + displaySneaker!.size)
+  }
+
+  if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
     return (
-      <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
-        <Col md='6'>
-          <SizesGrid />
-        </Col>
-        <Col md='6'>
-          <CenterContainer>
-            <StyledSneakerCard sneaker={displaySneaker} />
-            {/* TODO: implement the logic for checkout */}
-            <Button
-              disabled={selectedIdx === undefined}
-              style={{ display: 'block', margin: 'auto' }}
-              color='primary'
-              onClick={() => history.push(history.location.pathname + '/' + displaySneaker.size)}
-            >
-              Buy
-            </Button>
-          </CenterContainer>
-        </Col>
-      </Row>
+      <Container fluid='md'>
+        <h1>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h1>
+        <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
+          <Col md='6'>
+            <SizesGrid />
+          </Col>
+          <Col md='6'>
+            <CenterContainer>
+              <img alt={displaySneaker.name} src={displaySneaker.imageUrls!.split(',')[0]} />
+              <Button onClick={() => onViewAllAsks()}>View All Asks</Button>
+              <Button
+                style={{ display: 'block', margin: 'auto' }}
+                color='primary'
+                onClick={() => onBuy()}
+              >
+                Buy
+              </Button>
+              <Dialog fullWidth maxWidth='md' onClose={() => setOpenModal(false)} open={openModal}>
+                <DialogTitle>All Asks</DialogTitle>
+                <DialogContent dividers>
+                  <Table striped>
+                    <thead>
+                      <tr>
+                        <th>Size</th>
+                        <th>Ask Price</th>
+                        <th># Available</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filterAllAsks.map((ask, idx) => (
+                        <tr key={idx}>
+                          <td>{ask.size}</td>
+                          <td>{ask.askingPrice}</td>
+                          <td>{ask.numsAvailable}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus onClick={() => setOpenModal(false)}>
+                    Close
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </CenterContainer>
+          </Col>
+        </Row>
+      </Container>
     );
-  else
-    return <CenterSpinner />
+  else return <CenterSpinner />;
 };
 
 export default BuySneakerPage;

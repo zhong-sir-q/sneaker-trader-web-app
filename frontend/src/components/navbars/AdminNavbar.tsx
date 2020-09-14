@@ -73,7 +73,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
               <span className='navbar-toggler-bar bar3' />
             </button>
           </div>
-          <NavbarBrand href='/'>{props.brandText}</NavbarBrand>
+          <NavbarBrand>{props.brandText}</NavbarBrand>
         </div>
         <NavbarToggler onClick={toggle}>
           <span className='navbar-toggler-bar navbar-kebab' />
