@@ -8,8 +8,8 @@ import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from '
 import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
 import { User } from '../../../shared';
-import { fetchUserByEmail, updateUser } from 'api/api';
-import { fetchCognitoUser } from 'utils/auth';
+import { updateUser } from 'api/api';
+import { getCurrentUser } from 'utils/auth';
 
 const INIT_USER: User = {
   userName: '',
@@ -28,7 +28,6 @@ const nameIfUndefined = (message: string, ...names: (string | undefined)[]) => {
   return name;
 };
 
-
 const UserProfile = () => {
   const [user, setUser] = useState(INIT_USER);
   const [successEdit, setSuccessEdit] = useState(false);
@@ -37,10 +36,8 @@ const UserProfile = () => {
 
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCognitoUser();
-      const dbUser = await fetchUserByEmail(cognitoUser.email);
-
-      setUser(dbUser);
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
     })();
   }, []);
 
@@ -65,7 +62,7 @@ const UserProfile = () => {
           Changes have been saved
         </Alert>
         <Row>
-          <Formik initialValues={user} enableReinitialize={true} onSubmit={handleSubmit}>
+          <Formik initialValues={user} enableReinitialize onSubmit={handleSubmit}>
             <Col md='8'>
               <Card>
                 <CardHeader>

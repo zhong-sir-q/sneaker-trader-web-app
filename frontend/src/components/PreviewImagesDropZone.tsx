@@ -151,7 +151,7 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
 
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>
-        <Button color='primary' onClick={onPreview}>
+        <Button disabled={files.length === 0} color='primary' onClick={onPreview}>
           Preview
         </Button>
       </CardFooter>

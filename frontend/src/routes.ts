@@ -61,23 +61,21 @@ export type SneakerTraderRoute =
       views?: undefined;
     };
 
-// NOTE: duplicate routes below, an intuitive solution
-// to render the routes in the sidebar
+// NOTE: sidebarRoutes and homeRoutes contain duplicate
+// routes, currenty this is a dirty solution
 
 // And I have to put the route object in the routes variable first otherwise
 // it will force redirect back to the dashbord as implemented in AdminLayout
-export const siderbarRoutes = [
+export const sidebarRoutes = [
   {
     path: DASHBOARD,
     name: 'Dashboard',
     icon: 'now-ui-icons design_app',
-    component: Dashboard,
     layout: ADMIN,
   },
   {
     path: PRODUCT_LISTING,
     name: 'Product Listing',
-    component: ProductListingForm,
     icon: 'now-ui-icons objects_diamond',
     layout: ADMIN,
   },

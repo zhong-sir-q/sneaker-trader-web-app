@@ -10,27 +10,28 @@ import SneakerInfoForm from 'components/SneakerInfoForm';
 import {
   createProduct,
   uploadS3MultipleImages,
-  fetchUserByEmail,
   createListedProduct,
   createBrand,
   createSneakerName,
   createColorway,
+  getProductByNamecolorwaySize,
 } from 'api/api';
 
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
 
 import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
-import { fetchCognitoUser } from 'utils/auth';
+import { getCurrentUser } from 'utils/auth';
 
-export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls' | 'id'> &
-  Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition'>;
+
+export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls' | 'price'> &
+  Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'askingPrice'>;
 
 const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   name: '',
   brand: '',
   size: '',
   colorway: '',
-  price: '',
+  askingPrice: '',
   description: '',
   sizeSystem: '',
   currencyCode: '',
@@ -45,13 +46,19 @@ const formatListedProduct = (
 ): ListedProduct => ({
   userId,
   productId,
-  askingPrice: Number(sneaker.price),
+  askingPrice: Number(sneaker.askingPrice),
   sizeSystem: sneaker.sizeSystem,
   currencyCode: sneaker.currencyCode,
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
   sold: 0,
 });
+
+const formatProductSneaker = (s: ListingFormSneakerStateType): Omit<Sneaker, 'imageUrls' | 'price'> => {
+  const { name, colorway, brand, size, description } = s;
+
+  return { name, colorway, brand, size, description };
+};
 
 // A 4-step form, first to submit the basic info, second to preview with the
 // option to go back and change, third to confirm and upload the product. Lastly
@@ -106,6 +113,12 @@ const ProductListingForm = () => {
   const formDataFromFiles = () => {
     const formData = new FormData();
 
+    // image need to be the first element to be the main display image
+    const mainFileIdx = files.findIndex(f => f.id === mainFileId)
+    const tmp = files[0]
+    files[0] = files[mainFileIdx]
+    files[mainFileIdx] = tmp
+
     for (const f of files) formData.append('files', f);
 
     return formData;
@@ -120,14 +133,19 @@ const ProductListingForm = () => {
     const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles());
 
     const formattedUrls = uploadedUrls.join(',');
-    const createSneakerPayload = { ...sneaker, imageUrls: formattedUrls };
+    // need no use the asking price to create the product, because it should be a RRP
+    const createSneakerPayload = { ...formatProductSneaker(sneaker), imageUrls: formattedUrls };
 
-    const productId = await createProduct(createSneakerPayload);
+    let prodId: number;
 
-    const cognitoUser = await fetchCognitoUser();
-    const user = await fetchUserByEmail(cognitoUser.email);
+    const product = await getProductByNamecolorwaySize(`${sneaker.name} ${sneaker.colorway}`, sneaker.size as number);
 
-    const listedProductPayload = formatListedProduct(sneaker, user.id!, productId);
+    if (product) prodId = product.id!;
+    else prodId = await createProduct(createSneakerPayload);
+
+    const currentUser = await getCurrentUser()
+
+    const listedProductPayload = formatListedProduct(sneaker, currentUser.id!, prodId);
     await createListedProduct(listedProductPayload);
 
     // duplicate primary key insertions are handled by the backend
@@ -150,7 +168,7 @@ const ProductListingForm = () => {
           />
         );
       case 2:
-        const previewSneaker = { ...sneaker, imageUrls: getMainDisplayFile().preview };
+        const previewSneaker = { ...sneaker, imageUrls: getMainDisplayFile().preview, price: sneaker.askingPrice };
         return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep, onSubmit: onFinishSubmit }} />;
       case 3:
         return <SubmissionSuccess />;

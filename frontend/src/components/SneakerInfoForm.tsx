@@ -31,7 +31,7 @@ const sneakerInfoValidation = Yup.object({
   sizeSystem: required(),
   prodCondition: required(),
   // TODO: should be a price limit, confirm with Aaron
-  price: requiredPositiveNumber('Price'),
+  askingPrice: requiredPositiveNumber('Price'),
   // NOTE: should be between size 1 to 15 or something
   size: requiredPositiveNumber('Size'),
 });
@@ -113,7 +113,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 </Col>
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput name='price' placeholder='$$ ~ $$$$$' type='number' label='Asking Price' />
+                    <FormikLabelInput name='askingPrice' placeholder='$$ ~ $$$$$' type='number' label='Asking Price' />
                   </FormGroup>
                 </Col>
                 <Col md='4'>
@@ -132,7 +132,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                   <FormGroup>
                     <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
                       <option value=''>None</option>
-                      {shoeSizeOptions.map(sOpt => <option value={sOpt}>{sOpt}</option>)}
+                      {shoeSizeOptions.map((sOpt, idx) => <option value={sOpt} key={idx}>{sOpt}</option>)}
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>
@@ -141,8 +141,8 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                   <FormGroup>
                     <FormikLabelSelect name='currencyCode' label='Price Currency Code' id='sneaker-price-currency'>
                       <option value=''>None</option>
-                      {currencyCodeOptions.map((cOpt) => (
-                        <option value={cOpt}>{cOpt}</option>
+                      {currencyCodeOptions.map((cOpt, idx) => (
+                        <option key={idx} value={cOpt}>{cOpt}</option>
                       ))}
                     </FormikLabelSelect>
                   </FormGroup>

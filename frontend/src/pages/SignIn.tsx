@@ -18,8 +18,7 @@ import { SIGNUP, AUTH, FORGOT_PW } from 'routes';
 
 import stLogo from 'assets/img/logo_transparent_background.png';
 import bgImage from 'assets/img/bg14.jpg';
-import { fetchUserByEmail } from 'api/api';
-import { signIn } from 'utils/auth';
+import { signIn, getCurrentUser } from 'utils/auth';
 
 type SignInFormStateType = {
   email: string;
@@ -52,13 +51,12 @@ const SignIn = () => {
     // so call a API route such as /api/federatedUser
     Hub.listen('auth', async ({ payload: { event, data } }) => {
       if (event === 'signIn') {
-        // NOTE: edge case, this email may be the same acroos
-        // social media and the one user uses to signin
-        // this case HAS NOT BEEN handled
-        const user = await fetchUserByEmail(data.email).catch((err) => console.log(err));
-        // handle the error
-        if (!user) {
-        }
+        // NOTE: edge case, email may be the same acroos
+        // social media and the one user uses to signin.
+        // This case HAS NOT BEEN handled
+
+        // create the user in the db if not exists
+        await getCurrentUser(data)
 
         redirectAfterLoginSuccess();
       }

@@ -4,58 +4,66 @@ import { useHistory } from 'react-router-dom';
 
 import CenterSpinner from 'components/CenterSpinner';
 
-import { fetchCognitoUser } from 'utils/auth';
-import { getSellersBySneakerNameSize, fetchUserByEmail, contactSellerAfterPurchase } from 'api/api';
+import {
+  getSellersBySneakerNameSize,
+  mailAfterPurchase,
+  decreaseWalletBalance,
+  createTransaction,
+  purchaseListedProduct,
+  getProductByNamecolorwaySize,
+} from 'api/api';
 
-import { ContactSellerMailPayload } from '../../../shared';
+import { ContactSellerMailPayload, User } from '../../../shared';
 import { SIGNIN, AUTH } from 'routes';
+import { getCurrentUser } from 'utils/auth';
 
 type Seller = {
+  id: number;
   userName: string;
   email: string;
   askingPrice: number;
 };
 
+const transactionFees = (price: number) => price * 0.1;
+
 const SellersList = () => {
   const [sellers, setSellers] = useState<Seller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>();
+  const [currentCustomer, setCurrentCustomer] = useState<User>();
 
   const history = useHistory();
 
-  const sneakerInfo = () => history.location.pathname.split('/');
+  const sneakerInfo = history.location.pathname.split('/');
+  const sneakerNameColorway = sneakerInfo[1].split('-').join(' ');
+  const sneakerSize = Number(sneakerInfo[sneakerInfo.length - 1]);
 
   const formatProductName = () => {
-    const [, hyphenedName, size] = sneakerInfo();
-    return `Size ${size} ${hyphenedName.split('-').join(' ')}`;
+    return `Size ${sneakerSize} ${sneakerNameColorway}`;
   };
 
   const fetchSetSellers = async () => {
-    const [, hyphenedName, size] = sneakerInfo();
-    const sneakerName = hyphenedName.split('-').join(' ');
-
-    const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerName, Number(size)).catch((err) =>
-      console.log(err)
-    );
-
-    if (!sellersBySneakerNameSize) return;
+    const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerNameColorway, sneakerSize);
 
     setSellers(sellersBySneakerNameSize);
   };
 
   const onComponentLoaded = async () => {
-    const user = await fetchCognitoUser().catch(() => undefined);
-    // handle unauthenticated user
-    if (!user) history.push(AUTH + SIGNIN, history.location.pathname);
-    else fetchSetSellers();
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) history.push(AUTH + SIGNIN, history.location.pathname);
+    else {
+      fetchSetSellers();
+      setCurrentCustomer(currentUser);
+    }
   };
 
   useEffect(() => {
+    // settimeout to wait to fetch the current customer first
     onComponentLoaded();
   });
 
   const formatMailPayload = async (sellerIdx: number): Promise<ContactSellerMailPayload> => {
-    const { email } = await fetchCognitoUser();
-    const { userName } = await fetchUserByEmail(email);
+    const { userName, email } = currentCustomer!;
 
     const mailPayload: ContactSellerMailPayload = {
       sellerUserName: sellers![sellerIdx].userName,
@@ -74,16 +82,39 @@ const SellersList = () => {
       return;
     }
 
-    const mailPayload = await formatMailPayload(selectedSellerIdx);
+    // deduct the balance from the seller
+    const sellerId = sellers![selectedSellerIdx].id;
+    const { askingPrice } = sellers![selectedSellerIdx];
+    const processingFee = transactionFees(askingPrice);
 
-    contactSellerAfterPurchase(mailPayload)
-      .then(() => {
+    // TODO: ask seniors what is the best ways to handle errors here
+    // need to rollback the transactions if there are any incorrect ops
+
+    try {
+      const product = await getProductByNamecolorwaySize(sneakerNameColorway, sneakerSize);
+      // update the listed product status to sold
+      await purchaseListedProduct({ productId: product!.id!, sellerId });
+
+      await createTransaction({
+        buyerId: currentCustomer!.id!,
+        sellerId,
+        amount: askingPrice,
+        processingFee,
+        productId: product!.id!,
+      });
+
+      // make sure the amount passed in is the transaction fees!!!
+      await decreaseWalletBalance({ userId: sellerId, amount: processingFee });
+
+      // increment the ranking points of both users
+
+      const mailPayload = await formatMailPayload(selectedSellerIdx);
+
+      mailAfterPurchase(mailPayload).then(() => {
         alert('The seller will be in touch with you shortly');
         history.push('/');
-      })
-      .catch((err) => {
-        // do something after error
       });
+    } catch (err) {}
   };
 
   return !sellers ? (
@@ -91,7 +122,7 @@ const SellersList = () => {
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
       <ListGroup>
-        {sellers.map(({ userName, email, askingPrice }, idx) => (
+        {sellers.map(({ userName, askingPrice }, idx) => (
           // TODO: when screen size is smaller than 650px,
           // make the item layout to be column rather than row
           <ListGroupItem
@@ -102,22 +133,41 @@ const SellersList = () => {
             style={{
               borderColor: idx === selectedSellerIdx ? 'green' : undefined,
               outline: 'none',
-              borderTopWidth: '1.2px',
+              borderTopWidth: '1px',
             }}
           >
-            <pre style={{ margin: 0 }}>
-              User Name: {userName} Email: {email} Asking Price: ${askingPrice}
-            </pre>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span>User Name: {userName}</span>
+              <span>Asking Price: ${askingPrice}</span>
+            </div>
           </ListGroupItem>
         ))}
       </ListGroup>
-      <footer className='text-center'>
-        <Button color='primary' onClick={() => onConfirm()}>
-          Confirm
-        </Button>
-        <p className='category' style={{ margin: 0, fontSize: '0.95em' }}>
-          We will contact the seller on your behalf to get in touch
-        </p>
+      <footer>
+        {selectedSellerIdx !== undefined && selectedSellerIdx < sellers.length ? (
+          <ListGroup style={{ marginTop: '15px' }}>
+            <ListGroupItem>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Transaction fees:</span>
+                <span>${transactionFees(sellers[selectedSellerIdx].askingPrice)}</span>
+              </div>
+            </ListGroupItem>
+            <ListGroupItem>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Total:</span>
+                <span>${sellers[selectedSellerIdx].askingPrice}</span>
+              </div>
+            </ListGroupItem>
+          </ListGroup>
+        ) : null}
+        <div className='text-center'>
+          <Button color='primary' onClick={() => onConfirm()}>
+            Confirm
+          </Button>
+          <p className='category' style={{ margin: 0, fontSize: '0.95em' }}>
+            We will contact the seller on your behalf to get in touch
+          </p>
+        </div>
       </footer>
     </Container>
   );

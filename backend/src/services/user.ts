@@ -8,6 +8,7 @@ import { User } from '../../../shared';
 import { RequestHandler } from 'express';
 import { PromisifiedConnection } from '../config/mysql';
 import { USERS } from '../config/tables';
+import WalletService from './wallet';
 
 class UserService {
   private connection: PromisifiedConnection;
@@ -19,62 +20,46 @@ class UserService {
   handleCreate: RequestHandler = async (req, res, next) => {
     const user = req.body;
 
-    try {
-      const createUserResult = await this.create(user);
-      res.json(createUserResult);
-    } catch (err) {
-      next(err);
-    }
+    this.create(user).then(userId => res.json(userId)).catch(next)
   };
 
   handleGetByEmail: RequestHandler = async (req, res, next) => {
     const { email } = req.params;
 
-    try {
-      const user = await this.getByEmail(email);
-      res.json(user);
-    } catch (err) {
-      next(err);
-    }
+    this.getByEmail(email)
+      .then((user) => res.json(user))
+      .catch(next);
   };
 
   handleUpdate: RequestHandler = async (req, res, next) => {
     const user = req.body;
     const condition = 'email = ' + doubleQuotedValue(user.email);
-
     const updateUserQuery = formatUpdateColumnsQuery(USERS, user, condition);
 
-    try {
-      const updateResult = await this.connection.query(updateUserQuery);
-      res.json(updateResult);
-    } catch (err) {
-      next(err);
-    }
+    this.connection
+      .query(updateUserQuery)
+      .then((updateResult) => res.json(updateResult))
+      .catch(next);
   };
 
   async create(user: Partial<User>) {
     const createUserQuery = formatInsertColumnsQuery(USERS, user);
+    const userId = await this.connection.query(createUserQuery).then((result) => result.insertId);
+    await new WalletService(this.connection).create(userId);
 
-    return this.connection.query(createUserQuery);
+    return userId
   }
 
   async getByEmail(email: string): Promise<Partial<User>> {
     const getUserByEmailQuery = formateGetColumnsQuery(USERS, 'email = ' + doubleQuotedValue(email));
+    const queryResult = await this.connection.query(getUserByEmailQuery);
 
-    try {
-      const queryResult = await this.connection.query(getUserByEmailQuery);
-      if (queryResult.length === 0) {
-        // create the user
-        try {
-          const createUserResult = await this.create({ email });
-          return createUserResult;
-        } catch (err) {
-          throw err;
-        }
-      } else return queryResult[0];
-    } catch (err) {
-      throw err;
+    if (queryResult.length === 0) {
+      const createUserResult = await this.create({ email });
+      return createUserResult;
     }
+
+    return queryResult[0];
   }
 }
 

@@ -7,12 +7,33 @@ import { Formik, Form as FormikForm, Field, ErrorMessage, FormikState } from 'fo
 import * as Yup from 'yup';
 
 // reactstrap components
-import { Card, CardHeader, CardTitle, CardBody, CardFooter, Container, Row, Col, FormGroup, Label, Button, CardText } from 'reactstrap';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  CardFooter,
+  Container,
+  Row,
+  Col,
+  FormGroup,
+  Label,
+  Button,
+  CardText,
+} from 'reactstrap';
 
 import FormikInput from 'components/formik/FormikInput';
 import FormikDatetime from 'components/formik/FormikDatetime';
 
-import { maxCharacters, required, validEmail, minCharacters, matchingPassword, validDate, customRequired } from 'utils/yup';
+import {
+  maxCharacters,
+  required,
+  validEmail,
+  minCharacters,
+  matchingPassword,
+  validDate,
+  customRequired,
+} from 'utils/yup';
 import { createUser } from 'api/api';
 
 import { SIGNIN, AUTH } from 'routes';
@@ -29,7 +50,9 @@ const SideContent = () => (
       </div>
       <div className='description'>
         <h5 className='info-title'>Marketing</h5>
-        <p className='description'>We've created the marketing campaign of the website. It was a very interesting collaboration.</p>
+        <p className='description'>
+          We've created the marketing campaign of the website. It was a very interesting collaboration.
+        </p>
       </div>
     </div>
     <div className='info-area info-horizontal'>
@@ -102,7 +125,9 @@ const SignUpSuccess = () => (
                 <CardTitle tag='h5'>Thank you for signing up with SneakerTrader</CardTitle>
               </CardHeader>
               <CardBody>
-                <CardText>We have sent a account confirmation email, please use that to finish the sign up, xD</CardText>
+                <CardText>
+                  We have sent a account confirmation email, please use that to finish the sign up, xD
+                </CardText>
               </CardBody>
               <CardFooter>
                 <Button color='primary'>
@@ -140,13 +165,8 @@ const SignupForm = () => {
     // successful sign up, show the user the success message
     setSignUpSuccess(true);
 
-    const dbUser = await createUser(convertFormValuesToUser(formStates)).catch((err) =>
-      console.log('Error creating the user in the database', err)
-    );
-
-    // TODO: discuss with Aaron how we want to handle this error
-    // handle create user error in the database
-    if (!dbUser) console.log('Do something with the db create user error');
+    // create the user in the database and also th wallet
+    await createUser(convertFormValuesToUser(formStates));
   };
 
   return signUpSuccess ? (
@@ -180,11 +200,26 @@ const SignupForm = () => {
                         {signUpError && <CardText style={{ color: 'red' }}>{signUpError}</CardText>}
                       </CardHeader>
                       <CardBody>
-                        <FormikInput name='firstName' placeholder='First Name...' type='text' iconname='users_circle-08' />
-                        <FormikInput name='lastName' placeholder='Last Name...' type='text' iconname='text_caps-small' />
+                        <FormikInput
+                          name='firstName'
+                          placeholder='First Name...'
+                          type='text'
+                          iconname='users_circle-08'
+                        />
+                        <FormikInput
+                          name='lastName'
+                          placeholder='Last Name...'
+                          type='text'
+                          iconname='text_caps-small'
+                        />
 
                         {/* FIXME: the text margin is off; not enough right padding on the arrow; how do I gray the color the place holder */}
-                        <FormikInput style={{ paddingLeft: '12px' }} name='gender' type='select' iconname='users_single-02'>
+                        <FormikInput
+                          style={{ paddingLeft: '12px' }}
+                          name='gender'
+                          type='select'
+                          iconname='users_single-02'
+                        >
                           <option disabled value=''>
                             Select a gender
                           </option>
@@ -193,9 +228,19 @@ const SignupForm = () => {
                           <option value='confidential'>Prefer not to say</option>
                         </FormikInput>
 
-                        <FormikInput name='userName' placeholder='User Name...' type='text' iconname='emoticons_satisfied' />
+                        <FormikInput
+                          name='userName'
+                          placeholder='User Name...'
+                          type='text'
+                          iconname='emoticons_satisfied'
+                        />
                         <FormikInput name='email' placeholder='Email...' type='email' iconname='ui-1_email-85' />
-                        <FormikInput name='password' placeholder='Password...' type='password' iconname='ui-1_lock-circle-open' />
+                        <FormikInput
+                          name='password'
+                          placeholder='Password...'
+                          type='password'
+                          iconname='ui-1_lock-circle-open'
+                        />
                         <FormikInput
                           name='confirmPassword'
                           placeholder='Confirm Password...'
@@ -204,7 +249,12 @@ const SignupForm = () => {
                         />
 
                         {/* FIXME: resetForm in onSubmit does not reset the datevalue */}
-                        <Field name='dob' timeFormat={false} placeholder='Date Of Birth...' component={FormikDatetime} />
+                        <Field
+                          name='dob'
+                          timeFormat={false}
+                          placeholder='Date Of Birth...'
+                          component={FormikDatetime}
+                        />
 
                         {/* TODO: check if the terms and condition is checked */}
                         <FormGroup check>

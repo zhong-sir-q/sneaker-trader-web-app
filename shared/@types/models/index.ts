@@ -8,42 +8,47 @@ export type User = {
   id?: number;
 };
 
+// NOTE: type Sneaker and ListedProduct have some 
+// duplicate fields, how can I refactor that?
 export type Sneaker = {
   name: string;
   brand: string;
   colorway: string;
   size: number | '';
-  price: number | '';
   imageUrls: string;
+  sold?: 0 | 1
+  price?: number | '';
+  RRP?: number;
   id?: number;
+  quantity?: number
   description?: string;
 };
 
-export type SneakerCondition = 'new' | 'used' | 'dead stock'
+export type SneakerCondition = 'new' | 'used' | 'dead stock';
 
 export type ListedProduct = {
   // fk to Products table
   productId: number;
   // fk to Users table
   userId: number;
-  askingPrice: number;
+  askingPrice: number | '';
   quantity: number;
-  sizeSystem: string,
-  currencyCode: string,
+  sizeSystem: string;
+  currencyCode: string;
   sold: 0 | 1;
-  prodCondition: SneakerCondition
+  prodCondition: SneakerCondition;
 };
 
 export type Brand = {
-  brand: string
-}
+  brand: string;
+};
 
 export type Colorway = {
-  colorway: string
-}
+  colorway: string;
+};
 
 export type SneakerName = {
-  name: string
-}
+  name: string;
+};
 
-export type SizeMinPriceGroupType = { size: number, minPrice: number }[]
+export type SizeMinPriceGroupType = { size: number; minPrice: number }[];

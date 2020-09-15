@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { formatInsertColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
 
 import { ListedProduct, Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
 import { PromisifiedConnection } from '../config/mysql';
@@ -19,9 +19,9 @@ class ListedProductService {
     SELECT size, askingPrice, SUM(A.quantity) as numsAvailable FROM ListedProducts A, Products B 
       WHERE A.sold = 0 AND A.productId = B.id AND CONCAT(B.name, ' ', B.colorWay) = ${doubleQuotedValue(nameColorway)}
         GROUP BY askingPrice ORDER BY askingPrice;
-    `
+    `;
 
-    return this.connection.query(getAllAsksQuery)
+    return this.connection.query(getAllAsksQuery);
   }
 
   getBySize(size: string): Promise<Sneaker[]> {
@@ -89,6 +89,17 @@ class ListedProductService {
     this.connection
       .query(createListedProductQuery)
       .then(() => res.json('Product is listed'))
+      .catch(next);
+  };
+
+  handlePurchase: RequestHandler = (req, res, next) => {
+    const { productId, sellerId } = req.body;
+    const condition = `userId = ${sellerId} AND productId = ${productId}`;
+    const query = formatUpdateColumnsQuery(LISTED_PRODUCTS, { sold: 1 }, condition);
+
+    this.connection
+      .query(query)
+      .then((result) => res.json(result))
       .catch(next);
   };
 }

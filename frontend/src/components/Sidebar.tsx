@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 
-import { FormControlLabel, Switch } from '@material-ui/core';
-
 // reactstrap components
-import { Nav, Collapse, Button } from 'reactstrap';
+import { Nav, Collapse } from 'reactstrap';
 
 // core components
 import avatar from 'assets/img/ryan.jpg';
@@ -13,9 +11,7 @@ import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
 import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE } from 'routes';
-import { fetchCognitoUser } from 'utils/auth';
-import { fetchUserByEmail } from 'api/api';
-import { User } from '../../../shared';
+import { getCurrentUser } from 'utils/auth';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -75,6 +71,7 @@ const Sidebar = (props: SideBarProps) => {
   const [userName, setUserName] = useState<string>();
   // toggle this state to rerender the component upon route change
   const [, setReRender] = useState(false);
+
   const location = useLocation();
 
   // TODO: type this
@@ -84,18 +81,13 @@ const Sidebar = (props: SideBarProps) => {
 
   useEffect(() => {
     (async () => {
-      const cognitoUser = await fetchCognitoUser();
+      const currentUser = await getCurrentUser();
+      const { firstName, lastName } = currentUser;
+      const fullname = firstName && lastName ? `${firstName} ${lastName}` : undefined;
 
-      const cognitoFullName = cognitoUser.name;
-
-      const dbUser: User = await fetchUserByEmail(cognitoUser.email);
-
-      const { firstName, lastName } = dbUser;
-      const dbFullName = firstName && lastName ? firstName + ' ' + lastName : undefined;
-
-      setUserName(dbFullName || cognitoFullName);
+      setUserName(fullname || 'Anoynomous');
     })();
-  });
+  }, []);
 
   // this function creates the links and collapses that appear in the sidebar (left menu)
   const createLinks = (routes: SneakerTraderRoute[]) => {

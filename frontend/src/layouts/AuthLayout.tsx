@@ -6,7 +6,7 @@ import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 
 import routes, { SneakerTraderRoute, AUTH, SIGNIN, DASHBOARD, ADMIN } from 'routes';
 import AuthNavbar from 'components/navbars/AuthNavbar';
-import { fetchCognitoUser } from 'utils/auth';
+import { getCurrentUser } from 'utils/auth';
 
 const getRoutes = (_routes: SneakerTraderRoute[]) => {
   return _routes.map((route, idx) => {
@@ -20,8 +20,8 @@ const AuthLayout = () => {
   
   useEffect(() => {
     (async () => {
-      const user = await fetchCognitoUser().catch(() => undefined)
-      if (user) history.push(ADMIN + DASHBOARD)
+      const currentUser = await getCurrentUser()
+      if (currentUser) history.push(ADMIN + DASHBOARD)
     })()
   })
 

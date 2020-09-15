@@ -9,4 +9,6 @@ const fakeUser = {
   email: faker.internet.email(),
 };
 
+console.log(fakeUser)
+
 export default fakeUser;

@@ -1,15 +1,14 @@
 import { Router } from 'express';
-import { getMysqlDb } from '../../config/mysql';
 import UserService from '../../services/user';
 
 const userRoute = Router();
 
-export default (app: Router) => {
-  app.use('/user', userRoute)
+export default (app: Router, UserServiceInstance: UserService) => {
+  app.use('/user', userRoute);
 
-  userRoute.put('/', new UserService(getMysqlDb()).handleUpdate)
+  userRoute.put('/', UserServiceInstance.handleUpdate);
 
-  userRoute.get('/:email', new UserService(getMysqlDb()).handleGetByEmail)
+  userRoute.get('/:email', UserServiceInstance.handleGetByEmail);
 
-  userRoute.post('/', new UserService(getMysqlDb()).handleCreate)
+  userRoute.post('/', UserServiceInstance.handleCreate);
 };

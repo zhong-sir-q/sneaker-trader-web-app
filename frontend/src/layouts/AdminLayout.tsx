@@ -9,9 +9,9 @@ import PerfectScrollbar from 'perfect-scrollbar';
 import AdminNavbar from 'components/navbars/AdminNavbar';
 import Footer from 'components/Footer';
 
-import { fetchCognitoUser } from 'utils/auth';
-import routes, { SneakerTraderRoute, AUTH, SIGNIN, siderbarRoutes } from 'routes';
+import routes, { SneakerTraderRoute, AUTH, SIGNIN, sidebarRoutes } from 'routes';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
+import { getCurrentUser } from 'utils/auth';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map(({ collapse, views, layout, path, component }, idx) => {
@@ -26,7 +26,7 @@ const getActiveRoute = (routes: SneakerTraderRoute[]): string => {
   const activeRoute = 'Sneaker Trader';
 
   for (const { name, views, collapse, layout, path } of routes) {
-    if (collapse && views) {
+  if (collapse && views) {
       const collapseActiveRoute = getActiveRoute(views);
       if (collapseActiveRoute !== activeRoute) {
         return collapseActiveRoute;
@@ -70,9 +70,9 @@ const AdminLayout = () => {
 
   useEffect(() => {
     (async () => {
-      const user = await fetchCognitoUser().catch(() => undefined);
-      if (!user) history.push(AUTH + SIGNIN);
-    })();
+      const currentUser = await getCurrentUser()
+      if (!currentUser) history.push(AUTH + SIGNIN)
+    })()
   });
 
   const minimizeSideBar = () => {
@@ -95,7 +95,7 @@ const AdminLayout = () => {
   return (
     <div className='wrapper'>
       <NotificationAlert ref={notificationAlert} />
-      <Sidebar {...defaultSideBarProps} minimizeSidebar={minimizeSideBar} routes={siderbarRoutes} />
+      <Sidebar {...defaultSideBarProps} minimizeSidebar={minimizeSideBar} routes={sidebarRoutes} />
       {/* NOTE: a temporary solution to make the panel scrollable, would
           not need it when the dashboard is properly implemented */}
       <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>

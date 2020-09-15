@@ -37,7 +37,7 @@ const App = () => {
           <AdminLayout />
         </Route>
 
-        <Route  path='/'>
+        <Route path='/'>
           <HomeLayout />
         </Route>
       </Switch>

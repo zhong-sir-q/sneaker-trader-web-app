@@ -5,14 +5,16 @@ import styled from 'styled-components';
 import { DialogTitle, DialogContent, DialogActions, Dialog } from '@material-ui/core';
 import { Container, Button, Row, Col, Table } from 'reactstrap';
 
-import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
 
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
 import { getUserSizeGroupedPrice, getAllAsksByNameColorway } from 'api/api';
 
 const CenterContainer = styled(Container)`
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const SizeTile = styled.div`
@@ -35,18 +37,6 @@ const ShoeSize = styled.div`
 
 const ShoePrice = styled.div`
   color: #08a05c;
-`;
-
-const StyledSneakerCard = styled(SneakerCard)`
-  max-width: 400px;
-
-  @media (max-width: 549px) {
-    width: 152px;
-  }
-
-  @media (max-width: 767px) {
-    width: 224px;
-  }
 `;
 
 const nameColorwayFromPath = () => {
@@ -144,12 +134,12 @@ const BuySneakerPage = () => {
 
   const onBuy = () => {
     if (selectedSize === 'all') {
-      alert('Please select a size')
-      return
+      alert('Please select a size');
+      return;
     }
 
-    history.push(history.location.pathname + '/' + displaySneaker!.size)
-  }
+    history.push(history.location.pathname + '/' + displaySneaker!.size);
+  };
 
   if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
     return (
@@ -163,11 +153,7 @@ const BuySneakerPage = () => {
             <CenterContainer>
               <img alt={displaySneaker.name} src={displaySneaker.imageUrls!.split(',')[0]} />
               <Button onClick={() => onViewAllAsks()}>View All Asks</Button>
-              <Button
-                style={{ display: 'block', margin: 'auto' }}
-                color='primary'
-                onClick={() => onBuy()}
-              >
+              <Button style={{ display: 'block', margin: 'auto' }} color='primary' onClick={() => onBuy()}>
                 Buy
               </Button>
               <Dialog fullWidth maxWidth='md' onClose={() => setOpenModal(false)} open={openModal}>

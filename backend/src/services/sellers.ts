@@ -13,7 +13,7 @@ class SellersService {
     // first get all unsold sneakers by name and size
     // then get the sellers information
     const sellersQuery = `
-      SELECT userName, email, L.askingPrice FROM ${USERS} U, ${LISTED_PRODUCTS} L, ${PRODUCTS} P 
+      SELECT U.id, userName, email, L.askingPrice FROM ${USERS} U, ${LISTED_PRODUCTS} L, ${PRODUCTS} P 
         WHERE U.id = L.userId AND P.id = L.productId AND L.sold = 0 AND
           CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(sneakerName)} AND size = ${size}
     `
