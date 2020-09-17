@@ -9,13 +9,17 @@ class SellersService {
     this.connection = conn;
   }
 
-  getSellersBySneakerNameSize = async (sneakerName: string, size: number) => {
-    // first get all unsold sneakers by name and size
-    // then get the sellers information
+  getSellersBySneakerNameSize = async (nameColorway: string, size: number) => {
+    // get sellers sneakers then order it by their rating in descending order
     const sellersQuery = `
-      SELECT U.id, userName, email, L.askingPrice FROM ${USERS} U, ${LISTED_PRODUCTS} L, ${PRODUCTS} P 
-        WHERE U.id = L.userId AND P.id = L.productId AND L.sold = 0 AND
-          CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(sneakerName)} AND size = ${size}
+      SELECT id, username, email, askingPrice, listedProductId, rating FROM
+        (SELECT U.id, username, email, L.askingPrice, L.id as listedProductId
+           FROM Users U, ListedProducts L, Products P
+             WHERE U.id = L.userId AND P.id = L.productId AND L.prodStatus = "listed" AND
+              CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}) q1
+         LEFT JOIN
+           ( SELECT sellerId, AVG(sellerRatingFromBuyer) as rating FROM Transactions GROUP BY sellerId ) q2
+             ON (q1.id = q2.sellerId) ORDER BY rating DESC
     `
 
     return this.connection.query(sellersQuery);

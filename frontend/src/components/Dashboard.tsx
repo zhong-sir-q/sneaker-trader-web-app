@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
 
 // reactstrap components
-import { Card, CardHeader, CardBody, CardTitle, Table, Row, Col, Button } from 'reactstrap';
+import { Card, CardHeader, CardBody, CardTitle, Table, Row, Col, Button, Input } from 'reactstrap';
 
-import { DialogTitle, Dialog, DialogContent, TextField, DialogActions } from '@material-ui/core';
+import { DialogTitle, Dialog, DialogContent, TextField, DialogActions, Switch } from '@material-ui/core';
+
+import styled from 'styled-components';
 
 import PanelHeader from './PanelHeader';
-import { getWalletBalanceByUserId, topupWalletBalance } from 'api/api';
+import {
+  getWalletBalanceByUserId,
+  topupWalletBalance,
+  getListedProductsBySellerId,
+  getBoughtProductsByBuyerId,
+  rateBuyer,
+  rateSeller,
+  updateProdStatus,
+} from 'api/api';
 import { getCurrentUser } from 'utils/auth';
-import { Sneaker } from '../../../shared';
+import { Sneaker, Customer, SneakerStatus } from '../../../shared';
 
 type StatisticsDisplayProps = {
   iconColor: string;
@@ -99,7 +109,7 @@ const WalletBalance = () => {
         <StatisticsDisplay
           iconColor='icon-success'
           iconName='business_money-coins'
-          primaryText={'$' + (balance ? balance : 0)}
+          primaryText={'$' + balance}
           secondaryText='Wallet Balance'
         />
       </div>
@@ -108,105 +118,104 @@ const WalletBalance = () => {
   );
 };
 
-const mockListedProducts = [
-  {
-    id: 9,
-    name: 'kd 9 elite',
-    brand: 'Nike',
-    size: 8,
-    colorway: 'Black',
-    RRP: 345,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/d543bf97f60483f82824ba6691478e9f',
-  },
-  {
-    id: 11,
-    name: 'AJ 1 Retro',
-    brand: 'Air Jordan',
-    size: 1,
-    colorway: 'Red and White',
-    RRP: 400,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/72361fa2804ee8416d7d3a771cd0e3f3',
-  },
-  {
-    id: 13,
-    name: 'Kobe 14',
-    brand: 'Nike',
-    size: 12,
-    colorway: 'Black',
-    RRP: 600,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083',
-  },
-  {
-    id: 14,
-    name: 'Kobe 14',
-    brand: 'Nike',
-    size: 10,
-    colorway: 'Black',
-    RRP: 400,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083',
-  },
-];
+const CustomButton = styled(Button)`
+  font-size: 11px;
+  padding: 5px 10px;
+`;
 
-const mockBoughtProducts = [
-  {
-    id: 15,
-    name: 'Jordan 1',
-    brand: 'Nike',
-    size: 9,
-    colorway: 'Bred',
-    RRP: 800,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.ap-southeast-2.amazonaws.com/sneakers/79ee5ea2a9d6e1591c95a985a1b0c55f',
-  },
-  {
-    id: 16,
-    name: 'Air Max 270',
-    brand: 'Nike',
-    size: 10,
-    colorway: 'White',
-    RRP: 270,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.ap-southeast-2.amazonaws.com/sneakers/30bf7e22ef82729b002188ae0a7bd493',
-  },
-  {
-    id: 8,
-    name: 'Stephen Curry 4',
-    brand: 'Under Armor',
-    size: 12,
-    colorway: 'White and black',
-    RRP: 225,
-    description: '',
-    serialNumber: null,
-    imageUrls:
-      'https://sneaker-trader-client-images-uploads.s3.ap-southeast-2.amazonaws.com/sneakers/c40940c03e7f3be51b6dbe1a7557f338',
-  },
-];
+const ContactButton = styled(CustomButton)`
+  background-color: #1e90ff;
+`;
 
+const CompleteSaleButton = styled(CustomButton)`
+  background-color: #008000;
+`;
+
+const RatingButton = styled(CustomButton)`
+  cursor: pointer;
+`;
+
+type LeaveReviewProps = {
+  title: string;
+  listedProductId: number;
+  rateUser: (listedProductId: number, rating: number) => Promise<void>;
+};
+
+const LeaveReview = (props: LeaveReviewProps) => {
+  const [open, setOpen] = React.useState(false);
+
+  const [rating, setRating] = useState<number>(1);
+
+  const onSelectRating = (evt: any) => setRating(evt.target.value);
+
+  const { title, listedProductId, rateUser } = props;
+
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const onConfirm = async () => {
+    await rateUser(listedProductId, Number(rating));
+    handleClose();
+  };
+
+  return (
+    <div>
+      <RatingButton color='primary' onClick={handleClickOpen}>
+        {title}
+      </RatingButton>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+          <Input onChange={onSelectRating} type='select'>
+            {Array(10)
+              .fill(0)
+              .map((_, idx) => (
+                <option value={idx + 1} key={idx}>
+                  {idx + 1}
+                </option>
+              ))}
+          </Input>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={onConfirm} color='primary'>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
+
+// TODO: this should be a separate component on its own
 const TransactionHistory = () => {
-  const [items, setItems] = useState(mockListedProducts);
+  const [items, setItems] = useState<Sneaker[]>();
+  // the state type is defined in the api already
+  const [listedProducts, setListedProducts] = useState<Sneaker[]>();
+  const [boughtProducts, setBoughtProducts] = useState<Sneaker[]>();
+
+  const [showSaleSuccess, setShowCompleteSaleSuccess] = useState(false);
   const [showListed, setShowListed] = useState(true);
 
+  useEffect(() => {
+    (async () => {
+      const currentUser = await getCurrentUser();
+      const currUserId = currentUser.id!;
+
+      const fetchedListedProducts = await getListedProductsBySellerId(currUserId);
+      const fetchedBoughtProducts = await getBoughtProductsByBuyerId(currUserId);
+
+      setListedProducts(fetchedListedProducts);
+      setBoughtProducts(fetchedBoughtProducts);
+      setItems(fetchedListedProducts);
+    })();
+  }, [showSaleSuccess]);
+
   const toggle = () => {
-    setShowListed(!showListed)
-    if (showListed) setItems(mockBoughtProducts)
-    else setItems(mockListedProducts)
-  }
+    setShowListed(!showListed);
+    if (showListed) setItems(boughtProducts);
+    else setItems(listedProducts);
+  };
 
   const TransactionHeader = () => (
     <thead>
@@ -215,18 +224,103 @@ const TransactionHistory = () => {
         <th>PRODUCT</th>
         <th>COLOR</th>
         <th>Size</th>
-        {showListed ? <th>Status</th> : null}
-        <th className='text-right'>PRICE</th>
-        <th className='text-right'>QTY</th>
-        <th className='text-right'>AMOUNT</th>
+        <th>Status</th>
+        <th>PRICE</th>
+        <th>QTY</th>
+        <th>AMOUNT</th>
       </tr>
     </thead>
   );
 
-  const TransactionRow = (props: { sneaker: Sneaker }) => {
-    const { name, colorway, imageUrls, size, price, quantity, RRP } = props.sneaker;
+  type ContactCustomerButtonProps = {
+    customer: Customer;
+    title: string;
+  };
+
+  const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
+    const [showContact, setShowContact] = useState(false);
+
+    const { customer, title } = props;
+
+    const handleShow = () => setShowContact(true);
+    const handleClose = () => setShowContact(false);
+
+    return (
+      <React.Fragment>
+        <ContactButton onClick={handleShow}>{title}</ContactButton>
+        <Dialog open={showContact} onClose={handleClose}>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogContent>
+            <p>Email: {customer.email}</p>
+            <p>Username: {customer.username}</p>
+          </DialogContent>
+          <DialogActions>
+            <Button color='primary' onClick={handleClose}>
+              Okay
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+    );
+  };
+
+  const TransactionRow = (props: {
+    sneaker: Sneaker;
+    handleCompleteSale: (listedProdId: number) => void;
+  }) => {
+    const { id, name, colorway, imageUrls, size, price, quantity, prodStatus, buyer, seller } = props.sneaker;
+
+    const SellerCTAButtonsGroup = () => {
+      switch (prodStatus) {
+        case 'pending':
+          return (
+            <div className='flex margin-right-except-last'>
+              <ContactCustomerButton customer={buyer!} title='Contact Buyer' />
+              <CompleteSaleButton onClick={() => props.handleCompleteSale(id!)}>
+                Complete Sale
+              </CompleteSaleButton>
+            </div>
+          );
+        case 'sold':
+          return (
+            <div className='flex margin-right-except-last'>
+              <ContactCustomerButton customer={buyer!} title='Contact Buyer' />
+              <LeaveReview title='Rate Buyer' listedProductId={id!} rateUser={rateBuyer} />
+            </div>
+          );
+        default:
+          return null;
+      }
+    };
+
+    const BuyerCTAButtonsGroup = () => {
+      switch (prodStatus) {
+        case 'pending':
+          return (
+            <div className='flex margin-right-except-last'>
+              <ContactCustomerButton customer={seller!} title='Contact Seller' />
+            </div>
+          );
+        case 'sold':
+          return (
+            <div className='flex margin-right-except-last'>
+              <ContactCustomerButton customer={seller!} title='Contact Seller' />
+              <LeaveReview title='Rate Buyer' listedProductId={id!} rateUser={rateSeller} />
+            </div>
+          );
+        default:
+          return null;
+      }
+    };
 
     const displayImg = imageUrls.split(',')[0];
+
+    const upperCaseFirstLetter = (s: string | undefined) => {
+      if (!s) return s;
+
+      const firstLetter = s[0];
+      return firstLetter.toUpperCase() + s.slice(1);
+    };
 
     return (
       <tr>
@@ -235,23 +329,25 @@ const TransactionHistory = () => {
             <img src={displayImg} alt={name + colorway} />
           </div>
         </td>
-        <td className='td-name'>
+        <td>
           <span>{name}</span>
           <br />
           <small>by Balmain</small>
         </td>
         <td>{colorway}</td>
         <td>{size}</td>
-        {/* NOTE: hard-coded value */}
-        {showListed ? <td>Unsold</td> : null}
-        <td className='td-number'>
+        <td>{upperCaseFirstLetter(prodStatus)}</td>
+        <td>
           <small>$</small>
-          {RRP || price}
+          {price}
         </td>
-        <td className='td-number'>{quantity || 1}</td>
-        <td className='td-number'>
+        <td>{quantity || 1}</td>
+        <td>
           <small>$</small>
-          {quantity || 1 * (RRP || Number(price))}
+          {(quantity || 1) * Number(price)}
+        </td>
+        <td style={{ minWidth: showListed ? '300px' : '200px' }}>
+          {showListed ? <SellerCTAButtonsGroup /> : <BuyerCTAButtonsGroup />}
         </td>
       </tr>
     );
@@ -259,40 +355,55 @@ const TransactionHistory = () => {
 
   const computeTotalAmount = (sneakers: Sneaker[]) => {
     let total = 0;
-    for (const s of sneakers) total += s.quantity || 1 * (s.RRP || Number(s.price));
+
+    for (const s of sneakers) total += (s.quantity || 1) * Number(s.price);
 
     return total;
   };
 
-  const TransactionTable = () => (
-    <Table responsive className='table-shopping'>
-      <TransactionHeader />
-      <tbody>
-        {items.map((sneaker) => (
-          <TransactionRow sneaker={sneaker} />
-        ))}
-        <tr>
-          <td colSpan={showListed ? 6 : 5} />
-          <td className='td-total'>Total</td>
-          <td className='td-price'>
-            <small>$</small>
-            {computeTotalAmount(items)}
-          </td>
-        </tr>
-      </tbody>
-    </Table>
-  );
+  const handleCompleteSale = async (listedProdId: number) => {
+    await updateProdStatus(listedProdId, 'sold');
+    setShowCompleteSaleSuccess(true);
+  };
 
   return (
-    <Card>
-      <CardHeader style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <CardTitle tag='h4'>{showListed ? 'Listed Products' : 'Bought Products'}</CardTitle>
-        <Button color='primary' onClick={toggle}>{showListed ? 'Show Bought' : 'Show Listed'}</Button>
-      </CardHeader>
-      <CardBody>
-        <TransactionTable />
-      </CardBody>
-    </Card>
+    <React.Fragment>
+      <Card>
+        <CardHeader style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <CardTitle tag='h4'>{showListed ? 'Listed Products' : 'Bought Products'}</CardTitle>
+          <div>
+            Listed
+            <Switch checked={!showListed} onChange={toggle} color='default' />
+            Bought
+          </div>
+        </CardHeader>
+        <CardBody>
+          {items && items.length > 0 ? (
+            <Table responsive className='table-shopping'>
+              <TransactionHeader />
+              <tbody>
+                {items.map((sneaker, idx) => (
+                  <TransactionRow key={idx} sneaker={sneaker} handleCompleteSale={handleCompleteSale} />
+                ))}
+                <tr>
+                  <td colSpan={7} />
+                  <td className='td-total'>Total</td>
+                  <td className='td-price'>
+                    <small>$</small>
+                    {computeTotalAmount(items)}
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          ) : (
+            <div>Nothing so far :(</div>
+          )}
+        </CardBody>
+      </Card>
+      <Dialog open={showSaleSuccess} onClose={() => setShowCompleteSaleSuccess(false)}>
+        <DialogTitle>Congratulations! You have closed the deal!</DialogTitle>
+      </Dialog>
+    </React.Fragment>
   );
 };
 

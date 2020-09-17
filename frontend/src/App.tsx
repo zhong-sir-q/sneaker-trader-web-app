@@ -14,6 +14,7 @@ import { AUTH, ADMIN } from 'routes';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'assets/scss/now-ui-dashboard.scss';
 import 'assets/css/demo.css';
+import 'assets/css/sneakertrader.css'
 
 // @ts-ignore
 import awsconfig from 'aws-exports';

@@ -1,14 +1,17 @@
 export type User = {
   firstName: string;
   lastName: string;
-  userName: string;
+  username: string;
   gender: string;
   dob: string;
   email: string;
   id?: number;
 };
 
-// NOTE: type Sneaker and ListedProduct have some 
+// customer can either be a seller or buyer
+export type Customer = Pick<User, 'email' | 'username'>;
+
+// NOTE: type Sneaker and ListedProduct have some
 // duplicate fields, how can I refactor that?
 export type Sneaker = {
   name: string;
@@ -16,15 +19,21 @@ export type Sneaker = {
   colorway: string;
   size: number | '';
   imageUrls: string;
-  sold?: 0 | 1
-  price?: number | '';
-  RRP?: number;
   id?: number;
-  quantity?: number
+  RRP?: number;
+  price?: number | '';
+  buyer?: Customer;
+  seller?: Customer;
+  stringifiedBuyer?: string
+  stringifiedSeller?: string
+  quantity?: number;
   description?: string;
+  prodStatus?: SneakerStatus;
+  transactionId?: number;
 };
 
 export type SneakerCondition = 'new' | 'used' | 'dead stock';
+export type SneakerStatus = 'listed' | 'pending' | 'sold';
 
 export type ListedProduct = {
   // fk to Products table
@@ -35,8 +44,17 @@ export type ListedProduct = {
   quantity: number;
   sizeSystem: string;
   currencyCode: string;
-  sold: 0 | 1;
+  prodStatus: SneakerStatus;
   prodCondition: SneakerCondition;
+};
+
+export type Transaction = {
+  listedProductId: number;
+  buyerId: number;
+  sellerId: number;
+  amount: number;
+  processingFee: number;
+  quantity?: number;
 };
 
 export type Brand = {

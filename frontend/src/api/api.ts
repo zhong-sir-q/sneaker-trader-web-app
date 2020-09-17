@@ -8,7 +8,11 @@ import {
   Colorway,
   ContactSellerMailPayload,
   SneakerAsk,
+  Transaction,
+  SneakerStatus,
 } from '../../../shared';
+
+import { Seller } from 'pages/SellersList';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;
 
@@ -24,8 +28,9 @@ const LISTED_PRODUCT_API_URL = API_BASE_URL + 'listed_product/';
 // wallet
 const WALLET_API_URL = API_BASE_URL + 'wallet/';
 
-// transactions
+// transaction related
 const TRANSACTION_API_URL = API_BASE_URL + 'transaction/';
+const TRANSACTIONS_API_URL = API_BASE_URL + 'transactions/';
 
 // external api
 const AWS_API_URL = API_BASE_URL + 'aws/';
@@ -44,10 +49,7 @@ const formatRequestOptions = (data: any, contentType?: string, method?: 'POST' |
 export const fetchUserByEmail = (email: string): Promise<User> => fetch(USER_API_URL + email).then((res) => res.json());
 
 // sellers
-export const getSellersBySneakerNameSize = (
-  sneakerName: string,
-  size: number
-): Promise<(Pick<User, 'userName' | 'email'> & { askingPrice: number; id: number })[]> =>
+export const getSellersBySneakerNameSize = (sneakerName: string, size: number): Promise<Seller[]> =>
   fetch(SELLERS_API_URL + `?sneakerName=${sneakerName}&size=${size}`).then((res) => res.json());
 
 // Create the user in the database
@@ -61,7 +63,7 @@ export const updateUser = (user: User) =>
 export const createProduct = (product: Omit<Sneaker, 'price'>): Promise<number> =>
   fetch(PRODUCT_API_URL, formatRequestOptions(product)).then((res) => res.json());
 
-export const getProductByNamecolorwaySize = (nameColorway: string, size: number): Promise<Sneaker | undefined> =>
+export const getProductByNameColorwaySize = (nameColorway: string, size: number): Promise<Sneaker | undefined> =>
   fetch(PRODUCT_API_URL + `${nameColorway}/${size}`).then((res) => res.json());
 
 // listed product
@@ -82,8 +84,11 @@ export const getSneakersBySize = (size: string): Promise<Sneaker[]> =>
 export const getAllAsksByNameColorway = (nameColorway: string): Promise<SneakerAsk[]> =>
   fetch(LISTED_PRODUCT_API_URL + `allAsks?nameColorway=${nameColorway}`).then((res) => res.json());
 
-export const purchaseListedProduct = (paylod: { productId: number; sellerId: number }) =>
-  fetch(LISTED_PRODUCT_API_URL + 'purchase', formatRequestOptions(paylod, undefined, 'PUT'));
+export const purchaseListedProduct = (listedProduct: { id: number; sellerId: number }) =>
+  fetch(LISTED_PRODUCT_API_URL + 'purchase', formatRequestOptions(listedProduct, undefined, 'PUT'));
+
+export const updateProdStatus = (listedProductId: number, prodStatus: SneakerStatus) =>
+  fetch(LISTED_PRODUCT_API_URL + `status/${listedProductId}`, formatRequestOptions({ prodStatus }, undefined, 'PUT'));
 
 // s3
 export const uploadS3SignleImage = (formData: FormData) =>
@@ -130,15 +135,37 @@ export const topupWalletBalance = (data: { userId: number; amount: number }) =>
 export const decreaseWalletBalance = (data: { userId: number; amount: number }) =>
   fetch(WALLET_API_URL + 'decreaseBalance', formatRequestOptions(data, undefined, 'PUT'));
 
-type Transaction = {
-  productId: number;
-  buyerId: number;
-  sellerId: number;
-  amount: number;
-  processingFee: number;
-  quantity?: number;
-};
-
-// transactions
-export const createTransaction = (payload: Transaction) =>
+// transaction related
+export const createProductTransaction = (payload: Transaction) =>
   fetch(TRANSACTION_API_URL, formatRequestOptions(payload, undefined, 'POST'));
+
+export const getListedProductsBySellerId = (sellerId: number): Promise<Sneaker[]> =>
+  fetch(TRANSACTIONS_API_URL + `listed/${sellerId}`)
+    .then((res) => res.json())
+    .then((listedProducts: Sneaker[]) => {
+      for (const p of listedProducts) p.buyer = JSON.parse(p.stringifiedBuyer!);
+
+      return listedProducts;
+    });
+
+export const getBoughtProductsByBuyerId = (buyerId: number): Promise<Sneaker[]> =>
+  fetch(TRANSACTIONS_API_URL + `bought/${buyerId}`)
+    .then((res) => res.json())
+    .then((boughtProducts: Sneaker[]) => {
+      for (const p of boughtProducts) p.seller = JSON.parse(p.stringifiedSeller!);
+
+      return boughtProducts;
+    });
+
+// user rating
+export const rateBuyer = (listedProductId: number, rating: number) =>
+  fetch(
+    TRANSACTION_API_URL + `/rating/buyer/${listedProductId}`,
+    formatRequestOptions({ rating }, undefined, 'PUT')
+  ).then(() => {});
+
+export const rateSeller = (listedProductId: number, rating: number) =>
+  fetch(
+    TRANSACTION_API_URL + `/rating/seller/${listedProductId}`,
+    formatRequestOptions({ rating }, undefined, 'PUT')
+  ).then(() => {});

@@ -23,7 +23,7 @@ describe('User routes', () => {
   test('Update user username and dob', async (done) => {
     const res = await request(app).put('/api/user').send({
       email: '0alexzhong0@gmail.com',
-      userName: 'Vince Carter',
+      username: 'Vince Carter',
       dob: '11/12/1980',
     });
 
@@ -31,7 +31,7 @@ describe('User routes', () => {
 
     // validate the update
     const user = await request(app).get('/api/user/0alexzhong0@gmail.com').then(r => r.body).catch(err => err)
-    expect(user.userName).toBe('Vince Carter')
+    expect(user.username).toBe('Vince Carter')
     expect(user.email).toBe('0alexzhong0@gmail.com')
     expect(user.dob).toBe('11/12/1980')
 

@@ -3,7 +3,7 @@
     "callerContext": {
     "clientId": "dummyId"
     },
-    "userName": "testUser",
+    "username": "testUser",
     "triggerSource": "CustomMessage_SignUp",
     "request": {
     "codeParameter": "0000"

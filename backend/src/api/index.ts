@@ -27,6 +27,9 @@ import WalletService from '../services/wallet';
 import transaction from './routes/transaction';
 import TransactionService from '../services/transaction';
 
+import TransactionsService from '../services/transactions';
+import transactions from './routes/transactions';
+
 export default () => {
   const app = Router();
   const sqlConnection = getMysqlDb();
@@ -42,6 +45,7 @@ export default () => {
 
   wallet(app, new WalletService(sqlConnection))
   transaction(app, new TransactionService(sqlConnection))
+  transactions(app, new TransactionsService(sqlConnection))
 
   // external apis
   mail(app, new MailService());

@@ -14,7 +14,7 @@ import {
   createBrand,
   createSneakerName,
   createColorway,
-  getProductByNamecolorwaySize,
+  getProductByNameColorwaySize,
 } from 'api/api';
 
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
@@ -51,7 +51,7 @@ const formatListedProduct = (
   currencyCode: sneaker.currencyCode,
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
-  sold: 0,
+  prodStatus: 'listed'
 });
 
 const formatProductSneaker = (s: ListingFormSneakerStateType): Omit<Sneaker, 'imageUrls' | 'price'> => {
@@ -138,7 +138,7 @@ const ProductListingForm = () => {
 
     let prodId: number;
 
-    const product = await getProductByNamecolorwaySize(`${sneaker.name} ${sneaker.colorway}`, sneaker.size as number);
+    const product = await getProductByNameColorwaySize(`${sneaker.name} ${sneaker.colorway}`, sneaker.size as number);
 
     if (product) prodId = product.id!;
     else prodId = await createProduct(createSneakerPayload);

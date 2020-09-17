@@ -8,20 +8,21 @@ import {
   getSellersBySneakerNameSize,
   mailAfterPurchase,
   decreaseWalletBalance,
-  createTransaction,
+  createProductTransaction,
   purchaseListedProduct,
-  getProductByNamecolorwaySize,
 } from 'api/api';
 
 import { ContactSellerMailPayload, User } from '../../../shared';
 import { SIGNIN, AUTH } from 'routes';
 import { getCurrentUser } from 'utils/auth';
 
-type Seller = {
+export type Seller = {
   id: number;
-  userName: string;
+  rating: number;
   email: string;
+  username: string;
   askingPrice: number;
+  listedProductId: number;
 };
 
 const transactionFees = (price: number) => price * 0.1;
@@ -58,17 +59,16 @@ const SellersList = () => {
   };
 
   useEffect(() => {
-    // settimeout to wait to fetch the current customer first
-    onComponentLoaded();
+    if (!currentCustomer) onComponentLoaded();
   });
 
   const formatMailPayload = async (sellerIdx: number): Promise<ContactSellerMailPayload> => {
-    const { userName, email } = currentCustomer!;
+    const { username, email } = currentCustomer!;
 
     const mailPayload: ContactSellerMailPayload = {
-      sellerUserName: sellers![sellerIdx].userName,
+      sellerUserName: sellers![sellerIdx].username,
       sellerEmail: sellers![sellerIdx].email,
-      buyerUserName: userName,
+      buyerUserName: username,
       buyerEmail: email,
       productName: formatProductName(),
     };
@@ -84,36 +84,35 @@ const SellersList = () => {
 
     // deduct the balance from the seller
     const sellerId = sellers![selectedSellerIdx].id;
-    const { askingPrice } = sellers![selectedSellerIdx];
+    const { askingPrice, listedProductId } = sellers![selectedSellerIdx];
     const processingFee = transactionFees(askingPrice);
 
     // TODO: ask seniors what is the best ways to handle errors here
     // need to rollback the transactions if there are any incorrect ops
 
     try {
-      const product = await getProductByNamecolorwaySize(sneakerNameColorway, sneakerSize);
-      // update the listed product status to sold
-      await purchaseListedProduct({ productId: product!.id!, sellerId });
-
-      await createTransaction({
-        buyerId: currentCustomer!.id!,
-        sellerId,
-        amount: askingPrice,
-        processingFee,
-        productId: product!.id!,
-      });
-
-      // make sure the amount passed in is the transaction fees!!!
-      await decreaseWalletBalance({ userId: sellerId, amount: processingFee });
-
-      // increment the ranking points of both users
-
       const mailPayload = await formatMailPayload(selectedSellerIdx);
 
       mailAfterPurchase(mailPayload).then(() => {
         alert('The seller will be in touch with you shortly');
         history.push('/');
       });
+
+      // update the listed product status to sold
+      await purchaseListedProduct({ id: listedProductId, sellerId });
+
+      await createProductTransaction({
+        buyerId: currentCustomer!.id!,
+        sellerId,
+        amount: askingPrice,
+        processingFee,
+        listedProductId,
+      });
+
+      // make sure the amount passed in is the transaction fees!!!
+      await decreaseWalletBalance({ userId: sellerId, amount: processingFee });
+
+      // increment the ranking points of both users
     } catch (err) {}
   };
 
@@ -122,7 +121,7 @@ const SellersList = () => {
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
       <ListGroup>
-        {sellers.map(({ userName, askingPrice }, idx) => (
+        {sellers.map(({ username, askingPrice, rating }, idx) => (
           // TODO: when screen size is smaller than 650px,
           // make the item layout to be column rather than row
           <ListGroupItem
@@ -137,8 +136,9 @@ const SellersList = () => {
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span>User Name: {userName}</span>
+              <span>User Name: {username}</span>
               <span>Asking Price: ${askingPrice}</span>
+              <span>Rating: {!rating || rating <= 0 ? 0 : rating}</span>
             </div>
           </ListGroupItem>
         ))}

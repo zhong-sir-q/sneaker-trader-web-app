@@ -29,12 +29,12 @@ function confirm() {
   const encoded = urlParams.get('data');
   const code = urlParams.get('code');
   const decoded = JSON.parse(atob(encoded));
-  const { userName, redirectUrl, clientId, region } = decoded;
+  const { username, redirectUrl, clientId, region } = decoded;
 
   var params = {
     ClientId: clientId,
     ConfirmationCode: code,
-    Username: userName,
+    Username: username,
   };
 
   AWS.config.region = region;

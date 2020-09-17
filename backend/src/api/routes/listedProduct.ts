@@ -33,4 +33,6 @@ export default (app: Router, ListedProductServiceInstance: ListedProductService)
   listedProductRoute.post('/', ListedProductServiceInstance.handleCreate);
 
   listedProductRoute.put('/purchase', ListedProductServiceInstance.handlePurchase)
+
+  listedProductRoute.put('/status/:id', ListedProductServiceInstance.updateProdStatus)
 };

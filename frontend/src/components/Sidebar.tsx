@@ -68,7 +68,7 @@ type SideBarStateType = CollapseStateType & { openAvatar: boolean };
 // TODO: type this component properly
 const Sidebar = (props: SideBarProps) => {
   const [collapseStates, setCollapseStates] = useState({ openAvatar: false, ...getCollapseStates(props.routes) });
-  const [userName, setUserName] = useState<string>();
+  const [username, setUserName] = useState<string>();
   // toggle this state to rerender the component upon route change
   const [, setReRender] = useState(false);
 
@@ -185,7 +185,7 @@ const Sidebar = (props: SideBarProps) => {
               >
                 <span>
                   {/* TODO: do we want the username or first&last name */}
-                  {userName}
+                  {username}
                   <b className='caret' />
                 </span>
               </a>

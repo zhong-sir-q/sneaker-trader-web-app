@@ -12,7 +12,7 @@ import { updateUser } from 'api/api';
 import { getCurrentUser } from 'utils/auth';
 
 const INIT_USER: User = {
-  userName: '',
+  username: '',
   firstName: '',
   lastName: '',
   dob: '',
@@ -73,7 +73,7 @@ const UserProfile = () => {
                     <Row>
                       <Col className='pr-1' md='3'>
                         <FormGroup>
-                          <FormikLabelInput name='userName' placeholder='Username' type='text' label='Username' />
+                          <FormikLabelInput name='username' placeholder='Username' type='text' label='Username' />
                         </FormGroup>
                       </Col>
                       <Col className='pr-1' md='3'>
@@ -121,7 +121,7 @@ const UserProfile = () => {
                     <img alt='...' className='avatar border-gray' src={require('assets/img/mike.jpg')} />
                     <h5 className='title'>{nameIfUndefined('Opps, no full name', user.firstName, user.lastName)}</h5>
                   </a>
-                  <p className='description'>{nameIfUndefined('Ouch, where is my username', user.userName)}</p>
+                  <p className='description'>{nameIfUndefined('Ouch, where is my username', user.username)}</p>
                 </div>
               </CardBody>
               <hr />

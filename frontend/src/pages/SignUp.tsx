@@ -83,15 +83,15 @@ type FormStateType = User & { password: string; confirmPassword: string; policyA
 // Typescript does not throw an error when using FormStateType instead of User
 // so I have to manually transform the form values to a User object
 const convertFormValuesToUser = (formValues: FormStateType): User => {
-  const { firstName, lastName, userName, gender, dob, email } = formValues;
+  const { firstName, lastName, username, gender, dob, email } = formValues;
 
-  return { firstName, lastName, userName, gender, dob, email };
+  return { firstName, lastName, username, gender, dob, email };
 };
 
 const INIT_FORM_VALUES: FormStateType = {
   firstName: '',
   lastName: '',
-  userName: '',
+  username: '',
   gender: '',
   email: '',
   password: '',
@@ -104,7 +104,7 @@ const INIT_FORM_VALUES: FormStateType = {
 const validationSchema = Yup.object({
   firstName: maxCharacters(20),
   lastName: maxCharacters(20),
-  userName: maxCharacters(20),
+  username: maxCharacters(20),
   gender: required(),
   email: validEmail(),
   password: minCharacters(8),
@@ -229,7 +229,7 @@ const SignupForm = () => {
                         </FormikInput>
 
                         <FormikInput
-                          name='userName'
+                          name='username'
                           placeholder='User Name...'
                           type='text'
                           iconname='emoticons_satisfied'

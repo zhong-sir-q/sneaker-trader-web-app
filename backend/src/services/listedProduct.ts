@@ -17,7 +17,9 @@ class ListedProductService {
     // if the size is not defined, return all asks of the shoes with the name
     const getAllAsksQuery = `
     SELECT size, askingPrice, SUM(A.quantity) as numsAvailable FROM ListedProducts A, Products B 
-      WHERE A.sold = 0 AND A.productId = B.id AND CONCAT(B.name, ' ', B.colorWay) = ${doubleQuotedValue(nameColorway)}
+      WHERE A.prodStatus = "listed" AND A.productId = B.id AND CONCAT(B.name, ' ', B.colorWay) = ${doubleQuotedValue(
+        nameColorway
+      )}
         GROUP BY askingPrice ORDER BY askingPrice;
     `;
 
@@ -30,7 +32,7 @@ class ListedProductService {
     const getBySizeQuery = `
     SELECT name, colorway, brand, imageUrls, B.price FROM ${PRODUCTS} A JOIN (
       SELECT MIN(askingPrice) as price, productId FROM ${LISTED_PRODUCTS} 
-      WHERE sold = 0 GROUP BY productId
+      WHERE prodStatus = "listed" GROUP BY productId
     ) B ON A.id = B.productId WHERE size = ${size}`;
 
     return this.connection.query(getBySizeQuery);
@@ -42,7 +44,7 @@ class ListedProductService {
       const query = `SELECT name, size, brand, colorway, imageUrls,
               MIN(B.minAskingPrice) as price FROM ${PRODUCTS} A JOIN (
               SELECT MIN(askingPrice) as minAskingPrice, productId FROM ${LISTED_PRODUCTS}
-              WHERE sold = 0 GROUP BY productId
+              WHERE prodStatus = "listed" GROUP BY productId
             ) B ON A.id = B.productId GROUP BY name, colorway`;
 
       const sneakersWithLowestAskPrice: Sneaker[] = await this.connection.query(query);
@@ -67,7 +69,9 @@ class ListedProductService {
     // get the size and the minium price of each listedProduct
     const query = `
       SELECT A.size, MIN(B.askingPrice) as minPrice FROM ${PRODUCTS} A, ${LISTED_PRODUCTS} B
-        WHERE A.id = B.productId AND B.sold = 0 AND CONCAT(A.name, ' ', A.colorway) = ${doubleQuotedValue(name)}
+        WHERE A.id = B.productId AND B.prodStatus = "listed" AND CONCAT(A.name, ' ', A.colorway) = ${doubleQuotedValue(
+          name
+        )}
          GROUP BY B.productId
     `;
 
@@ -77,7 +81,7 @@ class ListedProductService {
   getAllListedProducts = () => {
     const allListedProductsQuery = `
       SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} A, 
-        ${LISTED_PRODUCTS} B WHERE A.id = B.productId AND B.sold = 0`;
+        ${LISTED_PRODUCTS} B WHERE A.id = B.productId AND B.prodStatus = "listed"`;
 
     return this.connection.query(allListedProductsQuery);
   };
@@ -93,13 +97,23 @@ class ListedProductService {
   };
 
   handlePurchase: RequestHandler = (req, res, next) => {
-    const { productId, sellerId } = req.body;
-    const condition = `userId = ${sellerId} AND productId = ${productId}`;
-    const query = formatUpdateColumnsQuery(LISTED_PRODUCTS, { sold: 1 }, condition);
+    const { id, sellerId } = req.body;
+    const condition = `userId = ${sellerId} AND id = ${id}`;
+    const query = formatUpdateColumnsQuery(LISTED_PRODUCTS, { prodStatus: 'pending' }, condition);
 
     this.connection
       .query(query)
       .then((result) => res.json(result))
+      .catch(next);
+  };
+
+  updateProdStatus: RequestHandler = (req, res, next) => {
+    const { id } = req.params;
+    const prodStatus = req.body;
+
+    this.connection
+      .query(formatUpdateColumnsQuery(LISTED_PRODUCTS, prodStatus, `id = ${id}`))
+      .then(() => res.json('Product status updated'))
       .catch(next);
   };
 }
