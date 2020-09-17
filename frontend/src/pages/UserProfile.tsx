@@ -17,6 +17,7 @@ const INIT_USER: User = {
   lastName: '',
   dob: '',
   gender: '',
+  phoneNo: '',
   // email is not in the form, but it is used to query the user
   email: '',
 };
@@ -88,14 +89,19 @@ const UserProfile = () => {
                       </Col>
                     </Row>
                     <Row>
+                      <Col className='pr-1' md='3'>
+                        <FormGroup>
+                          <FormikLabelInput name='phoneNo' placeholder='Phone number' type='text' label='Gender' />
+                        </FormGroup>
+                      </Col>
                       {/* TODO: one should be select and the other is datetime or force check
                           the date must be in the correct format and gender should have the desired values */}
-                      <Col className='pr-1' md='4'>
+                      <Col className='pr-1' md='3'>
                         <FormGroup>
                           <FormikLabelInput name='gender' placeholder='Gender' type='text' label='Gender' />
                         </FormGroup>
                       </Col>
-                      <Col className='px-1' md='4'>
+                      <Col className='px-1' md='3'>
                         <FormGroup>
                           <FormikLabelInput name='dob' placeholder='dd/mm/yyyy' type='text' label='Date of Birth' />
                         </FormGroup>

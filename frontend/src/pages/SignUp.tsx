@@ -33,6 +33,7 @@ import {
   matchingPassword,
   validDate,
   customRequired,
+  validPhoneNo,
 } from 'utils/yup';
 import { createUser } from 'api/api';
 
@@ -83,9 +84,9 @@ type FormStateType = User & { password: string; confirmPassword: string; policyA
 // Typescript does not throw an error when using FormStateType instead of User
 // so I have to manually transform the form values to a User object
 const convertFormValuesToUser = (formValues: FormStateType): User => {
-  const { firstName, lastName, username, gender, dob, email } = formValues;
+  const { firstName, lastName, username, gender, dob, email, phoneNo } = formValues;
 
-  return { firstName, lastName, username, gender, dob, email };
+  return { firstName, lastName, username, gender, dob, email, phoneNo };
 };
 
 const INIT_FORM_VALUES: FormStateType = {
@@ -95,6 +96,7 @@ const INIT_FORM_VALUES: FormStateType = {
   gender: '',
   email: '',
   password: '',
+  phoneNo: '',
   confirmPassword: '',
   dob: '',
   policyAgreed: '',
@@ -107,6 +109,7 @@ const validationSchema = Yup.object({
   username: maxCharacters(20),
   gender: required(),
   email: validEmail(),
+  phoneNo: validPhoneNo(),
   password: minCharacters(8),
   confirmPassword: matchingPassword('password'),
   dob: validDate(),
@@ -213,6 +216,36 @@ const SignupForm = () => {
                           iconname='text_caps-small'
                         />
 
+                        <FormikInput
+                          name='username'
+                          placeholder='User Name...'
+                          type='text'
+                          iconname='emoticons_satisfied'
+                        />
+
+                        <FormikInput
+                          name='phoneNo'
+                          placeholder='Phone number...'
+                          type='text'
+                          iconname='ui-2_chat-round'
+                        />
+
+                        <FormikInput name='email' placeholder='Email...' type='email' iconname='ui-1_email-85' />
+
+                        <FormikInput
+                          name='password'
+                          placeholder='Password...'
+                          type='password'
+                          iconname='ui-1_lock-circle-open'
+                        />
+
+                        <FormikInput
+                          name='confirmPassword'
+                          placeholder='Confirm Password...'
+                          type='password'
+                          iconname='ui-1_lock-circle-open'
+                        />
+
                         {/* FIXME: the text margin is off; not enough right padding on the arrow; how do I gray the color the place holder */}
                         <FormikInput
                           style={{ paddingLeft: '12px' }}
@@ -227,26 +260,6 @@ const SignupForm = () => {
                           <option value='female'>Female</option>
                           <option value='confidential'>Prefer not to say</option>
                         </FormikInput>
-
-                        <FormikInput
-                          name='username'
-                          placeholder='User Name...'
-                          type='text'
-                          iconname='emoticons_satisfied'
-                        />
-                        <FormikInput name='email' placeholder='Email...' type='email' iconname='ui-1_email-85' />
-                        <FormikInput
-                          name='password'
-                          placeholder='Password...'
-                          type='password'
-                          iconname='ui-1_lock-circle-open'
-                        />
-                        <FormikInput
-                          name='confirmPassword'
-                          placeholder='Confirm Password...'
-                          type='password'
-                          iconname='ui-1_lock-circle-open'
-                        />
 
                         {/* FIXME: resetForm in onSubmit does not reset the datevalue */}
                         <Field

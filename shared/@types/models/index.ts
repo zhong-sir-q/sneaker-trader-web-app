@@ -5,6 +5,7 @@ export type User = {
   gender: string;
   dob: string;
   email: string;
+  phoneNo: string;
   id?: number;
 };
 

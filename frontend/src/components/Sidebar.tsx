@@ -6,7 +6,6 @@ import { Nav, Collapse } from 'reactstrap';
 
 // core components
 import avatar from 'assets/img/ryan.jpg';
-// import logo from 'logo-white.svg';
 import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
@@ -77,7 +76,9 @@ const Sidebar = (props: SideBarProps) => {
   // TODO: type this
   const sidebar = useRef<any>(null);
 
-  useEffect(() => setReRender((val) => !val), [location]);
+  useEffect(() => {
+    setReRender((val) => !val);
+  }, [location]);
 
   useEffect(() => {
     (async () => {

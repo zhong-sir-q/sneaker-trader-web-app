@@ -41,8 +41,8 @@ const SignIn = () => {
 
   const redirectAfterLoginSuccess = () => {
     // the state is the pathname passed from SellerList
-    if (history.location.state) history.push(history.location.state);
-    else history.push('/');
+    // if (history.location.state) history.push(history.location.state);
+    // else history.push('/');
   };
 
   useEffect(() => {
@@ -56,14 +56,16 @@ const SignIn = () => {
         // This case HAS NOT BEEN handled
 
         // create the user in the db if not exists
-        await getCurrentUser(data)
+        await getCurrentUser(data);
 
         redirectAfterLoginSuccess();
       }
     });
 
     // unsubscribe the Hub
-    return () => Hub.remove('auth', () => {});
+    return () => {
+      Hub.remove('auth', () => {});
+    };
   });
 
   return (

@@ -93,7 +93,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
             </InputGroup>
           </form>
           <Nav navbar>
-            <Button onClick={() => signOut(history)}>Log out</Button>
+            <Button onClick={() => signOut(history, '/')}>Log out</Button>
           </Nav>
         </Collapse>
       </Container>

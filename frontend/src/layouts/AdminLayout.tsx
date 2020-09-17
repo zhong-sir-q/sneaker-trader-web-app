@@ -9,9 +9,8 @@ import PerfectScrollbar from 'perfect-scrollbar';
 import AdminNavbar from 'components/navbars/AdminNavbar';
 import Footer from 'components/Footer';
 
-import routes, { SneakerTraderRoute, AUTH, SIGNIN, sidebarRoutes } from 'routes';
+import routes, { SneakerTraderRoute, sidebarRoutes } from 'routes';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
-import { getCurrentUser } from 'utils/auth';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map(({ collapse, views, layout, path, component }, idx) => {
@@ -26,7 +25,7 @@ const getActiveRoute = (routes: SneakerTraderRoute[]): string => {
   const activeRoute = 'Sneaker Trader';
 
   for (const { name, views, collapse, layout, path } of routes) {
-  if (collapse && views) {
+    if (collapse && views) {
       const collapseActiveRoute = getActiveRoute(views);
       if (collapseActiveRoute !== activeRoute) {
         return collapseActiveRoute;
@@ -47,7 +46,6 @@ const AdminLayout = () => {
 
   const mainPanel = useRef<HTMLDivElement>(null);
   const notificationAlert = useRef<any>(null);
-  const history = useHistory();
   const location = useLocation();
 
   useEffect(() => setReRender((val) => !val), [location]);
@@ -67,13 +65,6 @@ const AdminLayout = () => {
       }
     };
   }, []);
-
-  useEffect(() => {
-    (async () => {
-      const currentUser = await getCurrentUser()
-      if (!currentUser) history.push(AUTH + SIGNIN)
-    })()
-  });
 
   const minimizeSideBar = () => {
     let message = 'Sidebar mini ';

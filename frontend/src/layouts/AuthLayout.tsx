@@ -1,30 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 // core components
 import Footer from 'components/Footer';
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
-import routes, { SneakerTraderRoute, AUTH, SIGNIN, DASHBOARD, ADMIN } from 'routes';
+import routes, { SneakerTraderRoute, AUTH, SIGNIN } from 'routes';
 import AuthNavbar from 'components/navbars/AuthNavbar';
-import { getCurrentUser } from 'utils/auth';
 
 const getRoutes = (_routes: SneakerTraderRoute[]) => {
   return _routes.map((route, idx) => {
-    if (route.layout === '/auth') return <Route path={route.layout + route.path} component={route.component} key={idx} />;
+    if (route.layout === '/auth')
+      return <Route path={route.layout + route.path} component={route.component} key={idx} />;
     else return null;
   });
 };
 
 const AuthLayout = () => {
-  const history = useHistory()
-  
-  useEffect(() => {
-    (async () => {
-      const currentUser = await getCurrentUser()
-      if (currentUser) history.push(ADMIN + DASHBOARD)
-    })()
-  })
-
   return (
     <React.Fragment>
       <AuthNavbar />
