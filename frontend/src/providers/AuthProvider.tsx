@@ -1,5 +1,4 @@
 import React, { useContext, createContext, useState, useEffect, ReactNode } from 'react';
-import { useHistory } from 'react-router-dom';
 import { getCurrentUser } from 'utils/auth';
 import { Hub } from 'aws-amplify';
 
@@ -11,8 +10,7 @@ const AuthContext = createContext(INIT_AUTH_CONTEXT);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   const [signedIn, setSignedIn] = useState(false);
-  const history = useHistory();
-
+   
   const handleSignIn = () => setSignedIn(true);
 
   const handleSignOut = () => setSignedIn(false);

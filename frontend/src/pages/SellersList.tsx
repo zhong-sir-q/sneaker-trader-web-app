@@ -15,6 +15,7 @@ import {
 import { ContactSellerMailPayload, User } from '../../../shared';
 import { SIGNIN, AUTH } from 'routes';
 import { getCurrentUser } from 'utils/auth';
+import { useAuth } from 'providers/AuthProvider';
 
 export type Seller = {
   id: number;
@@ -33,6 +34,7 @@ const SellersList = () => {
   const [currentCustomer, setCurrentCustomer] = useState<User>();
 
   const history = useHistory();
+  const { signedIn } = useAuth();
 
   const sneakerInfo = history.location.pathname.split('/');
   const sneakerNameColorway = sneakerInfo[1].split('-').join(' ');
@@ -42,20 +44,15 @@ const SellersList = () => {
     return `Size ${sneakerSize} ${sneakerNameColorway}`;
   };
 
-  const fetchSetSellers = async () => {
-    const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerNameColorway, sneakerSize);
-
-    setSellers(sellersBySneakerNameSize);
-  };
-
   const onComponentLoaded = async () => {
+    if (!signedIn) history.push(AUTH + SIGNIN, history.location.pathname);
+
     const currentUser = await getCurrentUser();
 
-    if (!currentUser) history.push(AUTH + SIGNIN, history.location.pathname);
-    else {
-      fetchSetSellers();
-      setCurrentCustomer(currentUser);
-    }
+    const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerNameColorway, sneakerSize);
+    setSellers(sellersBySneakerNameSize);
+
+    setCurrentCustomer(currentUser);
   };
 
   useEffect(() => {
@@ -89,7 +86,6 @@ const SellersList = () => {
 
     // TODO: ask seniors what is the best ways to handle errors here
     // need to rollback the transactions if there are any incorrect ops
-
     try {
       const mailPayload = await formatMailPayload(selectedSellerIdx);
 

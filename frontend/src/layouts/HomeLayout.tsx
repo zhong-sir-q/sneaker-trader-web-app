@@ -10,7 +10,7 @@ import { getAllListedProducts } from 'api/api';
 import { formatSneakerPathName } from 'utils/utils';
 
 import { Sneaker } from '../../../shared';
-import { HomeRoute, homeRoutes } from 'routes';
+import { homeRoutes } from 'routes';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);

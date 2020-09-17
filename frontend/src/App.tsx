@@ -1,6 +1,6 @@
 import Amplify from 'aws-amplify';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect, RouteComponentProps } from 'react-router-dom';
 
 // layouts
 import HomeLayout from 'layouts/HomeLayout';
@@ -8,7 +8,7 @@ import AuthLayout from 'layouts/AuthLayout';
 import AdminLayout from 'layouts/AdminLayout';
 
 // routes
-import { AUTH, ADMIN, SIGNIN, HOME, DASHBOARD } from 'routes';
+import { AUTH, ADMIN, SIGNIN, HOME } from 'routes';
 
 // css
 import 'bootstrap/dist/css/bootstrap.css';
@@ -34,10 +34,10 @@ const ProtectedAdmin = () => {
   return signedIn ? <AdminLayout /> : <Redirect to={AUTH + SIGNIN} />;
 };
 
-const RelaxedAuth = () => {
+const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={ADMIN + DASHBOARD} />;
+  return !signedIn ? <AuthLayout /> : <Redirect to={props.location.state || HOME} />;
 };
 
 const App = () => {
@@ -45,9 +45,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Switch>
-          <Route path={AUTH}>
-            <RelaxedAuth />
-          </Route>
+          <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
           <Route path={ADMIN}>
             <ProtectedAdmin />

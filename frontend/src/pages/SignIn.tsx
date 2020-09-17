@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
 import { Hub } from 'aws-amplify';
 import { AmplifyGoogleButton, AmplifyFacebookButton } from '@aws-amplify/ui-react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // reactstrap components
 import { Card, CardBody, CardHeader, CardFooter, Container, Col, Button } from 'reactstrap';
@@ -37,13 +37,6 @@ const validationSchema = Yup.object({
 
 const SignIn = () => {
   const [loginError, setLoginError] = useState<string>();
-  const history = useHistory();
-
-  const redirectAfterLoginSuccess = () => {
-    // the state is the pathname passed from SellerList
-    // if (history.location.state) history.push(history.location.state);
-    // else history.push('/');
-  };
 
   useEffect(() => {
     // use the hub to redirect the user when they sign in using social logins
@@ -58,7 +51,6 @@ const SignIn = () => {
         // create the user in the db if not exists
         await getCurrentUser(data);
 
-        redirectAfterLoginSuccess();
       }
     });
 
@@ -85,7 +77,6 @@ const SignIn = () => {
                     return;
                   }
 
-                  redirectAfterLoginSuccess();
                 }}
               >
                 <FormikForm>

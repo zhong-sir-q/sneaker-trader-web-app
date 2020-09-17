@@ -1,5 +1,5 @@
 import React, { useRef, ReactNode, useEffect, useState } from 'react';
-import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 
 // core components
 // NOTE: an unpopular react component, consider switching it out
