@@ -6,17 +6,6 @@ import { Sneaker } from '../../../shared';
 import { useHistory } from 'react-router-dom';
 import { formatSneakerPathName } from 'utils/utils';
 
-const ImageContainer = styled.div`
-  position: relative;
-  padding-top: 68%;
-`;
-
-const Image = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
 const InfoContainer = styled.div`
   padding: 5%;
   background-color: rgb(250, 250, 250);
@@ -42,6 +31,12 @@ type SneakerCardProps = {
   isListed?: boolean;
 };
 
+const StyledImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;
+
 const SneakerCard = (props: SneakerCardProps) => {
   const { sneaker, isListed, maxWidth } = props;
   const { imageUrls, name, price, size, colorway } = sneaker;
@@ -57,21 +52,27 @@ const SneakerCard = (props: SneakerCardProps) => {
   const formatSneakerName = () => [name, colorway].join(' ');
 
   return (
-    <Card
-      className='text-left'
-      onClick={onClick}
-      style={{ maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none' }}
-    >
-      <ImageContainer>
-        <Image src={firstImageUrl()} alt={name} />
-      </ImageContainer>
+    <Card onClick={onClick} style={{ maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none', display: 'flex' }}>
+      <StyledImage src={firstImageUrl()} />
       <InfoContainer>
-        <div style={{ marginBottom: '4px', height: '38px', lineHeight: '1.3', overflow: 'hidden', fontSize: isListed ? '16px' : '1.55em' }}>
+        <div
+          style={{
+            marginBottom: '4px',
+            height: '38px',
+            lineHeight: '1.3',
+            overflow: 'hidden',
+            fontSize: isListed ? '16px' : '1.55em',
+          }}
+        >
           {formatSneakerName()}
         </div>
         <div>
           <LowestAsk>Lowest Ask</LowestAsk>
-          <div style={{ fontSize: isListed ? '18px' : '1.75em', lineHeight: '1.3', fontWeight: 700, whiteSpace: 'nowrap' }}>${price}</div>
+          <div
+            style={{ fontSize: isListed ? '18px' : '1.75em', lineHeight: '1.3', fontWeight: 700, whiteSpace: 'nowrap' }}
+          >
+            ${price}
+          </div>
           {size && (
             <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em', lineHeight: '1.3' }}>
               Size: {size}

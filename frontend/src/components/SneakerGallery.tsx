@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row } from 'reactstrap';
+import { Row } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
 
@@ -12,15 +12,11 @@ type SneakerGalleryProps = {
 const SneakerGallery = (props: SneakerGalleryProps) => {
   const render = () => {
     return (
-      <Row xs='2' md='3'>
+      <Row className='margin-right-except-last' xs='2' md='3'>
         {props.sneakers.map((s, idx) => {
           const { size, ...sneaker } = s;
 
-          return (
-            <Col key={idx}>
-              <SneakerCard isListed sneaker={sneaker} maxWidth='235px' />
-            </Col>
-          );
+          return <SneakerCard isListed sneaker={sneaker} key={idx} />;
         })}
       </Row>
     );

@@ -91,7 +91,7 @@ const UserProfile = () => {
                     <Row>
                       <Col className='pr-1' md='3'>
                         <FormGroup>
-                          <FormikLabelInput name='phoneNo' placeholder='Phone number' type='text' label='Gender' />
+                          <FormikLabelInput name='phoneNo' placeholder='Phone no.' type='text' label='Phone Number' />
                         </FormGroup>
                       </Col>
                       {/* TODO: one should be select and the other is datetime or force check
