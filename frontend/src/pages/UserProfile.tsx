@@ -11,6 +11,8 @@ import { User } from '../../../shared';
 import { updateUser } from 'api/api';
 import { getCurrentUser } from 'utils/auth';
 
+import avatar from 'assets/img/default-profile-picture.jpg'
+
 const INIT_USER: User = {
   username: '',
   firstName: '',
@@ -20,6 +22,8 @@ const INIT_USER: User = {
   phoneNo: '',
   // email is not in the form, but it is used to query the user
   email: '',
+  // same with this field
+  profilePicUrl: ''
 };
 
 const nameIfUndefined = (message: string, ...names: (string | undefined)[]) => {
@@ -38,6 +42,7 @@ const UserProfile = () => {
   useEffect(() => {
     (async () => {
       const currentUser = await getCurrentUser();
+      console.log(currentUser)
       setUser(currentUser);
     })();
   }, []);
@@ -124,7 +129,7 @@ const UserProfile = () => {
               <CardBody>
                 <div className='author'>
                   <a href='#pablo' onClick={(e) => e.preventDefault()}>
-                    <img alt='...' className='avatar border-gray' src={require('assets/img/mike.jpg')} />
+                    <img alt='...' className='avatar border-gray' src={user.profilePicUrl || avatar} />
                     <h5 className='title'>{nameIfUndefined('Opps, no full name', user.firstName, user.lastName)}</h5>
                   </a>
                   <p className='description'>{nameIfUndefined('Ouch, where is my username', user.username)}</p>

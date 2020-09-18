@@ -20,14 +20,18 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const handleShow = () => setShowContact(true);
   const handleClose = () => setShowContact(false);
 
+  const { username, email, phoneNo, buyerRating, sellerRating } = customer;
+
   return (
     <React.Fragment>
       <ContactButton onClick={handleShow}>{title}</ContactButton>
       <Dialog open={showContact} onClose={handleClose}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
-          <p>Email: {customer.email}</p>
-          <p>Username: {customer.username}</p>
+          <p>Username: {username || 'Anonymous'}</p>
+          <p>Email: {email || 'None'}</p>
+          <p>Phone Number: {phoneNo || 'None'}</p>
+          <p>Rating: {buyerRating || sellerRating || 0} out of 10</p>
         </DialogContent>
         <DialogActions>
           <Button color='primary' onClick={handleClose}>

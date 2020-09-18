@@ -5,12 +5,12 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Nav, Collapse } from 'reactstrap';
 
 // core components
-import avatar from 'assets/img/ryan.jpg';
+import avatar from 'assets/img/default-profile-picture.jpg';
 import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
 import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE } from 'routes';
-import { getCurrentUser } from 'utils/auth';
+import { useAuth } from 'providers/AuthProvider';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -67,28 +67,23 @@ type SideBarStateType = CollapseStateType & { openAvatar: boolean };
 // TODO: type this component properly
 const Sidebar = (props: SideBarProps) => {
   const [collapseStates, setCollapseStates] = useState({ openAvatar: false, ...getCollapseStates(props.routes) });
-  const [username, setUserName] = useState<string>();
   // toggle this state to rerender the component upon route change
   const [, setReRender] = useState(false);
+
+  const { currentUser } = useAuth();
 
   const location = useLocation();
 
   // TODO: type this
   const sidebar = useRef<any>(null);
 
+  // const [user, setUser] = useState<User>()
+  const computeUserName = (firstName: string, lastName: string) =>
+    firstName && lastName ? `${firstName} ${lastName}` : 'Anoynomous';
+
   useEffect(() => {
     setReRender((val) => !val);
   }, [location]);
-
-  useEffect(() => {
-    (async () => {
-      const currentUser = await getCurrentUser();
-      const { firstName, lastName } = currentUser;
-      const fullname = firstName && lastName ? `${firstName} ${lastName}` : undefined;
-
-      setUserName(fullname || 'Anoynomous');
-    })();
-  }, []);
 
   // this function creates the links and collapses that appear in the sidebar (left menu)
   const createLinks = (routes: SneakerTraderRoute[]) => {
@@ -174,7 +169,6 @@ const Sidebar = (props: SideBarProps) => {
         <div className='sidebar-wrapper' ref={sidebar}>
           <div className='user'>
             <div className='photo'>
-              {/* TODO: use a default profile pic if user does not have one */}
               <img src={avatar} alt='Avatar' />
             </div>
             <div className='info'>
@@ -185,8 +179,7 @@ const Sidebar = (props: SideBarProps) => {
                 onClick={() => setCollapseStates({ ...collapseStates, openAvatar: !collapseStates.openAvatar })}
               >
                 <span>
-                  {/* TODO: do we want the username or first&last name */}
-                  {username}
+                  {currentUser && computeUserName(currentUser.firstName, currentUser.lastName)}
                   <b className='caret' />
                 </span>
               </a>

@@ -148,13 +148,13 @@ export const getListedProductsBySellerId = (sellerId: number): Promise<Sneaker[]
       return listedProducts;
     });
 
-export const getBoughtProductsByBuyerId = (buyerId: number): Promise<Sneaker[]> =>
-  fetch(TRANSACTIONS_API_URL + `bought/${buyerId}`)
+export const getPurchasedProductsByBuyerId = (buyerId: number): Promise<Sneaker[]> =>
+  fetch(TRANSACTIONS_API_URL + `purchased/${buyerId}`)
     .then((res) => res.json())
-    .then((boughtProducts: Sneaker[]) => {
-      for (const p of boughtProducts) p.seller = JSON.parse(p.stringifiedSeller!);
+    .then((purchasedProducts: Sneaker[]) => {
+      for (const p of purchasedProducts) p.seller = JSON.parse(p.stringifiedSeller!);
 
-      return boughtProducts;
+      return purchasedProducts;
     });
 
 // user rating

@@ -29,6 +29,7 @@ type SneakerCardProps = {
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
+  styles?: React.CSSProperties
 };
 
 const StyledImage = styled.img`
@@ -52,7 +53,7 @@ const SneakerCard = (props: SneakerCardProps) => {
   const formatSneakerName = () => [name, colorway].join(' ');
 
   return (
-    <Card onClick={onClick} style={{ maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none', display: 'flex' }}>
+    <Card onClick={onClick} style={{ ...props.styles, maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none', display: 'flex' }}>
       <StyledImage src={firstImageUrl()} />
       <InfoContainer>
         <div
@@ -67,12 +68,21 @@ const SneakerCard = (props: SneakerCardProps) => {
           {formatSneakerName()}
         </div>
         <div>
-          <LowestAsk>Lowest Ask</LowestAsk>
-          <div
-            style={{ fontSize: isListed ? '18px' : '1.75em', lineHeight: '1.3', fontWeight: 700, whiteSpace: 'nowrap' }}
-          >
-            ${price}
-          </div>
+          {price && (
+            <React.Fragment>
+              <LowestAsk>Lowest Ask</LowestAsk>
+              <div
+                style={{
+                  fontSize: isListed ? '18px' : '1.75em',
+                  lineHeight: '1.3',
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ${price}
+              </div>
+            </React.Fragment>
+          )}
           {size && (
             <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em', lineHeight: '1.3' }}>
               Size: {size}

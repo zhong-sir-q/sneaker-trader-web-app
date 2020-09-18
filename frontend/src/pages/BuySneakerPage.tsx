@@ -132,19 +132,12 @@ const BuySneakerPage = () => {
     else setFilterAllAsks(allAsks?.filter((ask) => ask.size === selectedSize));
   };
 
-  const onBuy = () => {
-    if (selectedSize === 'all') {
-      alert('Please select a size');
-      return;
-    }
-
-    history.push(history.location.pathname + '/' + displaySneaker!.size);
-  };
+  const onBuy = () => history.push(history.location.pathname + '/' + displaySneaker!.size, displaySneaker);
 
   if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
     return (
       <Container fluid='md'>
-        <h1>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h1>
+        <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
           <Col md='6'>
             <SizesGrid />
@@ -153,7 +146,12 @@ const BuySneakerPage = () => {
             <CenterContainer>
               <img alt={displaySneaker.name} src={displaySneaker.imageUrls!.split(',')[0]} />
               <Button onClick={() => onViewAllAsks()}>View All Asks</Button>
-              <Button style={{ display: 'block', margin: 'auto' }} color='primary' onClick={() => onBuy()}>
+              <Button
+                disabled={selectedSize === 'all'}
+                style={{ display: 'block', margin: 'auto' }}
+                color='primary'
+                onClick={() => onBuy()}
+              >
                 Buy
               </Button>
               <Dialog fullWidth maxWidth='md' onClose={() => setOpenModal(false)} open={openModal}>

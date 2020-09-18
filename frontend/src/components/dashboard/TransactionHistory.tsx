@@ -6,7 +6,7 @@ import { Card, CardBody, CardHeader, CardTitle, Table } from 'reactstrap';
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 import BuyerCTAButtonsGroup from 'components/buttons/BuyerCTAButtonsGroup';
 
-import { getListedProductsBySellerId, getBoughtProductsByBuyerId, updateProdStatus } from 'api/api';
+import { getListedProductsBySellerId, getPurchasedProductsByBuyerId, updateProdStatus } from 'api/api';
 import { getCurrentUser } from 'utils/auth';
 
 import { Sneaker } from '../../../../shared';
@@ -94,7 +94,7 @@ const TransactionRow = (props: TransactionRowProps) => {
 const TransactionHistory = () => {
   const [items, setItems] = useState<Sneaker[]>();
   const [listedProducts, setListedProducts] = useState<Sneaker[]>();
-  const [boughtProducts, setBoughtProducts] = useState<Sneaker[]>();
+  const [purchasedProducts, setPurchasedProducts] = useState<Sneaker[]>();
 
   const [showSaleSuccess, setShowCompleteSaleSuccess] = useState(false);
   const [showListed, setShowListed] = useState(true);
@@ -105,17 +105,17 @@ const TransactionHistory = () => {
       const currUserId = currentUser.id!;
 
       const fetchedListedProducts = await getListedProductsBySellerId(currUserId);
-      const fetchedBoughtProducts = await getBoughtProductsByBuyerId(currUserId);
+      const fetchedPurchasedProducts = await getPurchasedProductsByBuyerId(currUserId);
 
       setListedProducts(fetchedListedProducts);
-      setBoughtProducts(fetchedBoughtProducts);
+      setPurchasedProducts(fetchedPurchasedProducts);
       setItems(fetchedListedProducts);
     })();
   }, [showSaleSuccess]);
 
   const toggleShowListed = () => {
     setShowListed(!showListed);
-    if (showListed) setItems(boughtProducts);
+    if (showListed) setItems(purchasedProducts);
     else setItems(listedProducts);
   };
 
@@ -131,11 +131,11 @@ const TransactionHistory = () => {
     <React.Fragment>
       <Card>
         <CardHeader style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <CardTitle tag='h4'>{showListed ? 'Listed Products' : 'Bought Products'}</CardTitle>
+          <CardTitle tag='h4'>{showListed ? 'Listed Products' : 'Purchased Products'}</CardTitle>
           <div>
             Listed
             <Switch checked={!showListed} onChange={toggleShowListed} color='default' />
-            Bought
+            Purchased
           </div>
         </CardHeader>
         <CardBody>

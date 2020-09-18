@@ -16,7 +16,15 @@ class WalletService {
 
     this.connection
       .query(getBalanceByUserIdQuery)
-      .then((queryResult) => res.json(queryResult[0].balance))
+      .then(async (queryResult) => {
+        if (queryResult.length === 0) {
+          await this.create(userId);
+          res.json(0);
+          return;
+        }
+
+        res.json(queryResult[0].balance);
+      })
       .catch(next);
   };
 

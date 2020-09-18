@@ -18,8 +18,8 @@ class SellersService {
              WHERE U.id = L.userId AND P.id = L.productId AND L.prodStatus = "listed" AND
               CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}) q1
          LEFT JOIN
-           ( SELECT sellerId, AVG(sellerRatingFromBuyer) as rating FROM Transactions GROUP BY sellerId ) q2
-             ON (q1.id = q2.sellerId) ORDER BY rating DESC
+           ( SELECT sellerId, ROUND(AVG(sellerRatingFromBuyer), 1) as rating FROM Transactions GROUP BY sellerId ) q2
+             ON (q1.id = q2.sellerId) ORDER BY rating DESC, askingPrice
     `
 
     return this.connection.query(sellersQuery);

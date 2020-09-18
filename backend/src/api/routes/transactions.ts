@@ -9,5 +9,5 @@ export default (app: Router, TransactionsServiceInstance: TransactionService) =>
 
   transactionsRoute.get('/listed/:sellerId', TransactionsServiceInstance.handleGetListedBySellerId)
 
-  transactionsRoute.get('/bought/:buyerId', TransactionsServiceInstance.handleGetBoughtByBuyerId)
+  transactionsRoute.get('/purchased/:buyerId', TransactionsServiceInstance.handleGetPurchasedByBuyerId)
 }

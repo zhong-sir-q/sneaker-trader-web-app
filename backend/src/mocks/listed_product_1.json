@@ -1,10 +1,9 @@
 {
   "productId": 14,
-  "userId": 17,
-  "askingPrice": 120,
+  "userId": 3,
+  "askingPrice": 420,
   "quantity": 1,
-  "sold": 0,
   "currencyCode": "NZD",
-  "prodCondition": "used",
+  "prodCondition": "new",
   "sizeSystem": "US"
 }

@@ -45,7 +45,9 @@ class UserService {
   async create(user: Partial<User>) {
     const createUserQuery = formatInsertColumnsQuery(USERS, user);
     const userId = await this.connection.query(createUserQuery).then((result) => result.insertId);
-    await new WalletService(this.connection).create(userId);
+
+    // create the wallet for the user
+    new WalletService(this.connection).create(userId);
 
     return userId
   }

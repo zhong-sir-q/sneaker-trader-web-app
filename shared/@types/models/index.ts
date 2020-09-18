@@ -6,11 +6,14 @@ export type User = {
   dob: string;
   email: string;
   phoneNo: string;
+  buyerRating?: string;
+  sellerRating?: string;
+  profilePicUrl?: string
   id?: number;
 };
 
 // customer can either be a seller or buyer
-export type Customer = Pick<User, 'email' | 'username'>;
+export type Customer = Pick<User, 'email' | 'username' | 'phoneNo' | 'buyerRating' | 'sellerRating'>;
 
 // NOTE: type Sneaker and ListedProduct have some
 // duplicate fields, how can I refactor that?
@@ -25,8 +28,8 @@ export type Sneaker = {
   price?: number | '';
   buyer?: Customer;
   seller?: Customer;
-  stringifiedBuyer?: string
-  stringifiedSeller?: string
+  stringifiedBuyer?: string;
+  stringifiedSeller?: string;
   quantity?: number;
   description?: string;
   prodStatus?: SneakerStatus;

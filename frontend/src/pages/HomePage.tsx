@@ -37,7 +37,7 @@ type FilterByKey = 'brands' | 'sizes';
 type FiltersProps = {
   filters: FilterType[];
   filterKey: FilterByKey;
-  title: string
+  title: string;
 };
 
 const Filters = (props: FiltersProps) => {
@@ -122,11 +122,11 @@ const HomePage = () => {
   });
 
   return (
-    <Container fluid='lg' style={{ minHeight: 'calc(100vh - 150px)' }}>
+    <Container fluid='md' style={{ minHeight: 'calc(100vh - 150px)' }}>
       <Row>
         <Col sm={2}>
-          <Filters filters={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]} filterKey="sizes" title='us sizes' />
-          <Filters filters={['Nike', 'Air Jordan', 'Under Armor']} filterKey="brands" title='brands' />
+          <Filters filters={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]} filterKey='sizes' title='us sizes' />
+          <Filters filters={['Nike', 'Air Jordan', 'Under Armor']} filterKey='brands' title='brands' />
         </Col>
         <Col sm={10}>
           <SneakerGallery sneakers={filterSneakers} />

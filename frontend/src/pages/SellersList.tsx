@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { ListGroup, ListGroupItem, Container, Button } from 'reactstrap';
+import {
+  ListGroup,
+  ListGroupItem,
+  Container,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
+
 import { useHistory } from 'react-router-dom';
+
+import _ from 'lodash';
 
 import CenterSpinner from 'components/CenterSpinner';
 
@@ -10,12 +22,13 @@ import {
   decreaseWalletBalance,
   createProductTransaction,
   purchaseListedProduct,
+  getProductByNameColorwaySize,
 } from 'api/api';
 
-import { ContactSellerMailPayload, User } from '../../../shared';
+import { ContactSellerMailPayload, Sneaker } from '../../../shared';
 import { SIGNIN, AUTH } from 'routes';
-import { getCurrentUser } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
+import SneakerCard from 'components/SneakerCard';
 
 export type Seller = {
   id: number;
@@ -26,41 +39,66 @@ export type Seller = {
   listedProductId: number;
 };
 
+type SortByPriceDropdownProps = {
+  sortInDescendingOrder: () => void;
+  sortInAscendingOrder: () => void;
+};
+
+// TODO: disable the sort option once an order has been selected
+const SortByPriceDropdown = (props: SortByPriceDropdownProps) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { sortInAscendingOrder, sortInDescendingOrder } = props;
+
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+        <DropdownToggle color='primary' caret>
+          Sort by
+        </DropdownToggle>
+        <DropdownMenu right>
+          <DropdownItem onClick={sortInDescendingOrder}>Price: Hight-Low</DropdownItem>
+          <DropdownItem onClick={sortInAscendingOrder}>Price: Low-High</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    </div>
+  );
+};
+
+// NOTE: is it better to process the fees using cents?
 const transactionFees = (price: number) => price * 0.1;
 
 const SellersList = () => {
   const [sellers, setSellers] = useState<Seller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>();
-  const [currentCustomer, setCurrentCustomer] = useState<User>();
+  const [sneaker, setSneaker] = useState<Sneaker>();
 
   const history = useHistory();
-  const { signedIn } = useAuth();
+  const { signedIn, currentUser } = useAuth();
 
   const sneakerInfo = history.location.pathname.split('/');
   const sneakerNameColorway = sneakerInfo[1].split('-').join(' ');
   const sneakerSize = Number(sneakerInfo[sneakerInfo.length - 1]);
 
-  const formatProductName = () => {
-    return `Size ${sneakerSize} ${sneakerNameColorway}`;
-  };
+  const formatProductName = () => `Size ${sneakerSize} ${sneakerNameColorway}`;
 
   const onComponentLoaded = async () => {
     if (!signedIn) history.push(AUTH + SIGNIN, history.location.pathname);
 
-    const currentUser = await getCurrentUser();
-
+    const sneakerToBuy = await getProductByNameColorwaySize(sneakerNameColorway, sneakerSize);
     const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerNameColorway, sneakerSize);
-    setSellers(sellersBySneakerNameSize);
 
-    setCurrentCustomer(currentUser);
+    setSneaker(sneakerToBuy);
+    setSellers(sellersBySneakerNameSize);
   };
 
   useEffect(() => {
-    if (!currentCustomer) onComponentLoaded();
+    if (!sellers) onComponentLoaded();
   });
 
   const formatMailPayload = async (sellerIdx: number): Promise<ContactSellerMailPayload> => {
-    const { username, email } = currentCustomer!;
+    const { username, email } = currentUser!;
 
     const mailPayload: ContactSellerMailPayload = {
       sellerUserName: sellers![sellerIdx].username,
@@ -73,11 +111,9 @@ const SellersList = () => {
     return mailPayload;
   };
 
+
   const onConfirm = async () => {
-    if (selectedSellerIdx === undefined) {
-      alert('Please select a seller');
-      return;
-    }
+    if (selectedSellerIdx === undefined) return;
 
     // deduct the balance from the seller
     const sellerId = sellers![selectedSellerIdx].id;
@@ -98,7 +134,7 @@ const SellersList = () => {
       await purchaseListedProduct({ id: listedProductId, sellerId });
 
       await createProductTransaction({
-        buyerId: currentCustomer!.id!,
+        buyerId: currentUser!.id!,
         sellerId,
         amount: askingPrice,
         processingFee,
@@ -112,32 +148,50 @@ const SellersList = () => {
     } catch (err) {}
   };
 
-  return !sellers ? (
+  const sortSellersByAskingPriceAscending = () => {
+    const ascSellers = _.orderBy(sellers, ['askingPrice'], ['asc']);
+    setSellers(ascSellers);
+  };
+
+  const sortSellersByAskingPriceDescending = () => {
+    const descSellers = _.orderBy(sellers, ['askingPrice'], ['desc']);
+    setSellers(descSellers);
+  };
+
+  return !sellers || !currentUser || !sneaker ? (
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
+      <SneakerCard styles={{ margin: 'auto', marginBottom: '15px' }} sneaker={sneaker} maxWidth='200px' />
+      <SortByPriceDropdown
+        sortInAscendingOrder={sortSellersByAskingPriceAscending}
+        sortInDescendingOrder={sortSellersByAskingPriceDescending}
+      />
       <ListGroup>
-        {sellers.map(({ username, askingPrice, rating }, idx) => (
-          // TODO: when screen size is smaller than 650px,
-          // make the item layout to be column rather than row
-          <ListGroupItem
-            tag='button'
-            key={idx}
-            action
-            onClick={() => setSelectedSellerIdx(idx)}
-            style={{
-              borderColor: idx === selectedSellerIdx ? 'green' : undefined,
-              outline: 'none',
-              borderTopWidth: '1px',
-            }}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span>User Name: {username}</span>
-              <span>Asking Price: ${askingPrice}</span>
-              <span>Rating: {!rating || rating <= 0 ? 0 : rating}</span>
-            </div>
-          </ListGroupItem>
-        ))}
+        {sellers.map(({ id, username, askingPrice, rating }, idx) => {
+          // the customer cannot buy their own listing
+          if (id === currentUser!.id) return undefined;
+
+          return (
+            <ListGroupItem
+              tag='button'
+              key={idx}
+              action
+              onClick={() => setSelectedSellerIdx(idx)}
+              style={{
+                borderColor: idx === selectedSellerIdx ? 'green' : undefined,
+                outline: 'none',
+                borderTopWidth: '1px',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span>User Name: {username}</span>
+                <span>Asking Price: ${askingPrice}</span>
+                <span>Rating: {!rating || rating <= 0 ? 0 : rating}</span>
+              </div>
+            </ListGroupItem>
+          );
+        })}
       </ListGroup>
       <footer>
         {selectedSellerIdx !== undefined && selectedSellerIdx < sellers.length ? (
@@ -157,9 +211,14 @@ const SellersList = () => {
           </ListGroup>
         ) : null}
         <div className='text-center'>
-          <Button color='primary' onClick={() => onConfirm()}>
-            Confirm
-          </Button>
+          <div>
+            {/* NOTE: Not sure why accessing the sneaker route via the name colorway
+            force redirect me back to the gallery page  */}
+            <Button style={{ marginRight: '25px' }}>Cancel</Button>
+            <Button disabled={selectedSellerIdx === undefined} color='primary' onClick={() => onConfirm()}>
+              Confirm
+            </Button>
+          </div>
           <p className='category' style={{ margin: 0, fontSize: '0.95em' }}>
             We will contact the seller on your behalf to get in touch
           </p>
