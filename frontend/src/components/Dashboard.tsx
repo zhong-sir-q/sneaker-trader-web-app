@@ -5,7 +5,10 @@ import { Card, CardBody, Row, Col } from 'reactstrap';
 
 import PanelHeader from './PanelHeader';
 import WalletBalance from './dashboard/WalletBalance';
-import TransactionHistory from './dashboard/TransactionHistory';
+import TransactionDualHistoryTable from './dashboard/TransactionDualHistoryTable';
+import SaleHistoryTable from './dashboard/SaleHistoryTable';
+
+import TransactionTableContextProvider from 'providers/TransactionTableContextProvider';
 
 const Dashboard = () => {
   return (
@@ -26,9 +29,14 @@ const Dashboard = () => {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={12}>
-            <TransactionHistory />
-          </Col>
+          <TransactionTableContextProvider>
+            <Col xs={12} md={12}>
+              <TransactionDualHistoryTable />
+            </Col>
+            <Col xs={12} md={12}>
+              <SaleHistoryTable />
+            </Col>
+          </TransactionTableContextProvider>
         </Row>
       </div>
     </React.Fragment>

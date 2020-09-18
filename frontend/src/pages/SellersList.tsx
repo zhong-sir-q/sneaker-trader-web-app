@@ -158,6 +158,8 @@ const SellersList = () => {
     setSellers(descSellers);
   };
 
+  const onCancel = () => history.goBack()
+
   return !sellers || !currentUser || !sneaker ? (
     <CenterSpinner />
   ) : (
@@ -214,7 +216,7 @@ const SellersList = () => {
           <div>
             {/* NOTE: Not sure why accessing the sneaker route via the name colorway
             force redirect me back to the gallery page  */}
-            <Button style={{ marginRight: '25px' }}>Cancel</Button>
+            <Button style={{ marginRight: '25px' }} onClick={onCancel}>Cancel</Button>
             <Button disabled={selectedSellerIdx === undefined} color='primary' onClick={() => onConfirm()}>
               Confirm
             </Button>

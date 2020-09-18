@@ -50,6 +50,7 @@ export type ListedProduct = {
   currencyCode: string;
   prodStatus: SneakerStatus;
   prodCondition: SneakerCondition;
+  conditionRating: number
 };
 
 export type Transaction = {

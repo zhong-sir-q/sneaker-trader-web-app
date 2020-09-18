@@ -30,14 +30,14 @@ const sneakerInfoValidation = Yup.object({
   currencyCode: required(),
   sizeSystem: required(),
   prodCondition: required(),
-  // TODO: should be a price limit, confirm with Aaron
+  // TODO: minimum price of $20
   askingPrice: requiredPositiveNumber('Price'),
   // NOTE: should be between size 1 to 15 or something
   size: requiredPositiveNumber('Size'),
 });
 
 const currencyCodeOptions = ['AUD', 'YUAN', 'NZD', 'USD', 'CAD', 'EUR', 'GBP', 'CHF', 'JPY'];
-const shoeSizeOptions = ['US', 'EU', 'UK', 'Japan']
+const shoeSizeOptions = ['US', 'EU', 'UK', 'Japan'];
 
 const SneakerInfoForm = (props: SneakerInfoFormProps) => {
   const preventOnFormEnterDefault = (evt: React.KeyboardEvent<HTMLFormElement>) => {
@@ -66,7 +66,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
       }}
       enableReinitialize
     >
-      {({ setFieldValue }) => (
+      {({ setFieldValue, values }) => (
         <Card className='text-left'>
           <CardHeader>
             <h5 className='text-center title'>Sneaker Listing Form</h5>
@@ -132,7 +132,11 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                   <FormGroup>
                     <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
                       <option value=''>None</option>
-                      {shoeSizeOptions.map((sOpt, idx) => <option value={sOpt} key={idx}>{sOpt}</option>)}
+                      {shoeSizeOptions.map((sOpt, idx) => (
+                        <option value={sOpt} key={idx}>
+                          {sOpt}
+                        </option>
+                      ))}
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>
@@ -142,7 +146,9 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                     <FormikLabelSelect name='currencyCode' label='Price Currency Code' id='sneaker-price-currency'>
                       <option value=''>None</option>
                       {currencyCodeOptions.map((cOpt, idx) => (
-                        <option key={idx} value={cOpt}>{cOpt}</option>
+                        <option key={idx} value={cOpt}>
+                          {cOpt}
+                        </option>
                       ))}
                     </FormikLabelSelect>
                   </FormGroup>
@@ -159,6 +165,23 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                   </FormGroup>
                 </Col>
               </Row>
+              {values.prodCondition === 'used' && (
+                <Row>
+                  <Col md='4'>
+                    <FormGroup>
+                      <FormikLabelSelect name='conditionRating' label='Condition Rating' id='sneaker-prodConditionRating'>
+                        {Array(10)
+                          .fill(0)
+                          .map((_, idx) => (
+                            <option key={idx} value={idx + 1}>
+                              {idx + 1}
+                            </option>
+                          ))}
+                      </FormikLabelSelect>
+                    </FormGroup>
+                  </Col>
+                </Row>
+              )}
               <FormGroup>
                 {/* TODO: add new line after enter is pressed */}
                 <FormikLabelInput

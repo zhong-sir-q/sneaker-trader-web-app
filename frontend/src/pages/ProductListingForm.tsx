@@ -24,9 +24,9 @@ import { getCurrentUser } from 'utils/auth';
 
 
 export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls' | 'price'> &
-  Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'askingPrice'>;
+  Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'askingPrice' | 'conditionRating'>;
 
-const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
+const INIT_SNEAKER_FORM_STATE: ListingFormSneakerStateType = {
   name: '',
   brand: '',
   size: '',
@@ -36,6 +36,7 @@ const INIT_SNEAKER_STATE: ListingFormSneakerStateType = {
   sizeSystem: '',
   currencyCode: '',
   prodCondition: '' as SneakerCondition,
+  conditionRating: 10
 };
 
 const formatListedProduct = (
@@ -51,7 +52,8 @@ const formatListedProduct = (
   currencyCode: sneaker.currencyCode,
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
-  prodStatus: 'listed'
+  prodStatus: 'listed',
+  conditionRating: sneaker.conditionRating
 });
 
 const formatProductSneaker = (s: ListingFormSneakerStateType): Omit<Sneaker, 'imageUrls' | 'price'> => {
@@ -65,7 +67,7 @@ const formatProductSneaker = (s: ListingFormSneakerStateType): Omit<Sneaker, 'im
 // prompt the success message to the user
 
 const ProductListingForm = () => {
-  const [sneaker, setSneaker] = useState(INIT_SNEAKER_STATE);
+  const [sneaker, setSneaker] = useState(INIT_SNEAKER_FORM_STATE);
   // not part of the sneaker, so separate the state out
   const [billingInfo, setBillingInfo] = useState('');
 
