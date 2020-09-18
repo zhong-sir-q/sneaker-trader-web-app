@@ -32,21 +32,20 @@ stages:
         tags: |
           $(tag)
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
 
-- script: |
-    pip install aws-cli
-  displayName: 'Install AWS CLI'
+    - script: |
+        pip install aws-cli
+      displayName: 'Install AWS CLI'
 
-- script: |
-    npm --prefix frontend install
-    npm --prefix frontend run build
-  displayName: 'npm install and build'
+    - script: |
+        npm --prefix frontend install
+        npm --prefix frontend run build
+      displayName: 'npm install and build'
 
-- script: |
-    npm --prefix frontend run deploy
-  displayName: 'Sync react build with s3'
+    - script: |
+        npm --prefix frontend run deploy
+      displayName: 'Sync react build with s3'
