@@ -14,19 +14,14 @@ class ProductService {
     this.connection = conn;
   }
 
-  getAll: RequestHandler = (_req, res, next) => {
-    this.connection
-      .query(formateGetColumnsQuery(PRODUCTS))
-      .then((result) => res.json(result))
-      .catch(next);
-  };
-
   async getByNamecolorwaySize(nameColorway: string, size: number | string) {
     const condition = `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}`;
     const getQuery = formateGetColumnsQuery(PRODUCTS, condition);
     const prod = await this.connection.query(getQuery);
 
-    return prod[0];
+    // has to be null instead of undefined
+    // otherwise the app cannot deserialize it for some reason
+    return prod.length === 1 ? prod[0] : null;
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {

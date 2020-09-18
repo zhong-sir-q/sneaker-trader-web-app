@@ -36,8 +36,17 @@ const sneakerInfoValidation = Yup.object({
   size: requiredPositiveNumber('Size'),
 });
 
-const currencyCodeOptions = ['AUD', 'YUAN', 'NZD', 'USD', 'CAD', 'EUR', 'GBP', 'CHF', 'JPY'];
-const shoeSizeOptions = ['US', 'EU', 'UK', 'Japan'];
+const range = (start: number, end: number, step: number): number[] => {
+  let result: number[] = [];
+
+  for (let num = start; num <= end; num += step) result.push(num);
+
+  return result;
+};
+
+const currencyCodeOptions = ['AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'NZD', 'USD', 'YUAN'];
+const shoeSizeOptions = ['EU', 'Japan', 'UK', 'US'];
+const sneakerConditionRatings = range(1, 10, 0.5);
 
 const SneakerInfoForm = (props: SneakerInfoFormProps) => {
   const preventOnFormEnterDefault = (evt: React.KeyboardEvent<HTMLFormElement>) => {
@@ -96,7 +105,14 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 </Col>
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput name='size' placeholder='Size' type='number' label='Shoe Size' />
+                    <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
+                      <option value=''>None</option>
+                      {shoeSizeOptions.map((sOpt, idx) => (
+                        <option value={sOpt} key={idx}>
+                          {sOpt}
+                        </option>
+                      ))}
+                    </FormikLabelSelect>
                   </FormGroup>
                 </Col>
               </Row>
@@ -116,31 +132,15 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                     <FormikLabelInput name='askingPrice' placeholder='$$ ~ $$$$$' type='number' label='Asking Price' />
                   </FormGroup>
                 </Col>
+
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput
-                      name='billingInfo'
-                      placeholder='4444-4444-4444-4444'
-                      type='text'
-                      label='Billing Info (Optional)'
-                    />
+                    <FormikLabelInput name='size' placeholder='Size' type='number' label='Shoe Size' />
                   </FormGroup>
                 </Col>
               </Row>
-              <Row>
-                <Col md='4'>
-                  <FormGroup>
-                    <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
-                      <option value=''>None</option>
-                      {shoeSizeOptions.map((sOpt, idx) => (
-                        <option value={sOpt} key={idx}>
-                          {sOpt}
-                        </option>
-                      ))}
-                    </FormikLabelSelect>
-                  </FormGroup>
-                </Col>
 
+              <Row>
                 <Col md='4'>
                   <FormGroup>
                     <FormikLabelSelect name='currencyCode' label='Price Currency Code' id='sneaker-price-currency'>
@@ -164,19 +164,32 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>
+
+                <Col md='4'>
+                  <FormGroup>
+                    <FormikLabelInput
+                      name='billingInfo'
+                      placeholder='4444-4444-4444-4444'
+                      type='text'
+                      label='Billing Info (Optional)'
+                    />
+                  </FormGroup>
+                </Col>
               </Row>
               {values.prodCondition === 'used' && (
                 <Row>
                   <Col md='4'>
                     <FormGroup>
-                      <FormikLabelSelect name='conditionRating' label='Condition Rating' id='sneaker-prodConditionRating'>
-                        {Array(10)
-                          .fill(0)
-                          .map((_, idx) => (
-                            <option key={idx} value={idx + 1}>
-                              {idx + 1}
-                            </option>
-                          ))}
+                      <FormikLabelSelect
+                        name='conditionRating'
+                        label='Condition Rating'
+                        id='sneaker-prodConditionRating'
+                      >
+                        {sneakerConditionRatings.map((val, idx) => (
+                          <option key={idx} value={val}>
+                            {val}
+                          </option>
+                        ))}
                       </FormikLabelSelect>
                     </FormGroup>
                   </Col>

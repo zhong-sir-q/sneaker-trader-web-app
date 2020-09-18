@@ -10,6 +10,8 @@ import { PromisifiedConnection } from '../config/mysql';
 import { USERS } from '../config/tables';
 import WalletService from './wallet';
 
+import { getBuyersAvgRatingQuery, getSellersAvgRatingQuery } from '../utils/queries';
+
 class UserService {
   private connection: PromisifiedConnection;
 
@@ -20,7 +22,9 @@ class UserService {
   handleCreate: RequestHandler = async (req, res, next) => {
     const user = req.body;
 
-    this.create(user).then(userId => res.json(userId)).catch(next)
+    this.create(user)
+      .then((userId) => res.json(userId))
+      .catch(next);
   };
 
   handleGetByEmail: RequestHandler = async (req, res, next) => {
@@ -49,7 +53,7 @@ class UserService {
     // create the wallet for the user
     new WalletService(this.connection).create(userId);
 
-    return userId
+    return userId;
   }
 
   async getByEmail(email: string): Promise<Partial<User>> {
@@ -62,6 +66,34 @@ class UserService {
     }
 
     return queryResult[0];
+  }
+
+  handleGetBuyerAvgRating: RequestHandler = (req, res, next) => {
+    const { buyerId } = req.params;
+
+    this.getBuyerAvgRating(buyerId)
+      .then((rating) => res.json(rating))
+      .catch(next);
+  };
+
+  handleGetSellerAvgRating: RequestHandler = (req, res, next) => {
+    const { sellerId } = req.params;
+
+    this.getSellerAvgRating(sellerId)
+      .then((rating) => res.json(rating))
+      .catch(next);
+  };
+
+  getBuyerAvgRating(buyerId: string) {
+    return this.connection
+      .query(getBuyersAvgRatingQuery('buyerRating', `WHERE buyerId = ${buyerId}`))
+      .then((result) => (result.length == 1 ? result[0].buyerRating : 0));
+  }
+
+  getSellerAvgRating(sellerId: string) {
+    return this.connection
+      .query(getSellersAvgRatingQuery('sellerRating', `WHERE sellerId = ${sellerId}`))
+      .then((result) => (result.length == 1 ? result[0].sellerRating : 0));
   }
 }
 

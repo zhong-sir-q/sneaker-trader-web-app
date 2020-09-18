@@ -6,6 +6,7 @@ import PanelHeader from 'components/PanelHeader';
 import SubmissionSuccess from 'components/SubmissionSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
+import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
 
 import {
   createProduct,
@@ -19,9 +20,7 @@ import {
 
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
 
-import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
-import { getCurrentUser } from 'utils/auth';
-
+import { useAuth } from 'providers/AuthProvider';
 
 export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls' | 'price'> &
   Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'askingPrice' | 'conditionRating'>;
@@ -36,7 +35,7 @@ const INIT_SNEAKER_FORM_STATE: ListingFormSneakerStateType = {
   sizeSystem: '',
   currencyCode: '',
   prodCondition: '' as SneakerCondition,
-  conditionRating: 10
+  conditionRating: 10,
 };
 
 const formatListedProduct = (
@@ -53,7 +52,7 @@ const formatListedProduct = (
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
   prodStatus: 'listed',
-  conditionRating: sneaker.conditionRating
+  conditionRating: sneaker.conditionRating,
 });
 
 const formatProductSneaker = (s: ListingFormSneakerStateType): Omit<Sneaker, 'imageUrls' | 'price'> => {
@@ -77,6 +76,8 @@ const ProductListingForm = () => {
   const [mainFileId, setMainFileId] = useState<string>();
 
   const [step, setStep] = useState(0);
+
+  const { currentUser } = useAuth();
 
   // TODO: where is a good place to revoke the urls while maintaing a good UX
   // i.e. the user can still see the images when they reverse the step
@@ -116,10 +117,10 @@ const ProductListingForm = () => {
     const formData = new FormData();
 
     // image need to be the first element to be the main display image
-    const mainFileIdx = files.findIndex(f => f.id === mainFileId)
-    const tmp = files[0]
-    files[0] = files[mainFileIdx]
-    files[mainFileIdx] = tmp
+    const mainFileIdx = files.findIndex((f) => f.id === mainFileId);
+    const tmp = files[0];
+    files[0] = files[mainFileIdx];
+    files[mainFileIdx] = tmp;
 
     for (const f of files) formData.append('files', f);
 
@@ -145,9 +146,7 @@ const ProductListingForm = () => {
     if (product) prodId = product.id!;
     else prodId = await createProduct(createSneakerPayload);
 
-    const currentUser = await getCurrentUser()
-
-    const listedProductPayload = formatListedProduct(sneaker, currentUser.id!, prodId);
+    const listedProductPayload = formatListedProduct(sneaker, currentUser!.id!, prodId);
     await createListedProduct(listedProductPayload);
 
     // duplicate primary key insertions are handled by the backend

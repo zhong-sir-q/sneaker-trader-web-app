@@ -53,7 +53,7 @@ const SneakerCard = (props: SneakerCardProps) => {
   const formatSneakerName = () => [name, colorway].join(' ');
 
   return (
-    <Card onClick={onClick} style={{ ...props.styles, maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none', display: 'flex' }}>
+    <Card onClick={onClick} style={{ ...props.styles, maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none', display: 'flex', textAlign: 'left' }}>
       <StyledImage src={firstImageUrl()} />
       <InfoContainer>
         <div

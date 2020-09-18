@@ -16,7 +16,4 @@ export default (app: Router, ProductServiceInstance: ProductService) => {
   });
 
   productRoute.post('/', ProductServiceInstance.handleCreate);
-
-  // a testing route, no use at the moment
-  productRoute.get('/all', ProductServiceInstance.getAll)
 };

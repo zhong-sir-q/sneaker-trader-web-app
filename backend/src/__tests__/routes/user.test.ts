@@ -42,7 +42,6 @@ describe('User routes', () => {
     const res = await request(app).post('/api/user/').send(fakeUser)
 
     expect(res.status).toBe(200)
-    expect(res.body.affectedRows).toBe(1)
 
     done()
   })

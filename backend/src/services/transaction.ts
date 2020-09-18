@@ -25,7 +25,7 @@ class TransactionService {
 
     const rateBuyerQuery = formatUpdateColumnsQuery(TRANSACTION, { buyerRatingFromSeller: rating }, `listedProductId = ${listedProductId}`)
 
-    this.conneciton.query(rateBuyerQuery).then(() => res.json('Complete buyer rating')).catch(next)
+    this.conneciton.query(rateBuyerQuery).then(() => res.json('Buyer rating updated')).catch(next)
   };
 
   rateSeller: RequestHandler = (req, res, next) => {
@@ -39,7 +39,7 @@ class TransactionService {
     );
     this.conneciton
       .query(rateBuyerQuery)
-      .then(() => res.json('Complete buyer rating'))
+      .then(() => res.json('Seller rating updated'))
       .catch(next);
   };
 }

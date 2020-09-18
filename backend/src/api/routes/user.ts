@@ -10,5 +10,9 @@ export default (app: Router, UserServiceInstance: UserService) => {
 
   userRoute.get('/:email', UserServiceInstance.handleGetByEmail);
 
+  userRoute.get('/buyerRating/:buyerId', UserServiceInstance.handleGetBuyerAvgRating);
+
+  userRoute.get('/sellerRating/:sellerId', UserServiceInstance.handleGetSellerAvgRating);
+
   userRoute.post('/', UserServiceInstance.handleCreate);
 };
