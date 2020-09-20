@@ -1,3 +1,5 @@
+import React from 'react';
+
 import SignUp from 'pages/SignUp';
 import SignIn from 'pages/SignIn';
 import ForgotPassword from 'pages/ForgotPassword';
@@ -6,6 +8,8 @@ import ProductListingForm from 'pages/ProductListingForm';
 
 import Dashboard from 'components/Dashboard';
 import HomePage from 'pages/HomePage';
+import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
+import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -128,7 +132,13 @@ const routes: SneakerTraderRoute[] = [
   {
     path: PRODUCT_LISTING,
     name: 'Product Listing',
-    component: ProductListingForm,
+    component: () => (
+      <SneakerListingFormCtxProvider>
+        <PreviewImgDropzoneCtxProvider>
+          <ProductListingForm />
+        </PreviewImgDropzoneCtxProvider>
+      </SneakerListingFormCtxProvider>
+    ),
     layout: ADMIN,
   },
 ];

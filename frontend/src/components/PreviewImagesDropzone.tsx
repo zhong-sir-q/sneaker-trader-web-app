@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { v4 as uuidV4 } from 'uuid';
 import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
@@ -71,20 +70,12 @@ export type PreviewFile = File & {
 
 type PreviewImagesDropZoneProps = {
   onPrevStep: () => void;
-  onNextStep: (previewImgUrl: string, imgUrlsFormData: FormData) => void;
+  onNextStep: () => void;
 };
 
 const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   const { onPrevStep, onNextStep } = props;
-  const {
-    files,
-    mainFileId,
-    formDataFromFiles,
-    onDropFile,
-    onRemoveFile,
-    updateFileId,
-    getMainDisplayFile,
-  } = usePreviewImgDropzoneCtx();
+  const { files, mainFileId, onDropFile, onRemoveFile, updateFileId } = usePreviewImgDropzoneCtx();
 
   const thumbs = files.map((file, idx) => (
     <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.id}>
@@ -102,29 +93,11 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
     if (!mainFileId && thumbs.length > 0) updateFileId(thumbs[0].key as string);
   }, [mainFileId, thumbs, updateFileId]);
 
-  const UPLOAD_LIMIT = 5;
-  const isFileUploadLimit = () => files.length === UPLOAD_LIMIT;
-
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     accept: 'image/*',
-    onDrop: (acceptedFiles) => {
-      if (isFileUploadLimit()) {
-        alert('Maximum upload of 5 images!');
-        return;
-      }
-
-      const filesAfterAddition = files.concat(
-        acceptedFiles.map((file: any) => {
-          const previewBlob = URL.createObjectURL(file);
-          return Object.assign(file, { preview: previewBlob, id: uuidV4() });
-        })
-      );
-
-      onDropFile(filesAfterAddition);
-    },
+    onDrop: onDropFile,
   });
 
-  // TODO: where is a good place to revoke the urls while maintaing a good UX
   // i.e. the user can still see the images when they reverse the step
   // useEffect(
   //   () => () => {
@@ -133,16 +106,6 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   //   },
   //   [files]
   // );
-
-  const onPreview = () => {
-    // previewFile should always be defined, because the preview button is
-    // disabled if there is no image and a main image is selected by default
-    const previewFile = getMainDisplayFile();
-    if (!previewFile) return;
-    console.log(previewFile.preview)
-
-    onNextStep(previewFile.preview, formDataFromFiles());
-  };
 
   return (
     <Card style={{ padding: '15px 15px 0px 15px' }}>
@@ -166,11 +129,10 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
 
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>
-        <Button disabled={files.length === 0} color='primary' onClick={onPreview}>
+        <Button disabled={files.length === 0} color='primary' onClick={onNextStep}>
           Preview
         </Button>
       </CardFooter>
-
     </Card>
   );
 };

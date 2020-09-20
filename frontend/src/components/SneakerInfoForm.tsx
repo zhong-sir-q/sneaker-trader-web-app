@@ -1,40 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { Col, Card, CardHeader, CardBody, Row, FormGroup, CardFooter, Button } from 'reactstrap';
 
-import * as Yup from 'yup';
 import { Formik, Form as FormikForm } from 'formik';
 
-import { ListingFormSneakerStateType } from 'pages/ProductListingForm';
-import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 import FormikLabelInput from './formik/FormikLabelInput';
+import FormikLabelSelect from './formik/FormikLabelSelect';
+import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 
 import { DASHBOARD, ADMIN } from 'routes';
 
-import { required, requiredPositiveNumber } from 'utils/yup';
-import { getBrands, getSneakerNames, getColorways } from 'api/api';
-import FormikLabelSelect from './formik/FormikLabelSelect';
-
-type SneakerInfoFormStateType = ListingFormSneakerStateType & { billingInfo: string };
+import { useSneakerListingFormCtx } from 'providers/SneakerListingFormCtxProvider';
 
 type SneakerInfoFormProps = {
-  formValues: SneakerInfoFormStateType;
-  onSubmit: (sneaker: ListingFormSneakerStateType, billingInfo: string) => void;
+  goNextStep: () => void;
 };
-
-const sneakerInfoValidation = Yup.object({
-  name: required(),
-  brand: required(),
-  colorway: required(),
-  currencyCode: required(),
-  sizeSystem: required(),
-  prodCondition: required(),
-  // TODO: minimum price of $20
-  askingPrice: requiredPositiveNumber('Price'),
-  // NOTE: should be between size 1 to 15 or something
-  size: requiredPositiveNumber('Size'),
-});
 
 const range = (start: number, end: number, step: number): number[] => {
   let result: number[] = [];
@@ -53,25 +34,23 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
     if ((evt.charCode || evt.keyCode) === 13) evt.preventDefault();
   };
 
-  const [brandOptions, setBrandOptions] = useState<string[]>([]);
-  const [sneakerNamesOptions, setSneakerNamesOptions] = useState<string[]>([]);
-  const [colorwayOptions, setColorwayOptions] = useState<string[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      setBrandOptions((await getBrands()).map((b) => b.brand));
-      setSneakerNamesOptions((await getSneakerNames()).map((sn) => sn.name));
-      setColorwayOptions((await getColorways()).map((c) => c.colorway));
-    })();
-  }, []);
+  const {
+    brandOptions,
+    colorwayOptions,
+    sneakerNamesOptions,
+    listingSneakerFormState,
+    validationSchema,
+    onSubmit,
+  } = useSneakerListingFormCtx();
 
   return (
     <Formik
-      initialValues={props.formValues}
-      validationSchema={sneakerInfoValidation}
+      initialValues={listingSneakerFormState}
+      validationSchema={validationSchema}
       onSubmit={(formStates) => {
-        const { billingInfo, ...sneaker } = formStates;
-        props.onSubmit(sneaker, billingInfo);
+        onSubmit(formStates);
+        console.log(formStates);
+        props.goNextStep();
       }}
       enableReinitialize
     >
@@ -162,17 +141,6 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                       <option value='new'>New</option>
                       <option value='used'>Used</option>
                     </FormikLabelSelect>
-                  </FormGroup>
-                </Col>
-
-                <Col md='4'>
-                  <FormGroup>
-                    <FormikLabelInput
-                      name='billingInfo'
-                      placeholder='4444-4444-4444-4444'
-                      type='text'
-                      label='Billing Info (Optional)'
-                    />
                   </FormGroup>
                 </Col>
               </Row>
