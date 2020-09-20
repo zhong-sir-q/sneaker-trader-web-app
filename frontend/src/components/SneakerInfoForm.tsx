@@ -174,11 +174,9 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
               </FormGroup>
             </CardBody>
             <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-              <Button>
-                <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
-                  Cancel
-                </Link>
-              </Button>
+              <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
+                <Button type='button'>Cancel</Button>
+              </Link>
               <Button type='submit' color='primary'>
                 Next
               </Button>

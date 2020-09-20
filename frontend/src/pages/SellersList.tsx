@@ -164,7 +164,7 @@ const SellersList = () => {
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
-      <SneakerCard styles={{ margin: 'auto', marginBottom: '15px' }} sneaker={sneaker} maxWidth='200px' />
+      <SneakerCard styles={{ margin: 'auto', marginBottom: '15px' }} sneaker={sneaker} maxWidth='400px' />
       <SortByPriceDropdown
         sortInAscendingOrder={sortSellersByAskingPriceAscending}
         sortInDescendingOrder={sortSellersByAskingPriceDescending}

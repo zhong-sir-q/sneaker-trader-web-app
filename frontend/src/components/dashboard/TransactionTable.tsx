@@ -85,7 +85,7 @@ const TransactionTable = (props: TransactionTableProps) => {
           <small>$</small>
           {(quantity || 1) * Number(price)}
         </td>
-        <td style={{ minWidth: showListed ? '300px' : '200px' }}>
+        <td style={{ minWidth: '220px' }}>
           {showListed ? (
             <SellerCTAButtonsGroup
               listedProdId={id!}

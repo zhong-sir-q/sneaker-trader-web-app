@@ -98,15 +98,6 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
     onDrop: onDropFile,
   });
 
-  // i.e. the user can still see the images when they reverse the step
-  // useEffect(
-  //   () => () => {
-  //     // Make sure to revoke the data uris to avoid memory leaks
-  //     files.forEach((file) => URL.revokeObjectURL(file.preview));
-  //   },
-  //   [files]
-  // );
-
   return (
     <Card style={{ padding: '15px 15px 0px 15px' }}>
       <CardHeader>

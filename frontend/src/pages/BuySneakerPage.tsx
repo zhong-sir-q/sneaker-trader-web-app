@@ -139,12 +139,12 @@ const BuySneakerPage = () => {
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
-          <Col md='6'>
+          <Col sm='4' md='4'>
             <SizesGrid />
           </Col>
-          <Col md='6'>
+          <Col sm='8' md='8'>
             <CenterContainer>
-              <img alt={displaySneaker.name} src={displaySneaker.imageUrls!.split(',')[0]} />
+              <img style={{ maxWidth: '500px', width: '100%', height: '100%' }} alt={displaySneaker.name} src={displaySneaker.imageUrls!.split(',')[0]} />
               <Button onClick={() => onViewAllAsks()}>View All Asks</Button>
               <Button
                 disabled={selectedSize === 'all'}

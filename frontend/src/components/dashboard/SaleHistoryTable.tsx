@@ -9,7 +9,7 @@ const SaleHistoryTable = () => {
 
   return (
     <Card>
-      <CardHeader style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <CardHeader>
         <CardTitle tag='h4'>Sales History</CardTitle>
       </CardHeader>
       <CardBody>
