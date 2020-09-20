@@ -4,6 +4,7 @@ import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
 import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
+import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {
@@ -69,17 +70,21 @@ export type PreviewFile = File & {
 };
 
 type PreviewImagesDropZoneProps = {
-  files: PreviewFile[];
-  mainFileId: string | undefined;
   onPrevStep: () => void;
-  onNextStep: () => void;
-  onDropFile: (newFiles: PreviewFile[]) => void;
-  onRemoveFile: (fileId: string) => void;
-  updateFileId: (fileId: string) => void;
+  onNextStep: (previewImgUrl: string, imgUrlsFormData: FormData) => void;
 };
 
-const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
-  const { files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, updateFileId } = props;
+const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
+  const { onPrevStep, onNextStep } = props;
+  const {
+    files,
+    mainFileId,
+    formDataFromFiles,
+    onDropFile,
+    onRemoveFile,
+    updateFileId,
+    getMainDisplayFile,
+  } = usePreviewImgDropzoneCtx();
 
   const thumbs = files.map((file, idx) => (
     <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.id}>
@@ -119,14 +124,24 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
     },
   });
 
-  // reject user if the main image has not be selected yet
-  const onPreview = () => {
-    if (!mainFileId) {
-      alert('Select a main image to display');
-      return;
-    }
+  // TODO: where is a good place to revoke the urls while maintaing a good UX
+  // i.e. the user can still see the images when they reverse the step
+  // useEffect(
+  //   () => () => {
+  //     // Make sure to revoke the data uris to avoid memory leaks
+  //     files.forEach((file) => URL.revokeObjectURL(file.preview));
+  //   },
+  //   [files]
+  // );
 
-    onNextStep();
+  const onPreview = () => {
+    // previewFile should always be defined, because the preview button is
+    // disabled if there is no image and a main image is selected by default
+    const previewFile = getMainDisplayFile();
+    if (!previewFile) return;
+    console.log(previewFile.preview)
+
+    onNextStep(previewFile.preview, formDataFromFiles());
   };
 
   return (
@@ -155,8 +170,9 @@ const PreviewImagesDropZone = (props: PreviewImagesDropZoneProps) => {
           Preview
         </Button>
       </CardFooter>
+
     </Card>
   );
 };
 
-export default PreviewImagesDropZone;
+export default PreviewImagesDropzone;

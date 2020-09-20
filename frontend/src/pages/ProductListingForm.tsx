@@ -6,7 +6,7 @@ import PanelHeader from 'components/PanelHeader';
 import SubmissionSuccess from 'components/SubmissionSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
-import PreviewImagesDropZone, { PreviewFile } from 'components/PreviewImagesDropZone';
+import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 
 import {
   createProduct,
@@ -21,6 +21,7 @@ import {
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
 
 import { useAuth } from 'providers/AuthProvider';
+import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
 
 export type ListingFormSneakerStateType = Omit<Sneaker, 'imageUrls' | 'price'> &
   Pick<ListedProduct, 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'askingPrice' | 'conditionRating'>;
@@ -70,70 +71,35 @@ const ProductListingForm = () => {
   // not part of the sneaker, so separate the state out
   const [billingInfo, setBillingInfo] = useState('');
 
-  // images
-  const [files, setFiles] = useState<PreviewFile[]>([]);
-  // use this as the specific ID of the file
-  const [mainFileId, setMainFileId] = useState<string>();
-
   const [step, setStep] = useState(0);
 
   const { currentUser } = useAuth();
 
-  // TODO: where is a good place to revoke the urls while maintaing a good UX
-  // i.e. the user can still see the images when they reverse the step
-  // useEffect(
-  //   () => () => {
-  //     // Make sure to revoke the data uris to avoid memory leaks
-  //     files.forEach((file) => URL.revokeObjectURL(file.preview));
-  //   },
-  //   [files]
-  // );
+  const goPrevStep = () => setStep(step - 1);
 
-  const onPrevStep = () => setStep(step - 1);
-
-  const onNextStep = () => setStep(step + 1);
+  const goNextstep = () => setStep(step + 1);
 
   const onSubmitInfoForm = (sneakerStates: ListingFormSneakerStateType, billingInfoInput: string) => {
-    onNextStep();
+    goNextstep();
 
     setSneaker(sneakerStates);
     setBillingInfo(billingInfoInput);
   };
 
-  const onDropFile = (newFiles: PreviewFile[]) => setFiles(newFiles);
+  const [previewImgUrl, setPreviewImgUrl] = useState('');
+  const [imgUrlsFormData, setImgUrlsFormData] = useState<FormData>();
 
-  const onRemoveFile = (fileId: string) => {
-    if (mainFileId === fileId) setMainFileId(undefined);
-
-    const filesAfterRemoval = files.filter((file) => file.id !== fileId);
-    setFiles(filesAfterRemoval);
+  const onConfirmPreview = (previewUrl: string, formData: FormData) => {
+    setPreviewImgUrl(previewUrl);
+    setImgUrlsFormData(formData);
+    goNextstep();
   };
-
-  const updateFileId = (fileId: string) => setMainFileId(fileId);
-
-  const getMainDisplayFile = () => files.filter((f) => f.id === mainFileId)[0];
-
-  const formDataFromFiles = () => {
-    const formData = new FormData();
-
-    // image need to be the first element to be the main display image
-    const mainFileIdx = files.findIndex((f) => f.id === mainFileId);
-    const tmp = files[0];
-    files[0] = files[mainFileIdx];
-    files[mainFileIdx] = tmp;
-
-    for (const f of files) formData.append('files', f);
-
-    return formData;
-  };
-
-  // NOTE: am I doing too much in the onFinishSubmit function???
 
   // steps:
   // upload all the images to S3 -> insert the product in the
-  // Products and the ListedProducts table -> display successful message
+  // Products and the ({ ...new File(), id: '', preview: '' })ListedProducts table -> display successful message
   const onFinishSubmit = async () => {
-    const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles());
+    const uploadedUrls = await uploadS3MultipleImages(imgUrlsFormData!);
 
     const formattedUrls = uploadedUrls.join(',');
     // need no use the asking price to create the product, because it should be a RRP
@@ -155,7 +121,7 @@ const ProductListingForm = () => {
     await createSneakerName({ name: sneaker.name });
 
     // Go to the success message
-    onNextStep();
+    goNextstep();
   };
 
   const renderStep = () => {
@@ -163,14 +129,10 @@ const ProductListingForm = () => {
       case 0:
         return <SneakerInfoForm formValues={{ ...sneaker, billingInfo }} onSubmit={onSubmitInfoForm} />;
       case 1:
-        return (
-          <PreviewImagesDropZone
-            {...{ files, mainFileId, onPrevStep, onNextStep, onDropFile, onRemoveFile, updateFileId }}
-          />
-        );
+        return <PreviewImagesDropzone onNextStep={onConfirmPreview} onPrevStep={goPrevStep} />;
       case 2:
-        const previewSneaker = { ...sneaker, imageUrls: getMainDisplayFile().preview, price: sneaker.askingPrice };
-        return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep, onSubmit: onFinishSubmit }} />;
+        const previewSneaker = { ...sneaker, imageUrls: previewImgUrl, price: sneaker.askingPrice };
+        return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep: goPrevStep, onSubmit: onFinishSubmit }} />;
       case 3:
         return <SubmissionSuccess />;
       default:
@@ -190,7 +152,7 @@ const ProductListingForm = () => {
             <div style={{ marginBottom: '1rem' }}>
               <Progress value={calcProgress()} />
             </div>
-            {renderStep()}
+            <PreviewImgDropzoneCtxProvider>{renderStep()}</PreviewImgDropzoneCtxProvider>
           </Col>
         </Container>
       </div>

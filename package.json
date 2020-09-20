@@ -7,7 +7,8 @@
     "buildAll": "tsc -b frontend backend",
     "buildBackend": "tsc -b backend",
     "start": "concurrently 'npm --prefix frontend start' 'npm --prefix backend start'",
-    "deployAll": "./build_and_deploy.sh && npm --prefix frontend run build && npm --prefix frontend run deploy"
+    "deployAll": "source build_and_deploy.sh && npm --prefix frontend run build && npm --prefix frontend run deploy",
+    "push": "npm --prefix backend test && git push && npm run deployAll"
   },
   "keywords": [],
   "author": "",
