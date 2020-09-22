@@ -7,13 +7,13 @@ import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from '
 // core components
 import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
-import { User } from '../../../shared';
+import { User, DomainUser } from '../../../shared';
 import { updateUser } from 'api/api';
 import { getCurrentUser } from 'utils/auth';
 
 import avatar from 'assets/img/default-profile-picture.jpg'
 
-const INIT_USER: User = {
+const INIT_USER: DomainUser = {
   username: '',
   firstName: '',
   lastName: '',
@@ -42,7 +42,6 @@ const UserProfile = () => {
   useEffect(() => {
     (async () => {
       const currentUser = await getCurrentUser();
-      console.log(currentUser)
       setUser(currentUser);
     })();
   }, []);
@@ -51,9 +50,7 @@ const UserProfile = () => {
     // TODO: check if the user name is already in use upon submit
     // DO NOT make the api calls if none of the fields have been touched!
 
-    const res = await updateUser({ ...formStates, email: user.email }).catch((err) => console.log(err));
-    // handle the error
-    if (!res) return;
+    await updateUser({ ...formStates, email: user.email })
 
     setSuccessEdit(true);
     // update is successful
@@ -68,7 +65,7 @@ const UserProfile = () => {
           Changes have been saved
         </Alert>
         <Row>
-          <Formik initialValues={user} enableReinitialize onSubmit={handleSubmit}>
+          <Formik initialValues={user as User} enableReinitialize onSubmit={handleSubmit}>
             <Col md='8'>
               <Card>
                 <CardHeader>

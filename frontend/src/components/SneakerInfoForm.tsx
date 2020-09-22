@@ -49,7 +49,6 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
       validationSchema={validationSchema}
       onSubmit={(formStates) => {
         onSubmit(formStates);
-        console.log(formStates);
         props.goNextStep();
       }}
       enableReinitialize

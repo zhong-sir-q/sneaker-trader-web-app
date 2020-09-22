@@ -1,15 +1,22 @@
 import {
   User,
   Sneaker,
-  ListedProduct,
   SizeMinPriceGroupType,
   Brand,
   SneakerName,
   Colorway,
-  ContactSellerMailPayload,
+  MailAfterPurchasePayload,
   SneakerAsk,
-  Transaction,
   SneakerStatus,
+  TopupWalletPayload,
+  DecreaseWalletPayload,
+  SellerListedSneaker,
+  BuyerPurchasedSneaker,
+  DomainSneaker,
+  DomainListedSneaker,
+  CreateTransactionPayload,
+  CreateUserPayload,
+  GallerySneaker,
 } from '../../../shared';
 
 import { Seller } from 'pages/SellersList';
@@ -53,32 +60,32 @@ export const getSellersBySneakerNameSize = (sneakerName: string, size: number): 
   fetch(SELLERS_API_URL + `?sneakerName=${sneakerName}&size=${size}`).then((res) => res.json());
 
 // Create the user in the database
-export const createUser = (user: User) => fetch(USER_API_URL, formatRequestOptions(user)).then((res) => res.json());
+export const createUser = (user: CreateUserPayload) => fetch(USER_API_URL, formatRequestOptions(user)).then((res) => res.json());
 
 export const updateUser = (user: User) =>
   fetch(USER_API_URL, formatRequestOptions(user, undefined, 'PUT')).then((res) => res);
 
 // product
 // returns the insert id of the product
-export const createProduct = (product: Omit<Sneaker, 'price'>): Promise<number> =>
-  fetch(PRODUCT_API_URL, formatRequestOptions(product)).then((res) => res.json());
+export const createSneaker = (sneaker: DomainSneaker): Promise<number> =>
+  fetch(PRODUCT_API_URL, formatRequestOptions(sneaker)).then((res) => res.json());
 
 export const getProductByNameColorwaySize = (nameColorway: string, size: number): Promise<Sneaker | undefined> =>
   fetch(PRODUCT_API_URL + `${nameColorway}/${size}`).then((res) => res.json());
 
 // listed product
-export const createListedProduct = (listedProduct: ListedProduct) =>
-  fetch(LISTED_PRODUCT_API_URL, formatRequestOptions(listedProduct)).then((res) => res.json());
+export const createListedSneaker = (listedSneaker: DomainListedSneaker) =>
+  fetch(LISTED_PRODUCT_API_URL, formatRequestOptions(listedSneaker)).then((res) => res.json());
 
-export const getAllListedProducts = (): Promise<Sneaker[]> => fetch(LISTED_PRODUCT_API_URL).then((res) => res.json());
+export const getAllListedProducts = (): Promise<DomainSneaker[]> => fetch(LISTED_PRODUCT_API_URL).then((res) => res.json());
 
-export const getGallerySneakers = (): Promise<Sneaker[]> =>
+export const getGallerySneakers = (): Promise<GallerySneaker[]> =>
   fetch(LISTED_PRODUCT_API_URL + 'gallery').then((res) => res.json());
 
 export const getUserSizeGroupedPrice = (sneakerName: string): Promise<SizeMinPriceGroupType> =>
   fetch(LISTED_PRODUCT_API_URL + `?name=${sneakerName}`).then((res) => res.json());
 
-export const getSneakersBySize = (size: string): Promise<Sneaker[]> =>
+export const getSneakersBySize = (size: string): Promise<GallerySneaker[]> =>
   fetch(LISTED_PRODUCT_API_URL + `?sizes=${size}`).then((res) => res.json());
 
 export const getAllAsksByNameColorway = (nameColorway: string): Promise<SneakerAsk[]> =>
@@ -104,7 +111,7 @@ export const uploadS3MultipleImages = (formData: FormData): Promise<string[]> =>
   }).then((res) => res.json());
 
 // mail
-export const mailAfterPurchase = (payload: ContactSellerMailPayload) =>
+export const mailAfterPurchase = (payload: MailAfterPurchasePayload) =>
   fetch(MAIL_API_URL + 'confirmPurchase', formatRequestOptions(payload));
 
 // helper_info such as brands, sneaker names and color ways etc.
@@ -129,33 +136,21 @@ export const createColorway = (colorway: Colorway): Promise<any> =>
 export const getWalletBalanceByUserId = (userId: number): Promise<number | undefined> =>
   fetch(WALLET_API_URL + userId).then((res) => res.json());
 
-export const topupWalletBalance = (data: { userId: number; amount: number }) =>
+export const topupWalletBalance = (data: TopupWalletPayload) =>
   fetch(WALLET_API_URL + 'topup', formatRequestOptions(data, undefined, 'PUT'));
 
-export const decreaseWalletBalance = (data: { userId: number; amount: number }) =>
+export const decreaseWalletBalance = (data: DecreaseWalletPayload) =>
   fetch(WALLET_API_URL + 'decreaseBalance', formatRequestOptions(data, undefined, 'PUT'));
 
 // transaction related
-export const createProductTransaction = (payload: Transaction) =>
+export const createProductTransaction = (payload: CreateTransactionPayload) =>
   fetch(TRANSACTION_API_URL, formatRequestOptions(payload, undefined, 'POST'));
 
-export const getListedProductsBySellerId = (sellerId: number): Promise<Sneaker[]> =>
-  fetch(TRANSACTIONS_API_URL + `listed/${sellerId}`)
-    .then((res) => res.json())
-    .then((listedProducts: Sneaker[]) => {
-      for (const p of listedProducts) p.buyer = JSON.parse(p.stringifiedBuyer!);
+export const getListedProductsBySellerId = (sellerId: number): Promise<SellerListedSneaker[]> =>
+  fetch(TRANSACTIONS_API_URL + `listed/${sellerId}`).then((res) => res.json());
 
-      return listedProducts;
-    });
-
-export const getPurchasedProductsByBuyerId = (buyerId: number): Promise<Sneaker[]> =>
-  fetch(TRANSACTIONS_API_URL + `purchased/${buyerId}`)
-    .then((res) => res.json())
-    .then((purchasedProducts: Sneaker[]) => {
-      for (const p of purchasedProducts) p.seller = JSON.parse(p.stringifiedSeller!);
-
-      return purchasedProducts;
-    });
+export const getPurchasedProductsByBuyerId = (buyerId: number): Promise<BuyerPurchasedSneaker[]> =>
+  fetch(TRANSACTIONS_API_URL + `purchased/${buyerId}`).then((res) => res.json());
 
 // user rating
 export const rateBuyer = (listedProductId: number, rating: number) =>

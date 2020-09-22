@@ -38,7 +38,7 @@ import {
 import { createUser } from 'api/api';
 
 import { SIGNIN, AUTH } from 'routes';
-import { User } from '../../../shared';
+import { CreateUserPayload } from '../../../shared';
 
 import bgImage from 'assets/img/bg16.jpg';
 
@@ -79,17 +79,17 @@ const SideContent = () => (
   </Col>
 );
 
-type FormStateType = User & { password: string; confirmPassword: string; policyAgreed: string };
+type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: string };
 
-// Typescript does not throw an error when using FormStateType instead of User
+// Typescript does not throw an error when using SignupFormStateType instead of User
 // so I have to manually transform the form values to a User object
-const convertFormValuesToUser = (formValues: FormStateType): User => {
+const convertFormValuesToUser = (formValues: SignupFormStateType): CreateUserPayload => {
   const { firstName, lastName, username, gender, dob, email, phoneNo } = formValues;
 
   return { firstName, lastName, username, gender, dob, email, phoneNo };
 };
 
-const INIT_FORM_VALUES: FormStateType = {
+const INIT_FORM_VALUES: SignupFormStateType = {
   firstName: '',
   lastName: '',
   username: '',
@@ -154,7 +154,7 @@ const SignupForm = () => {
   const [signUpError, setSignUpError] = useState<string>();
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-  const handleSubmit = async (formStates: FormStateType) => {
+  const handleSubmit = async (formStates: SignupFormStateType) => {
     const cognitoUser = await Auth.signUp({ username: formStates.email, password: formStates.password })
       .then((res) => res.user)
       .catch((err) => err);
@@ -188,7 +188,7 @@ const SignupForm = () => {
                   onSubmit={(formStates, { setSubmitting, resetForm }) => {
                     setTimeout(async () => {
                       handleSubmit(formStates);
-                      resetForm(INIT_FORM_VALUES as Partial<FormikState<FormStateType>>);
+                      resetForm(INIT_FORM_VALUES as Partial<FormikState<SignupFormStateType>>);
                       setSubmitting(false);
                     }, 400);
                   }}

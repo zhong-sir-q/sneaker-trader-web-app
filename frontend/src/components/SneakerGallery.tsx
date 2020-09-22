@@ -3,10 +3,10 @@ import { Row } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
 
-import { Sneaker } from '../../../shared';
+import { GallerySneaker } from '../../../shared';
 
 type SneakerGalleryProps = {
-  sneakers: Sneaker[];
+  sneakers: GallerySneaker[];
 };
 
 const SneakerGallery = (props: SneakerGalleryProps) => {
@@ -14,9 +14,7 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
     return (
       <Row className='margin-right-except-last' xs='3' sm='4' md='5'>
         {props.sneakers.map((s, idx) => {
-          const { size, ...sneaker } = s;
-
-          return <SneakerCard isListed sneaker={sneaker} key={idx} />;
+          return <SneakerCard isListed sneaker={s} key={idx} price={s.minPrice} />;
         })}
       </Row>
     );

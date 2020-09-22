@@ -3,14 +3,15 @@ import React from 'react';
 import { Dialog, DialogTitle, Switch } from '@material-ui/core';
 import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 
-import TransactionTable from './TransactionTable';
-
 import { useTransactionTableContext } from 'providers/TransactionTableContextProvider';
+import ListedSneakerTable from './ListedSneakerTable';
+import PurchasedSneakerTable from './PurchasedSneakerTable';
 
 const TransactionDualHistoryTable = () => {
   const {
     showListed,
-    dualHistoryTableSneakers,
+    unsoldListedSneakers,
+    purchasedSneakers,
     isOpenSaleSuccessPopup,
     handleOpenPopup,
     handleClosePopup,
@@ -29,11 +30,11 @@ const TransactionDualHistoryTable = () => {
           </div>
         </CardHeader>
         <CardBody>
-          <TransactionTable
-            sneakers={dualHistoryTableSneakers!}
-            showListed={showListed}
-            setShowCompleteSaleSuccess={handleOpenPopup}
-          />
+          {showListed ? (
+            <ListedSneakerTable sneakers={unsoldListedSneakers} setShowCompleteSaleSuccess={handleOpenPopup} />
+          ) : (
+            <PurchasedSneakerTable sneakers={purchasedSneakers} />
+          )}
         </CardBody>
       </Card>
       <Dialog open={isOpenSaleSuccessPopup} onClose={handleClosePopup}>

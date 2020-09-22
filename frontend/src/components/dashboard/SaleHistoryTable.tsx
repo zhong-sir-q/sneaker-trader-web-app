@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 
-import TransactionTable from './TransactionTable';
+import ListedSneakerTable from './ListedSneakerTable';
+
 import { useTransactionTableContext } from 'providers/TransactionTableContextProvider';
 
 const SaleHistoryTable = () => {
@@ -13,7 +14,7 @@ const SaleHistoryTable = () => {
         <CardTitle tag='h4'>Sales History</CardTitle>
       </CardHeader>
       <CardBody>
-        <TransactionTable sneakers={sellerSoldSneakers} showListed={true} />
+        <ListedSneakerTable sneakers={sellerSoldSneakers} />
       </CardBody>
     </Card>
   );

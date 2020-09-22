@@ -1,21 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import { Table } from 'reactstrap'
+import { Table } from 'reactstrap';
 
-import SellerCTAButtonsGroup from "components/buttons/SellerCTAButtonsGroup";
-import BuyerCTAButtonsGroup from "components/buttons/BuyerCTAButtonsGroup";
+import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
-import { updateProdStatus } from "api/api";
-import { Sneaker } from "../../../../shared";
+import { updateProdStatus } from 'api/api';
+import { upperCaseFirstLetter } from 'utils/utils';
 
-const upperCaseFirstLetter = (s: string | undefined) => {
-  if (!s) return s;
+import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 
-  const firstLetter = s[0];
-  return firstLetter.toUpperCase() + s.slice(1);
-};
-
-const TransactionHeader = () => (
+const ListedSneakerTableHeader = () => (
   <thead>
     <tr>
       <th className='text-center' />
@@ -30,20 +24,19 @@ const TransactionHeader = () => (
   </thead>
 );
 
-type TransactionRowProps = {
-  sneaker: Sneaker;
+type ListedSneakerTableRowProps = {
+  sneaker: SellerListedSneaker;
 };
 
-type TransactionTableProps = {
-  showListed: boolean;
-  sneakers: Sneaker[] | undefined;
+type ListedSneakerTableProps = {
+  sneakers: SellerListedSneaker[];
   setShowCompleteSaleSuccess?: () => void;
 };
 
-const TransactionTable = (props: TransactionTableProps) => {
-  const { showListed, sneakers, setShowCompleteSaleSuccess } = props;
+const ListedSneakerTable = (props: ListedSneakerTableProps) => {
+  const { sneakers, setShowCompleteSaleSuccess } = props;
 
-  const computeTotalAmount = (sneakers: Sneaker[]) => {
+  const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
     let total = 0;
 
     for (const s of sneakers) total += (s.quantity || 1) * Number(s.price);
@@ -51,14 +44,14 @@ const TransactionTable = (props: TransactionTableProps) => {
     return total;
   };
 
-  const TransactionRow = (props: TransactionRowProps) => {
-    const { id, name, colorway, imageUrls, size, price, quantity, prodStatus, buyer, seller } = props.sneaker;
+  const ListedSneakerRow = (props: ListedSneakerTableRowProps) => {
+    const { id, name, colorway, imageUrls, size, price, quantity, prodStatus, buyer } = props.sneaker;
 
     const displayImg = imageUrls.split(',')[0];
 
     const onCompleteSale = async () => {
-      await updateProdStatus(id!, 'sold');
-      setShowCompleteSaleSuccess!();
+      await updateProdStatus(id, 'sold');
+      if (setShowCompleteSaleSuccess) setShowCompleteSaleSuccess();
     };
 
     return (
@@ -86,16 +79,12 @@ const TransactionTable = (props: TransactionTableProps) => {
           {(quantity || 1) * Number(price)}
         </td>
         <td style={{ minWidth: '220px' }}>
-          {showListed ? (
-            <SellerCTAButtonsGroup
-              listedProdId={id!}
-              prodStatus={prodStatus!}
-              onCompleteSale={onCompleteSale}
-              buyer={buyer!}
-            />
-          ) : (
-            <BuyerCTAButtonsGroup listedProdId={id!} prodStatus={prodStatus!} seller={seller!} />
-          )}
+          <SellerCTAButtonsGroup
+            listedProdId={id}
+            prodStatus={prodStatus}
+            onCompleteSale={onCompleteSale}
+            buyer={buyer}
+          />
         </td>
       </tr>
     );
@@ -103,10 +92,10 @@ const TransactionTable = (props: TransactionTableProps) => {
 
   return sneakers && sneakers.length > 0 ? (
     <Table responsive className='table-shopping'>
-      <TransactionHeader />
+      <ListedSneakerTableHeader />
       <tbody>
         {sneakers.map((s, idx) => (
-          <TransactionRow key={idx} sneaker={s} />
+          <ListedSneakerRow key={idx} sneaker={s} />
         ))}
         <tr>
           <td colSpan={7} />
@@ -123,4 +112,4 @@ const TransactionTable = (props: TransactionTableProps) => {
   );
 };
 
-export default TransactionTable
+export default ListedSneakerTable;

@@ -7,20 +7,11 @@ import { getBrands, getSneakerNames, getColorways } from 'api/api';
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
-  | 'name'
-  | 'brand'
-  | 'size'
-  | 'colorway'
-  | 'askingPrice'
-  | 'description'
-  | 'sizeSystem'
-  | 'currencyCode'
-  | 'prodCondition'
-  | 'conditionRating'
->;
+  'name' | 'brand' | 'colorway' | 'description' | 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'conditionRating'
+> & { size: number | ''; askingPrice: number | '' };
 
 type SneakerListingFormValidationSchemaType = Yup.ObjectSchema<
-  Omit<SneakerListingFormStateType, 'conditionRating'> | undefined
+  Omit<SneakerListingFormStateType, 'conditionRating' | 'description'> | undefined
 >;
 
 type SneakerListingFormCtxType = {

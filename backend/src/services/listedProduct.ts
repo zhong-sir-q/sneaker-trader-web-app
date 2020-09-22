@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 
 import { formatInsertColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
 
-import { ListedProduct, Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
+import { ListedProduct, Sneaker, SizeMinPriceGroupType, SneakerAsk, GallerySneaker } from '../../../shared';
 import { PromisifiedConnection } from '../config/mysql';
 import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
 
@@ -26,12 +26,12 @@ class ListedProductService {
     return this.connection.query(getAllAsksQuery);
   }
 
-  getBySize(size: string): Promise<Sneaker[]> {
+  getBySize(size: string) {
     // similar to the get gallery sneakers query, but because the sneakers with different
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
-    SELECT name, colorway, brand, imageUrls, B.price FROM ${PRODUCTS} A JOIN (
-      SELECT MIN(askingPrice) as price, productId FROM ${LISTED_PRODUCTS} 
+    SELECT name, colorway, brand, imageUrls, B.minPrice FROM ${PRODUCTS} A JOIN (
+      SELECT MIN(askingPrice) as minPrice, productId FROM ${LISTED_PRODUCTS} 
       WHERE prodStatus = "listed" GROUP BY productId
     ) B ON A.id = B.productId WHERE size = ${size}`;
 
@@ -41,13 +41,14 @@ class ListedProductService {
   getGallerySneakers: RequestHandler = async (_req, res, next) => {
     try {
       // get all sneakers grouped by the names and their min price
-      const query = `SELECT name, size, brand, colorway, imageUrls,
-              MIN(B.minAskingPrice) as price FROM ${PRODUCTS} A JOIN (
-              SELECT MIN(askingPrice) as minAskingPrice, productId FROM ${LISTED_PRODUCTS}
+      const query = `
+        SELECT name, size, brand, colorway, imageUrls,
+          MIN(B.minAskingPrice) as minPrice FROM ${PRODUCTS} A JOIN (
+            SELECT MIN(askingPrice) as minAskingPrice, productId FROM ${LISTED_PRODUCTS}
               WHERE prodStatus = "listed" GROUP BY productId
-            ) B ON A.id = B.productId GROUP BY name, colorway`;
+                ) B ON A.id = B.productId GROUP BY name, colorway`;
 
-      const sneakersWithLowestAskPrice: Sneaker[] = await this.connection.query(query);
+      const sneakersWithLowestAskPrice: GallerySneaker[] = await this.connection.query(query);
 
       res.json(sneakersWithLowestAskPrice);
     } catch (err) {
@@ -80,8 +81,8 @@ class ListedProductService {
 
   getAllListedProducts = () => {
     const allListedProductsQuery = `
-      SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} A, 
-        ${LISTED_PRODUCTS} B WHERE A.id = B.productId AND B.prodStatus = "listed"`;
+      SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} P, 
+        ${LISTED_PRODUCTS} L WHERE P.id = L.productId AND L.prodStatus = "listed"`;
 
     return this.connection.query(allListedProductsQuery);
   };

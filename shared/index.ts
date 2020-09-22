@@ -1,2 +1,2 @@
 export * from './@types/models'
-export * from './@types/shared'
+export * from './@types/domains'

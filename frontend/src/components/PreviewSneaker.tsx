@@ -3,16 +3,17 @@ import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
 
-import { Sneaker } from '../../../shared';
+import { DomainSneaker } from '../../../shared';
 
 type PreviewSneakerProps = {
-  sneaker: Sneaker;
+  sneaker: DomainSneaker;
+  price: number;
   onPrevStep: () => void;
   onSubmit: () => void;
 };
 
 const PreviewSneaker = (props: PreviewSneakerProps) => {
-  const { sneaker, onPrevStep, onSubmit } = props;
+  const { sneaker, price, onPrevStep, onSubmit } = props;
 
   return (
     <Card className='text-center' style={{ maxWidth: '500px' }}>
@@ -20,7 +21,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
       <CardBody>
-        <SneakerCard sneaker={sneaker} />
+        <SneakerCard sneaker={sneaker} price={price} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>

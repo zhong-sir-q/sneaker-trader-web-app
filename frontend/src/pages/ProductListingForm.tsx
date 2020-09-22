@@ -8,43 +8,28 @@ import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
 import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 
-import {
-  createProduct,
-  uploadS3MultipleImages,
-  createListedProduct,
-  createBrand,
-  createSneakerName,
-  createColorway,
-  getProductByNameColorwaySize,
-} from 'api/api';
-
-import { Sneaker, ListedProduct } from '../../../shared';
+import { SneakerStatus } from '../../../shared';
 
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
 import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormCtxProvider';
 
-const formatListedProduct = (
-  sneaker: SneakerListingFormStateType,
-  userId: number,
-  productId: number,
-  quantity?: number
-): ListedProduct => ({
-  userId,
-  productId,
+import handleListingSneaker from 'domains/handleListingSneaker';
+
+const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: number) => ({
   askingPrice: Number(sneaker.askingPrice),
   sizeSystem: sneaker.sizeSystem,
   currencyCode: sneaker.currencyCode,
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
-  prodStatus: 'listed',
+  prodStatus: 'listed' as SneakerStatus,
   conditionRating: sneaker.conditionRating,
 });
 
-const formatProductSneaker = (s: SneakerListingFormStateType): Omit<Sneaker, 'imageUrls' | 'price'> => {
+const formatSneaker = (s: SneakerListingFormStateType) => {
   const { name, colorway, brand, size, description } = s;
 
-  return { name, colorway, brand, size, description };
+  return { name, colorway, brand, size: Number(size), description };
 };
 
 // the providers reside in routes.tsx
@@ -62,31 +47,29 @@ const ProductListingForm = () => {
   const onFinishSubmit = async () => {
     const { name, colorway, size, brand } = listingSneakerFormState;
 
-    const uploadedUrls = await uploadS3MultipleImages(formDataFromFiles());
+    try {
+      const nameColorway = `${name} ${colorway}`;
+      const imgFormData = formDataFromFiles();
+      const sneakerPayload = formatSneaker(listingSneakerFormState);
+      const listedProductPayload = formatListedProduct(listingSneakerFormState);
 
-    let prodId: number;
+      await handleListingSneaker(
+        imgFormData,
+        nameColorway,
+        size as number,
+        currentUser!.id!,
+        sneakerPayload,
+        listedProductPayload,
+        !brandOptions.includes(brand) ? brand : undefined,
+        !colorwayOptions.includes(colorway) ? colorway : undefined,
+        !sneakerNamesOptions.includes(name) ? name : undefined
+      );
 
-    const product = await getProductByNameColorwaySize(`${name} ${colorway}`, size as number);
+      destroyFiles();
 
-    if (product) prodId = product.id!;
-    else {
-      const formattedUrls = uploadedUrls.join(',');
-      const createSneakerPayload = { ...formatProductSneaker(listingSneakerFormState), imageUrls: formattedUrls };
-
-      prodId = await createProduct(createSneakerPayload);
-    }
-
-    const listedProductPayload = formatListedProduct(listingSneakerFormState, currentUser!.id!, prodId);
-    await createListedProduct(listedProductPayload);
-
-    if (!brandOptions.includes(brand)) await createBrand({ brand });
-    if (!colorwayOptions.includes(colorway)) await createColorway({ colorway });
-    if (!sneakerNamesOptions.includes(name)) await createSneakerName({ name });
-
-    destroyFiles();
-
-    // Go to the success message
-    goNextstep();
+      // Go to the success message
+      goNextstep();
+    } catch {}
   };
 
   const renderStep = () => {
@@ -97,11 +80,18 @@ const ProductListingForm = () => {
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:
         const previewSneaker = {
-          ...listingSneakerFormState,
+          ...formatSneaker(listingSneakerFormState),
           imageUrls: getMainDisplayFile()!.preview,
-          price: listingSneakerFormState.askingPrice,
         };
-        return <PreviewSneaker {...{ sneaker: previewSneaker, onPrevStep: goPrevStep, onSubmit: onFinishSubmit }} />;
+
+        return (
+          <PreviewSneaker
+            sneaker={previewSneaker}
+            price={Number(listingSneakerFormState.askingPrice)}
+            onPrevStep={goPrevStep}
+            onSubmit={onFinishSubmit}
+          />
+        );
       case 3:
         return <SubmissionSuccess />;
       default:

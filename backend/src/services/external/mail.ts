@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { ContactSellerMailPayload } from '../../../../shared';
+import { MailAfterPurchasePayload } from '../../../../shared';
 import sendgridMail from '../../config/sendgridMail';
 
 // refactor: define the types
@@ -57,7 +57,7 @@ class MailService {
       sellerEmail,
       buyerEmail,
       productName,
-    } = req.body as ContactSellerMailPayload;
+    } = req.body as MailAfterPurchasePayload;
 
     const toSellerMsg = {
       to: `${sellerEmail}`,

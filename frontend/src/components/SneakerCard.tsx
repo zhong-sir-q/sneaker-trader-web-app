@@ -2,8 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import { Card } from 'reactstrap';
 
-import { Sneaker } from '../../../shared';
 import { useHistory } from 'react-router-dom';
+
+import { DomainSneaker } from '../../../shared';
+
 import { formatSneakerPathName } from 'utils/utils';
 
 const InfoContainer = styled.div`
@@ -22,10 +24,9 @@ const LowestAsk = styled.div`
   text-transform: capitalize;
 `;
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
 type SneakerCardProps = {
-  sneaker: PartialBy<Sneaker, 'size'>;
+  sneaker: Partial<DomainSneaker>;
+  price: number | undefined
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
@@ -39,13 +40,13 @@ const StyledImage = styled.img`
 `;
 
 const SneakerCard = (props: SneakerCardProps) => {
-  const { sneaker, isListed, maxWidth } = props;
-  const { imageUrls, name, price, size, colorway } = sneaker;
+  const { sneaker, isListed, price, maxWidth } = props;
+  const { imageUrls, name, size, colorway } = sneaker;
 
   const history = useHistory();
 
   const onClick = () => {
-    if (isListed) history.push(formatSneakerPathName(name, colorway), sneaker);
+    if (isListed && name && colorway) history.push(formatSneakerPathName(name, colorway), sneaker);
   };
 
   const firstImageUrl = () => imageUrls!.split(',')[0];
@@ -68,7 +69,7 @@ const SneakerCard = (props: SneakerCardProps) => {
           {formatSneakerName()}
         </div>
         <div>
-          {price && (
+          {price !== undefined && (
             <React.Fragment>
               <LowestAsk>Lowest Ask</LowestAsk>
               <div

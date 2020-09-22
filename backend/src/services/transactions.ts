@@ -1,6 +1,7 @@
 import { PromisifiedConnection } from '../config/mysql';
 import { RequestHandler } from 'express';
 import { getSellersAvgRatingQuery, getBuyersAvgRatingQuery } from '../utils/queries';
+import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
 
 class TransactionsService {
   private conneciton: PromisifiedConnection;
@@ -25,7 +26,7 @@ class TransactionsService {
       .catch(next);
   };
 
-  getListedBySellerId(sellerId: string) {
+  async getListedBySellerId(sellerId: string): Promise<SellerListedSneaker[]> {
     const getBuyersInfo = `
       SELECT email, name, username, phoneNo, U.id as userId FROM
         Transactions T, Users U WHERE listedProductId = L.id AND T.buyerId = U.id
@@ -49,10 +50,16 @@ class TransactionsService {
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;
 
-    return this.conneciton.query(getSellerListedProductsQuery);
+    const queryResult = await this.conneciton.query(getSellerListedProductsQuery);
+    for (const sneaker of queryResult) {
+      sneaker.buyer = JSON.parse(sneaker.stringifiedBuyer);
+      delete sneaker.stringifiedBuyer;
+    }
+
+    return queryResult;
   }
 
-  getPurchasedByBuyerId(buyerId: string) {
+  async getPurchasedByBuyerId(buyerId: string): Promise<BuyerPurchasedSneaker[]> {
     const getSellersInfo = `
       SELECT email, name, username, phoneNo, U.id as userId FROM
         Transactions T, Users U WHERE listedProductId = L.id AND T.sellerId = U.id
@@ -75,7 +82,14 @@ class TransactionsService {
           WHERE T.buyerId = ${buyerId} AND T.listedProductId = L.id AND L.productId = P.id
     `;
 
-    return this.conneciton.query(getPurchasedProductsQuery);
+    const queryResult = await this.conneciton.query(getPurchasedProductsQuery);
+
+    for (const sneaker of queryResult) {
+      sneaker.seller = JSON.parse(sneaker.stringifiedSeller);
+      delete sneaker.stringifiedSeller;
+    }
+
+    return queryResult;
   }
 }
 

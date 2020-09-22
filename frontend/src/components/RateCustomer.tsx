@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@material-ui/core";
-import { Input, Button } from "reactstrap";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+import { Input, Button } from 'reactstrap';
 
-import { RatingButton } from "./buttons/StyledButton";
+import { RatingButton } from './buttons/StyledButton';
 
 type RateCustomerProps = {
   title: string;
@@ -16,9 +16,9 @@ const RateCustomer = (props: RateCustomerProps) => {
 
   const [rating, setRating] = useState<number>(1);
 
-  const onSelectRating = (evt: any) => setRating(evt.target.value);
-
   const { title, listedProductId, rateUser } = props;
+
+  const onSelectRating = (evt: any) => setRating(evt.target.value);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -57,4 +57,4 @@ const RateCustomer = (props: RateCustomerProps) => {
   );
 };
 
-export default RateCustomer
+export default RateCustomer;

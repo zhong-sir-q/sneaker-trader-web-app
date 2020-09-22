@@ -1,15 +1,16 @@
-import React, { createContext, useContext, ReactNode, useState, useEffect } from "react";
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
-import { useAuth } from "./AuthProvider";
-import { getListedProductsBySellerId, getPurchasedProductsByBuyerId } from "api/api";
+import { useAuth } from './AuthProvider';
+import { getListedProductsBySellerId, getPurchasedProductsByBuyerId } from 'api/api';
 
-import { Sneaker } from "../../../shared";
+import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
 
 type TransactionTableContextType = {
   isOpenSaleSuccessPopup: boolean;
   showListed: boolean;
-  dualHistoryTableSneakers: Sneaker[] | undefined;
-  sellerSoldSneakers: Sneaker[] | undefined
+  unsoldListedSneakers: SellerListedSneaker[];
+  purchasedSneakers: BuyerPurchasedSneaker[];
+  sellerSoldSneakers: SellerListedSneaker[];
   handleOpenPopup: () => void;
   handleClosePopup: () => void;
   toggleShowListed: () => void;
@@ -18,8 +19,9 @@ type TransactionTableContextType = {
 const INIT_TRANSACTION_CONTEXT: TransactionTableContextType = {
   isOpenSaleSuccessPopup: false,
   showListed: true,
-  dualHistoryTableSneakers: undefined,
-  sellerSoldSneakers: undefined,
+  unsoldListedSneakers: [],
+  purchasedSneakers: [],
+  sellerSoldSneakers: [],
   handleOpenPopup: () => {},
   handleClosePopup: () => {},
   toggleShowListed: () => {},
@@ -33,11 +35,10 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   const [isOpenSaleSuccessPopup, showIsOpenSaleSuccessPopup] = useState(false);
   const [showListed, setShowListed] = useState(true);
 
-  const [dualHistoryTableSneakers, setDualHistoryTableSneakers] = useState<Sneaker[]>();
-  const [listedProductsNotSold, setListedProductsNotSold] = useState<Sneaker[]>();
-  const [purchasedProducts, setPurchasedProducts] = useState<Sneaker[]>();
+  const [unsoldListedSneakers, setUnsoldListedSneakers] = useState<SellerListedSneaker[]>([]);
+  const [purchasedSneakers, setPurchasedSneakers] = useState<BuyerPurchasedSneaker[]>([]);
 
-  const [sellerSoldSneakers, setSellerSoldSneakers] = useState<Sneaker[]>()
+  const [sellerSoldSneakers, setSellerSoldSneakers] = useState<SellerListedSneaker[]>([]);
 
   const { currentUser } = useAuth();
 
@@ -46,17 +47,14 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
       if (currentUser) {
         const fetchedListedProducts = await getListedProductsBySellerId(currentUser.id!);
         const fetchedPurchasedProducts = await getPurchasedProductsByBuyerId(currentUser.id!);
-        
+
         const notSold = fetchedListedProducts.filter((p) => p.prodStatus !== 'sold');
-        const sold = fetchedListedProducts.filter(p => p.prodStatus === 'sold')
+        const sold = fetchedListedProducts.filter((p) => p.prodStatus === 'sold');
 
-        setListedProductsNotSold(notSold);
-        setPurchasedProducts(fetchedPurchasedProducts);
+        setUnsoldListedSneakers(notSold);
+        setPurchasedSneakers(fetchedPurchasedProducts);
 
-        // initially showing the listed products that are 
-        // not sold in the history table
-        setDualHistoryTableSneakers(notSold);
-        setSellerSoldSneakers(sold)
+        setSellerSoldSneakers(sold);
       }
     })();
   }, [isOpenSaleSuccessPopup, currentUser]);
@@ -64,19 +62,15 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   const handleOpenPopup = () => showIsOpenSaleSuccessPopup(true);
   const handleClosePopup = () => showIsOpenSaleSuccessPopup(false);
 
-  const toggleShowListed = () => {
-    if (showListed) setDualHistoryTableSneakers(purchasedProducts);
-    else setDualHistoryTableSneakers(listedProductsNotSold);
-
-    setShowListed(!showListed);
-  };
+  const toggleShowListed = () => setShowListed(!showListed);
 
   return (
     <TransactionTableContext.Provider
       value={{
         isOpenSaleSuccessPopup,
         showListed,
-        dualHistoryTableSneakers,
+        purchasedSneakers,
+        unsoldListedSneakers,
         sellerSoldSneakers,
         handleClosePopup,
         handleOpenPopup,
@@ -88,4 +82,4 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   );
 };
 
-export default TransactionTableContextProvider
+export default TransactionTableContextProvider;

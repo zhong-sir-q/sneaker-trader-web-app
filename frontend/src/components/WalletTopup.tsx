@@ -1,6 +1,6 @@
 import React from 'react';
 import PanelHeader from './PanelHeader';
-import { Input, Card, Container } from 'reactstrap';
+import { Input, Card } from 'reactstrap';
 
 const WalletTopup = () => {
   return (

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import SneakerGallery from 'components/SneakerGallery';
 import { getGallerySneakers, getSneakersBySize } from 'api/api';
 
-import { Sneaker } from '../../../shared';
+import { GallerySneaker } from '../../../shared';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;
@@ -84,8 +84,8 @@ const Filters = (props: FiltersProps) => {
 };
 
 const HomePage = () => {
-  const [defaultSneakers, setDefaultSneakers] = useState<Sneaker[]>([]);
-  const [filterSneakers, setFilterSneakers] = useState<Sneaker[]>([]);
+  const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>([]);
+  const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -96,14 +96,14 @@ const HomePage = () => {
     })();
   }, []);
 
-  const queryHandler = async (brands: string, sizes: string) => {
-    if (brands && sizes) {
-      const sneakersBySize = await getSneakersBySize(sizes as string);
-      setFilterSneakers(sneakersBySize.filter((s) => s.brand === brands));
-    } else if (brands) {
-      setFilterSneakers(defaultSneakers.filter((s) => s.brand === brands));
-    } else if (sizes) {
-      const sneakersBySize = await getSneakersBySize(sizes as string);
+  const queryHandler = async (brand: string, size: string) => {
+    if (brand && size) {
+      const sneakersBySize = await getSneakersBySize(size as string);
+      setFilterSneakers(sneakersBySize.filter((s) => s.brand === brand));
+    } else if (brand) {
+      setFilterSneakers(defaultSneakers.filter((s) => s.brand === brand));
+    } else if (size) {
+      const sneakersBySize = await getSneakersBySize(size as string);
       setFilterSneakers(sneakersBySize);
     } else setFilterSneakers(defaultSneakers);
   };

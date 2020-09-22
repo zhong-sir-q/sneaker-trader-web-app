@@ -9,14 +9,14 @@ import BuySneakerPage from 'pages/BuySneakerPage';
 import { getAllListedProducts } from 'api/api';
 import { formatSneakerPathName } from 'utils/utils';
 
-import { Sneaker } from '../../../shared';
+import { DomainSneaker } from '../../../shared';
 import { homeRoutes } from 'routes';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
 
   const renderBuySneakerRoutes = async () => {
-    const sneakers: Sneaker[] = await getAllListedProducts();
+    const sneakers: DomainSneaker[] = await getAllListedProducts();
     // prevent duplicate routes from rendering
     const seenPaths: Set<string> = new Set();
 

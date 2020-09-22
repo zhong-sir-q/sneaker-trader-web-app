@@ -85,17 +85,15 @@ const BuySneakerPage = () => {
     onComponentMounted();
   }, [onComponentMounted]);
 
-  const onClickSize = (price: number, size: number | 'all') => {
-    setSelectedSize(size);
-    setDisplaySneaker({ ...displaySneaker!, price, size: Number(size) });
-  };
+  const onClickSize = (size: number | 'all') => setSelectedSize(size);
 
   const SizesGrid = () => {
     const renderTiles = () => {
       const minPrice = Math.min(...sizeMinPriceGroup!.map((item) => item.minPrice));
+
       const allSize = [
         <SizeTile
-          onClick={() => onClickSize(minPrice, 'all')}
+          onClick={() => onClickSize('all')}
           key={-1}
           style={{ border: selectedSize === 'all' ? '2px solid green' : '' }}
         >
@@ -107,7 +105,7 @@ const BuySneakerPage = () => {
       return allSize.concat(
         sizeMinPriceGroup!.map(({ size, minPrice }, idx) => (
           <SizeTile
-            onClick={() => onClickSize(minPrice, size)}
+            onClick={() => onClickSize(size)}
             key={idx}
             style={{ border: selectedSize === size ? '2px solid green' : '' }}
           >
@@ -144,7 +142,12 @@ const BuySneakerPage = () => {
           </Col>
           <Col sm='8' md='8'>
             <CenterContainer>
-              <img style={{ maxWidth: '500px', width: '100%', height: '100%' }} alt={displaySneaker.name} src={displaySneaker.imageUrls!.split(',')[0]} />
+              {/* TODO: try use the sneaker card here */}
+              <img
+                style={{ maxWidth: '500px', width: '100%', height: '100%' }}
+                alt={displaySneaker.name}
+                src={displaySneaker.imageUrls!.split(',')[0]}
+              />
               <Button onClick={() => onViewAllAsks()}>View All Asks</Button>
               <Button
                 disabled={selectedSize === 'all'}

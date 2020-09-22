@@ -14,21 +14,18 @@ import { useHistory } from 'react-router-dom';
 
 import _ from 'lodash';
 
+import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
 
-import {
-  getSellersBySneakerNameSize,
-  mailAfterPurchase,
-  decreaseWalletBalance,
-  createProductTransaction,
-  purchaseListedProduct,
-  getProductByNameColorwaySize,
-} from 'api/api';
-
-import { ContactSellerMailPayload, Sneaker } from '../../../shared';
-import { SIGNIN, AUTH } from 'routes';
 import { useAuth } from 'providers/AuthProvider';
-import SneakerCard from 'components/SneakerCard';
+
+import { getSellersBySneakerNameSize, getProductByNameColorwaySize } from 'api/api';
+
+import { SIGNIN, AUTH } from 'routes';
+import { MailAfterPurchasePayload, Sneaker, CreateTransactionPayload } from '../../../shared';
+
+import getTransactionFees from 'domains/getTransactionFee';
+import onConfirmPurchaseSneaker from 'domains/onConfirmPurchaseSneaker';
 
 export type Seller = {
   id: number;
@@ -66,12 +63,9 @@ const SortByPriceDropdown = (props: SortByPriceDropdownProps) => {
   );
 };
 
-// NOTE: is it better to process the fees using cents?
-const transactionFees = (price: number) => price * 0.1;
-
 const SellersList = () => {
-  const [sellers, setSellers] = useState<Seller[]>();
-  const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>();
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [sneaker, setSneaker] = useState<Sneaker>();
 
   const history = useHistory();
@@ -94,15 +88,15 @@ const SellersList = () => {
   };
 
   useEffect(() => {
-    if (!sellers) onComponentLoaded();
+    if (sellers.length === 0) onComponentLoaded();
   });
 
-  const formatMailPayload = async (sellerIdx: number): Promise<ContactSellerMailPayload> => {
+  const formatMailPayload = (sellerIdx: number): MailAfterPurchasePayload => {
     const { username, email } = currentUser!;
 
-    const mailPayload: ContactSellerMailPayload = {
-      sellerUserName: sellers![sellerIdx].username,
-      sellerEmail: sellers![sellerIdx].email,
+    const mailPayload: MailAfterPurchasePayload = {
+      sellerUserName: sellers[sellerIdx].username,
+      sellerEmail: sellers[sellerIdx].email,
       buyerUserName: username,
       buyerEmail: email,
       productName: formatProductName(),
@@ -111,41 +105,38 @@ const SellersList = () => {
     return mailPayload;
   };
 
+  const onEmailSent = () => {
+    alert('The seller will be in touch with you shortly');
+    history.push('/');
+  };
 
   const onConfirm = async () => {
-    if (selectedSellerIdx === undefined) return;
+    const sellerId = sellers[selectedSellerIdx].id;
+    const { askingPrice, listedProductId } = sellers[selectedSellerIdx];
 
-    // deduct the balance from the seller
-    const sellerId = sellers![selectedSellerIdx].id;
-    const { askingPrice, listedProductId } = sellers![selectedSellerIdx];
-    const processingFee = transactionFees(askingPrice);
+    const processingFee = getTransactionFees(askingPrice);
+    const mailPayload = await formatMailPayload(selectedSellerIdx);
 
-    // TODO: ask seniors what is the best ways to handle errors here
-    // need to rollback the transactions if there are any incorrect ops
     try {
-      const mailPayload = await formatMailPayload(selectedSellerIdx);
-
-      mailAfterPurchase(mailPayload).then(() => {
-        alert('The seller will be in touch with you shortly');
-        history.push('/');
-      });
-
-      // update the listed product status to sold
-      await purchaseListedProduct({ id: listedProductId, sellerId });
-
-      await createProductTransaction({
+      const transaction: CreateTransactionPayload = {
         buyerId: currentUser!.id!,
         sellerId,
         amount: askingPrice,
         processingFee,
         listedProductId,
-      });
+      };
 
-      // make sure the amount passed in is the transaction fees!!!
-      await decreaseWalletBalance({ userId: sellerId, amount: processingFee });
+      const listedProductPayload = { id: listedProductId, sellerId };
+      const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
 
-      // increment the ranking points of both users
-    } catch (err) {}
+      await onConfirmPurchaseSneaker(
+        mailPayload,
+        transaction,
+        listedProductPayload,
+        decreaseWalletBalPayload,
+        onEmailSent
+      );
+    } catch {}
   };
 
   const sortSellersByAskingPriceAscending = () => {
@@ -158,13 +149,18 @@ const SellersList = () => {
     setSellers(descSellers);
   };
 
-  const onCancel = () => history.goBack()
+  const onCancel = () => history.goBack();
 
-  return !sellers || !currentUser || !sneaker ? (
+  return sellers.length === 0 || !currentUser || !sneaker ? (
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
-      <SneakerCard styles={{ margin: 'auto', marginBottom: '15px' }} sneaker={sneaker} maxWidth='400px' />
+      <SneakerCard
+        styles={{ margin: 'auto', marginBottom: '15px' }}
+        sneaker={sneaker}
+        price={undefined}
+        maxWidth='400px'
+      />
       <SortByPriceDropdown
         sortInAscendingOrder={sortSellersByAskingPriceAscending}
         sortInDescendingOrder={sortSellersByAskingPriceDescending}
@@ -196,12 +192,12 @@ const SellersList = () => {
         })}
       </ListGroup>
       <footer>
-        {selectedSellerIdx !== undefined && selectedSellerIdx < sellers.length ? (
+        {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (
           <ListGroup style={{ marginTop: '15px' }}>
             <ListGroupItem>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Transaction fees:</span>
-                <span>${transactionFees(sellers[selectedSellerIdx].askingPrice)}</span>
+                <span>${getTransactionFees(sellers[selectedSellerIdx].askingPrice)}</span>
               </div>
             </ListGroupItem>
             <ListGroupItem>
@@ -216,8 +212,10 @@ const SellersList = () => {
           <div>
             {/* NOTE: Not sure why accessing the sneaker route via the name colorway
             force redirect me back to the gallery page  */}
-            <Button style={{ marginRight: '25px' }} onClick={onCancel}>Cancel</Button>
-            <Button disabled={selectedSellerIdx === undefined} color='primary' onClick={() => onConfirm()}>
+            <Button style={{ marginRight: '25px' }} onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button disabled={selectedSellerIdx === -1} color='primary' onClick={() => onConfirm()}>
               Confirm
             </Button>
           </div>

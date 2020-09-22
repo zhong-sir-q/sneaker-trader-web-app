@@ -4,7 +4,7 @@ import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } f
 
 import { PromisifiedConnection } from '../config/mysql';
 
-import { Sneaker } from '../../../shared';
+import { DomainSneaker } from '../../../shared';
 import { PRODUCTS } from '../config/tables';
 
 class ProductService {
@@ -25,7 +25,7 @@ class ProductService {
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {
-    const product: Omit<Sneaker, 'price'> = req.body;
+    const product: DomainSneaker = req.body;
     const createProductQuery = formatInsertColumnsQuery(PRODUCTS, product);
 
     this.connection
