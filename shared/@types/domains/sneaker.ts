@@ -13,15 +13,15 @@ export type SizeMinPriceGroupType = SizeMinPriceType[];
 export type CustomerSneaker = Pick<Sneaker, 'imageUrls' | 'name' | 'colorway' | 'size'> &
   Pick<ListedProduct, 'id' | 'prodStatus'> & { quantity: number; price: number };
 
-export type DomainSneaker = Omit<Sneaker, 'id' | 'RRP'>;
+export type AppSneaker = Omit<Sneaker, 'id' | 'RRP'>;
 
-export type GallerySneaker = DomainSneaker & { minPrice: number };
+export type GallerySneaker = AppSneaker & { minPrice: number };
 
-export type DomainListedSneaker = Omit<ListedProduct, 'id'>;
+export type AppListedSneaker = Omit<ListedProduct, 'id'>;
 
 export type ListedSneakerPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId'>;
 
-export type ListingFormSneaker = Omit<DomainSneaker, 'imageUrls'>;
+export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 
 export type SellerListedSneaker = CustomerSneaker & { buyer: Customer };
 

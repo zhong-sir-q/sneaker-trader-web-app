@@ -2,7 +2,7 @@ import { RequestHandler, Response, NextFunction } from 'express';
 
 import { formateGetColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
 
-import { PromisifiedConnection } from '../config/mysql';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 import { SNEAKER_NAMES, COLORWAYS, BRANDS } from '../config/tables';
 
 import { Brand, SneakerName, Colorway } from '../../../shared';
@@ -15,8 +15,8 @@ const duplicateKeyHandler = (err: any, res: Response<any>, next: NextFunction, k
 class HelperInfoService {
   connection: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.connection = conn;
+  constructor() {
+    this.connection = getMysqlDb();
   }
 
   getSneakerNames: RequestHandler = (_req, res, next) => {

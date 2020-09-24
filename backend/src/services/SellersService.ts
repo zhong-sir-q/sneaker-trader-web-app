@@ -1,12 +1,12 @@
-import { PromisifiedConnection } from '../config/mysql';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 import { doubleQuotedValue } from '../utils/formatDbQuery';
 import { getSellersAvgRatingQuery } from '../utils/queries';
 
 class SellersService {
   connection: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.connection = conn;
+  constructor() {
+    this.connection = getMysqlDb();
   }
 
   getSellersBySneakerNameSize = async (nameColorway: string, size: number) => {

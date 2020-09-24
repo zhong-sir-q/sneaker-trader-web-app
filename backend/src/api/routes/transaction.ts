@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import TransactionService from "../../services/transaction";
+import TransactionService from "../../services/TransactionService";
 
 const transactionRoute = Router()
 

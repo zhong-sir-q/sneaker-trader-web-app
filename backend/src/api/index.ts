@@ -3,49 +3,48 @@ import { Router } from 'express';
 import user from './routes/user';
 import sellers from './routes/sellers';
 
-import product from './routes/product';
-import listedProduct from './routes/listedProduct';
+import sneaker from './routes/sneaker';
+import listedSneaker from './routes/listedSneaker';
 
 import aws from './routes/aws';
 
 import helperInfo from './routes/helperInfo';
 import mail from './routes/mail';
 
-import UserService from '../services/user';
-import SellersService from '../services/sellers';
+import wallet from './routes/wallet';
+import transaction from './routes/transaction';
+import transactions from './routes/transactions';
 
-import ListedProductService from '../services/listedProduct';
-import ProductService from '../services/product';
-import HelperInfoService from '../services/helperInfo';
+import UserService from '../services/UserService';
+import SellersService from '../services/SellersService';
+
+import ListedSneakerService from '../services/ListedSneakerService';
+import SneakerService from '../services/SneakerService';
+import HelperInfoService from '../services/HelperInfoService';
 
 import CustomAwsService from '../services/external/aws';
 import MailService from '../services/external/mail';
 
-import { getMysqlDb } from '../config/mysql';
-import wallet from './routes/wallet';
-import WalletService from '../services/wallet';
-import transaction from './routes/transaction';
-import TransactionService from '../services/transaction';
+import WalletService from '../services/WalletService';
+import TransactionService from '../services/TransactionService';
 
-import TransactionsService from '../services/transactions';
-import transactions from './routes/transactions';
+import TransactionsService from '../services/TransactionsService';
 
 export default () => {
   const app = Router();
-  const sqlConnection = getMysqlDb();
 
   // app will use the following routes as middleware at the respective routes
-  
-  product(app, new ProductService(sqlConnection));
-  listedProduct(app, new ListedProductService(sqlConnection));
 
-  user(app, new UserService(sqlConnection));
-  sellers(app, new SellersService(sqlConnection));
-  helperInfo(app, new HelperInfoService(sqlConnection));
+  sneaker(app, new SneakerService());
+  listedSneaker(app, new ListedSneakerService());
 
-  wallet(app, new WalletService(sqlConnection))
-  transaction(app, new TransactionService(sqlConnection))
-  transactions(app, new TransactionsService(sqlConnection))
+  user(app, new UserService());
+  sellers(app, new SellersService());
+  helperInfo(app, new HelperInfoService());
+
+  wallet(app, new WalletService());
+  transaction(app, new TransactionService());
+  transactions(app, new TransactionsService());
 
   // external apis
   mail(app, new MailService());

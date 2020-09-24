@@ -7,13 +7,13 @@ import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from '
 // core components
 import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
-import { User, DomainUser } from '../../../shared';
+import { User, AppUser } from '../../../shared';
 import { updateUser } from 'api/api';
 import { getCurrentUser } from 'utils/auth';
 
 import avatar from 'assets/img/default-profile-picture.jpg'
 
-const INIT_USER: DomainUser = {
+const INIT_USER: AppUser = {
   username: '',
   firstName: '',
   lastName: '',

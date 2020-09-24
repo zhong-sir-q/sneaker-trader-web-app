@@ -9,6 +9,21 @@ import TransactionDualHistoryTable from './dashboard/TransactionDualHistoryTable
 import SaleHistoryTable from './dashboard/SaleHistoryTable';
 
 import TransactionTableContextProvider from 'providers/TransactionTableContextProvider';
+import StatisticsDisplay from './dashboard/StatisticsDisplay';
+
+/**
+ * TODO:
+ *
+ * Static display
+ * - numbers of listed sneakers
+ * - ranking points
+ * - current wallet balance
+ * - Number of sales
+ * 
+ * Graphs
+ * - Profit over time (compare to the og purchased price, add it to the listing form)
+ * - the value of your sneakers going up or down monthly (Trend)
+ */
 
 const Dashboard = () => {
   return (
@@ -20,8 +35,35 @@ const Dashboard = () => {
             <Card className='card-stats card-raised'>
               <CardBody>
                 <Row>
+                <Col md='3'>
+                    {/* get the no. of listed sneakers, excluding sold */}
+                    <StatisticsDisplay
+                      iconColor='icon-success'
+                      iconName='business_money-coins'
+                      primaryText={25}
+                      secondaryText='No. of Listed Sneakers'
+                    />
+                  </Col>
+                  <Col md='3'>
+                    {/* get the ranking points of the current user */}
+                    <StatisticsDisplay
+                      iconColor='icon-success'
+                      iconName='business_money-coins'
+                      primaryText={25}
+                      secondaryText='Ranking Points'
+                    />
+                  </Col>
                   <Col md='3'>
                     <WalletBalance />
+                  </Col>
+                  <Col md='3'>
+                    {/* get no. of sneakers sold */}
+                    <StatisticsDisplay
+                      iconColor='icon-success'
+                      iconName='business_money-coins'
+                      primaryText={25}
+                      secondaryText='No. of Sales'
+                    />
                   </Col>
                 </Row>
               </CardBody>

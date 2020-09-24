@@ -15,7 +15,7 @@ afterAll(async () => await getMysqlDb().close());
 describe('Listed product routes', () => {
   test('Get size and min price grouped by name and colorway', async (done) => {
     const sizeMinPriceGroupByName = await request(app)
-      .get('/api/listed_product?name=Kobe 14 Black')
+      .get('/api/listedSneaker?name=Kobe 14 Black')
       .then((r) => r.body);
 
     expect(sizeMinPriceGroupByName).toBeInstanceOf(Array);
@@ -27,7 +27,7 @@ describe('Listed product routes', () => {
   });
 
   test('Get none by name only', async (done) => {
-    const emptySet = await request(app).get('/api/listed_product?name=Kobe 14');
+    const emptySet = await request(app).get('/api/listedSneaker?name=Kobe 14');
     expect(emptySet.body).toHaveLength(0);
 
     done();
@@ -36,7 +36,7 @@ describe('Listed product routes', () => {
   // NOTE: another thing to test possibly is the properties of the object returned
   test('Get listed products by size', async (done) => {
     const size12Listed = await request(app)
-      .get('/api/listed_product?size=12')
+      .get('/api/listedSneaker?size=12')
       .then((r) => r.body);
 
     const desiredListedProduct = {
@@ -55,7 +55,7 @@ describe('Listed product routes', () => {
 
   test('Get all listed products', async (done) => {
     const allListedProducts = await request(app)
-      .get('/api/listed_product')
+      .get('/api/listedSneaker')
       .then((r) => r.body);
 
     const desiredListedProducts = {
@@ -74,7 +74,7 @@ describe('Listed product routes', () => {
 
   test('Get gallery sneakers', async (done) => {
     const gallerySneakers = await request(app)
-      .get('/api/listed_product/gallery')
+      .get('/api/listedSneaker/gallery')
       .then((r) => r.body);
 
     const desiredGallerySneakers = {
@@ -95,7 +95,7 @@ describe('Listed product routes', () => {
 
   test('Create a listed product', async (done) => {
     const response = await request(app)
-      .post('/api/listed_product')
+      .post('/api/listedSneaker')
       .send(listedProductOne)
 
     expect(response.status).toBe(200);

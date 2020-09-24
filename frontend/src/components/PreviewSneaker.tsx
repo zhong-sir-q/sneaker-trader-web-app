@@ -3,10 +3,10 @@ import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
 
-import { DomainSneaker } from '../../../shared';
+import { AppSneaker } from '../../../shared';
 
 type PreviewSneakerProps = {
-  sneaker: DomainSneaker;
+  sneaker: AppSneaker;
   price: number;
   onPrevStep: () => void;
   onSubmit: () => void;

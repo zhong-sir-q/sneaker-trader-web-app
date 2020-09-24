@@ -2,19 +2,19 @@ import { RequestHandler } from 'express';
 
 import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
 
-import { PromisifiedConnection } from '../config/mysql';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 
-import { DomainSneaker } from '../../../shared';
+import { AppSneaker, Sneaker } from '../../../shared';
 import { PRODUCTS } from '../config/tables';
 
-class ProductService {
+class SneakerService {
   connection: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.connection = conn;
+  constructor() {
+    this.connection = getMysqlDb();
   }
 
-  async getByNamecolorwaySize(nameColorway: string, size: number | string) {
+  async getByNamecolorwaySize(nameColorway: string, size: number | string): Promise<Sneaker> {
     const condition = `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}`;
     const getQuery = formateGetColumnsQuery(PRODUCTS, condition);
     const prod = await this.connection.query(getQuery);
@@ -25,7 +25,7 @@ class ProductService {
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {
-    const product: DomainSneaker = req.body;
+    const product: AppSneaker = req.body;
     const createProductQuery = formatInsertColumnsQuery(PRODUCTS, product);
 
     this.connection
@@ -35,4 +35,4 @@ class ProductService {
   };
 }
 
-export default ProductService;
+export default SneakerService;

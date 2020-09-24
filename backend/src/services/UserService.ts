@@ -6,17 +6,17 @@ import {
 } from '../utils/formatDbQuery';
 import { User } from '../../../shared';
 import { RequestHandler } from 'express';
-import { PromisifiedConnection } from '../config/mysql';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 import { USERS } from '../config/tables';
-import WalletService from './wallet';
+import WalletService from './WalletService';
 
 import { getBuyersAvgRatingQuery, getSellersAvgRatingQuery } from '../utils/queries';
 
 class UserService {
   private connection: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.connection = conn;
+  constructor() {
+    this.connection = getMysqlDb();
   }
 
   handleCreate: RequestHandler = async (req, res, next) => {
@@ -51,7 +51,7 @@ class UserService {
     const userId = await this.connection.query(createUserQuery).then((result) => result.insertId);
 
     // create the wallet for the user
-    new WalletService(this.connection).create(userId);
+    new WalletService().create(userId);
 
     return userId;
   }

@@ -1,13 +1,13 @@
-import { PromisifiedConnection } from '../config/mysql';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 import { RequestHandler } from 'express';
 import { getSellersAvgRatingQuery, getBuyersAvgRatingQuery } from '../utils/queries';
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
 
 class TransactionsService {
-  private conneciton: PromisifiedConnection;
+  private connection: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.conneciton = conn;
+  constructor() {
+    this.connection = getMysqlDb();
   }
 
   handleGetListedBySellerId: RequestHandler = (req, res, next) => {
@@ -50,7 +50,8 @@ class TransactionsService {
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;
 
-    const queryResult = await this.conneciton.query(getSellerListedProductsQuery);
+    const queryResult = await this.connection.query(getSellerListedProductsQuery);
+
     for (const sneaker of queryResult) {
       sneaker.buyer = JSON.parse(sneaker.stringifiedBuyer);
       delete sneaker.stringifiedBuyer;
@@ -82,7 +83,7 @@ class TransactionsService {
           WHERE T.buyerId = ${buyerId} AND T.listedProductId = L.id AND L.productId = P.id
     `;
 
-    const queryResult = await this.conneciton.query(getPurchasedProductsQuery);
+    const queryResult = await this.connection.query(getPurchasedProductsQuery);
 
     for (const sneaker of queryResult) {
       sneaker.seller = JSON.parse(sneaker.stringifiedSeller);

@@ -4,7 +4,7 @@ import { Table } from 'reactstrap';
 
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
-import { updateProdStatus } from 'api/api';
+import { updateListedSneakerStatus } from 'api/api';
 import { upperCaseFirstLetter } from 'utils/utils';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
@@ -50,7 +50,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     const displayImg = imageUrls.split(',')[0];
 
     const onCompleteSale = async () => {
-      await updateProdStatus(id, 'sold');
+      await updateListedSneakerStatus(id, 'sold');
       if (setShowCompleteSaleSuccess) setShowCompleteSaleSuccess();
     };
 

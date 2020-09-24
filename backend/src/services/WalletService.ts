@@ -1,13 +1,13 @@
-import { PromisifiedConnection } from '../config/mysql';
-import { formatInsertColumnsQuery, formateGetColumnsQuery, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import { formatInsertColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
 import { WALLET } from '../config/tables';
 import { RequestHandler } from 'express';
 
 class WalletService {
   private connection: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.connection = conn;
+  constructor() {
+    this.connection = getMysqlDb();
   }
 
   getBalanceByUserId: RequestHandler = (req, res, next) => {

@@ -81,6 +81,19 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                     />
                   </FormGroup>
                 </Col>
+
+                <Col md='4'>
+                  <FormGroup>
+                    <FormikAutoSuggestInput
+                      name='colorway'
+                      label='Color Way'
+                      options={colorwayOptions}
+                      setfieldvalue={setFieldValue}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
                 <Col md='4'>
                   <FormGroup>
                     <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
@@ -93,32 +106,13 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>
-              </Row>
-              <Row>
-                <Col md='4'>
-                  <FormGroup>
-                    <FormikAutoSuggestInput
-                      name='colorway'
-                      label='Color Way'
-                      options={colorwayOptions}
-                      setfieldvalue={setFieldValue}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md='4'>
-                  <FormGroup>
-                    <FormikLabelInput name='askingPrice' placeholder='$$ ~ $$$$$' type='number' label='Asking Price' />
-                  </FormGroup>
-                </Col>
 
                 <Col md='4'>
                   <FormGroup>
                     <FormikLabelInput name='size' placeholder='Size' type='number' label='Shoe Size' />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col md='4'>
                   <FormGroup>
                     <FormikLabelSelect name='currencyCode' label='Price Currency Code' id='sneaker-price-currency'>
@@ -129,6 +123,14 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                         </option>
                       ))}
                     </FormikLabelSelect>
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md='4'>
+                  <FormGroup>
+                    <FormikLabelInput name='askingPrice' placeholder='$$ ~ $$$$$' type='number' label='Asking Price' />
                   </FormGroup>
                 </Col>
 

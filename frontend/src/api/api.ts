@@ -12,8 +12,8 @@ import {
   DecreaseWalletPayload,
   SellerListedSneaker,
   BuyerPurchasedSneaker,
-  DomainSneaker,
-  DomainListedSneaker,
+  AppSneaker,
+  AppListedSneaker,
   CreateTransactionPayload,
   CreateUserPayload,
   GallerySneaker,
@@ -30,7 +30,7 @@ const SELLERS_API_URL = API_BASE_URL + 'sellers/';
 // products
 const PRODUCT_API_URL = API_BASE_URL + 'product/';
 const HELPER_INFO_API_URL = API_BASE_URL + 'helper_info/';
-const LISTED_PRODUCT_API_URL = API_BASE_URL + 'listed_product/';
+const LISTED_PRODUCT_API_URL = API_BASE_URL + 'listedSneaker/';
 
 // wallet
 const WALLET_API_URL = API_BASE_URL + 'wallet/';
@@ -67,17 +67,17 @@ export const updateUser = (user: User) =>
 
 // product
 // returns the insert id of the product
-export const createSneaker = (sneaker: DomainSneaker): Promise<number> =>
+export const createSneaker = (sneaker: AppSneaker): Promise<number> =>
   fetch(PRODUCT_API_URL, formatRequestOptions(sneaker)).then((res) => res.json());
 
 export const getProductByNameColorwaySize = (nameColorway: string, size: number): Promise<Sneaker | undefined> =>
   fetch(PRODUCT_API_URL + `${nameColorway}/${size}`).then((res) => res.json());
 
 // listed product
-export const createListedSneaker = (listedSneaker: DomainListedSneaker) =>
+export const createListedSneaker = (listedSneaker: AppListedSneaker) =>
   fetch(LISTED_PRODUCT_API_URL, formatRequestOptions(listedSneaker)).then((res) => res.json());
 
-export const getAllListedProducts = (): Promise<DomainSneaker[]> => fetch(LISTED_PRODUCT_API_URL).then((res) => res.json());
+export const getAllListedSneakers = (): Promise<AppSneaker[]> => fetch(LISTED_PRODUCT_API_URL).then((res) => res.json());
 
 export const getGallerySneakers = (): Promise<GallerySneaker[]> =>
   fetch(LISTED_PRODUCT_API_URL + 'gallery').then((res) => res.json());
@@ -94,7 +94,7 @@ export const getAllAsksByNameColorway = (nameColorway: string): Promise<SneakerA
 export const purchaseListedProduct = (listedProduct: { id: number; sellerId: number }) =>
   fetch(LISTED_PRODUCT_API_URL + 'purchase', formatRequestOptions(listedProduct, undefined, 'PUT'));
 
-export const updateProdStatus = (listedProductId: number, prodStatus: SneakerStatus) =>
+export const updateListedSneakerStatus = (listedProductId: number, prodStatus: SneakerStatus) =>
   fetch(LISTED_PRODUCT_API_URL + `status/${listedProductId}`, formatRequestOptions({ prodStatus }, undefined, 'PUT'));
 
 // s3

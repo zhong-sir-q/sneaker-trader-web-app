@@ -1,4 +1,4 @@
-import { PromisifiedConnection } from '../config/mysql';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 import { RequestHandler } from 'express';
 import { formatInsertColumnsQuery, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
 import { TRANSACTION } from '../config/tables';
@@ -6,8 +6,8 @@ import { TRANSACTION } from '../config/tables';
 class TransactionService {
   private conneciton: PromisifiedConnection;
 
-  constructor(conn: PromisifiedConnection) {
-    this.conneciton = conn;
+  constructor() {
+    this.conneciton = getMysqlDb();
   }
 
   handleCreate: RequestHandler = (req, res, next) => {

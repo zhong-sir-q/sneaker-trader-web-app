@@ -4,7 +4,7 @@ import { Card } from 'reactstrap';
 
 import { useHistory } from 'react-router-dom';
 
-import { DomainSneaker } from '../../../shared';
+import { AppSneaker } from '../../../shared';
 
 import { formatSneakerPathName } from 'utils/utils';
 
@@ -25,7 +25,7 @@ const LowestAsk = styled.div`
 `;
 
 type SneakerCardProps = {
-  sneaker: Partial<DomainSneaker>;
+  sneaker: Partial<AppSneaker>;
   price: number | undefined
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page

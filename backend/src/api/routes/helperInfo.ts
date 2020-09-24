@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import HelperInfoService from '../../services/helperInfo';
+import HelperInfoService from '../../services/HelperInfoService';
 
 const helperInfoRoute = Router();
 
