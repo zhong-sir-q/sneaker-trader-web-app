@@ -1,15 +1,43 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import TransactionService from "../../services/TransactionService";
+import TransactionService from '../../services/TransactionService';
 
-const transactionRoute = Router()
+const transactionRoute = Router();
 
 export default (app: Router, TransactionServiceInstance: TransactionService) => {
-  app.use('/transaction', transactionRoute)
+  app.use('/transaction', transactionRoute);
 
-  transactionRoute.post('/', TransactionServiceInstance.handleCreate)
+  transactionRoute.get('/:listedProductId', (req, res, next) => {
+    const { listedProductId } = req.params;
 
-  transactionRoute.put('/rating/buyer/:listedProductId', TransactionServiceInstance.rateBuyer)
+    TransactionServiceInstance.get(Number(listedProductId))
+      .then((transaction) => res.json(transaction))
+      .catch(next);
+  });
 
-  transactionRoute.put('/rating/seller/:listedProductId', TransactionServiceInstance.rateSeller)
-}
+  transactionRoute.post('/', (req, res, next) => {
+    const transaction = req.body;
+
+    TransactionServiceInstance.create(transaction)
+      .then(() => res.json('Transaction created'))
+      .catch(next);
+  });
+
+  transactionRoute.put('/rating/buyer/:listedProductId', (req, res, next) => {
+    const { listedProductId } = req.params;
+    const { rating } = req.body;
+
+    TransactionServiceInstance.rateBuyer(Number(listedProductId), rating)
+      .then(() => res.json('Buyer is rated'))
+      .catch(next);
+  });
+
+  transactionRoute.put('/rating/seller/:listedProductId', (req, res, next) => {
+    const { listedProductId } = req.params;
+    const { rating } = req.body;
+
+    TransactionServiceInstance.rateSeller(Number(listedProductId), rating)
+      .then(() => res.json('Buyer is rated'))
+      .catch(next);
+  });
+};

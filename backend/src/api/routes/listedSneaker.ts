@@ -8,16 +8,24 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
   app.use('/listedSneaker', listedSneakerRoute);
 
   listedSneakerRoute.get('/', async (req, res, next) => {
-    const sneakerSize = req.query.sizes as string;
+    const sneakerSize = Number(req.query.size);
     const sneakerName = req.query.name as string;
 
     try {
       if (sneakerName) ListedSneakerServiceInstance.getSizeMinPriceGroupByName(sneakerName).then((r) => res.json(r));
-      else if (sneakerSize) ListedSneakerServiceInstance.getBySize(sneakerSize).then((r) => res.json(r));
+      else if (sneakerSize) ListedSneakerServiceInstance.getGallerySneakersBySize(sneakerSize).then((r) => res.json(r));
       else ListedSneakerServiceInstance.getAllListedSneakers().then((r) => res.json(r));
     } catch (err) {
       next(err);
     }
+  });
+
+  listedSneakerRoute.get('/all/:sellerId', (req, res, next) => {
+    const { sellerId } = req.params;
+
+    ListedSneakerServiceInstance.getBySellerId(Number(sellerId))
+      .then((sellerListedSneakers) => res.json(sellerListedSneakers))
+      .catch(next);
   });
 
   listedSneakerRoute.get('/allAsks', (req, res, next) => {
@@ -37,7 +45,7 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
   listedSneakerRoute.post('/', (req, res, next) => {
     const listedSneaker = req.body;
 
-    ListedSneakerServiceInstance.handleCreate(listedSneaker)
+    ListedSneakerServiceInstance.create(listedSneaker)
       .then(() => res.json('A sneaker is listed'))
       .catch(next);
   });
@@ -54,6 +62,8 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
     const { id } = req.params;
     const listedSneakerStatus = req.body;
 
-    ListedSneakerServiceInstance.updateListedSneakerStatus(Number(id), listedSneakerStatus);
+    ListedSneakerServiceInstance.updateListedSneakerStatus(Number(id), listedSneakerStatus)
+      .then(() => res.json('Sneaker status updated'))
+      .catch(next);
   });
 };

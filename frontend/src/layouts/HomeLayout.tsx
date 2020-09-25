@@ -6,17 +6,18 @@ import Footer from 'components/Footer';
 import SellersList from 'pages/SellersList';
 import BuySneakerPage from 'pages/BuySneakerPage';
 
-import { getAllListedSneakers } from 'api/api';
+// import { getAllListedSneakers } from 'api/api';
 import { formatSneakerPathName } from 'utils/utils';
 
-import { AppSneaker } from '../../../shared';
 import { homeRoutes } from 'routes';
+import ListedSneakerControllerInstance from 'api/ListedSneakerController';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
 
   const renderBuySneakerRoutes = async () => {
-    const sneakers: AppSneaker[] = await getAllListedSneakers();
+    const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers()
+
     // prevent duplicate routes from rendering
     const seenPaths: Set<string> = new Set();
 

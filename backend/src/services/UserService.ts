@@ -4,47 +4,26 @@ import {
   doubleQuotedValue,
   formatUpdateColumnsQuery,
 } from '../utils/formatDbQuery';
-import { User } from '../../../shared';
-import { RequestHandler } from 'express';
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
-import { USERS } from '../config/tables';
+
 import WalletService from './WalletService';
 
-import { getBuyersAvgRatingQuery, getSellersAvgRatingQuery } from '../utils/queries';
+import { User, UserEntity } from '../../../shared';
+import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import { USERS } from '../config/tables';
 
-class UserService {
+class UserService implements UserEntity {
   private connection: PromisifiedConnection;
 
   constructor() {
     this.connection = getMysqlDb();
   }
 
-  handleCreate: RequestHandler = async (req, res, next) => {
-    const user = req.body;
-
-    this.create(user)
-      .then((userId) => res.json(userId))
-      .catch(next);
-  };
-
-  handleGetByEmail: RequestHandler = async (req, res, next) => {
-    const { email } = req.params;
-
-    this.getByEmail(email)
-      .then((user) => res.json(user))
-      .catch(next);
-  };
-
-  handleUpdate: RequestHandler = async (req, res, next) => {
-    const user = req.body;
+  update(user: User) {
     const condition = 'email = ' + doubleQuotedValue(user.email);
     const updateUserQuery = formatUpdateColumnsQuery(USERS, user, condition);
 
-    this.connection
-      .query(updateUserQuery)
-      .then((updateResult) => res.json(updateResult))
-      .catch(next);
-  };
+    return this.connection.query(updateUserQuery);
+  }
 
   async create(user: Partial<User>) {
     const createUserQuery = formatInsertColumnsQuery(USERS, user);
@@ -56,7 +35,7 @@ class UserService {
     return userId;
   }
 
-  async getByEmail(email: string): Promise<Partial<User>> {
+  async getByEmail(email: string): Promise<User> {
     const getUserByEmailQuery = formateGetColumnsQuery(USERS, 'email = ' + doubleQuotedValue(email));
     const queryResult = await this.connection.query(getUserByEmailQuery);
 
@@ -66,34 +45,6 @@ class UserService {
     }
 
     return queryResult[0];
-  }
-
-  handleGetBuyerAvgRating: RequestHandler = (req, res, next) => {
-    const { buyerId } = req.params;
-
-    this.getBuyerAvgRating(buyerId)
-      .then((rating) => res.json(rating))
-      .catch(next);
-  };
-
-  handleGetSellerAvgRating: RequestHandler = (req, res, next) => {
-    const { sellerId } = req.params;
-
-    this.getSellerAvgRating(sellerId)
-      .then((rating) => res.json(rating))
-      .catch(next);
-  };
-
-  getBuyerAvgRating(buyerId: string) {
-    return this.connection
-      .query(getBuyersAvgRatingQuery('buyerRating', `WHERE buyerId = ${buyerId}`))
-      .then((result) => (result.length == 1 ? result[0].buyerRating : 0));
-  }
-
-  getSellerAvgRating(sellerId: string) {
-    return this.connection
-      .query(getSellersAvgRatingQuery('sellerRating', `WHERE sellerId = ${sellerId}`))
-      .then((result) => (result.length == 1 ? result[0].sellerRating : 0));
   }
 }
 

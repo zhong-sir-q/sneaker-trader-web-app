@@ -8,7 +8,8 @@ import { Container, Button, Row, Col, Table } from 'reactstrap';
 import CenterSpinner from 'components/CenterSpinner';
 
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
-import { getUserSizeGroupedPrice, getAllAsksByNameColorway } from 'api/api';
+
+import ListedSneakerControllerInstance from 'api/ListedSneakerController';
 
 const CenterContainer = styled(Container)`
   display: flex;
@@ -63,8 +64,8 @@ const BuySneakerPage = () => {
 
   const onComponentMounted = useCallback(async () => {
     const shoeName = nameColorwayFromPath();
-    const items = await getUserSizeGroupedPrice(shoeName);
-    const asks = await getAllAsksByNameColorway(shoeName);
+    const items = await ListedSneakerControllerInstance.getSizeMinPriceGroupByName(shoeName)
+    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeName)
 
     // the state is passed through from SneakerCard
     const sneaker = history.location.state as Sneaker;

@@ -17,6 +17,8 @@ const INIT_AUTH_CONTEXT: AuthContextType = {
 const AuthContext = createContext(INIT_AUTH_CONTEXT);
 
 const AuthProvider = (props: { children: ReactNode }) => {
+  // TODO: can use a better cache strategy, so I can safely store
+  // the user object as well maybe use something like mobx
   const storedSignedIn = JSON.parse(localStorage.getItem('signedIn') || 'false') as boolean
   const [signedIn, setSignedIn] = useState(storedSignedIn);
   const [currentUser, setCurrentUser] = useState<User>();

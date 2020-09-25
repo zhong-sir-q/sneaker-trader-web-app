@@ -4,7 +4,7 @@ import config from '.';
 
 export type PromisifiedConnection = {
   query(sql: string | mysql.QueryOptions): Promise<any>;
-  close(): Promise<void>;
+  close(): Promise<any>;
 };
 
 let _db: PromisifiedConnection

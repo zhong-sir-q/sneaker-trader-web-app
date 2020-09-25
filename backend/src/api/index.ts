@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import user from './routes/user';
-import sellers from './routes/sellers';
+import seller from './routes/seller';
 
 import sneaker from './routes/sneaker';
 import listedSneaker from './routes/listedSneaker';
@@ -16,7 +16,7 @@ import transaction from './routes/transaction';
 import transactions from './routes/transactions';
 
 import UserService from '../services/UserService';
-import SellersService from '../services/SellersService';
+import SellerService from '../services/SellerService';
 
 import ListedSneakerService from '../services/ListedSneakerService';
 import SneakerService from '../services/SneakerService';
@@ -39,7 +39,7 @@ export default () => {
   listedSneaker(app, new ListedSneakerService());
 
   user(app, new UserService());
-  sellers(app, new SellersService());
+  seller(app, new SellerService());
   helperInfo(app, new HelperInfoService());
 
   wallet(app, new WalletService());

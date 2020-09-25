@@ -15,5 +15,5 @@ export default (app: Router, SneakerServiceInstance: SneakerService) => {
       .catch(next);
   });
 
-  productRoute.post('/', SneakerServiceInstance.handleCreate);
+  productRoute.post('/', SneakerServiceInstance.create);
 };

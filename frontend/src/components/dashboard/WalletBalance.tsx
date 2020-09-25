@@ -73,7 +73,7 @@ const WalletBalance = () => {
       <div style={{ cursor: 'pointer' }} onClick={() => handleOpen()}>
         <StatisticsDisplay
           iconColor='icon-success'
-          iconName='business_money-coins'
+          iconName='shopping_credit-card'
           primaryText={'$' + balance}
           secondaryText='Wallet Balance'
         />

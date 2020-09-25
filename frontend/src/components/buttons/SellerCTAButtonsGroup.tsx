@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import RateCustomer from 'components/RateCustomer';
 import ContactCustomerButton from './ContactCustomerButton';
 import { CompleteSaleButton } from './StyledButton';
 
-import { rateBuyer } from 'api/api';
+import TransactionControllerInstance from 'api/TransactionController';
+
 import { SneakerStatus, Customer } from '../../../../shared';
 
 type SellerCTAButtonsGroupProps = {
@@ -15,7 +16,18 @@ type SellerCTAButtonsGroupProps = {
 };
 
 const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
+  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(false);
+
   const { prodStatus, listedProdId, buyer, onCompleteSale } = props;
+
+  useEffect(() => {
+    (async () => setHasSellerRatedBuyer(await TransactionControllerInstance.hasSellerRatedBuyer(listedProdId)))();
+  });
+
+  const onCompelteRating = async (listedProductId: number, rating: number) => {
+    TransactionControllerInstance.rateBuyer(listedProductId, rating);
+    setHasSellerRatedBuyer(true);
+  };
 
   switch (prodStatus) {
     case 'pending':
@@ -29,7 +41,9 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
       return (
         <div className='flex margin-right-except-last'>
           <ContactCustomerButton customer={buyer!} title='Contact Buyer' />
-          <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={rateBuyer} />
+          {!hasSellerRatedBuyer && (
+            <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompelteRating} />
+          )}
         </div>
       );
     default:

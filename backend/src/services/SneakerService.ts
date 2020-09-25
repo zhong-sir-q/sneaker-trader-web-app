@@ -24,7 +24,7 @@ class SneakerService {
     return prod.length === 1 ? prod[0] : null;
   }
 
-  handleCreate: RequestHandler = async (req, res, next) => {
+  create: RequestHandler = async (req, res, next) => {
     const product: AppSneaker = req.body;
     const createProductQuery = formatInsertColumnsQuery(PRODUCTS, product);
 

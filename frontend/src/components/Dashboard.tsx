@@ -9,16 +9,14 @@ import TransactionDualHistoryTable from './dashboard/TransactionDualHistoryTable
 import SaleHistoryTable from './dashboard/SaleHistoryTable';
 
 import TransactionTableContextProvider from 'providers/TransactionTableContextProvider';
-import StatisticsDisplay from './dashboard/StatisticsDisplay';
+import ListedSneakerCounts from './dashboard/ListedSneakerCounts';
+import UserRankingPoints from './dashboard/UserRankingPoints';
+import SoldSneakerCounts from './dashboard/SoldSneakerCounts';
+import MonthlyProfit from './dashboard/charts/MonthlyProfit';
+import MonthSneakerValue from './dashboard/charts/MonthSneakerValue';
 
 /**
  * TODO:
- *
- * Static display
- * - numbers of listed sneakers
- * - ranking points
- * - current wallet balance
- * - Number of sales
  * 
  * Graphs
  * - Profit over time (compare to the og purchased price, add it to the listing form)
@@ -35,39 +33,29 @@ const Dashboard = () => {
             <Card className='card-stats card-raised'>
               <CardBody>
                 <Row>
-                <Col md='3'>
-                    {/* get the no. of listed sneakers, excluding sold */}
-                    <StatisticsDisplay
-                      iconColor='icon-success'
-                      iconName='business_money-coins'
-                      primaryText={25}
-                      secondaryText='No. of Listed Sneakers'
-                    />
+                  <Col md='3'>
+                    <UserRankingPoints />
                   </Col>
                   <Col md='3'>
-                    {/* get the ranking points of the current user */}
-                    <StatisticsDisplay
-                      iconColor='icon-success'
-                      iconName='business_money-coins'
-                      primaryText={25}
-                      secondaryText='Ranking Points'
-                    />
+                    <ListedSneakerCounts />
                   </Col>
                   <Col md='3'>
                     <WalletBalance />
                   </Col>
                   <Col md='3'>
-                    {/* get no. of sneakers sold */}
-                    <StatisticsDisplay
-                      iconColor='icon-success'
-                      iconName='business_money-coins'
-                      primaryText={25}
-                      secondaryText='No. of Sales'
-                    />
+                    <SoldSneakerCounts />
                   </Col>
                 </Row>
               </CardBody>
             </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} md={6}>
+            <MonthlyProfit />
+          </Col>
+          <Col xs={12} md={6}>
+            <MonthSneakerValue />
           </Col>
         </Row>
         <Row>

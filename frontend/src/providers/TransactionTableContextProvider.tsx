@@ -1,9 +1,10 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
 import { useAuth } from './AuthProvider';
-import { getListedProductsBySellerId, getPurchasedProductsByBuyerId } from 'api/api';
+import { getPurchasedProductsByBuyerId } from 'api/api';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
+import ListedSneakerControllerInstance from 'api/ListedSneakerController';
 
 type TransactionTableContextType = {
   isOpenSaleSuccessPopup: boolean;
@@ -45,11 +46,10 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   useEffect(() => {
     (async () => {
       if (currentUser) {
-        const fetchedListedProducts = await getListedProductsBySellerId(currentUser.id!);
-        const fetchedPurchasedProducts = await getPurchasedProductsByBuyerId(currentUser.id!);
+        const fetchedPurchasedProducts = await getPurchasedProductsByBuyerId(currentUser.id);
 
-        const notSold = fetchedListedProducts.filter((p) => p.prodStatus !== 'sold');
-        const sold = fetchedListedProducts.filter((p) => p.prodStatus === 'sold');
+        const notSold = await ListedSneakerControllerInstance.getUnsoldListedSneakers(currentUser.id);
+        const sold = await ListedSneakerControllerInstance.getSoldListedSneakers(currentUser.id);
 
         setUnsoldListedSneakers(notSold);
         setPurchasedSneakers(fetchedPurchasedProducts);

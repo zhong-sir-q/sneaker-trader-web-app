@@ -14,7 +14,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
 import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormCtxProvider';
 
-import handleListingSneaker from 'domains/handleListingSneaker';
+import handleListingSneaker from 'usecases/handleListingSneaker';
 
 const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: number) => ({
   askingPrice: Number(sneaker.askingPrice),

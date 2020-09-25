@@ -3,10 +3,10 @@ import { formatInsertColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery }
 import { ListedProduct, SizeMinPriceGroupType, SneakerAsk, GallerySneaker, AppSneaker, SellerListedSneaker } from '../../../shared';
 import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
 import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
-import ListedSneakerUseCase from '../../../shared/@types/domains/usecases/ListedSneakerUseCase';
+import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
 import { getBuyersAvgRatingQuery } from '../utils/queries';
 
-class ListedSneakerService implements ListedSneakerUseCase {
+class ListedSneakerService implements ListedSneakerEntity {
   private connection: PromisifiedConnection;
 
   constructor() {
@@ -60,7 +60,7 @@ class ListedSneakerService implements ListedSneakerUseCase {
     return queryResult;
   }
 
-  getBySize(size: string): Promise<GallerySneaker> {
+  getGallerySneakersBySize(size: number): Promise<GallerySneaker[]> {
     // similar to the get gallery sneakers query, but because the sneakers with different
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
@@ -117,7 +117,7 @@ class ListedSneakerService implements ListedSneakerUseCase {
     return this.connection.query(allListedProductsQuery);
   }
 
-  handleCreate(listedSneaker: ListedProduct) {
+  create(listedSneaker: ListedProduct) {
     const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedSneaker);
     return this.connection.query(createListedProductQuery);
   }

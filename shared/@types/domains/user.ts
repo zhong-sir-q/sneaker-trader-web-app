@@ -5,4 +5,13 @@ export type Customer = Pick<User, 'email' | 'username' | 'phoneNo'> & { buyerRat
 
 export type AppUser = Omit<User, 'id' | 'rankingPoint'>;
 
+export type ListedSneakerSeller = {
+  id: number;
+  username: string;
+  email: string;
+  askingPrice: number;
+  listedProductId: number;
+  rating: number;
+};
+
 export type CreateUserPayload = Omit<AppUser, 'profilePicUrl'>;

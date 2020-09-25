@@ -22,19 +22,10 @@ import { useAuth } from 'providers/AuthProvider';
 import { getSellersBySneakerNameSize, getProductByNameColorwaySize } from 'api/api';
 
 import { SIGNIN, AUTH } from 'routes';
-import { MailAfterPurchasePayload, Sneaker, CreateTransactionPayload } from '../../../shared';
+import { MailAfterPurchasePayload, Sneaker, CreateTransactionPayload, ListedSneakerSeller } from '../../../shared';
 
-import getTransactionFees from 'domains/getTransactionFee';
-import onConfirmPurchaseSneaker from 'domains/onConfirmPurchaseSneaker';
-
-export type Seller = {
-  id: number;
-  rating: number;
-  email: string;
-  username: string;
-  askingPrice: number;
-  listedProductId: number;
-};
+import getTransactionFees from 'usecases/getTransactionFee';
+import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
@@ -64,7 +55,7 @@ const SortByPriceDropdown = (props: SortByPriceDropdownProps) => {
 };
 
 const SellersList = () => {
-  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [sellers, setSellers] = useState<ListedSneakerSeller[]>([]);
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [sneaker, setSneaker] = useState<Sneaker>();
 
@@ -126,13 +117,13 @@ const SellersList = () => {
         listedProductId,
       };
 
-      const listedProductPayload = { id: listedProductId, sellerId };
       const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
 
       await onConfirmPurchaseSneaker(
         mailPayload,
         transaction,
-        listedProductPayload,
+        listedProductId,
+        sellerId,
         decreaseWalletBalPayload,
         onEmailSent
       );

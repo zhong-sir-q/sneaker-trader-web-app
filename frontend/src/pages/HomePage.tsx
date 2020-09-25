@@ -5,9 +5,9 @@ import { Row, Col, Container } from 'reactstrap';
 import styled from 'styled-components';
 
 import SneakerGallery from 'components/SneakerGallery';
-import { getGallerySneakers, getSneakersBySize } from 'api/api';
 
 import { GallerySneaker } from '../../../shared';
+import ListedSneakerControllerInstance from 'api/ListedSneakerController';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;
@@ -32,7 +32,7 @@ const FilterTitle = styled.div`
 `;
 
 type FilterType = string | number;
-type FilterByKey = 'brands' | 'sizes';
+type FilterByKey = 'brand' | 'size';
 
 type FiltersProps = {
   filters: FilterType[];
@@ -90,20 +90,21 @@ const HomePage = () => {
 
   useEffect(() => {
     (async () => {
-      const gallerySneakers = await getGallerySneakers();
+      const gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers();
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);
     })();
   }, []);
 
-  const queryHandler = async (brand: string, size: string) => {
+  const queryHandler = async (brand: string, size: number) => {
     if (brand && size) {
-      const sneakersBySize = await getSneakersBySize(size as string);
+      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(size);
+      // const sneakersBySize = await getSneakersBySize(size as string);
       setFilterSneakers(sneakersBySize.filter((s) => s.brand === brand));
     } else if (brand) {
       setFilterSneakers(defaultSneakers.filter((s) => s.brand === brand));
     } else if (size) {
-      const sneakersBySize = await getSneakersBySize(size as string);
+      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(size);
       setFilterSneakers(sneakersBySize);
     } else setFilterSneakers(defaultSneakers);
   };
@@ -114,8 +115,8 @@ const HomePage = () => {
   // sneakers are filtered after the user enters the path
   useEffect(() => {
     const unlisten = history.listen((location) => {
-      const { brands, sizes } = queryString.parse(location.search);
-      filtersHandler(brands as string, sizes as string);
+      const { brand, size } = queryString.parse(location.search);
+      filtersHandler(brand as string, Number(size));
     });
 
     return () => unlisten();
@@ -125,8 +126,8 @@ const HomePage = () => {
     <Container fluid='md' style={{ minHeight: 'calc(100vh - 150px)' }}>
       <Row>
         <Col sm={2}>
-          <Filters filters={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]} filterKey='sizes' title='us sizes' />
-          <Filters filters={['Nike', 'Air Jordan', 'Under Armor']} filterKey='brands' title='brands' />
+          <Filters filters={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]} filterKey='size' title='us sizes' />
+          <Filters filters={['Nike', 'Air Jordan', 'Under Armor']} filterKey='brand' title='brands' />
         </Col>
         <Col sm={10}>
           <SneakerGallery sneakers={filterSneakers} />

@@ -1,47 +1,46 @@
 import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
-import { RequestHandler } from 'express';
-import { formatInsertColumnsQuery, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formatUpdateColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
 import { TRANSACTION } from '../config/tables';
+import TranscationEntity from '../../../shared/@types/domains/entities/TransactionEntity';
+import { Transaction } from '../../../shared';
 
-class TransactionService {
+class TransactionService implements TranscationEntity {
   private conneciton: PromisifiedConnection;
 
   constructor() {
     this.conneciton = getMysqlDb();
   }
 
-  handleCreate: RequestHandler = (req, res, next) => {
-    const transaction = req.body;
+  async get(listedSneakerId: number) {
+    const findTransactionQuery = formateGetColumnsQuery(TRANSACTION, `listedProductId = ${listedSneakerId}`);
+    const res = await this.conneciton.query(findTransactionQuery)
 
-    this.conneciton
-      .query(formatInsertColumnsQuery(TRANSACTION, transaction))
-      .then((result) => res.json(result))
-      .catch(next);
-  };
+    return res.length === 0 ? null : res[0]
+  }
 
-  rateBuyer: RequestHandler = (req, res, next) => {
-    const { listedProductId } = req.params;
-    const { rating } = req.body;
+  create(transaction: Transaction) {
+    return this.conneciton.query(formatInsertColumnsQuery(TRANSACTION, transaction));
+  }
 
-    const rateBuyerQuery = formatUpdateColumnsQuery(TRANSACTION, { buyerRatingFromSeller: rating }, `listedProductId = ${listedProductId}`)
+  rateBuyer(listedProductId: number, rating: number) {
+    const rateSellerQuery = formatUpdateColumnsQuery(
+      TRANSACTION,
+      { buyerRatingFromSeller: rating },
+      `listedProductId = ${listedProductId}`
+    );
 
-    this.conneciton.query(rateBuyerQuery).then(() => res.json('Buyer rating updated')).catch(next)
-  };
+    return this.conneciton.query(rateSellerQuery);
+  }
 
-  rateSeller: RequestHandler = (req, res, next) => {
-    const { listedProductId } = req.params;
-    const { rating } = req.body;
-
-    const rateBuyerQuery = formatUpdateColumnsQuery(
+  rateSeller(listedProductId: number, rating: number) {
+    const rateSellerQuery = formatUpdateColumnsQuery(
       TRANSACTION,
       { sellerRatingFromBuyer: rating },
       `listedProductId = ${listedProductId}`
     );
-    this.conneciton
-      .query(rateBuyerQuery)
-      .then(() => res.json('Seller rating updated'))
-      .catch(next);
-  };
+
+    return this.conneciton.query(rateSellerQuery);
+  }
 }
 
 export default TransactionService;

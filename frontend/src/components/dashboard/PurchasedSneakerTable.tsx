@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {  } from 'react';
 
 import { Table } from 'reactstrap';
 
@@ -7,7 +7,7 @@ import BuyerCTAButtonsGroup from 'components/buttons/BuyerCTAButtonsGroup';
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 import { upperCaseFirstLetter } from 'utils/utils';
 
-const PurchasedSneakerHeader = () => (
+const PurchasedSneakerTableHeader = () => (
   <thead>
     <tr>
       <th className='text-center' />
@@ -46,7 +46,6 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
 
     const displayImg = imageUrls.split(',')[0];
 
-
     return (
       <tr>
         <td>
@@ -80,7 +79,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
 
   return sneakers && sneakers.length > 0 ? (
     <Table responsive className='table-shopping'>
-      <PurchasedSneakerHeader />
+      <PurchasedSneakerTableHeader />
       <tbody>
         {sneakers.map((s, idx) => (
           <PurchasedSneakerRow key={idx} sneaker={s} />
