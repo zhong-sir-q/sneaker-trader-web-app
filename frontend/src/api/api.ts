@@ -100,7 +100,7 @@ export const createColorway = (colorway: Colorway): Promise<any> =>
   fetch(HELPER_INFO_API_URL + 'colorways', formatRequestOptions(colorway));
 
 // wallet
-export const getWalletBalanceByUserId = (userId: number): Promise<number | undefined> =>
+export const getWalletBalanceByUserId = (userId: number): Promise<number> =>
   fetch(WALLET_API_URL + userId).then((res) => res.json());
 
 export const topupWalletBalance = (data: TopupWalletPayload) =>

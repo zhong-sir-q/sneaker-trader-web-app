@@ -13,29 +13,29 @@ class TransactionService implements TranscationEntity {
 
   async get(listedSneakerId: number) {
     const findTransactionQuery = formateGetColumnsQuery(TRANSACTION, `listedProductId = ${listedSneakerId}`);
-    const res = await this.conneciton.query(findTransactionQuery)
+    const res = await this.conneciton.query(findTransactionQuery);
 
-    return res.length === 0 ? null : res[0]
+    return res.length === 0 ? null : res[0];
   }
 
   create(transaction: Transaction) {
     return this.conneciton.query(formatInsertColumnsQuery(TRANSACTION, transaction));
   }
 
-  rateBuyer(listedProductId: number, rating: number) {
+  rateBuyer(listedProductId: number, rating: number, comment: string) {
     const rateSellerQuery = formatUpdateColumnsQuery(
       TRANSACTION,
-      { buyerRatingFromSeller: rating },
+      { buyerRatingFromSeller: rating, buyerCommentFromSeller: comment },
       `listedProductId = ${listedProductId}`
     );
 
     return this.conneciton.query(rateSellerQuery);
   }
 
-  rateSeller(listedProductId: number, rating: number) {
+  rateSeller(listedProductId: number, rating: number, comment: string) {
     const rateSellerQuery = formatUpdateColumnsQuery(
       TRANSACTION,
-      { sellerRatingFromBuyer: rating },
+      { sellerRatingFromBuyer: rating, sellerCommentFromBuyer: comment },
       `listedProductId = ${listedProductId}`
     );
 

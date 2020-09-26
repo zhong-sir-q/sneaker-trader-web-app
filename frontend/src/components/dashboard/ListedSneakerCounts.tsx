@@ -1,29 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import StatisticsDisplay from './StatisticsDisplay';
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
-import { useAuth } from 'providers/AuthProvider';
 
-const ListedSneakerCounts = () => {
-  const [counts, setCounts] = useState<number>(0);
-  const { currentUser } = useAuth();
-
-  useEffect(() => {
-    (async () => {
-      if (currentUser) {
-        const sellerListedSneakers = await ListedSneakerControllerInstance.getUnsoldListedSneakers(currentUser.id);
-        setCounts(sellerListedSneakers.length);
-      }
-    })();
-  });
-
-  return (
-    <StatisticsDisplay
-      iconColor='icon-info'
-      iconName='files_paper'
-      primaryText={counts}
-      secondaryText='Listed Sneakers'
-    />
-  );
+type ListedSneakerCountsProps = {
+  counts: number;
 };
+
+const ListedSneakerCounts = (props: ListedSneakerCountsProps) => (
+  <StatisticsDisplay
+    iconColor='icon-info'
+    iconName='files_paper'
+    primaryText={props.counts}
+    secondaryText='Listed Sneakers'
+  />
+);
 
 export default ListedSneakerCounts;

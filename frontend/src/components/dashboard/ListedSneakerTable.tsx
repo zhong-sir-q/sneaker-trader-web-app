@@ -1,14 +1,13 @@
 import React, {  } from 'react';
-
 import { Table } from 'reactstrap';
 
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
+import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+
 import { upperCaseFirstLetter } from 'utils/utils';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
-
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
 
 const ListedSneakerTableHeader = () => (
   <thead>

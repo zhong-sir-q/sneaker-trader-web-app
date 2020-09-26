@@ -28,16 +28,16 @@ class TransactionController implements TranscationEntity {
     return transaction && transaction.buyerRatingFromSeller > 0;
   }
 
-  rateBuyer = (listedProductId: number, rating: number) =>
+  rateBuyer = (listedProductId: number, rating: number, comment: string) =>
     fetch(
       this.transactionPath + `/rating/buyer/${listedProductId}`,
-      formatRequestOptions({ rating }, undefined, 'PUT')
+      formatRequestOptions({ rating, comment }, undefined, 'PUT')
     ).then((r) => r.json());
 
-  rateSeller = (listedProductId: number, rating: number) =>
+  rateSeller = (listedProductId: number, rating: number, comment: string) =>
     fetch(
       this.transactionPath + `/rating/seller/${listedProductId}`,
-      formatRequestOptions({ rating }, undefined, 'PUT')
+      formatRequestOptions({ rating, comment }, undefined, 'PUT')
     ).then((r) => r.json());
 }
 

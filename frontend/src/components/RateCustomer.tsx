@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Slider, Grid } from '@material-ui/core';
-import { Button } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 
 import { RatingButton } from './buttons/StyledButton';
 
 type RateCustomerProps = {
   title: string;
   listedProductId: number;
-  rateUser: (listedProductId: number, rating: number) => Promise<any>;
+  rateUser: (listedProductId: number, rating: number, comment: string) => Promise<any>;
 };
 
 const ratingMarks = Array(10)
@@ -16,17 +16,19 @@ const ratingMarks = Array(10)
   .map((_, idx) => ({ value: idx + 1, label: String(idx + 1) }));
 
 const RateCustomer = (props: RateCustomerProps) => {
-  const [open, setOpen] = React.useState(false);
-
-  const [rating, setRating] = useState<number>(1);
+  const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState<number>(5);
+  const [comment, setComment] = useState('');
 
   const { title, listedProductId, rateUser } = props;
+
+  const onInputChange = (evt: any) => setComment(evt.target.value);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onConfirm = async () => {
-    await rateUser(listedProductId, rating);
+    await rateUser(listedProductId, rating, comment);
     handleClose();
   };
 
@@ -54,6 +56,13 @@ const RateCustomer = (props: RateCustomerProps) => {
               <div>Excellence</div>
             </Grid>
           </Grid>
+          <Input
+            value={comment}
+            onChange={onInputChange}
+            style={{ fontSize: '1.35em' }}
+            type='textarea'
+            placeholder='Any comment? (Optional)'
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

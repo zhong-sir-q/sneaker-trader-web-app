@@ -50,6 +50,8 @@ export type Transaction = {
   listedProductId: number;
   buyerRatingFromSeller: number;
   sellerRatingFromBuyer: number;
+  buyerCommentFromSeller: string | null;
+  sellerCommentFromBuyer: string | null;
 };
 
 export type Brand = {

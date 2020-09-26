@@ -15,14 +15,14 @@ type BuyerCTAButtonsGroupProps = {
 const BuyerCTAButtonsGroup = (props: BuyerCTAButtonsGroupProps) => {
   const { prodStatus, listedProdId, seller } = props;
 
-  const [hasBuyerRatedSeller, setHasBuyerRatedSeller] = useState(false);
+  const [hasBuyerRatedSeller, setHasBuyerRatedSeller] = useState(true);
 
   useEffect(() => {
     (async () => setHasBuyerRatedSeller(await TransactionControllerInstance.hasBuyerRatedSeller(listedProdId)))();
   });
 
-  const onCompelteRating = async (listedProductId: number, rating: number) => {
-    TransactionControllerInstance.rateSeller(listedProductId, rating);
+  const onCompelteRating = async (listedProductId: number, rating: number, comment: string) => {
+    TransactionControllerInstance.rateSeller(listedProductId, rating, comment);
     setHasBuyerRatedSeller(true);
   };
 

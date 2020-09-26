@@ -25,18 +25,18 @@ export default (app: Router, TransactionServiceInstance: TransactionService) => 
 
   transactionRoute.put('/rating/buyer/:listedProductId', (req, res, next) => {
     const { listedProductId } = req.params;
-    const { rating } = req.body;
+    const { rating, comment } = req.body;
 
-    TransactionServiceInstance.rateBuyer(Number(listedProductId), rating)
+    TransactionServiceInstance.rateBuyer(Number(listedProductId), rating, comment)
       .then(() => res.json('Buyer is rated'))
       .catch(next);
   });
 
   transactionRoute.put('/rating/seller/:listedProductId', (req, res, next) => {
     const { listedProductId } = req.params;
-    const { rating } = req.body;
+    const { rating, comment } = req.body;
 
-    TransactionServiceInstance.rateSeller(Number(listedProductId), rating)
+    TransactionServiceInstance.rateSeller(Number(listedProductId), rating, comment)
       .then(() => res.json('Buyer is rated'))
       .catch(next);
   });

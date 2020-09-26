@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { Dialog, TextField, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
 import { Button } from 'reactstrap';
 
 import StatisticsDisplay from './StatisticsDisplay';
 
-import { getCurrentUser } from 'utils/auth';
-import { topupWalletBalance, getWalletBalanceByUserId } from 'api/api';
+import { topupWalletBalance } from 'api/api';
+import { useAuth } from 'providers/AuthProvider';
 
 type TopupWalletDialogProps = {
   handleClose: () => void;
@@ -15,15 +15,14 @@ type TopupWalletDialogProps = {
 
 const TopupWalletDialog = (props: TopupWalletDialogProps) => {
   const [topupAmount, setTopupAmount] = useState<number>();
+  const { currentUser } = useAuth();
 
   const { handleClose, isOpen } = props;
 
   const onChange = (evt: any) => setTopupAmount(evt.target.value);
 
   const onTopup = async () => {
-    const currentUser = await getCurrentUser();
-
-    await topupWalletBalance({ userId: currentUser.id!, amount: topupAmount! });
+    if (currentUser) await topupWalletBalance({ userId: currentUser.id, amount: topupAmount! });
 
     handleClose();
   };
@@ -54,19 +53,15 @@ const TopupWalletDialog = (props: TopupWalletDialogProps) => {
   );
 };
 
-const WalletBalance = () => {
-  const [balance, setBalance] = useState<number>();
+type WalletBalanceProps = {
+  balance: number;
+};
+
+const WalletBalance = (props: WalletBalanceProps) => {
   const [open, setOpen] = useState(false);
 
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
-
-  useEffect(() => {
-    (async () => {
-      const currentUser = await getCurrentUser();
-      if (currentUser) setBalance(await getWalletBalanceByUserId(currentUser.id!));
-    })();
-  });
 
   return (
     <React.Fragment>
@@ -74,7 +69,7 @@ const WalletBalance = () => {
         <StatisticsDisplay
           iconColor='icon-success'
           iconName='shopping_credit-card'
-          primaryText={'$' + balance}
+          primaryText={`$${props.balance}`}
           secondaryText='Wallet Balance'
         />
       </div>
@@ -83,4 +78,4 @@ const WalletBalance = () => {
   );
 };
 
-export default WalletBalance
+export default WalletBalance;

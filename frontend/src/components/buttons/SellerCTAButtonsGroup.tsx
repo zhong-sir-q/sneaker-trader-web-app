@@ -4,9 +4,8 @@ import RateCustomer from 'components/RateCustomer';
 import ContactCustomerButton from './ContactCustomerButton';
 import { CompleteSaleButton } from './StyledButton';
 
-import TransactionControllerInstance from 'api/TransactionController';
-
 import { SneakerStatus, Customer } from '../../../../shared';
+import TransactionControllerInstance from 'api/TransactionController';
 
 type SellerCTAButtonsGroupProps = {
   prodStatus: SneakerStatus;
@@ -16,16 +15,17 @@ type SellerCTAButtonsGroupProps = {
 };
 
 const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
-  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(false);
-
   const { prodStatus, listedProdId, buyer, onCompleteSale } = props;
+
+  // set to true so the rate button does not render initially straight away
+  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(true);
 
   useEffect(() => {
     (async () => setHasSellerRatedBuyer(await TransactionControllerInstance.hasSellerRatedBuyer(listedProdId)))();
   });
 
-  const onCompelteRating = async (listedProductId: number, rating: number) => {
-    TransactionControllerInstance.rateBuyer(listedProductId, rating);
+  const onCompleteRating = async (listedProductId: number, rating: number, comment: string) => {
+    TransactionControllerInstance.rateBuyer(listedProductId, rating, comment);
     setHasSellerRatedBuyer(true);
   };
 
@@ -42,7 +42,7 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
         <div className='flex margin-right-except-last'>
           <ContactCustomerButton customer={buyer!} title='Contact Buyer' />
           {!hasSellerRatedBuyer && (
-            <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompelteRating} />
+            <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompleteRating} />
           )}
         </div>
       );
