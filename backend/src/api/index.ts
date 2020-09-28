@@ -1,19 +1,19 @@
 import { Router } from 'express';
 
-import user from './routes/user';
-import seller from './routes/seller';
+import user from './routers/user';
+import seller from './routers/seller';
 
-import sneaker from './routes/sneaker';
-import listedSneaker from './routes/listedSneaker';
+import sneaker from './routers/sneaker';
+import listedSneaker from './routers/listedSneaker';
 
-import aws from './routes/aws';
+import aws from './routers/aws';
 
-import helperInfo from './routes/helperInfo';
-import mail from './routes/mail';
+import helperInfo from './routers/helperInfo';
+import mail from './routers/mail';
 
-import wallet from './routes/wallet';
-import transaction from './routes/transaction';
-import transactions from './routes/transactions';
+import wallet from './routers/wallet';
+import transaction from './routers/transaction';
+import transactions from './routers/transactions';
 
 import UserService from '../services/UserService';
 import SellerService from '../services/SellerService';

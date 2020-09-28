@@ -3,10 +3,7 @@ import UserService from '../../services/UserService';
 
 const userRoute = Router();
 
-export default (
-  app: Router,
-  UserServiceInstance: UserService
-) => {
+export default (app: Router, UserServiceInstance: UserService) => {
   app.use('/user', userRoute);
 
   userRoute.put('/', (req, res, next) => {
@@ -14,6 +11,14 @@ export default (
 
     UserServiceInstance.update(user)
       .then(() => res.json('User is updated'))
+      .catch(next);
+  });
+
+  userRoute.get('/name/:username', (req, res, next) => {
+    const { username } = req.params;
+
+    UserServiceInstance.getByUsername(username)
+      .then((user) => res.json(user))
       .catch(next);
   });
 
@@ -30,6 +35,14 @@ export default (
 
     UserServiceInstance.create(user)
       .then((userId) => res.json(userId))
+      .catch(next);
+  });
+
+  userRoute.delete('/name/:username', (req, res, next) => {
+    const { username } = req.params;
+
+    UserServiceInstance.deleteByUsername(username)
+      .then(() => res.json('User deleted'))
       .catch(next);
   });
 };

@@ -6,12 +6,12 @@ import {
   SneakerAsk,
   SellerListedSneaker,
   ListedProduct,
-} from '../../../shared';
+} from '../../../../shared';
 
-import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
+import ListedSneakerEntity from '../../../../shared/@types/domains/entities/ListedSneakerEntity';
 
-import formatApiEndpoint from './formatApiEndpoint';
-import formatRequestOptions from './formatRequestOptions';
+import formatApiEndpoint from '../formatApiEndpoint';
+import formatRequestOptions from '../formatRequestOptions';
 
 class ListedSneakerController implements ListedSneakerEntity {
   listedSneakerPath: string;

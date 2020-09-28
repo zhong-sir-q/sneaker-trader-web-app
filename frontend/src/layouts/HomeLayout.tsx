@@ -10,7 +10,7 @@ import BuySneakerPage from 'pages/BuySneakerPage';
 import { formatSneakerPathName } from 'utils/utils';
 
 import { homeRoutes } from 'routes';
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);

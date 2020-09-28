@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
+import { AccountCircle } from '@material-ui/icons';
 
 // reactstrap components
 import { Nav, Collapse } from 'reactstrap';
 
 // core components
-import avatar from 'assets/img/default-profile-picture.jpg';
 import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
@@ -169,7 +169,7 @@ const Sidebar = (props: SideBarProps) => {
         <div className='sidebar-wrapper' ref={sidebar}>
           <div className='user'>
             <div className='photo'>
-              <img src={avatar} alt='Avatar' />
+              <AccountCircle style={{ width: '100%', height: '100%' }} />
             </div>
             <div className='info'>
               <a

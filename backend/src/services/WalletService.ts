@@ -1,54 +1,36 @@
 import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
-import { formatInsertColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formateGetColumnsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
 import { WALLET } from '../config/tables';
-import { RequestHandler } from 'express';
 
-class WalletService {
+import WalletEntity from '../../../shared/@types/domains/entities/WalletEntity';
+
+class WalletService implements WalletEntity {
   private connection: PromisifiedConnection;
 
   constructor() {
     this.connection = getMysqlDb();
   }
 
-  getBalanceByUserId: RequestHandler = (req, res, next) => {
-    const { userId } = req.params;
+  getBalanceByUserId(userId: number) {
     const getBalanceByUserIdQuery = formateGetColumnsQuery(WALLET, `userId = ${userId}`);
 
-    this.connection
-      .query(getBalanceByUserIdQuery)
-      .then(async (queryResult) => {
-        if (queryResult.length === 0) {
-          await this.create(userId);
-          res.json(0);
-          return;
-        }
+    return this.connection.query(getBalanceByUserIdQuery).then(async (queryResult) => {
+      if (queryResult.length === 0) {
+        await this.create(Number(userId));
+        return 0;
+      }
 
-        res.json(queryResult[0].balance);
-      })
-      .catch(next);
-  };
-
-  handleTopup: RequestHandler = (req, res, next) => {
-    const { userId, amount } = req.body;
-    this.topUp(userId, amount)
-      .then((result) => res.json(result))
-      .catch(next);
-  };
-
-  handleDecreaseBalance: RequestHandler = (req, res, next) => {
-    const { userId, amount } = req.body;
-    this.decreaseBalance(userId, amount)
-      .then((result) => res.json(result))
-      .catch(next);
-  };
-
-  create(userId: string) {
-    return this.connection.query(formatInsertColumnsQuery(WALLET, { userId }));
+      return queryResult[0].balance;
+    });
   }
+
+  create = (userId: number) => this.connection.query(formatInsertColumnsQuery(WALLET, { userId }));
+
+  delete = (userId: number) => this.connection.query(formatDeleteQuery(WALLET, `userId = ${userId}`));
 
   // amount cannot be negative
   // assume there is no limit
-  topUp(userId: number, amount: number) {
+  topup(userId: number, amount: number) {
     const topupQuery = `UPDATE ${WALLET} SET balance = balance + ${amount} WHERE userId = ${userId}`;
 
     return this.connection.query(topupQuery);

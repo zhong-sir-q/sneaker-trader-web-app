@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import SneakerGallery from 'components/SneakerGallery';
 
 import { GallerySneaker } from '../../../shared';
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;

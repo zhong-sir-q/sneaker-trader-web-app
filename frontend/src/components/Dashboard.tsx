@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, Row, Col } from 'reactstrap';
 
 import PanelHeader from './PanelHeader';
-import WalletBalance from './dashboard/WalletBalance';
 import TransactionDualHistoryTable from './dashboard/TransactionDualHistoryTable';
 import SaleHistoryTable from './dashboard/SaleHistoryTable';
 
@@ -14,10 +13,13 @@ import UserRankingPoints from './dashboard/UserRankingPoints';
 import SoldSneakerCounts from './dashboard/SoldSneakerCounts';
 import MonthlyProfit from './dashboard/charts/MonthlyProfit';
 import MonthSneakerValue from './dashboard/charts/MonthSneakerValue';
-import { useAuth } from 'providers/AuthProvider';
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
-import { getWalletBalanceByUserId } from 'api/api';
 import CenterSpinner from './CenterSpinner';
+
+import { useAuth } from 'providers/AuthProvider';
+
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import WalletBalance from './dashboard/WalletBalance';
+import WalletCtxProvider from 'providers/WalletCtxProvider';
 
 /**
  * TODO:
@@ -30,7 +32,6 @@ import CenterSpinner from './CenterSpinner';
 const Dashboard = () => {
   const [rankingPoint, setRankingPoint] = useState(0);
   const [listedSneakerCounts, setListedSneakerCounts] = useState(0);
-  const [balance, setBalance] = useState(0);
   const [completedSaleCounts, setCompletedSaleCounts] = useState(0);
 
   const { currentUser } = useAuth();
@@ -40,8 +41,6 @@ const Dashboard = () => {
       const sellerListedSneakers = await ListedSneakerControllerInstance.getUnsoldListedSneakers(currentUser.id);
       const soldSneakers = await ListedSneakerControllerInstance.getSoldListedSneakers(currentUser.id);
 
-      // TODO: create a wallet entity object
-      setBalance(await getWalletBalanceByUserId(currentUser.id));
       setListedSneakerCounts(sellerListedSneakers.length);
       setCompletedSaleCounts(soldSneakers.length);
       setRankingPoint(currentUser.rankingPoint);
@@ -70,7 +69,7 @@ const Dashboard = () => {
                     <ListedSneakerCounts counts={listedSneakerCounts} />
                   </Col>
                   <Col md='3'>
-                    <WalletBalance balance={balance} />
+                    <WalletBalance />
                   </Col>
                   <Col md='3'>
                     <SoldSneakerCounts counts={completedSaleCounts} />
@@ -103,4 +102,12 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+const DashboardContainer = () => (
+  <WalletCtxProvider>
+    <TransactionTableContextProvider>
+      <Dashboard />
+    </TransactionTableContextProvider>
+  </WalletCtxProvider>
+);
+
+export default DashboardContainer;

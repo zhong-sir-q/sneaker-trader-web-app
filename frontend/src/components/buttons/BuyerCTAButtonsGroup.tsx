@@ -4,7 +4,7 @@ import RateCustomer from 'components/RateCustomer';
 import ContactCustomerButton from './ContactCustomerButton';
 
 import { SneakerStatus, Customer } from '../../../../shared';
-import TransactionControllerInstance from 'api/TransactionController';
+import TransactionControllerInstance from 'api/controllers/TransactionController';
 
 type BuyerCTAButtonsGroupProps = {
   prodStatus: SneakerStatus;

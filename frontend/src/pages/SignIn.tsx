@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
-import { Hub } from 'aws-amplify';
-import { AmplifyGoogleButton, AmplifyFacebookButton } from '@aws-amplify/ui-react';
 import { Link } from 'react-router-dom';
 
 // reactstrap components
@@ -18,7 +16,9 @@ import { SIGNUP, AUTH, FORGOT_PW } from 'routes';
 
 import stLogo from 'assets/img/logo_transparent_background.png';
 import bgImage from 'assets/img/bg14.jpg';
-import { signIn, getCurrentUser } from 'utils/auth';
+import { signIn } from 'utils/auth';
+import SignInWithGoogle from 'components/buttons/SigninWithGoogle';
+import SignInWithFacebook from 'components/buttons/SignInWithFacebook';
 
 type SignInFormStateType = {
   email: string;
@@ -38,27 +38,16 @@ const validationSchema = Yup.object({
 const SignIn = () => {
   const [loginError, setLoginError] = useState<string>();
 
-  useEffect(() => {
-    // use the hub to redirect the user when they sign in using social logins
-    // TODO: create the user in the database if not exists, it will have to be a federated user
-    // so call a API route such as /api/federatedUser
-    Hub.listen('auth', async ({ payload: { event, data } }) => {
-      if (event === 'signIn') {
-        // NOTE: edge case, email may be the same acroos
-        // social media and the one user uses to signin.
-        // This case HAS NOT BEEN handled
+  const updateLoginErr = (message: string) => setLoginError(message);
 
-        // create the user in the db if not exists
-        await getCurrentUser(data);
-
-      }
-    });
-
-    // unsubscribe the Hub
-    return () => {
-      Hub.remove('auth', () => {});
-    };
-  });
+  const onSignin = async (email: string, pw: string) => {
+    try {
+      await signIn(email, pw);
+    } catch (err) {
+      if (err.code === 'NotAuthorizedException') setLoginError('Incorrect email or password');
+      else updateLoginErr(err.message);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -69,15 +58,7 @@ const SignIn = () => {
               <Formik
                 initialValues={INIT_FORM_STATES}
                 validationSchema={validationSchema}
-                onSubmit={async (formStates) => {
-                  const loginResult = await signIn(formStates.email, formStates.password);
-
-                  if (loginResult.message) {
-                    setLoginError(loginResult.message);
-                    return;
-                  }
-
-                }}
+                onSubmit={async (formStates) => await onSignin(formStates.email, formStates.password)}
               >
                 <FormikForm>
                   <Card className='card-login card-plain'>
@@ -85,10 +66,8 @@ const SignIn = () => {
                       <div className='logo-container' style={{ width: '130px', marginBottom: '35px' }}>
                         <img src={stLogo} alt='now-logo' />
                       </div>
-                      {/* TODO: Use own button for better customizations */}
-                      {/* <Button onClick={() => { Auth.federatedSignIn({ provider: 'Google' }) }}>Sign In With Google</Button> */}
-                      <AmplifyGoogleButton clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID} />
-                      <AmplifyFacebookButton appId={process.env.REACT_APP_FB_APP_ID} />
+                      <SignInWithGoogle handleSignin={updateLoginErr} />
+                      <SignInWithFacebook handleSignin={updateLoginErr} />
                     </CardHeader>
                     <CardBody>
                       {loginError && <InputFieldError error={loginError} />}

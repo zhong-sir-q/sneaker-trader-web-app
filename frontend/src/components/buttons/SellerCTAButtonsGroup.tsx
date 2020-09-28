@@ -5,7 +5,7 @@ import ContactCustomerButton from './ContactCustomerButton';
 import { CompleteSaleButton } from './StyledButton';
 
 import { SneakerStatus, Customer } from '../../../../shared';
-import TransactionControllerInstance from 'api/TransactionController';
+import TransactionControllerInstance from 'api/controllers/TransactionController';
 
 type SellerCTAButtonsGroupProps = {
   prodStatus: SneakerStatus;
@@ -21,7 +21,9 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
   const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(true);
 
   useEffect(() => {
-    (async () => setHasSellerRatedBuyer(await TransactionControllerInstance.hasSellerRatedBuyer(listedProdId)))();
+    (async () => {
+      (await TransactionControllerInstance.hasSellerRatedBuyer(listedProdId));
+    })();
   });
 
   const onCompleteRating = async (listedProductId: number, rating: number, comment: string) => {

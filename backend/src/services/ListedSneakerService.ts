@@ -45,7 +45,7 @@ class ListedSneakerService implements ListedSneakerEntity {
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
-      SELECT L.id, imageUrls, name, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
+      SELECT L.id, L.sizeSystem, imageUrls, name, brand, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
         askingPrice as price, quantity FROM ListedProducts L, Products P
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;

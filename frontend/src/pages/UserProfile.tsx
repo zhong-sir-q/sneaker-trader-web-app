@@ -7,13 +7,14 @@ import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from '
 // core components
 import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
+
 import { User, AppUser } from '../../../shared';
-import { updateUser } from 'api/api';
-import { getCurrentUser } from 'utils/auth';
 
-import avatar from 'assets/img/default-profile-picture.jpg'
+import UserControllerInstance from 'api/controllers/UserController';
+import { AccountCircle } from '@material-ui/icons';
+import { useAuth } from 'providers/AuthProvider';
 
-const INIT_USER: AppUser = {
+const INIT_USER: Omit<AppUser, 'signinMethod'> = {
   username: '',
   firstName: '',
   lastName: '',
@@ -22,8 +23,8 @@ const INIT_USER: AppUser = {
   phoneNo: '',
   // email is not in the form, but it is used to query the user
   email: '',
-  // same with this field
-  profilePicUrl: ''
+  // this field is the same as above
+  profilePicUrl: '',
 };
 
 const nameIfUndefined = (message: string, ...names: (string | undefined)[]) => {
@@ -36,24 +37,19 @@ const nameIfUndefined = (message: string, ...names: (string | undefined)[]) => {
 const UserProfile = () => {
   const [user, setUser] = useState(INIT_USER);
   const [successEdit, setSuccessEdit] = useState(false);
+  const { currentUser } = useAuth();
 
   const onAlertDismiss = () => setSuccessEdit(false);
 
   useEffect(() => {
     (async () => {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
+      if (currentUser) setUser(currentUser);
     })();
-  }, []);
+  }, [currentUser]);
 
   const handleSubmit = async (formStates: User) => {
-    // TODO: check if the user name is already in use upon submit
-    // DO NOT make the api calls if none of the fields have been touched!
-
-    await updateUser({ ...formStates, email: user.email })
-
+    await UserControllerInstance.update(formStates);
     setSuccessEdit(true);
-    // update is successful
     setUser(formStates);
   };
 
@@ -65,7 +61,20 @@ const UserProfile = () => {
           Changes have been saved
         </Alert>
         <Row>
-          <Formik initialValues={user as User} enableReinitialize onSubmit={handleSubmit}>
+          <Formik
+            initialValues={user as User}
+            enableReinitialize
+            onSubmit={async (formStates, { setFieldError }) => {
+              try {
+                await UserControllerInstance.getByUsername(formStates.username);
+              } catch (err) {
+                setFieldError('username', err.message);
+                return;
+              }
+
+              await handleSubmit(formStates);
+            }}
+          >
             <Col md='8'>
               <Card>
                 <CardHeader>
@@ -120,15 +129,14 @@ const UserProfile = () => {
 
           <Col md='4'>
             <Card className='card-user'>
-              <div className='image'>
-                <img alt='...' src={require('assets/img/bg5.jpg')} />
-              </div>
               <CardBody>
-                <div className='author'>
-                  <a href='#pablo' onClick={(e) => e.preventDefault()}>
-                    <img alt='...' className='avatar border-gray' src={user.profilePicUrl || avatar} />
-                    <h5 className='title'>{nameIfUndefined('Opps, no full name', user.firstName, user.lastName)}</h5>
-                  </a>
+                <div className='text-center'>
+                  {user.profilePicUrl ? (
+                    <img style={{ maxWidth: '100px' }} alt='user profile' src={user.profilePicUrl} />
+                  ) : (
+                    <AccountCircle style={{ maxWidth: '100px', width: '100%', height: '100%' }} />
+                  )}
+                  <h5 className='title'>{nameIfUndefined('Opps, no full name', user.firstName, user.lastName)}</h5>
                   <p className='description'>{nameIfUndefined('Ouch, where is my username', user.username)}</p>
                 </div>
               </CardBody>

@@ -33,7 +33,7 @@ const formatSneaker = (s: SneakerListingFormStateType) => {
 };
 
 // the providers reside in routes.tsx
-const ProductListingForm = () => {
+const SneakerListingForm = () => {
   const [step, setStep] = useState(0);
 
   const { currentUser } = useAuth();
@@ -119,4 +119,4 @@ const ProductListingForm = () => {
   );
 };
 
-export default ProductListingForm;
+export default SneakerListingForm;

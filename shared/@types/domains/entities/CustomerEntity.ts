@@ -5,7 +5,14 @@ export interface UserEntity {
   // return the id of the created user
   create(user: Partial<User>): Promise<number>;
   getByEmail(email: string): Promise<User>;
+  getByUsername(username: string): Promise<User>;
   update(user: User): Promise<any>;
+  deleteByUsername(username: string): Promise<any>;
+}
+
+export interface UserControllerEntity extends UserEntity {
+  isDuplicateUsername(username: string): Promise<boolean | void>;
+  isDuplicateEmail(email: string): Promise<boolean | void>;
 }
 
 export interface BuyerEntity {

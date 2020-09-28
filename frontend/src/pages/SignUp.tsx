@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Auth } from 'aws-amplify';
 
 import { Formik, Form as FormikForm, Field, ErrorMessage, FormikState } from 'formik';
 
@@ -34,13 +33,14 @@ import {
   validDate,
   customRequired,
   validPhoneNo,
+  checkDuplicateUsername,
 } from 'utils/yup';
-import { createUser } from 'api/api';
 
 import { SIGNIN, AUTH } from 'routes';
 import { CreateUserPayload } from '../../../shared';
 
 import bgImage from 'assets/img/bg16.jpg';
+import onSignup from 'usecases/onSignup';
 
 // TODO: This component can be refactored
 const SideContent = () => (
@@ -86,7 +86,7 @@ type SignupFormStateType = CreateUserPayload & { password: string; confirmPasswo
 const convertFormValuesToUser = (formValues: SignupFormStateType): CreateUserPayload => {
   const { firstName, lastName, username, gender, dob, email, phoneNo } = formValues;
 
-  return { firstName, lastName, username, gender, dob, email, phoneNo };
+  return { firstName, lastName, username, gender, dob, email, phoneNo, signinMethod: 'email' };
 };
 
 const INIT_FORM_VALUES: SignupFormStateType = {
@@ -100,13 +100,13 @@ const INIT_FORM_VALUES: SignupFormStateType = {
   confirmPassword: '',
   dob: '',
   policyAgreed: '',
+  signinMethod: 'email',
 };
 
-// TODO: refactor and put this in a specific folder
 const validationSchema = Yup.object({
   firstName: maxCharacters(20),
   lastName: maxCharacters(20),
-  username: maxCharacters(20),
+  username: checkDuplicateUsername(),
   gender: required(),
   email: validEmail(),
   phoneNo: validPhoneNo(),
@@ -155,21 +155,12 @@ const SignupForm = () => {
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const handleSubmit = async (formStates: SignupFormStateType) => {
-    const cognitoUser = await Auth.signUp({ username: formStates.email, password: formStates.password })
-      .then((res) => res.user)
-      .catch((err) => err);
-
-    // handle sign up error
-    if (cognitoUser.message) {
-      setSignUpError(cognitoUser.message);
-      return;
+    try {
+      await onSignup(convertFormValuesToUser(formStates), formStates.password);
+      setSignUpSuccess(true);
+    } catch (err) {
+      setSignUpError(err.message);
     }
-
-    // successful sign up, show the user the success message
-    setSignUpSuccess(true);
-
-    // create the user in the database and also th wallet
-    await createUser(convertFormValuesToUser(formStates));
   };
 
   return signUpSuccess ? (

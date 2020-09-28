@@ -5,6 +5,7 @@ export * from './transaction'
 export * from './entities/CustomerEntity'
 export * from './entities/ListedSneakerEntity'
 export * from './entities/TransactionEntity'
+export * from './entities/WalletEntity'
 
 export type DecreaseWalletPayload = {
   userId: number;

@@ -8,7 +8,7 @@ import {
 } from 'api/api';
 
 import { ListedSneakerPayload, ListingFormSneaker } from '../../../shared';
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 const handleListingSneaker = async (
   imgFormData: FormData,

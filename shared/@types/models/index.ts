@@ -1,3 +1,5 @@
+export type SocialProvider = 'google' | 'facebook';
+
 export type User = {
   id: number;
   firstName: string;
@@ -9,6 +11,7 @@ export type User = {
   phoneNo: string;
   rankingPoint: number;
   profilePicUrl: string;
+  signinMethod: 'email' | SocialProvider;
 };
 
 export type Sneaker = {

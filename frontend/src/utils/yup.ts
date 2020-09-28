@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import moment from 'moment';
+import UserControllerInstance from 'api/controllers/UserController';
 
 const REQUIRED = '* Required';
 const DATE_FORMAT = 'MM/DD/YYYY';
@@ -31,7 +32,25 @@ export const requiredPositiveNumber = (fieldName: string) =>
     .positive(`${fieldName} must be greater than zero`)
     .required(`${fieldName} is Required`);
 
+// the val !== undefined check here is necessaru otherwise the web will become errorenous
 export const validPhoneNo = () =>
   Yup.string()
     .matches(/^[0-9]+/, 'Must be all digits')
-    .test('len', 'Should be between 8-10 digits long', (val) => val!.length >= 8 && val!.length <= 10);
+    .test(
+      'len',
+      'Should be between 8-10 digits long',
+      (val) => val !== undefined && val!.length >= 8 && val!.length <= 10
+    );
+
+export const checkDuplicateUsername = () =>
+  Yup.string()
+    .test('check duplicate user name in db', 'Username is chosen', async (username) => {
+      if (!username) return true;
+      try {
+        await UserControllerInstance.isDuplicateUsername(username);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    })
+    .required(REQUIRED);

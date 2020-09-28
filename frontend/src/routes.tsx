@@ -4,12 +4,14 @@ import SignUp from 'pages/SignUp';
 import SignIn from 'pages/SignIn';
 import ForgotPassword from 'pages/ForgotPassword';
 import UserProfile from 'pages/UserProfile';
-import ProductListingForm from 'pages/ProductListingForm';
+import SneakerListingForm from 'pages/SneakerListingForm';
 
 import Dashboard from 'components/Dashboard';
 import HomePage from 'pages/HomePage';
 import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
 import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
+import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
+import WalletCtxProvider from 'providers/WalletCtxProvider';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -20,6 +22,7 @@ export const FORGOT_PW = '/reset';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
 export const HOME = '/';
+const TOPUP_WALLET = '/topup';
 
 type AppLayout = '/auth' | '/admin' | '/';
 
@@ -83,6 +86,12 @@ export const sidebarRoutes = [
     icon: 'now-ui-icons objects_diamond',
     layout: ADMIN,
   },
+  {
+    path: TOPUP_WALLET,
+    name: 'Topup Wallet',
+    icon: 'now-ui-icons business_money-coins',
+    layout: ADMIN,
+  },
 ];
 
 export type HomeRoute = {
@@ -135,9 +144,19 @@ const routes: SneakerTraderRoute[] = [
     component: () => (
       <SneakerListingFormCtxProvider>
         <PreviewImgDropzoneCtxProvider>
-          <ProductListingForm />
+          <SneakerListingForm />
         </PreviewImgDropzoneCtxProvider>
       </SneakerListingFormCtxProvider>
+    ),
+    layout: ADMIN,
+  },
+  {
+    path: TOPUP_WALLET,
+    name: 'Topup Wallet',
+    component: () => (
+      <WalletCtxProvider>
+        <TopupWalletPage />
+      </WalletCtxProvider>
     ),
     layout: ADMIN,
   },

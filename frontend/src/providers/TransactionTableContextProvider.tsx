@@ -4,7 +4,7 @@ import { useAuth } from './AuthProvider';
 import { getPurchasedProductsByBuyerId } from 'api/api';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 type TransactionTableContextType = {
   isOpenSaleSuccessPopup: boolean;

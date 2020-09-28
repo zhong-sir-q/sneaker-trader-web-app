@@ -9,7 +9,7 @@ import CenterSpinner from 'components/CenterSpinner';
 
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
 
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 const CenterContainer = styled(Container)`
   display: flex;

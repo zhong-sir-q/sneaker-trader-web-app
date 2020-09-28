@@ -1,9 +1,11 @@
-import React, {  } from 'react';
+import React from 'react';
 import { Table } from 'reactstrap';
+
+import styled from 'styled-components';
 
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
-import ListedSneakerControllerInstance from 'api/ListedSneakerController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 import { upperCaseFirstLetter } from 'utils/utils';
 
@@ -12,10 +14,7 @@ import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 const ListedSneakerTableHeader = () => (
   <thead>
     <tr>
-      <th className='text-center' />
-      <th>PRODUCT</th>
-      <th>COLOR</th>
-      <th>Size</th>
+      <th>Name</th>
       <th>Status</th>
       <th>PRICE</th>
       <th>QTY</th>
@@ -33,6 +32,18 @@ type ListedSneakerTableProps = {
   setShowCompleteSaleSuccess?: () => void;
 };
 
+const ImgContainer = styled.div`
+  float: left;
+
+  @media (min-width: 150px) {
+    width: 60px;
+  }
+
+  @media (min-width: 768px) {
+    width: 80px;
+  }
+`;
+
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, setShowCompleteSaleSuccess } = props;
 
@@ -45,7 +56,19 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   };
 
   const ListedSneakerRow = (props: ListedSneakerTableRowProps) => {
-    const { id, name, colorway, imageUrls, size, price, quantity, prodStatus, buyer } = props.sneaker;
+    const {
+      id,
+      brand,
+      name,
+      colorway,
+      imageUrls,
+      size,
+      price,
+      quantity,
+      prodStatus,
+      buyer,
+      sizeSystem,
+    } = props.sneaker;
 
     const displayImg = imageUrls.split(',')[0];
 
@@ -54,20 +77,34 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       if (setShowCompleteSaleSuccess) setShowCompleteSaleSuccess();
     };
 
+    const displayName = `${brand} ${name} ${colorway}`;
+    const displaySize = `${sizeSystem} Men's Size: ${size}`;
+
     return (
       <tr>
         <td>
-          <div className='img-container'>
+          <ImgContainer>
             <img src={displayImg} alt={name + colorway} />
+          </ImgContainer>
+          <div style={{ overflowX: 'hidden', paddingLeft: '8px', top: '5px' }}>
+            <span style={{ fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'hidden' }}>
+              {displayName}
+            </span>
+            <span
+              style={{
+                color: '#000',
+                fontSize: '0.85em',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflowX: 'hidden',
+                display: 'block',
+              }}
+              className='category'
+            >
+              {displaySize}
+            </span>
           </div>
         </td>
-        <td>
-          <span>{name}</span>
-          <br />
-          <small>by Balmain</small>
-        </td>
-        <td>{colorway}</td>
-        <td>{size}</td>
         <td>{upperCaseFirstLetter(prodStatus)}</td>
         <td>
           <small>$</small>
@@ -98,7 +135,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           <ListedSneakerRow key={idx} sneaker={s} />
         ))}
         <tr>
-          <td colSpan={7} />
+          <td colSpan={4} />
           <td className='td-total'>Total</td>
           <td className='td-price'>
             <small>$</small>

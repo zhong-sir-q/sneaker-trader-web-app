@@ -3,9 +3,8 @@ import {
   formateGetColumnsQuery,
   doubleQuotedValue,
   formatUpdateColumnsQuery,
+  formatDeleteQuery,
 } from '../utils/formatDbQuery';
-
-import WalletService from './WalletService';
 
 import { User, UserEntity } from '../../../shared';
 import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
@@ -29,23 +28,25 @@ class UserService implements UserEntity {
     const createUserQuery = formatInsertColumnsQuery(USERS, user);
     const userId = await this.connection.query(createUserQuery).then((result) => result.insertId);
 
-    // create the wallet for the user
-    new WalletService().create(userId);
-
     return userId;
+  }
+
+  async getByUsername(username: string): Promise<User> {
+    const getQuery = formateGetColumnsQuery(USERS, `username = ${doubleQuotedValue(username)}`);
+    const res = await this.connection.query(getQuery);
+
+    return res.length === 0 ? null : res[0];
   }
 
   async getByEmail(email: string): Promise<User> {
     const getUserByEmailQuery = formateGetColumnsQuery(USERS, 'email = ' + doubleQuotedValue(email));
-    const queryResult = await this.connection.query(getUserByEmailQuery);
+    const res = await this.connection.query(getUserByEmailQuery);
 
-    if (queryResult.length === 0) {
-      const createUserResult = await this.create({ email });
-      return createUserResult;
-    }
-
-    return queryResult[0];
+    return res.length === 0 ? null : res[0];
   }
+
+  deleteByUsername = (username: string) =>
+    this.connection.query(formatDeleteQuery(USERS, `username = ${doubleQuotedValue(username)}`));
 }
 
 export default UserService;

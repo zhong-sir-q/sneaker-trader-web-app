@@ -45,7 +45,7 @@ class TransactionsService {
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
-      SELECT L.id, imageUrls, name, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
+      SELECT L.id, imageUrls, name, colorway, brand, size, prodStatus, ${buyerIfPendingOrSoldProduct},
         askingPrice as price, quantity FROM ListedProducts L, Products P
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;
@@ -78,7 +78,7 @@ class TransactionsService {
         (${getSellerObjectQuery}), null) AS stringifiedSeller`;
 
     const getPurchasedProductsQuery = `
-      SELECT T.amount as price, T.quantity, L.id, name, imageUrls, colorway, size, prodStatus, 
+      SELECT T.amount as price, T.quantity, L.id, name, imageUrls, colorway, brand, size, prodStatus, 
         ${sellerIfPendingOrSoldProduct} FROM Transactions T, ListedProducts L, Products P
           WHERE T.buyerId = ${buyerId} AND T.listedProductId = L.id AND L.productId = P.id
     `;

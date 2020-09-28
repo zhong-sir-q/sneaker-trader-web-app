@@ -10,8 +10,8 @@ export type SneakerAsk = {
 type SizeMinPriceType = { size: number; minPrice: number };
 export type SizeMinPriceGroupType = SizeMinPriceType[];
 
-export type CustomerSneaker = Pick<Sneaker, 'imageUrls' | 'name' | 'colorway' | 'size'> &
-  Pick<ListedProduct, 'id' | 'prodStatus'> & { quantity: number; price: number };
+export type CustomerSneaker = Pick<Sneaker, 'imageUrls' | 'name' | 'colorway' | 'size' | 'brand'> &
+  Pick<ListedProduct, 'id' | 'prodStatus' | 'sizeSystem'> & { quantity: number; price: number };
 
 export type AppSneaker = Omit<Sneaker, 'id' | 'RRP'>;
 

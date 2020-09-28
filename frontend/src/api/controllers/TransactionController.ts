@@ -1,7 +1,8 @@
-import TranscationEntity from '../../../shared/@types/domains/entities/TransactionEntity';
-import formatApiEndpoint from './formatApiEndpoint';
-import { Transaction, CreateTransactionPayload } from '../../../shared';
-import formatRequestOptions from './formatRequestOptions';
+import TranscationEntity from '../../../../shared/@types/domains/entities/TransactionEntity';
+import { Transaction, CreateTransactionPayload } from '../../../../shared';
+
+import formatApiEndpoint from '../formatApiEndpoint';
+import formatRequestOptions from '../formatRequestOptions';
 
 class TransactionController implements TranscationEntity {
   transactionPath: string;

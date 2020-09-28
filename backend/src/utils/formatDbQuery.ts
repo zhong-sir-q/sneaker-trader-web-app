@@ -42,3 +42,5 @@ export const formatUpdateColumnsQuery = (tableName: string, obj: QueryObject, co
 
 export const formateGetColumnsQuery = (tableName: string, condition?: string) =>
   condition ? `SELECT * FROM ${tableName} WHERE ${condition}` : `SELECT * FROM ${tableName}`;
+
+export const formatDeleteQuery = (tableName: string, condition: string) => `DELETE FROM ${tableName} WHERE ${condition}`
