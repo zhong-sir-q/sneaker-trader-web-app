@@ -5,7 +5,16 @@ import PanelHeader from 'components/PanelHeader';
 import { Paper } from '@material-ui/core';
 import TopupWalletDialog from 'components/TopupWalletDialog';
 
+import styled from 'styled-components';
+
 import { useWalletCtx } from 'providers/WalletCtxProvider';
+
+const PaperContainer = styled(Paper)`
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 10%;
+`;
 
 const TopupWalletPage = () => {
   const [open, setOpen] = useState(false);
@@ -18,7 +27,7 @@ const TopupWalletPage = () => {
   return (
     <div>
       <PanelHeader size='sm' />
-      <Paper style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+      <PaperContainer>
         <div style={{ width: '300px' }}>
           <Card>
             <CardHeader>
@@ -34,7 +43,7 @@ const TopupWalletPage = () => {
             Topup
           </Button>
         </div>
-      </Paper>
+      </PaperContainer>
       <TopupWalletDialog isOpen={open} handleClose={handleClose} />
     </div>
   );

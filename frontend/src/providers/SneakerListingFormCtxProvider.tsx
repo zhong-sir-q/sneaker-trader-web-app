@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
 import { required, requiredPositiveNumber } from 'utils/yup';
-import { getBrands, getSneakerNames, getColorways } from 'api/api';
+import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
@@ -73,9 +73,9 @@ const SneakerListingFormCtxProvider = (props: { children: React.ReactNode }) => 
 
   useEffect(() => {
     (async () => {
-      setBrandOptions((await getBrands()).map((b) => b.brand));
-      setSneakerNamesOptions((await getSneakerNames()).map((sn) => sn.name));
-      setColorwayOptions((await getColorways()).map((c) => c.colorway));
+      setBrandOptions(await HelperInfoControllerInstance.getBrands())
+      setSneakerNamesOptions(await HelperInfoControllerInstance.getSneakerNames())
+      setColorwayOptions(await HelperInfoControllerInstance.getColorways())
     })();
   }, []);
 

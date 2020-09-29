@@ -8,18 +8,18 @@ import SneakerGallery from 'components/SneakerGallery';
 
 import { GallerySneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import { range } from 'utils/utils';
+import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;
   font-family: BebasNeue;
   text-align: center;
   background-color: #f5f5f5;
-  max-width: 48px;
   margin: 2%;
   padding: 1% 5px;
   cursor: pointer;
   color: ${(props) => (props.selected ? '#f96332' : '')};
-  flex: 0 0 25%;
 `;
 
 const FilterTitle = styled.div`
@@ -86,6 +86,8 @@ const Filters = (props: FiltersProps) => {
 const HomePage = () => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>([]);
   const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>([]);
+  const [brands, setBrands] = useState<string[]>([])
+
   const history = useHistory();
 
   useEffect(() => {
@@ -93,13 +95,13 @@ const HomePage = () => {
       const gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers();
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);
+      setBrands(await HelperInfoControllerInstance.getBrands())
     })();
   }, []);
 
   const queryHandler = async (brand: string, size: number) => {
     if (brand && size) {
       const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(size);
-      // const sneakersBySize = await getSneakersBySize(size as string);
       setFilterSneakers(sneakersBySize.filter((s) => s.brand === brand));
     } else if (brand) {
       setFilterSneakers(defaultSneakers.filter((s) => s.brand === brand));
@@ -123,11 +125,11 @@ const HomePage = () => {
   });
 
   return (
-    <Container fluid='md' style={{ minHeight: 'calc(100vh - 150px)' }}>
+    <Container fluid='sm' style={{ minHeight: 'calc(100vh - 150px)' }}>
       <Row>
         <Col sm={2}>
-          <Filters filters={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]} filterKey='size' title='us sizes' />
-          <Filters filters={['Nike', 'Air Jordan', 'Under Armor']} filterKey='brand' title='brands' />
+          <Filters filters={range(1, 12, 1)} filterKey='size' title='us sizes' />
+          <Filters filters={brands} filterKey='brand' title='brands' />
         </Col>
         <Col sm={10}>
           <SneakerGallery sneakers={filterSneakers} />

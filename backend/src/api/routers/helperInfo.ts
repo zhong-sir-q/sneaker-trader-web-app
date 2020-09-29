@@ -11,7 +11,7 @@ const duplicateKeyHandler = (err: any, res: Response<any>, next: NextFunction, k
 };
 
 export default (app: Router, HelperInfoServiceInstance: HelperInfoService) => {
-  app.use('/helper_info', helperInfoRoute);
+  app.use('/helperInfo', helperInfoRoute);
 
   helperInfoRoute.get('/sneakerNames', (_req, res, next) => {
     HelperInfoServiceInstance.get('sneakernames')

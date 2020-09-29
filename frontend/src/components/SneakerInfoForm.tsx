@@ -12,17 +12,10 @@ import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 import { DASHBOARD, ADMIN } from 'routes';
 
 import { useSneakerListingFormCtx } from 'providers/SneakerListingFormCtxProvider';
+import { range } from 'utils/utils';
 
 type SneakerInfoFormProps = {
   goNextStep: () => void;
-};
-
-const range = (start: number, end: number, step: number): number[] => {
-  let result: number[] = [];
-
-  for (let num = start; num <= end; num += step) result.push(num);
-
-  return result;
 };
 
 const currencyCodeOptions = ['AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'NZD', 'USD', 'YUAN'];

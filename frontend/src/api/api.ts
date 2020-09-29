@@ -1,8 +1,5 @@
 import {
   Sneaker,
-  Brand,
-  SneakerName,
-  Colorway,
   MailAfterPurchasePayload,
   BuyerPurchasedSneaker,
   AppSneaker,
@@ -15,7 +12,6 @@ const SELLERS_API_URL = API_BASE_URL + 'sellers/';
 
 // products
 const PRODUCT_API_URL = API_BASE_URL + 'product/';
-const HELPER_INFO_API_URL = API_BASE_URL + 'helper_info/';
 
 // transaction related
 const TRANSACTIONS_API_URL = API_BASE_URL + 'transactions/';
@@ -61,24 +57,6 @@ export const uploadS3MultipleImages = (formData: FormData): Promise<string[]> =>
 // mail
 export const mailAfterPurchase = (payload: MailAfterPurchasePayload) =>
   fetch(MAIL_API_URL + 'confirmPurchase', formatRequestOptions(payload));
-
-// helper_info such as brands, sneaker names and color ways etc.
-export const getBrands = (): Promise<Brand[]> => fetch(HELPER_INFO_API_URL + 'brands').then((res) => res.json());
-
-export const getSneakerNames = (): Promise<SneakerName[]> =>
-  fetch(HELPER_INFO_API_URL + 'sneakerNames').then((res) => res.json());
-
-export const getColorways = (): Promise<Colorway[]> =>
-  fetch(HELPER_INFO_API_URL + 'colorways').then((res) => res.json());
-
-export const createBrand = (brand: Brand): Promise<any> =>
-  fetch(HELPER_INFO_API_URL + 'brands', formatRequestOptions(brand));
-
-export const createSneakerName = (name: SneakerName): Promise<any> =>
-  fetch(HELPER_INFO_API_URL + 'sneakerNames', formatRequestOptions(name));
-
-export const createColorway = (colorway: Colorway): Promise<any> =>
-  fetch(HELPER_INFO_API_URL + 'colorways', formatRequestOptions(colorway));
 
 export const getPurchasedProductsByBuyerId = (buyerId: number): Promise<BuyerPurchasedSneaker[]> =>
   fetch(TRANSACTIONS_API_URL + `purchased/${buyerId}`).then((res) => res.json());

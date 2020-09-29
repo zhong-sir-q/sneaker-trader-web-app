@@ -7,9 +7,9 @@ export interface HelperInfoServiceEntity {
 }
 
 export interface HelperInfoControllerEntity {
-  getColorways(): Promise<Colorway[]>;
-  getBrands(): Promise<Brand[]>;
-  getSneakerNames(): Promise<SneakerName[]>;
+  getColorways(): Promise<string[]>;
+  getBrands(): Promise<string[]>;
+  getSneakerNames(): Promise<string[]>;
 
   createBrand(brand: Brand): Promise<any>;
   createColorway(colorway: Colorway): Promise<any>;

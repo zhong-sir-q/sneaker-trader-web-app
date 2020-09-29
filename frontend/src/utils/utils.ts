@@ -6,3 +6,12 @@ export const upperCaseFirstLetter = (s: string | undefined) => {
   const firstLetter = s[0];
   return firstLetter.toUpperCase() + s.slice(1);
 };
+
+
+export const range = (start: number, end: number, step: number): number[] => {
+  let result: number[] = [];
+
+  for (let num = start; num <= end; num += step) result.push(num);
+
+  return result;
+};
