@@ -1,19 +1,21 @@
 import { formatInsertColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
 
-import { ListedProduct, SizeMinPriceGroupType, SneakerAsk, GallerySneaker, AppSneaker, SellerListedSneaker } from '../../../shared';
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import {
+  ListedProduct,
+  SizeMinPriceGroupType,
+  SneakerAsk,
+  GallerySneaker,
+  AppSneaker,
+  SellerListedSneaker,
+} from '../../../shared';
+import mysqlPoolConnection, {  } from '../config/mysql';
 import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
 import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
 import { getBuyersAvgRatingQuery } from '../utils/queries';
 
 class ListedSneakerService implements ListedSneakerEntity {
-  private connection: PromisifiedConnection;
-
-  constructor() {
-    this.connection = getMysqlDb();
-  }
-
-  getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]> {
+  async getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]> {
+    const poolConn = await mysqlPoolConnection();
     // if the size is not defined, return all asks of the shoes with the name
     const getAllAsksQuery = `
     SELECT size, askingPrice, SUM(A.quantity) as numsAvailable FROM ListedProducts A, Products B 
@@ -23,10 +25,12 @@ class ListedSneakerService implements ListedSneakerEntity {
         GROUP BY askingPrice ORDER BY askingPrice;
     `;
 
-    return this.connection.query(getAllAsksQuery);
+    return poolConn.query(getAllAsksQuery);
   }
 
   async getBySellerId(sellerId: number): Promise<SellerListedSneaker[]> {
+    const poolConn = await mysqlPoolConnection();
+
     const getBuyersInfo = `
       SELECT email, name, username, phoneNo, U.id as userId FROM
         Transactions T, Users U WHERE listedProductId = L.id AND T.buyerId = U.id
@@ -50,7 +54,7 @@ class ListedSneakerService implements ListedSneakerEntity {
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;
 
-    const queryResult = await this.connection.query(getSellerListedProductsQuery);
+    const queryResult = await poolConn.query(getSellerListedProductsQuery);
 
     for (const sneaker of queryResult) {
       sneaker.buyer = JSON.parse(sneaker.stringifiedBuyer);
@@ -60,7 +64,9 @@ class ListedSneakerService implements ListedSneakerEntity {
     return queryResult;
   }
 
-  getGallerySneakersBySize(size: number): Promise<GallerySneaker[]> {
+  async getGallerySneakersBySize(size: number): Promise<GallerySneaker[]> {
+    const poolConn = await mysqlPoolConnection();
+
     // similar to the get gallery sneakers query, but because the sneakers with different
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
@@ -69,7 +75,7 @@ class ListedSneakerService implements ListedSneakerEntity {
       WHERE prodStatus = "listed" GROUP BY productId
     ) B ON A.id = B.productId WHERE size = ${size}`;
 
-    return this.connection.query(getBySizeQuery);
+    return poolConn.query(getBySizeQuery);
   }
 
   async getGallerySneakers(): Promise<GallerySneaker[]> {
@@ -81,7 +87,8 @@ class ListedSneakerService implements ListedSneakerEntity {
           WHERE prodStatus = "listed" GROUP BY productId
             ) B ON A.id = B.productId GROUP BY name, colorway`;
 
-    const sneakersWithLowestAskPrice: GallerySneaker[] = await this.connection.query(query);
+    const poolConn = await mysqlPoolConnection();
+    const sneakersWithLowestAskPrice = await poolConn.query(query);
 
     return sneakersWithLowestAskPrice;
   }
@@ -90,6 +97,8 @@ class ListedSneakerService implements ListedSneakerEntity {
    * @param name space separated name, e.g. Kobe 4 Black
    */
   getSizeMinPriceGroupByName = async (name: string): Promise<SizeMinPriceGroupType> => {
+    const poolConn = await mysqlPoolConnection();
+
     /**
      * NOTE: here are the BUGS I experenced
      * - the result column name query does not match the type definition, hence the client
@@ -106,34 +115,39 @@ class ListedSneakerService implements ListedSneakerEntity {
          GROUP BY B.productId
     `;
 
-    return this.connection.query(query);
+    return poolConn.query(query);
   };
 
-  getAllListedSneakers(): Promise<AppSneaker[]> {
+  async getAllListedSneakers(): Promise<AppSneaker[]> {
+    const poolConn = await mysqlPoolConnection();
+
     const allListedProductsQuery = `
       SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} P, 
         ${LISTED_PRODUCTS} L WHERE P.id = L.productId AND L.prodStatus = "listed"`;
 
-    return this.connection.query(allListedProductsQuery);
+    return poolConn.query(allListedProductsQuery);
   }
 
-  create(listedSneaker: ListedProduct) {
+  async create(listedSneaker: ListedProduct) {
+    const poolConn = await mysqlPoolConnection();
     const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedSneaker);
-    return this.connection.query(createListedProductQuery);
+
+    return poolConn.query(createListedProductQuery);
   }
 
-  handlePurchase(listedSneakerId: number, sellerId: number) {
+  async handlePurchase(listedSneakerId: number, sellerId: number) {
+    const poolConn = await mysqlPoolConnection();
+
     const condition = `userId = ${sellerId} AND id = ${listedSneakerId}`;
     const query = formatUpdateColumnsQuery(LISTED_PRODUCTS, { prodStatus: 'pending' }, condition);
 
-    return this.connection.query(query);
+    return poolConn.query(query);
   }
 
-  // TODO: need to confirm the implementations here
-  updateListedSneakerStatus(listedSneakerId: number, listedSneakerStatus: Pick<ListedProduct, 'prodStatus'>) {
+  async updateListedSneakerStatus(listedSneakerId: number, listedSneakerStatus: Pick<ListedProduct, 'prodStatus'>) {
+    const poolConn = await mysqlPoolConnection();
 
-    return this.connection
-      .query(formatUpdateColumnsQuery(LISTED_PRODUCTS, listedSneakerStatus, `id = ${listedSneakerId}`))
+    return poolConn.query(formatUpdateColumnsQuery(LISTED_PRODUCTS, listedSneakerStatus, `id = ${listedSneakerId}`));
   }
 }
 

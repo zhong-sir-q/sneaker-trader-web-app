@@ -15,5 +15,11 @@ export default (app: Router, SneakerServiceInstance: SneakerService) => {
       .catch(next);
   });
 
-  productRoute.post('/', SneakerServiceInstance.create);
+  productRoute.post('/', (req, res, next) => {
+    const sneaker = req.body;
+
+    SneakerServiceInstance.create(sneaker)
+      .then((sneakerId) => res.json(sneakerId))
+      .catch(next);
+  });
 };

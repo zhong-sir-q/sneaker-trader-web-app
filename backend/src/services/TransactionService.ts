@@ -1,45 +1,45 @@
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import mysqlPoolConnection, {  } from '../config/mysql';
 import { formatInsertColumnsQuery, formatUpdateColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
 import { TRANSACTION } from '../config/tables';
 import TranscationEntity from '../../../shared/@types/domains/entities/TransactionEntity';
 import { Transaction } from '../../../shared';
 
 class TransactionService implements TranscationEntity {
-  private conneciton: PromisifiedConnection;
-
-  constructor() {
-    this.conneciton = getMysqlDb();
-  }
 
   async get(listedSneakerId: number) {
     const findTransactionQuery = formateGetColumnsQuery(TRANSACTION, `listedProductId = ${listedSneakerId}`);
-    const res = await this.conneciton.query(findTransactionQuery);
+
+    const poolConn = await mysqlPoolConnection()
+    const res = await poolConn.query(findTransactionQuery);
 
     return res.length === 0 ? null : res[0];
   }
 
-  create(transaction: Transaction) {
-    return this.conneciton.query(formatInsertColumnsQuery(TRANSACTION, transaction));
+  async create(transaction: Transaction) {
+    const poolConn = await mysqlPoolConnection()
+    return poolConn.query(formatInsertColumnsQuery(TRANSACTION, transaction));
   }
 
-  rateBuyer(listedProductId: number, rating: number, comment: string) {
+  async rateBuyer(listedProductId: number, rating: number, comment: string) {
     const rateSellerQuery = formatUpdateColumnsQuery(
       TRANSACTION,
       { buyerRatingFromSeller: rating, buyerCommentFromSeller: comment },
       `listedProductId = ${listedProductId}`
     );
-
-    return this.conneciton.query(rateSellerQuery);
+    
+    const poolConn = await mysqlPoolConnection()
+    return poolConn.query(rateSellerQuery);
   }
 
-  rateSeller(listedProductId: number, rating: number, comment: string) {
+  async rateSeller(listedProductId: number, rating: number, comment: string) {
     const rateSellerQuery = formatUpdateColumnsQuery(
       TRANSACTION,
       { sellerRatingFromBuyer: rating, sellerCommentFromBuyer: comment },
       `listedProductId = ${listedProductId}`
     );
-
-    return this.conneciton.query(rateSellerQuery);
+    
+    const poolConn = await mysqlPoolConnection()
+    return poolConn.query(rateSellerQuery);
   }
 }
 

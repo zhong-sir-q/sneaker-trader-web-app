@@ -3,11 +3,14 @@ import faker from 'faker'
 
 import app from '../../app';
 
-import { getMysqlDb } from '../../config/mysql';
+import mysqlPoolConnection, { poolQuery } from '../../config/mysql';
 
-beforeEach(async () => await getMysqlDb().query('START TRANSACTION'));
-afterEach(async () => await getMysqlDb().query('ROLLBACK'));
-afterAll(async () => await getMysqlDb().close());
+afterEach(async () => await poolQuery('ROLLBACK'))
+
+afterAll(async () => {
+  const poolConn = await mysqlPoolConnection()
+  await poolConn.close()
+});
 
 describe('Product route', () => {
   test('Return null for getting a product with unknown shoe name and size', async (done) => {

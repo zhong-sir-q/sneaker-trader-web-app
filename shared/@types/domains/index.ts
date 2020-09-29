@@ -6,6 +6,7 @@ export * from './entities/CustomerEntity'
 export * from './entities/ListedSneakerEntity'
 export * from './entities/TransactionEntity'
 export * from './entities/WalletEntity'
+export * from './entities/HelperInfoEntity'
 
 export type DecreaseWalletPayload = {
   userId: number;
@@ -24,3 +25,5 @@ export type MailAfterPurchasePayload = {
   buyerEmail: string;
   productName: string;
 };
+
+export type HelperInfoType = 'sneakernames' | 'colorways' | 'brands';

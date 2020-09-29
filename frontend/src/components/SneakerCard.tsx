@@ -26,11 +26,12 @@ const LowestAsk = styled.div`
 
 type SneakerCardProps = {
   sneaker: Partial<AppSneaker>;
-  price: number | undefined
+  price: number | undefined;
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
-  styles?: React.CSSProperties
+  styles?: React.CSSProperties;
+  className?: string;
 };
 
 const StyledImage = styled.img`
@@ -54,7 +55,18 @@ const SneakerCard = (props: SneakerCardProps) => {
   const formatSneakerName = () => [name, colorway].join(' ');
 
   return (
-    <Card onClick={onClick} style={{ ...props.styles, maxWidth, cursor: isListed ? 'pointer' : '', boxShadow: 'none', display: 'flex', textAlign: 'left' }}>
+    <Card
+      className={props.className}
+      onClick={onClick}
+      style={{
+        ...props.styles,
+        maxWidth,
+        cursor: isListed ? 'pointer' : '',
+        boxShadow: 'none',
+        display: 'flex',
+        textAlign: 'left',
+      }}
+    >
       <StyledImage src={firstImageUrl()} />
       <InfoContainer>
         <div

@@ -1,71 +1,28 @@
-import { RequestHandler, Response, NextFunction } from 'express';
-
 import { formateGetColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
 
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import mysqlPoolConnection from '../config/mysql';
 import { SNEAKER_NAMES, COLORWAYS, BRANDS } from '../config/tables';
 
-import { Brand, SneakerName, Colorway } from '../../../shared';
+import { HelperInfoType, HelperInfoServiceEntity } from '../../../shared';
 
-const duplicateKeyHandler = (err: any, res: Response<any>, next: NextFunction, key: string) => {
-  if (err.message.split(':')[0] === 'ER_DUP_ENTRY') res.json(`${key} already exists`);
-  else next(err);
-};
-
-class HelperInfoService {
-  connection: PromisifiedConnection;
-
-  constructor() {
-    this.connection = getMysqlDb();
+class HelperInfoService implements HelperInfoServiceEntity {
+  private getTableName(info: HelperInfoType) {
+    return info === 'sneakernames' ? SNEAKER_NAMES : info === 'colorways' ? COLORWAYS : BRANDS;
   }
 
-  getSneakerNames: RequestHandler = (_req, res, next) => {
-    this.connection
-      .query(formateGetColumnsQuery(SNEAKER_NAMES))
-      .then((names) => res.json(names))
-      .catch(next);
-  };
+  async get(info: HelperInfoType) {
+    const poolConn = await mysqlPoolConnection();
+    const tableName = this.getTableName(info);
 
-  getColorways: RequestHandler = (_req, res, next) => {
-    this.connection
-      .query(formateGetColumnsQuery(COLORWAYS))
-      .then((colors) => res.json(colors))
-      .catch(next);
-  };
+    return poolConn.query(formateGetColumnsQuery(tableName));
+  }
 
-  getBrands: RequestHandler = (_req, res, next) => {
-    this.connection
-      .query(formateGetColumnsQuery(BRANDS))
-      .then((brands) => res.json(brands))
-      .catch(next);
-  };
+  async create(info: HelperInfoType, payload: any) {
+    const poolConn = await mysqlPoolConnection();
+    const tableName = this.getTableName(info);
 
-  createBrand: RequestHandler = (req, res, next) => {
-    const brand: Brand = req.body;
-
-    this.connection
-      .query(formatInsertColumnsQuery(BRANDS, brand))
-      .then(() => res.json('Brand inserted'))
-      .catch((err) => duplicateKeyHandler(err, res, next, brand.brand));
-  };
-
-  createSneakerName: RequestHandler = (req, res, next) => {
-    const name: SneakerName = req.body;
-
-    this.connection
-      .query(formatInsertColumnsQuery(SNEAKER_NAMES, name))
-      .then(() => res.json('Sneaker name inserted'))
-      .catch((err) => duplicateKeyHandler(err, res, next, name.name));
-  };
-
-  createColorway: RequestHandler = (req, res, next) => {
-    const colorway: Colorway = req.body;
-
-    this.connection
-      .query(formatInsertColumnsQuery(COLORWAYS, colorway))
-      .then(() => res.json('Coloway inserted'))
-      .catch((err) => duplicateKeyHandler(err, res, next, colorway.colorway));
-  };
+    return poolConn.query(formatInsertColumnsQuery(tableName, payload));
+  }
 }
 
 export default HelperInfoService;

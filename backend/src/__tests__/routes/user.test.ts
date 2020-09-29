@@ -1,13 +1,15 @@
 import request from 'supertest';
 import app from '../../app';
 
-import { getMysqlDb } from '../../config/mysql';
 import fakeUser from '../../mocks/fakeUser';
+import mysqlPoolConnection, { poolQuery } from '../../config/mysql';
 
-// start transaction automatically sets autocommit to false
-beforeEach(async () => await getMysqlDb().query('START TRANSACTION'))
-afterEach(async () => await getMysqlDb().query('ROLLBACK'))
-afterAll(async () => await getMysqlDb().close());
+afterEach(async () => await poolQuery('ROLLBACK'))
+
+afterAll(async () => {
+  const poolConn = await mysqlPoolConnection()
+  await poolConn.close()
+});
 
 describe('User routes', () => {
   test('Get a user by email', async (done) => {

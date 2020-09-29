@@ -1,20 +1,15 @@
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import mysqlPoolConnection from '../config/mysql';
 import { formatInsertColumnsQuery, formateGetColumnsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
 import { WALLET } from '../config/tables';
 
 import WalletEntity from '../../../shared/@types/domains/entities/WalletEntity';
 
 class WalletService implements WalletEntity {
-  private connection: PromisifiedConnection;
-
-  constructor() {
-    this.connection = getMysqlDb();
-  }
-
-  getBalanceByUserId(userId: number) {
+  async getBalanceByUserId(userId: number) {
     const getBalanceByUserIdQuery = formateGetColumnsQuery(WALLET, `userId = ${userId}`);
+    const poolConn = await mysqlPoolConnection();
 
-    return this.connection.query(getBalanceByUserIdQuery).then(async (queryResult) => {
+    return poolConn.query(getBalanceByUserIdQuery).then(async (queryResult) => {
       if (queryResult.length === 0) {
         await this.create(Number(userId));
         return 0;
@@ -24,24 +19,32 @@ class WalletService implements WalletEntity {
     });
   }
 
-  create = (userId: number) => this.connection.query(formatInsertColumnsQuery(WALLET, { userId }));
+  async create(userId: number) {
+    const poolConn = await mysqlPoolConnection();
 
-  delete = (userId: number) => this.connection.query(formatDeleteQuery(WALLET, `userId = ${userId}`));
-
-  // amount cannot be negative
-  // assume there is no limit
-  topup(userId: number, amount: number) {
-    const topupQuery = `UPDATE ${WALLET} SET balance = balance + ${amount} WHERE userId = ${userId}`;
-
-    return this.connection.query(topupQuery);
+    return poolConn.query(formatInsertColumnsQuery(WALLET, { userId }));
   }
 
-  // amount cannot be negative
+  async delete(userId: number) {
+    const poolConn = await mysqlPoolConnection();
+
+    return poolConn.query(formatDeleteQuery(WALLET, `userId = ${userId}`));
+  }
+
+  // assume there is no limit
+  async topup(userId: number, amount: number) {
+    const poolConn = await mysqlPoolConnection();
+    const topupQuery = `UPDATE ${WALLET} SET balance = balance + ${amount} WHERE userId = ${userId}`;
+
+    return poolConn.query(topupQuery);
+  }
+
   // NOTE: assume balance can go to negative
-  decreaseBalance(userId: number, amount: number) {
+  async decreaseBalance(userId: number, amount: number) {
+    const poolConn = await mysqlPoolConnection();
     const decreaseBalanceQuery = `UPDATE ${WALLET} SET balance = balance - ${amount} WHERE userId = ${userId}`;
 
-    return this.connection.query(decreaseBalanceQuery);
+    return poolConn.query(decreaseBalanceQuery);
   }
 }
 

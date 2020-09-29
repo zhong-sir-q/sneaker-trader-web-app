@@ -1,31 +1,8 @@
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
-import { RequestHandler } from 'express';
+import mysqlPoolConnection from '../config/mysql';
 import { getSellersAvgRatingQuery, getBuyersAvgRatingQuery } from '../utils/queries';
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
 
 class TransactionsService {
-  private connection: PromisifiedConnection;
-
-  constructor() {
-    this.connection = getMysqlDb();
-  }
-
-  handleGetListedBySellerId: RequestHandler = (req, res, next) => {
-    const { sellerId } = req.params;
-
-    this.getListedBySellerId(sellerId)
-      .then((listedProducts) => res.json(listedProducts))
-      .catch(next);
-  };
-
-  handleGetPurchasedByBuyerId: RequestHandler = (req, res, next) => {
-    const { buyerId } = req.params;
-
-    this.getPurchasedByBuyerId(buyerId)
-      .then((purchasedProducts) => res.json(purchasedProducts))
-      .catch(next);
-  };
-
   async getListedBySellerId(sellerId: string): Promise<SellerListedSneaker[]> {
     const getBuyersInfo = `
       SELECT email, name, username, phoneNo, U.id as userId FROM
@@ -50,7 +27,8 @@ class TransactionsService {
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;
 
-    const queryResult = await this.connection.query(getSellerListedProductsQuery);
+    const poolConn = await mysqlPoolConnection();
+    const queryResult = await poolConn.query(getSellerListedProductsQuery);
 
     for (const sneaker of queryResult) {
       sneaker.buyer = JSON.parse(sneaker.stringifiedBuyer);
@@ -83,7 +61,8 @@ class TransactionsService {
           WHERE T.buyerId = ${buyerId} AND T.listedProductId = L.id AND L.productId = P.id
     `;
 
-    const queryResult = await this.connection.query(getPurchasedProductsQuery);
+    const poolConn = await mysqlPoolConnection();
+    const queryResult = await poolConn.query(getPurchasedProductsQuery);
 
     for (const sneaker of queryResult) {
       sneaker.seller = JSON.parse(sneaker.stringifiedSeller);

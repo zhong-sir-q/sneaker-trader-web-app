@@ -2,15 +2,16 @@ import request from 'supertest';
 
 import app from '../../app';
 
-import { getMysqlDb } from '../../config/mysql';
-
 import listedProductOne from '../../mocks/listed_product_1.json';
 
-// TODO: can I abstract this common setup between the tests into another file?
-// start transaction automatically sets autocommit to false
-beforeEach(async () => await getMysqlDb().query('START TRANSACTION'));
-afterEach(async () => await getMysqlDb().query('ROLLBACK'));
-afterAll(async () => await getMysqlDb().close());
+import mysqlPoolConnection, { poolQuery } from '../../config/mysql';
+
+afterEach(async () => await poolQuery('ROLLBACK'))
+
+afterAll(async () => {
+  const poolConn = await mysqlPoolConnection()
+  await poolConn.close()
+});
 
 describe('Listed product routes', () => {
   test('Get size and min price grouped by name and colorway', async (done) => {

@@ -7,9 +7,12 @@ type SignInWithGoogleProps = {
 
 // To federated sign in from Google
 class SignInWithGoogle extends Component<SignInWithGoogleProps> {
+  btnImg: string;
+
   constructor(props: any) {
     super(props);
     this.signIn = this.signIn.bind(this);
+    this.btnImg = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png';
   }
 
   componentDidMount() {
@@ -68,16 +71,28 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
     });
   }
 
-  googleImgUrl() {
-    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png';
-  }
-
   render() {
     return (
-      <a onClick={this.signIn} className='btn btn-outline' style={{ backgroundColor: 'white', color: 'black', width: '100%', fontSize: '1em' }} role='button'>
-        <img style={{ marginBottom: '3px', marginRight: '5px' }} width='20px' alt='Google signin' src={this.googleImgUrl()} />
+      <button
+        onClick={this.signIn}
+        type='button'
+        style={{
+          backgroundColor: 'white',
+          color: 'black',
+          width: '100%',
+          fontSize: '1em',
+          padding: '10px 0',
+          marginBottom: '15px',
+        }}
+      >
+        <img
+          style={{ marginBottom: '3px', marginRight: '5px' }}
+          width='20px'
+          alt='Google signin'
+          src={this.btnImg}
+        />
         Sign in with Google
-      </a>
+      </button>
     );
   }
 }

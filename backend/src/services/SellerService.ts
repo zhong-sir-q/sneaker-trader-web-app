@@ -1,22 +1,21 @@
-import { PromisifiedConnection, getMysqlDb } from '../config/mysql';
+import mysqlPoolConnection from '../config/mysql';
 import { doubleQuotedValue } from '../utils/formatDbQuery';
 import { getSellersAvgRatingQuery } from '../utils/queries';
 import { SellerEntity } from '../../../shared';
 
 class SellerService implements SellerEntity {
-  connection: PromisifiedConnection;
-
-  constructor() {
-    this.connection = getMysqlDb();
-  }
 
   async getAvgRating(sellerId: number) {
-    return this.connection
+    const poolConn = await mysqlPoolConnection()
+
+    return poolConn
       .query(getSellersAvgRatingQuery('sellerRating', `WHERE sellerId = ${sellerId}`))
       .then((result) => (result.length == 1 ? result[0].sellerRating : 0));
   }
 
   async getSellersBySneakerNameSize(nameColorway: string, size: number) {
+    const poolConn = await mysqlPoolConnection()
+
     // get sellers sneakers then order it by their rating in descending
     // order, then by askingPrice in ascending order
     const getSellersQuery = `
@@ -33,7 +32,7 @@ class SellerService implements SellerEntity {
              ON (q1.id = q2.sellerId) ORDER BY rating DESC, askingPrice
     `;
 
-    return this.connection.query(sellersQuery);
+    return poolConn.query(sellersQuery);
   };
 }
 

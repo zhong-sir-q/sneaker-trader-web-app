@@ -2,12 +2,17 @@ import request from 'supertest';
 
 import app from '../../app';
 
-import { getMysqlDb } from '../../config/mysql';
+
 import transactionOne from '../../mocks/transaction_1.json';
 
-beforeEach(async () => await getMysqlDb().query('START TRANSACTION'));
-afterEach(async () => await getMysqlDb().query('ROLLBACK'));
-afterAll(async () => await getMysqlDb().close());
+import mysqlPoolConnection, { poolQuery } from '../../config/mysql';
+
+afterEach(async () => await poolQuery('ROLLBACK'))
+
+afterAll(async () => {
+  const poolConn = await mysqlPoolConnection()
+  await poolConn.close()
+});
 
 describe('Transaction route', () => {
   test('Create a transaction', async (done) => {

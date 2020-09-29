@@ -1,13 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 
-import { initMysqlDb } from './config/mysql';
-
 // routes
 import apiRoutes from './api';
-
-// NOTE: is it good practice to init the db here?
-initMysqlDb();
 
 const app = express();
 
