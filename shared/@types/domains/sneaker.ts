@@ -19,7 +19,7 @@ export type GallerySneaker = AppSneaker & { minPrice: number };
 
 export type AppListedSneaker = Omit<ListedProduct, 'id'>;
 
-export type ListedSneakerPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId'>;
+export type ListedSneakerPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId' | 'imageUrls'>;
 
 export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 

@@ -16,7 +16,7 @@ const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
 
   const renderBuySneakerRoutes = async () => {
-    const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers()
+    const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
 
     // prevent duplicate routes from rendering
     const seenPaths: Set<string> = new Set();
@@ -38,9 +38,7 @@ const HomeLayout = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      setBuySneakerRoutes(await renderBuySneakerRoutes());
-    })();
+    (async () => setBuySneakerRoutes(await renderBuySneakerRoutes()))();
   }, []);
 
   const renderHomeRoutes = () =>

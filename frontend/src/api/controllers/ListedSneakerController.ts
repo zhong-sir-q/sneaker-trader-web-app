@@ -51,9 +51,6 @@ class ListedSneakerController implements ListedSneakerEntity {
       formatRequestOptions(status, undefined, 'PUT')
     ).then((r) => r.json());
 
-  getListedProductsBySellerId = (sellerId: number): Promise<SellerListedSneaker[]> =>
-    fetch(this.listedSneakerPath + `/all/${sellerId}`).then((res) => res.json());
-
   getUnsoldListedSneakers = async (sellerId: number) =>
     (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold');
 

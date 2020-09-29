@@ -1,14 +1,15 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
 import { useAuth } from './AuthProvider';
-import { getPurchasedProductsByBuyerId } from 'api/api';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import TransactionControllerInstance from 'api/controllers/TransactionController';
 
 type TransactionTableContextType = {
-  isOpenSaleSuccessPopup: boolean;
+  isFetchingTransactions: boolean;
   showListed: boolean;
+  isOpenSaleSuccessPopup: boolean;
   unsoldListedSneakers: SellerListedSneaker[];
   purchasedSneakers: BuyerPurchasedSneaker[];
   sellerSoldSneakers: SellerListedSneaker[];
@@ -18,6 +19,7 @@ type TransactionTableContextType = {
 };
 
 const INIT_TRANSACTION_CONTEXT: TransactionTableContextType = {
+  isFetchingTransactions: true,
   isOpenSaleSuccessPopup: false,
   showListed: true,
   unsoldListedSneakers: [],
@@ -35,6 +37,7 @@ export const useTransactionTableContext = () => useContext(TransactionTableConte
 const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   const [isOpenSaleSuccessPopup, showIsOpenSaleSuccessPopup] = useState(false);
   const [showListed, setShowListed] = useState(true);
+  const [isFetchingTransactions, setisFetchingTransactions] = useState(true);
 
   const [unsoldListedSneakers, setUnsoldListedSneakers] = useState<SellerListedSneaker[]>([]);
   const [purchasedSneakers, setPurchasedSneakers] = useState<BuyerPurchasedSneaker[]>([]);
@@ -46,7 +49,9 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   useEffect(() => {
     (async () => {
       if (currentUser) {
-        const fetchedPurchasedProducts = await getPurchasedProductsByBuyerId(currentUser.id);
+        const fetchedPurchasedProducts = await TransactionControllerInstance.getPurchasedSneakersByBuyerId(
+          currentUser.id
+        );
 
         const notSold = await ListedSneakerControllerInstance.getUnsoldListedSneakers(currentUser.id);
         const sold = await ListedSneakerControllerInstance.getSoldListedSneakers(currentUser.id);
@@ -55,6 +60,7 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
         setPurchasedSneakers(fetchedPurchasedProducts);
 
         setSellerSoldSneakers(sold);
+        setisFetchingTransactions(false);
       }
     })();
   }, [isOpenSaleSuccessPopup, currentUser]);
@@ -67,6 +73,7 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   return (
     <TransactionTableContext.Provider
       value={{
+        isFetchingTransactions,
         isOpenSaleSuccessPopup,
         showListed,
         purchasedSneakers,

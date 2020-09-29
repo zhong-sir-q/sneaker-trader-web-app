@@ -8,6 +8,9 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  CarouselItem,
+  Carousel,
+  CarouselControl,
 } from 'reactstrap';
 
 import { useHistory } from 'react-router-dom';
@@ -54,12 +57,52 @@ const SortByPriceDropdown = (props: SortByPriceDropdownProps) => {
   );
 };
 
+type SneakerCarouselProps = {
+  imgUrlItems: string[];
+};
+
+const SneakerCarousel = (props: SneakerCarouselProps) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  const { imgUrlItems } = props;
+
+  const next = () => {
+    if (animating) return;
+    const nextIndex = activeIndex === imgUrlItems.length - 1 ? 0 : activeIndex + 1;
+    setActiveIndex(nextIndex);
+  };
+
+  const previous = () => {
+    if (animating) return;
+    const nextIndex = activeIndex === 0 ? imgUrlItems.length - 1 : activeIndex - 1;
+    setActiveIndex(nextIndex);
+  };
+
+  const slides = imgUrlItems.map((url, idx) => {
+    return (
+      <CarouselItem onExiting={() => setAnimating(true)} onExited={() => setAnimating(false)} key={idx}>
+        <img style={{ width: '100%' }} src={url} alt={url} />
+      </CarouselItem>
+    );
+  });
+
+  return (
+    <Carousel activeIndex={activeIndex} next={next} previous={previous}>
+      {slides}
+      <CarouselControl direction='prev' directionText='Previous' onClickHandler={previous} />
+      <CarouselControl direction='next' directionText='Next' onClickHandler={next} />
+    </Carousel>
+  );
+};
+
 const SellersList = () => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>([]);
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [sneaker, setSneaker] = useState<Sneaker>();
 
   const history = useHistory();
+
   const { signedIn, currentUser } = useAuth();
 
   const sneakerInfo = history.location.pathname.split('/');
@@ -69,7 +112,10 @@ const SellersList = () => {
   const formatProductName = () => `Size ${sneakerSize} ${sneakerNameColorway}`;
 
   const onComponentLoaded = async () => {
-    if (!signedIn) history.push(AUTH + SIGNIN, history.location.pathname);
+    if (!signedIn) {
+      history.push(AUTH + SIGNIN, history.location.pathname);
+      return;
+    }
 
     const sneakerToBuy = await getProductByNameColorwaySize(sneakerNameColorway, sneakerSize);
     const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerNameColorway, sneakerSize);
@@ -106,7 +152,7 @@ const SellersList = () => {
     const { askingPrice, listedProductId } = sellers[selectedSellerIdx];
 
     const processingFee = getTransactionFees(askingPrice);
-    const mailPayload = await formatMailPayload(selectedSellerIdx);
+    const mailPayload = formatMailPayload(selectedSellerIdx);
 
     try {
       const transaction: CreateTransactionPayload = {
@@ -142,16 +188,22 @@ const SellersList = () => {
 
   const onCancel = () => history.goBack();
 
+  const getSellerSeneakrImgUrls = () => sellers[selectedSellerIdx].imageUrls.split(',');
+
   return sellers.length === 0 || !currentUser || !sneaker ? (
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
-      <SneakerCard
-        styles={{ margin: 'auto', marginBottom: '15px' }}
-        sneaker={sneaker}
-        price={undefined}
-        maxWidth='400px'
-      />
+      {selectedSellerIdx === -1 ? (
+        <SneakerCard
+          styles={{ margin: 'auto', marginBottom: '15px' }}
+          sneaker={sneaker}
+          price={undefined}
+          maxWidth='400px'
+        />
+      ) : (
+        <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls()} />
+      )}
       <SortByPriceDropdown
         sortInAscendingOrder={sortSellersByAskingPriceAscending}
         sortInDescendingOrder={sortSellersByAskingPriceDescending}

@@ -41,6 +41,7 @@ export type ListedProduct = {
   prodStatus: SneakerStatus;
   prodCondition: SneakerCondition;
   conditionRating: number;
+  imageUrls: string;
 };
 
 export type Transaction = {

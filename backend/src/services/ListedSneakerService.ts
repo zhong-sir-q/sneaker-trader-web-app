@@ -8,9 +8,10 @@ import {
   AppSneaker,
   SellerListedSneaker,
 } from '../../../shared';
-import mysqlPoolConnection, {  } from '../config/mysql';
-import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
 import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
+
+import mysqlPoolConnection from '../config/mysql';
+import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
 import { getBuyersAvgRatingQuery } from '../utils/queries';
 
 class ListedSneakerService implements ListedSneakerEntity {
@@ -18,8 +19,8 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
     // if the size is not defined, return all asks of the shoes with the name
     const getAllAsksQuery = `
-    SELECT size, askingPrice, SUM(A.quantity) as numsAvailable FROM ListedProducts A, Products B 
-      WHERE A.prodStatus = "listed" AND A.productId = B.id AND CONCAT(B.name, ' ', B.colorWay) = ${doubleQuotedValue(
+    SELECT size, askingPrice, SUM(L.quantity) as numsAvailable FROM ListedProducts L, Products P
+      WHERE L.prodStatus = "listed" AND L.productId = P.id AND CONCAT(P.name, ' ', P.colorWay) = ${doubleQuotedValue(
         nameColorway
       )}
         GROUP BY askingPrice ORDER BY askingPrice;
@@ -49,19 +50,21 @@ class ListedSneakerService implements ListedSneakerEntity {
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
-      SELECT L.id, L.sizeSystem, imageUrls, name, brand, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
+      SELECT L.id, L.sizeSystem, L.imageUrls, name, brand, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
         askingPrice as price, quantity FROM ListedProducts L, Products P
           WHERE L.userId = ${sellerId} AND L.productId = P.id
     `;
 
-    const queryResult = await poolConn.query(getSellerListedProductsQuery);
+    const sellerListedSneakers = await poolConn.query(getSellerListedProductsQuery);
 
-    for (const sneaker of queryResult) {
+    if (!sellerListedSneakers) return [];
+
+    for (const sneaker of sellerListedSneakers) {
       sneaker.buyer = JSON.parse(sneaker.stringifiedBuyer);
       delete sneaker.stringifiedBuyer;
     }
 
-    return queryResult;
+    return sellerListedSneakers;
   }
 
   async getGallerySneakersBySize(size: number): Promise<GallerySneaker[]> {
@@ -70,10 +73,10 @@ class ListedSneakerService implements ListedSneakerEntity {
     // similar to the get gallery sneakers query, but because the sneakers with different
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
-    SELECT name, colorway, brand, imageUrls, B.minPrice FROM ${PRODUCTS} A JOIN (
+    SELECT name, colorway, brand, P.imageUrls, L.minPrice FROM ${PRODUCTS} P JOIN (
       SELECT MIN(askingPrice) as minPrice, productId FROM ${LISTED_PRODUCTS} 
       WHERE prodStatus = "listed" GROUP BY productId
-    ) B ON A.id = B.productId WHERE size = ${size}`;
+    ) L ON P.id = L.productId WHERE size = ${size}`;
 
     return poolConn.query(getBySizeQuery);
   }
@@ -81,14 +84,16 @@ class ListedSneakerService implements ListedSneakerEntity {
   async getGallerySneakers(): Promise<GallerySneaker[]> {
     // get all sneakers grouped by the names and their min price
     const query = `
-    SELECT name, size, brand, colorway, imageUrls,
-      MIN(B.minAskingPrice) as minPrice FROM ${PRODUCTS} A JOIN (
+    SELECT name, size, brand, colorway, P.imageUrls,
+      MIN(L.minAskingPrice) as minPrice FROM ${PRODUCTS} P JOIN (
         SELECT MIN(askingPrice) as minAskingPrice, productId FROM ${LISTED_PRODUCTS}
           WHERE prodStatus = "listed" GROUP BY productId
-            ) B ON A.id = B.productId GROUP BY name, colorway`;
+            ) L ON P.id = L.productId GROUP BY name, colorway`;
 
     const poolConn = await mysqlPoolConnection();
     const sneakersWithLowestAskPrice = await poolConn.query(query);
+
+    if (!sneakersWithLowestAskPrice) return [];
 
     return sneakersWithLowestAskPrice;
   }
@@ -108,11 +113,11 @@ class ListedSneakerService implements ListedSneakerEntity {
 
     // get the size and the minium price of each listedProduct
     const query = `
-      SELECT A.size, MIN(B.askingPrice) as minPrice FROM ${PRODUCTS} A, ${LISTED_PRODUCTS} B
-        WHERE A.id = B.productId AND B.prodStatus = "listed" AND CONCAT(A.name, ' ', A.colorway) = ${doubleQuotedValue(
+      SELECT P.size, MIN(L.askingPrice) as minPrice FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L
+        WHERE P.id = L.productId AND L.prodStatus = "listed" AND CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(
           name
         )}
-         GROUP BY B.productId
+         GROUP BY L.productId
     `;
 
     return poolConn.query(query);

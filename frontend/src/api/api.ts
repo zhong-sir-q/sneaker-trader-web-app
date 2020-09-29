@@ -1,7 +1,6 @@
 import {
   Sneaker,
   MailAfterPurchasePayload,
-  BuyerPurchasedSneaker,
   AppSneaker,
   ListedSneakerSeller,
 } from '../../../shared';
@@ -12,9 +11,6 @@ const SELLERS_API_URL = API_BASE_URL + 'sellers/';
 
 // products
 const PRODUCT_API_URL = API_BASE_URL + 'product/';
-
-// transaction related
-const TRANSACTIONS_API_URL = API_BASE_URL + 'transactions/';
 
 // external api
 const AWS_API_URL = API_BASE_URL + 'aws/';
@@ -30,8 +26,8 @@ const formatRequestOptions = (data: any, contentType?: string, method?: 'POST' |
 });
 
 // sellers
-export const getSellersBySneakerNameSize = (sneakerName: string, size: number): Promise<ListedSneakerSeller[]> =>
-  fetch(SELLERS_API_URL + `?sneakerName=${sneakerName}&size=${size}`).then((res) => res.json());
+export const getSellersBySneakerNameSize = (nameColorway: string, size: number): Promise<ListedSneakerSeller[]> =>
+  fetch(SELLERS_API_URL + `?sneakerName=${nameColorway}&size=${size}`).then((res) => res.json());
 
 // product
 // returns the insert id of the product
@@ -57,6 +53,3 @@ export const uploadS3MultipleImages = (formData: FormData): Promise<string[]> =>
 // mail
 export const mailAfterPurchase = (payload: MailAfterPurchasePayload) =>
   fetch(MAIL_API_URL + 'confirmPurchase', formatRequestOptions(payload));
-
-export const getPurchasedProductsByBuyerId = (buyerId: number): Promise<BuyerPurchasedSneaker[]> =>
-  fetch(TRANSACTIONS_API_URL + `purchased/${buyerId}`).then((res) => res.json());

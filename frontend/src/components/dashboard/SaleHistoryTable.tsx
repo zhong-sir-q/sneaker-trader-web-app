@@ -6,7 +6,7 @@ import ListedSneakerTable from './ListedSneakerTable';
 import { useTransactionTableContext } from 'providers/TransactionTableContextProvider';
 
 const SaleHistoryTable = () => {
-  const { sellerSoldSneakers } = useTransactionTableContext()
+  const { sellerSoldSneakers, isFetchingTransactions } = useTransactionTableContext();
 
   return (
     <Card>
@@ -14,7 +14,7 @@ const SaleHistoryTable = () => {
         <CardTitle tag='h4'>Sales History</CardTitle>
       </CardHeader>
       <CardBody>
-        <ListedSneakerTable sneakers={sellerSoldSneakers} />
+        <ListedSneakerTable sneakers={sellerSoldSneakers} isFetchingData={isFetchingTransactions} />
       </CardBody>
     </Card>
   );

@@ -10,6 +10,7 @@ import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerContro
 import { upperCaseFirstLetter } from 'utils/utils';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
+import CenterSpinner from 'components/CenterSpinner';
 
 const ListedSneakerTableHeader = () => (
   <thead>
@@ -28,6 +29,7 @@ type ListedSneakerTableRowProps = {
 };
 
 type ListedSneakerTableProps = {
+  isFetchingData: boolean;
   sneakers: SellerListedSneaker[];
   setShowCompleteSaleSuccess?: () => void;
 };
@@ -45,7 +47,7 @@ const ImgContainer = styled.div`
 `;
 
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
-  const { sneakers, setShowCompleteSaleSuccess } = props;
+  const { sneakers, isFetchingData, setShowCompleteSaleSuccess } = props;
 
   const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
     let total = 0;
@@ -127,7 +129,10 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     );
   };
 
-  return sneakers && sneakers.length > 0 ? (
+
+  return isFetchingData ? (
+    <CenterSpinner />
+  ) : sneakers && sneakers.length > 0 ? (
     <Table responsive className='table-shopping'>
       <ListedSneakerTableHeader />
       <tbody>
@@ -145,7 +150,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       </tbody>
     </Table>
   ) : (
-    <div>Nothing so far :(</div>
+    <div>No listed sneakers</div>
   );
 };
 

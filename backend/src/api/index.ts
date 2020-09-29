@@ -13,7 +13,6 @@ import mail from './routers/mail';
 
 import wallet from './routers/wallet';
 import transaction from './routers/transaction';
-import transactions from './routers/transactions';
 
 import UserService from '../services/UserService';
 import SellerService from '../services/SellerService';
@@ -27,8 +26,6 @@ import MailService from '../services/external/mail';
 
 import WalletService from '../services/WalletService';
 import TransactionService from '../services/TransactionService';
-
-import TransactionsService from '../services/TransactionsService';
 
 export default () => {
   const app = Router();
@@ -44,7 +41,6 @@ export default () => {
 
   wallet(app, new WalletService());
   transaction(app, new TransactionService());
-  transactions(app, new TransactionsService());
 
   // external apis
   mail(app, new MailService());

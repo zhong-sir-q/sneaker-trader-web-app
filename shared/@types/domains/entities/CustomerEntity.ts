@@ -20,6 +20,6 @@ export interface BuyerEntity {
 }
 
 export interface SellerEntity {
-  getSellersBySneakerNameSize(nameColorway: string, size: number): Promise<ListedSneakerSeller>;
+  getSellersBySneakerNameSize(nameColorway: string, size: number): Promise<ListedSneakerSeller[]>;
   getAvgRating(sellerId: number): Promise<number>;
 }

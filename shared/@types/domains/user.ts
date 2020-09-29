@@ -12,6 +12,7 @@ export type ListedSneakerSeller = {
   askingPrice: number;
   listedProductId: number;
   rating: number;
+  imageUrls: string;
 };
 
 export type CreateUserPayload = Omit<AppUser, 'profilePicUrl'>;

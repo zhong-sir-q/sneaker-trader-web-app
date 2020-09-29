@@ -1,4 +1,5 @@
 import { Transaction } from '../../models';
+import { BuyerPurchasedSneaker } from '..';
 
 interface TranscationEntity {
   create(transaction: Transaction): Promise<any>;
@@ -6,6 +7,7 @@ interface TranscationEntity {
 
   rateBuyer(listedSneakerId: number, rating: number, comment: string): Promise<any>;
   rateSeller(listedSneakerId: number, rating: number, comment: string): Promise<any>;
+  getPurchasedSneakersByBuyerId(buyerId: number): Promise<BuyerPurchasedSneaker[] | null>;
 }
 
 export default TranscationEntity;

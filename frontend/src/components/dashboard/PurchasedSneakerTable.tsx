@@ -130,7 +130,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       </tbody>
     </Table>
   ) : (
-    <div>Nothing so far :(</div>
+    <div>No purchased sneakers</div>
   );
 };
 

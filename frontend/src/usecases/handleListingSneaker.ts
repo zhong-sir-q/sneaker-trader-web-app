@@ -11,27 +11,24 @@ const handleListingSneaker = async (
   currentUserId: number,
   listingFormSneaker: ListingFormSneaker,
   listedSneakerPayload: ListedSneakerPayload,
-  brand?: string,
-  colorway?: string,
-  name?: string
+  brand: string | undefined,
+  colorway: string | undefined,
+  name: string | undefined
 ) => {
   const uploadedUrls = await uploadS3MultipleImages(imgFormData);
+  const formattedUrls = uploadedUrls.join(',');
 
   let prodId: number;
-
   const product = await getProductByNameColorwaySize(nameColorway, size);
 
   if (product) prodId = product.id!;
-  else {
-    const formattedUrls = uploadedUrls.join(',');
-
-    prodId = await createSneaker({ ...listingFormSneaker, imageUrls: formattedUrls });
-  }
+  else prodId = await createSneaker({ ...listingFormSneaker, imageUrls: formattedUrls });
 
   await ListedSneakerControllerInstance.create({
     ...listedSneakerPayload,
     userId: currentUserId,
     productId: prodId,
+    imageUrls: formattedUrls
   });
 
   if (brand) await HelperInfoControllerInstance.createBrand({ brand });

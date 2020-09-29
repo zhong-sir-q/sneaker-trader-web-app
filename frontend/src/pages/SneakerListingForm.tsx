@@ -23,7 +23,7 @@ const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: nu
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
   prodStatus: 'listed' as SneakerStatus,
-  conditionRating: sneaker.conditionRating,
+  conditionRating: sneaker.conditionRating
 });
 
 const formatSneaker = (s: SneakerListingFormStateType) => {

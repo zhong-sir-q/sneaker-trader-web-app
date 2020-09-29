@@ -13,6 +13,7 @@ const TransactionDualHistoryTable = () => {
     unsoldListedSneakers,
     purchasedSneakers,
     isOpenSaleSuccessPopup,
+    isFetchingTransactions,
     handleOpenPopup,
     handleClosePopup,
     toggleShowListed,
@@ -31,7 +32,11 @@ const TransactionDualHistoryTable = () => {
         </CardHeader>
         <CardBody>
           {showListed ? (
-            <ListedSneakerTable sneakers={unsoldListedSneakers} setShowCompleteSaleSuccess={handleOpenPopup} />
+            <ListedSneakerTable
+              isFetchingData={isFetchingTransactions}
+              sneakers={unsoldListedSneakers}
+              setShowCompleteSaleSuccess={handleOpenPopup}
+            />
           ) : (
             <PurchasedSneakerTable sneakers={purchasedSneakers} />
           )}

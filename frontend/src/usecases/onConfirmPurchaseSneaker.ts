@@ -1,18 +1,16 @@
 import { mailAfterPurchase } from 'api/api';
-import { MailAfterPurchasePayload, CreateTransactionPayload } from '../../../shared';
+import { MailAfterPurchasePayload, CreateTransactionPayload, DecreaseWalletPayload } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import TransactionControllerInstance from 'api/controllers/TransactionController';
 
 import WalletControllerInstance from 'api/controllers/WalletController';
 
-// NOTE: DRY is violated, the types were declared in multiple places
-// here and the api.ts file
 const onConfirmPurchaseSneaker = async (
   mailPayload: MailAfterPurchasePayload,
   transaction: CreateTransactionPayload,
   listedSneakerId: number,
   sellerId: number,
-  decreaseWalletBalPayload: { userId: number; amount: number },
+  decreaseWalletBalPayload: DecreaseWalletPayload,
   onEmailSent: () => void
 ) => {
   await mailAfterPurchase(mailPayload);

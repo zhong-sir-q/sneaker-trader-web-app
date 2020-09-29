@@ -15,6 +15,14 @@ export default (app: Router, TransactionServiceInstance: TransactionService) => 
       .catch(next);
   });
 
+  transactionRoute.get('/purchased/:buyerId', (req, res, next) => {
+    const { buyerId } = req.params;
+
+    TransactionServiceInstance.getPurchasedSneakersByBuyerId(Number(buyerId))
+      .then((purchasedProducts) => res.json(purchasedProducts))
+      .catch(next);
+  });
+
   transactionRoute.post('/', (req, res, next) => {
     const transaction = req.body;
 

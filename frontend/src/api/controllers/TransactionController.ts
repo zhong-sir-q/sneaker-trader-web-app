@@ -1,7 +1,7 @@
 import TranscationEntity from '../../../../shared/@types/domains/entities/TransactionEntity';
-import { Transaction, CreateTransactionPayload } from '../../../../shared';
+import { Transaction, CreateTransactionPayload, BuyerPurchasedSneaker } from '../../../../shared';
 
-import formatApiEndpoint from '../formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from '../formatApiEndpoint';
 import formatRequestOptions from '../formatRequestOptions';
 
 class TransactionController implements TranscationEntity {
@@ -13,6 +13,9 @@ class TransactionController implements TranscationEntity {
 
   get = (listedSneakerId: number): Promise<Transaction> =>
     fetch(`${this.transactionPath}/${listedSneakerId}`).then((r) => r.json());
+
+  getPurchasedSneakersByBuyerId = (buyerId: number): Promise<BuyerPurchasedSneaker[]> =>
+    fetch(concatPaths(this.transactionPath, 'purchased', buyerId)).then((r) => r.json());
 
   create = (payload: CreateTransactionPayload) =>
     fetch(this.transactionPath, formatRequestOptions(payload, undefined, 'POST'));

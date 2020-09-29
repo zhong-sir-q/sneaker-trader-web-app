@@ -11,13 +11,13 @@ type RateCustomerProps = {
   rateUser: (listedProductId: number, rating: number, comment: string) => Promise<any>;
 };
 
-const ratingMarks = Array(10)
+const ratingMarks = Array(5)
   .fill(0)
   .map((_, idx) => ({ value: idx + 1, label: String(idx + 1) }));
 
 const RateCustomer = (props: RateCustomerProps) => {
   const [open, setOpen] = useState(false);
-  const [rating, setRating] = useState<number>(5);
+  const [rating, setRating] = useState<number>(3);
   const [comment, setComment] = useState('');
 
   const { title, listedProductId, rateUser } = props;
@@ -48,8 +48,8 @@ const RateCustomer = (props: RateCustomerProps) => {
                 onChange={(_, newVal) => setRating(newVal as number)}
                 step={1}
                 marks={ratingMarks}
-                min={1}
-                max={10}
+                min={ratingMarks[0].value}
+                max={ratingMarks[ratingMarks.length - 1].value}
               />
             </Grid>
             <Grid item>
