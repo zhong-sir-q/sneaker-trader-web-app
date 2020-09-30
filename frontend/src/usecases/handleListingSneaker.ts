@@ -1,8 +1,9 @@
-import { uploadS3MultipleImages, getProductByNameColorwaySize, createSneaker } from 'api/api';
+import { uploadS3MultipleImages } from 'api/api';
 
 import { ListedSneakerPayload, ListingFormSneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
 
 const handleListingSneaker = async (
   imgFormData: FormData,
@@ -19,10 +20,10 @@ const handleListingSneaker = async (
   const formattedUrls = uploadedUrls.join(',');
 
   let prodId: number;
-  const product = await getProductByNameColorwaySize(nameColorway, size);
+  const product = await SneakerControllerInstance.getByNameColorwaySize(nameColorway, size);
 
   if (product) prodId = product.id!;
-  else prodId = await createSneaker({ ...listingFormSneaker, imageUrls: formattedUrls });
+  else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: formattedUrls })
 
   await ListedSneakerControllerInstance.create({
     ...listedSneakerPayload,

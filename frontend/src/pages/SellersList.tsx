@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   ListGroup,
   ListGroupItem,
@@ -22,13 +22,13 @@ import CenterSpinner from 'components/CenterSpinner';
 
 import { useAuth } from 'providers/AuthProvider';
 
-import { getSellersBySneakerNameSize, getProductByNameColorwaySize } from 'api/api';
-
-import { SIGNIN, AUTH } from 'routes';
-import { MailAfterPurchasePayload, Sneaker, CreateTransactionPayload, ListedSneakerSeller } from '../../../shared';
+import { SIGNIN, AUTH, HOME } from 'routes';
+import { Sneaker, CreateTransactionPayload, ListedSneakerSeller } from '../../../shared';
 
 import getTransactionFees from 'usecases/getTransactionFee';
 import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
+import SellerControllerInstance from 'api/controllers/SellerController';
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
@@ -97,7 +97,7 @@ const SneakerCarousel = (props: SneakerCarouselProps) => {
 };
 
 const SellersList = () => {
-  const [sellers, setSellers] = useState<ListedSneakerSeller[]>([]);
+  const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [sneaker, setSneaker] = useState<Sneaker>();
 
@@ -106,74 +106,76 @@ const SellersList = () => {
   const { signedIn, currentUser } = useAuth();
 
   const sneakerInfo = history.location.pathname.split('/');
-  const sneakerNameColorway = sneakerInfo[1].split('-').join(' ');
+  const sneakerNameColorway = sneakerInfo[2].split('-').join(' ');
   const sneakerSize = Number(sneakerInfo[sneakerInfo.length - 1]);
 
-  const formatProductName = () => `Size ${sneakerSize} ${sneakerNameColorway}`;
+  const formatSneakerName = () => `Size ${sneakerSize} ${sneakerNameColorway}`;
 
-  const onComponentLoaded = async () => {
+  const onComponentLoaded = useCallback(async () => {
     if (!signedIn) {
       history.push(AUTH + SIGNIN, history.location.pathname);
       return;
     }
 
-    const sneakerToBuy = await getProductByNameColorwaySize(sneakerNameColorway, sneakerSize);
-    const sellersBySneakerNameSize = await getSellersBySneakerNameSize(sneakerNameColorway, sneakerSize);
+    const sneakerToBuy = await SneakerControllerInstance.getByNameColorwaySize(sneakerNameColorway, sneakerSize);
 
-    setSneaker(sneakerToBuy);
-    setSellers(sellersBySneakerNameSize);
-  };
+    if (sneakerToBuy) setSneaker(sneakerToBuy);
+
+    if (currentUser) {
+      const sellersBySneakerNameSize = await SellerControllerInstance.getSellersBySneakerNameSize(
+        currentUser.id,
+        sneakerNameColorway,
+        sneakerSize
+      );
+
+      setSellers(sellersBySneakerNameSize);
+    }
+  }, [history, currentUser, signedIn, sneakerNameColorway, sneakerSize]);
 
   useEffect(() => {
-    if (sellers.length === 0) onComponentLoaded();
-  });
+    onComponentLoaded();
+  }, [onComponentLoaded]);
 
-  const formatMailPayload = (sellerIdx: number): MailAfterPurchasePayload => {
-    const { username, email } = currentUser!;
-
-    const mailPayload: MailAfterPurchasePayload = {
-      sellerUserName: sellers[sellerIdx].username,
-      sellerEmail: sellers[sellerIdx].email,
-      buyerUserName: username,
-      buyerEmail: email,
-      productName: formatProductName(),
-    };
-
-    return mailPayload;
-  };
+  useEffect(() => {
+    // all listed sneakers are from the current user, hence redirect the user back home
+    if (sellers && sellers.length === 0) history.push(HOME);
+  }, [sellers, history]);
 
   const onEmailSent = () => {
     alert('The seller will be in touch with you shortly');
-    history.push('/');
+    history.push(HOME);
   };
 
   const onConfirm = async () => {
-    const sellerId = sellers[selectedSellerIdx].id;
-    const { askingPrice, listedProductId } = sellers[selectedSellerIdx];
+    const sellerId = sellers![selectedSellerIdx].id;
+    const { askingPrice, listedProductId, email, username } = sellers![selectedSellerIdx];
 
     const processingFee = getTransactionFees(askingPrice);
-    const mailPayload = formatMailPayload(selectedSellerIdx);
 
-    try {
-      const transaction: CreateTransactionPayload = {
-        buyerId: currentUser!.id!,
-        sellerId,
-        amount: askingPrice,
-        processingFee,
-        listedProductId,
-      };
+    const transaction: CreateTransactionPayload = {
+      buyerId: currentUser!.id!,
+      sellerId,
+      amount: askingPrice,
+      processingFee,
+      listedProductId,
+    };
 
-      const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
+    const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
 
-      await onConfirmPurchaseSneaker(
-        mailPayload,
-        transaction,
-        listedProductId,
-        sellerId,
-        decreaseWalletBalPayload,
-        onEmailSent
-      );
-    } catch {}
+    await onConfirmPurchaseSneaker(
+      {
+        sellerEmail: email,
+        sellerUserName: username,
+        buyerUserName: currentUser!.username,
+        buyerEmail: currentUser!.email,
+        productName: formatSneakerName(),
+      },
+      transaction,
+      listedProductId,
+      sellerId,
+      decreaseWalletBalPayload,
+      onEmailSent
+    );
   };
 
   const sortSellersByAskingPriceAscending = () => {
@@ -188,9 +190,9 @@ const SellersList = () => {
 
   const onCancel = () => history.goBack();
 
-  const getSellerSeneakrImgUrls = () => sellers[selectedSellerIdx].imageUrls.split(',');
+  const getSellerSeneakrImgUrls = (imageUrls: string) => imageUrls.split(',');
 
-  return sellers.length === 0 || !currentUser || !sneaker ? (
+  return !sellers || !currentUser || !sneaker ? (
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
@@ -202,37 +204,32 @@ const SellersList = () => {
           maxWidth='400px'
         />
       ) : (
-        <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls()} />
+        <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls(sellers[selectedSellerIdx].imageUrls)} />
       )}
       <SortByPriceDropdown
         sortInAscendingOrder={sortSellersByAskingPriceAscending}
         sortInDescendingOrder={sortSellersByAskingPriceDescending}
       />
       <ListGroup>
-        {sellers.map(({ id, username, askingPrice, rating }, idx) => {
-          // the customer cannot buy their own listing
-          if (id === currentUser!.id) return undefined;
-
-          return (
-            <ListGroupItem
-              tag='button'
-              key={idx}
-              action
-              onClick={() => setSelectedSellerIdx(idx)}
-              style={{
-                borderColor: idx === selectedSellerIdx ? 'green' : undefined,
-                outline: 'none',
-                borderTopWidth: '1px',
-              }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span>User Name: {username}</span>
-                <span>Asking Price: ${askingPrice}</span>
-                <span>Rating: {!rating || rating <= 0 ? 0 : rating}</span>
-              </div>
-            </ListGroupItem>
-          );
-        })}
+        {sellers.map(({ username, askingPrice, rating }, idx) => (
+          <ListGroupItem
+            tag='button'
+            key={idx}
+            action
+            onClick={() => setSelectedSellerIdx(idx)}
+            style={{
+              borderColor: idx === selectedSellerIdx ? 'green' : undefined,
+              outline: 'none',
+              borderTopWidth: '1px',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span>User Name: {username}</span>
+              <span>Asking Price: ${askingPrice}</span>
+              <span>Rating: {!rating || rating <= 0 ? 0 : rating}</span>
+            </div>
+          </ListGroupItem>
+        ))}
       </ListGroup>
       <footer>
         {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (

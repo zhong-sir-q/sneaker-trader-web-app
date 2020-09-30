@@ -4,22 +4,17 @@ import { getSellersAvgRatingQuery } from '../utils/queries';
 import { SellerEntity, ListedSneakerSeller } from '../../../shared';
 
 class SellerService implements SellerEntity {
-
-  async getAvgRating(sellerId: number) {
-    const poolConn = await mysqlPoolConnection()
-
-    return poolConn
-      .query(getSellersAvgRatingQuery('sellerRating', `WHERE sellerId = ${sellerId}`))
-      .then((result) => (result.length == 1 ? result[0].sellerRating : 0));
-  }
-
-  async getSellersBySneakerNameSize(nameColorway: string, size: number): Promise<ListedSneakerSeller[]> {
-    const poolConn = await mysqlPoolConnection()
+  async getSellersBySneakerNameSize(
+    currentUserId: number,
+    nameColorway: string,
+    size: number
+  ): Promise<ListedSneakerSeller[]> {
+    const poolConn = await mysqlPoolConnection();
 
     const getSellersQuery = `
       SELECT U.id, U.username, U.email, L.askingPrice, L.id as listedProductId, L.imageUrls
-        FROM Users U, ListedProducts L, Products P
-          WHERE U.id = L.userId AND P.id = L.productId AND L.prodStatus = "listed" AND
+        FROM Users U, ListedProducts L, Products P WHERE U.id = L.userId
+          AND NOT L.userId = ${currentUserId} AND P.id = L.productId AND L.prodStatus = "listed" AND
             CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}
     `;
 
@@ -33,7 +28,7 @@ class SellerService implements SellerEntity {
     `;
 
     return poolConn.query(sellersQuery);
-  };
+  }
 }
 
 export default SellerService;

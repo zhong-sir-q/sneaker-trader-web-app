@@ -18,6 +18,7 @@ import {
 
 
 import { signOut } from 'utils/auth';
+import { HOME } from 'routes';
 
 type NavbarColor = 'transparent' | 'white';
 
@@ -94,7 +95,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
             </InputGroup>
           </form>
           <Nav navbar>
-            <Button onClick={() => signOut(history, '/')}>Log out</Button>
+            <Button onClick={() => signOut(history, HOME)}>Log out</Button>
           </Nav>
         </Collapse>
       </Container>

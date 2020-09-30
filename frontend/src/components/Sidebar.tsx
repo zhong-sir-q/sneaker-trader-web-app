@@ -9,7 +9,7 @@ import { Nav, Collapse } from 'reactstrap';
 import logo from 'assets/img/logo_transparent_background.png';
 
 // routes
-import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE } from 'routes';
+import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE, HOME } from 'routes';
 import { useAuth } from 'providers/AuthProvider';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
@@ -156,12 +156,12 @@ const Sidebar = (props: SideBarProps) => {
     <React.Fragment>
       <div className='sidebar' data-color={props.backgroundColor}>
         <div className='logo'>
-          <Link to='/' className='simple-text logo-mini'>
+          <Link to={HOME} className='simple-text logo-mini'>
             <div className='logo-img'>
               <img src={logo} alt='react-logo' />
             </div>
           </Link>
-          <Link to='/' className='simple-text logo-normal'>
+          <Link to={HOME} className='simple-text logo-normal'>
             Home
           </Link>
         </div>

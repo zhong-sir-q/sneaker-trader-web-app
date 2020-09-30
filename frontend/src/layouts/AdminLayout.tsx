@@ -96,7 +96,7 @@ const AdminLayout = () => {
           <Redirect from='/admin' to='/admin/dashboard' />
         </Switch>
         {
-          // we don't want the Footer to be rendered on full screen maps page
+          // do not render footer on full screen maps page
           window.location.href.indexOf('full-screen-maps') !== -1 ? null : <Footer fluid default={false} />
         }
       </div>

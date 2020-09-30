@@ -2,7 +2,7 @@ import React from 'react'
 import { Navbar, NavbarBrand, Nav, NavItem } from "reactstrap";
 import { Link } from "react-router-dom";
 
-import { ADMIN, DASHBOARD, AUTH, SIGNIN } from "routes";
+import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from "routes";
 
 import { signOut } from "utils/auth";
 import { useAuth } from 'providers/AuthProvider';
@@ -12,7 +12,7 @@ const HomeNavbar = () => {
 
   return (
     <Navbar color='light' light>
-      <NavbarBrand style={{ color: 'black' }} href='/'>
+      <NavbarBrand style={{ color: 'black' }} href={HOME}>
         Sneaker Trader
       </NavbarBrand>
       <Nav style={{ alignItems: 'center' }} className='ml-auto'>

@@ -7,6 +7,8 @@ import { useHistory } from 'react-router-dom';
 import { AppSneaker } from '../../../shared';
 
 import { formatSneakerPathName } from 'utils/utils';
+import { concatPaths } from 'api/formatApiEndpoint';
+import { HOME } from 'routes';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -47,7 +49,7 @@ const SneakerCard = (props: SneakerCardProps) => {
   const history = useHistory();
 
   const onClick = () => {
-    if (isListed && name && colorway) history.push(formatSneakerPathName(name, colorway), sneaker);
+    if (isListed && name && colorway) history.push(concatPaths(HOME, formatSneakerPathName(name, colorway)));
   };
 
   const firstImageUrl = () => imageUrls!.split(',')[0];

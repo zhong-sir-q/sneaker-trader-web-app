@@ -21,10 +21,10 @@ export const DASHBOARD = '/dashboard';
 export const FORGOT_PW = '/reset';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
-export const HOME = '/';
+export const HOME = '/home';
 const TOPUP_WALLET = '/topup';
 
-type AppLayout = '/auth' | '/admin' | '/';
+type AppLayout = '/auth' | '/admin' | '/home';
 
 export type RouteState = 'openPages' | 'openComponents' | 'openForms' | 'openTables' | 'openMaps';
 

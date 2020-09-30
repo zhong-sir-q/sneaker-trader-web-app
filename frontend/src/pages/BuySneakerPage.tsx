@@ -10,6 +10,9 @@ import CenterSpinner from 'components/CenterSpinner';
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
+import { HOME } from 'routes';
+import { concatPaths } from 'api/formatApiEndpoint';
 
 const CenterContainer = styled(Container)`
   display: flex;
@@ -44,9 +47,9 @@ const nameColorwayFromPath = () => {
   const { pathname } = window.location;
 
   const pathArray = pathname.split('/');
-  const shoeName = pathArray[pathArray.length - 1].split('-').join(' ');
+  const shoeNameColorway = pathArray[pathArray.length - 1].split('-').join(' ');
 
-  return shoeName;
+  return shoeNameColorway;
 };
 
 // use the path name to query the sneaker
@@ -63,15 +66,14 @@ const BuySneakerPage = () => {
   const history = useHistory();
 
   const onComponentMounted = useCallback(async () => {
-    const shoeName = nameColorwayFromPath();
-    const items = await ListedSneakerControllerInstance.getSizeMinPriceGroupByName(shoeName)
-    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeName)
+    const shoeNameColorway = nameColorwayFromPath();
+    const items = await ListedSneakerControllerInstance.getSizeMinPriceGroupByName(shoeNameColorway);
+    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeNameColorway);
 
-    // the state is passed through from SneakerCard
-    const sneaker = history.location.state as Sneaker;
+    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeNameColorway);
 
     if (!sneaker) {
-      history.push('/');
+      history.push(HOME);
       return;
     }
 
@@ -131,7 +133,7 @@ const BuySneakerPage = () => {
     else setFilterAllAsks(allAsks?.filter((ask) => ask.size === selectedSize));
   };
 
-  const onBuy = () => history.push(history.location.pathname + '/' + displaySneaker!.size, displaySneaker);
+  const onBuy = () => history.push(concatPaths(history.location.pathname, selectedSize))
 
   if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
     return (

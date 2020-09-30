@@ -41,8 +41,6 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
       name: profile.getName(),
     };
 
-    console.log(user.email);
-
     try {
       await onFederatedSignin('google', id_token, expires_at, user);
     } catch (err) {

@@ -3,10 +3,10 @@ import { ListedProduct } from '../../models';
 import { SellerListedSneaker } from '../sneaker';
 
 interface ListedSneakerEntity {
-  getGallerySneakersBySize(size: number): Promise<GallerySneaker[]>;
+  getGallerySneakersBySize(sellerId: number, size: number): Promise<GallerySneaker[]>;
   getBySellerId(sellerId: number): Promise<SellerListedSneaker[]>;
   getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]>;
-  getGallerySneakers(): Promise<GallerySneaker[]>;
+  getGallerySneakers(sellerId: number): Promise<GallerySneaker[]>;
   getSizeMinPriceGroupByName(name: string): Promise<SizeMinPriceGroupType>;
   getAllListedSneakers(): Promise<AppSneaker[]>;
 

@@ -2,11 +2,13 @@ import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } f
 
 import mysqlPoolConnection from '../config/mysql';
 
-import { AppSneaker, Sneaker } from '../../../shared';
 import { PRODUCTS } from '../config/tables';
 
-class SneakerService {
-  async getByNamecolorwaySize(nameColorway: string, size: number | string): Promise<Sneaker> {
+import { AppSneaker, Sneaker } from '../../../shared';
+import SneakerEntity from '../../../shared/@types/domains/entities/SneakerEntity';
+
+class SneakerService implements SneakerEntity {
+  async getByNameColorwaySize(nameColorway: string, size: number): Promise<Sneaker> {
     const poolConn = await mysqlPoolConnection();
 
     const condition = `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}`;
@@ -16,6 +18,18 @@ class SneakerService {
     // has to be null instead of undefined
     // otherwise the app cannot deserialize it for some reason
     return prod.length === 1 ? prod[0] : null;
+  }
+
+  async getFirstByNameColorway(nameColorway: string): Promise<Sneaker> {
+    const poolConn = await mysqlPoolConnection();
+
+    const getByNameColorwayQuery = formateGetColumnsQuery(
+      PRODUCTS,
+      `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)}`
+    );
+
+    const res = await poolConn.query(getByNameColorwayQuery);
+    return res ? res[0] : null;
   }
 
   async create(sneaker: AppSneaker): Promise<number> {

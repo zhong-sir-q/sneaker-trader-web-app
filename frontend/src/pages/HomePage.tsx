@@ -10,6 +10,8 @@ import { GallerySneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import { range } from 'utils/utils';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+import { useAuth } from 'providers/AuthProvider';
+import { HOME } from 'routes';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;
@@ -52,7 +54,7 @@ const Filters = (props: FiltersProps) => {
 
     if (String(filter) === params.get(filterKey)) {
       params.delete(filterKey);
-      if (params.toString().length === 0) history.push('/');
+      if (params.toString().length === 0) history.push(HOME);
       else history.push(formatQueryParams(params));
     } else {
       params.delete(filterKey);
@@ -86,35 +88,46 @@ const Filters = (props: FiltersProps) => {
 const HomePage = () => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>([]);
   const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>([]);
-  const [brands, setBrands] = useState<string[]>([])
+  const [brands, setBrands] = useState<string[]>([]);
 
+  const { currentUser, signedIn } = useAuth();
   const history = useHistory();
 
   useEffect(() => {
     (async () => {
-      const gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers();
+      let gallerySneakers: GallerySneaker[] = [];
+
+      // if the user is not logged in, then render all gallery sneakers
+      if (!signedIn) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(-1);
+      else if (currentUser) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(currentUser.id);
+
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);
-      setBrands(await HelperInfoControllerInstance.getBrands())
+
+      setBrands(await HelperInfoControllerInstance.getBrands());
     })();
-  }, []);
+  }, [signedIn, currentUser]);
 
   const queryHandler = async (brand: string, size: number) => {
     if (brand && size) {
-      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(size);
+      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(
+        currentUser ? currentUser.id : -1,
+        size
+      );
       setFilterSneakers(sneakersBySize.filter((s) => s.brand === brand));
     } else if (brand) {
       setFilterSneakers(defaultSneakers.filter((s) => s.brand === brand));
     } else if (size) {
-      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(size);
+      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(
+        currentUser ? currentUser.id : -1,
+        size
+      );
       setFilterSneakers(sneakersBySize);
     } else setFilterSneakers(defaultSneakers);
   };
 
   const filtersHandler = useCallback(queryHandler, [filterSneakers]);
 
-  // TODO: add the functionality such that, without re-rendering forever,
-  // sneakers are filtered after the user enters the path
   useEffect(() => {
     const unlisten = history.listen((location) => {
       const { brand, size } = queryString.parse(location.search);

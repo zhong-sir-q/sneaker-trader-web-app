@@ -1,16 +1,11 @@
 import {
-  Sneaker,
   MailAfterPurchasePayload,
-  AppSneaker,
   ListedSneakerSeller,
 } from '../../../shared';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL as string;
 
 const SELLERS_API_URL = API_BASE_URL + 'sellers/';
-
-// products
-const PRODUCT_API_URL = API_BASE_URL + 'product/';
 
 // external api
 const AWS_API_URL = API_BASE_URL + 'aws/';
@@ -28,14 +23,6 @@ const formatRequestOptions = (data: any, contentType?: string, method?: 'POST' |
 // sellers
 export const getSellersBySneakerNameSize = (nameColorway: string, size: number): Promise<ListedSneakerSeller[]> =>
   fetch(SELLERS_API_URL + `?sneakerName=${nameColorway}&size=${size}`).then((res) => res.json());
-
-// product
-// returns the insert id of the product
-export const createSneaker = (sneaker: AppSneaker): Promise<number> =>
-  fetch(PRODUCT_API_URL, formatRequestOptions(sneaker)).then((res) => res.json());
-
-export const getProductByNameColorwaySize = (nameColorway: string, size: number): Promise<Sneaker | undefined> =>
-  fetch(PRODUCT_API_URL + `${nameColorway}/${size}`).then((res) => res.json());
 
 // s3
 export const uploadS3SignleImage = (formData: FormData) =>

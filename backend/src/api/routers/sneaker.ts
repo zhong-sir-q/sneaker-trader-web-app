@@ -1,21 +1,29 @@
 import { Router } from 'express';
 import SneakerService from '../../services/SneakerService';
 
-const productRoute = Router();
+const sneakerRoute = Router();
 
 // NOTE: are there too much going on in this funtion? If so, how can I refactor it?
 export default (app: Router, SneakerServiceInstance: SneakerService) => {
-  app.use('/product', productRoute);
+  app.use('/sneaker', sneakerRoute);
 
-  productRoute.get('/:nameColorway/:size', (req, res, next) => {
-    const { nameColorway, size } = req.params;
+  sneakerRoute.get('/:nameColorway', (req, res, next) => {
+    const { nameColorway } = req.params
 
-    SneakerServiceInstance.getByNamecolorwaySize(nameColorway, size)
+    SneakerServiceInstance.getFirstByNameColorway(nameColorway)
       .then((sneaker) => res.json(sneaker))
       .catch(next);
   });
 
-  productRoute.post('/', (req, res, next) => {
+  sneakerRoute.get('/:nameColorway/:size', (req, res, next) => {
+    const { nameColorway, size } = req.params;
+
+    SneakerServiceInstance.getByNameColorwaySize(nameColorway, Number(size))
+      .then((sneaker) => res.json(sneaker))
+      .catch(next);
+  });
+
+  sneakerRoute.post('/', (req, res, next) => {
     const sneaker = req.body;
 
     SneakerServiceInstance.create(sneaker)

@@ -54,6 +54,8 @@ const App = () => {
           <Route path={HOME}>
             <HomeLayout />
           </Route>
+
+          <Redirect from='/' to={HOME} />
         </Switch>
       </Router>
     </AuthProvider>

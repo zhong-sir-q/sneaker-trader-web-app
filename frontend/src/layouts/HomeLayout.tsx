@@ -6,11 +6,11 @@ import Footer from 'components/Footer';
 import SellersList from 'pages/SellersList';
 import BuySneakerPage from 'pages/BuySneakerPage';
 
-// import { getAllListedSneakers } from 'api/api';
 import { formatSneakerPathName } from 'utils/utils';
 
-import { homeRoutes } from 'routes';
+import { homeRoutes, HOME } from 'routes';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import { concatPaths } from 'api/formatApiEndpoint';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
@@ -26,8 +26,8 @@ const HomeLayout = () => {
 
       const routes = (
         <React.Fragment key={idx}>
-          <Route exact path={`/${path}/${size}`} component={SellersList} />
-          {!seenPaths.has(path) ? <Route exact path={`/${path}`} component={BuySneakerPage} /> : undefined}
+          {!seenPaths.has(path) ? <Route exact path={concatPaths(HOME, path)} component={BuySneakerPage} /> : undefined}
+          <Route path={concatPaths(HOME, path, size)} component={SellersList} />
         </React.Fragment>
       );
 
@@ -47,8 +47,8 @@ const HomeLayout = () => {
   return (
     <React.Fragment>
       <HomeNavbar />
-      {buySneakerRoutes}
       {renderHomeRoutes()}
+      {buySneakerRoutes}
       <Footer fluid default={false} />
     </React.Fragment>
   );

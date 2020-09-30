@@ -15,11 +15,10 @@ export interface UserControllerEntity extends UserEntity {
   isDuplicateEmail(email: string): Promise<boolean | void>;
 }
 
-export interface BuyerEntity {
-  getAvgRating(buyerId: number): Promise<number>;
-}
-
 export interface SellerEntity {
-  getSellersBySneakerNameSize(nameColorway: string, size: number): Promise<ListedSneakerSeller[]>;
-  getAvgRating(sellerId: number): Promise<number>;
+  getSellersBySneakerNameSize(
+    currentUserId: number,
+    nameColorway: string,
+    size: number
+  ): Promise<ListedSneakerSeller[]>;
 }

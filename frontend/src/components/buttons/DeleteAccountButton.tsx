@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 import onDeleteUser from 'usecases/onDeleteUser';
+import { HOME } from 'routes';
 
 const DeleteAccountButton = () => {
   const [open, setOpen] = React.useState(false);
@@ -17,7 +18,7 @@ const DeleteAccountButton = () => {
 
   const onConfirmDelete = async () => {
     await onDeleteUser(currentUser!.username);
-    await signOut(history, '/');
+    await signOut(history, HOME);
     handleClose();
   };
 
