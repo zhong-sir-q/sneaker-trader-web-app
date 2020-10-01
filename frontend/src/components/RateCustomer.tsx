@@ -53,7 +53,7 @@ const RateCustomer = (props: RateCustomerProps) => {
               />
             </Grid>
             <Grid item>
-              <div>Excellence</div>
+              <div>Excellent</div>
             </Grid>
           </Grid>
           <Input
@@ -61,7 +61,7 @@ const RateCustomer = (props: RateCustomerProps) => {
             onChange={onInputChange}
             style={{ fontSize: '1.35em' }}
             type='textarea'
-            placeholder='Any comment? (Optional)'
+            placeholder='Any feedback? (Optional)'
           />
         </DialogContent>
         <DialogActions>

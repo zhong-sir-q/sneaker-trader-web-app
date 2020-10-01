@@ -1,6 +1,8 @@
 import React from 'react';
 import { Table } from 'reactstrap';
 
+import moment from 'moment';
+
 import styled from 'styled-components';
 
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
@@ -15,11 +17,12 @@ import CenterSpinner from 'components/CenterSpinner';
 const ListedSneakerTableHeader = () => (
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Status</th>
-      <th>PRICE</th>
-      <th>QTY</th>
-      <th>AMOUNT</th>
+      <th>name</th>
+      <th>sold date</th>
+      <th>status</th>
+      <th>price</th>
+      <th>qty</th>
+      <th>amount</th>
     </tr>
   </thead>
 );
@@ -107,6 +110,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             </span>
           </div>
         </td>
+        <td>{buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</td>
         <td>{upperCaseFirstLetter(prodStatus)}</td>
         <td>
           <small>$</small>
@@ -129,7 +133,6 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     );
   };
 
-
   return isFetchingData ? (
     <CenterSpinner />
   ) : sneakers && sneakers.length > 0 ? (
@@ -140,7 +143,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           <ListedSneakerRow key={idx} sneaker={s} />
         ))}
         <tr>
-          <td colSpan={4} />
+          <td colSpan={5} />
           <td className='td-total'>Total</td>
           <td className='td-price'>
             <small>$</small>

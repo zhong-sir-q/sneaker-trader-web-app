@@ -29,6 +29,7 @@ import getTransactionFees from 'usecases/getTransactionFee';
 import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import SellerControllerInstance from 'api/controllers/SellerController';
+import useRedirect from 'hooks/useRedirect';
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
@@ -102,6 +103,7 @@ const SellersList = () => {
   const [sneaker, setSneaker] = useState<Sneaker>();
 
   const history = useHistory();
+  const redirect = useRedirect(HOME);
 
   const { signedIn, currentUser } = useAuth();
 
@@ -143,7 +145,8 @@ const SellersList = () => {
 
   const onEmailSent = () => {
     alert('The seller will be in touch with you shortly');
-    history.push(HOME);
+    redirect();
+    window.location.reload();
   };
 
   const onConfirm = async () => {
@@ -173,9 +176,10 @@ const SellersList = () => {
       transaction,
       listedProductId,
       sellerId,
-      decreaseWalletBalPayload,
-      onEmailSent
+      decreaseWalletBalPayload
     );
+
+    onEmailSent();
   };
 
   const sortSellersByAskingPriceAscending = () => {

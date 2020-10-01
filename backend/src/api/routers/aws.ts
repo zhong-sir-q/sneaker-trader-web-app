@@ -1,6 +1,6 @@
 import multer from 'multer';
 import { Router } from 'express';
-import CustomAwsService, { s3BucketFolder } from '../../services/external/aws';
+import CustomAwsService, { s3BucketFolder } from '../../services/external/AwsService';
 
 const upload = multer({ dest: 'uploads/' });
 

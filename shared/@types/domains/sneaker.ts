@@ -1,5 +1,6 @@
 import { Sneaker, ListedProduct } from '../..';
 import { Customer } from './user';
+import { Transaction } from '../models';
 
 export type SneakerAsk = {
   size: number;
@@ -23,6 +24,6 @@ export type ListedSneakerPayload = Omit<ListedProduct, 'id' | 'productId' | 'use
 
 export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 
-export type SellerListedSneaker = CustomerSneaker & { buyer: Customer };
+export type SellerListedSneaker = CustomerSneaker & { buyer: Customer & Pick<Transaction, 'transactionDatetime'> };
 
-export type BuyerPurchasedSneaker = CustomerSneaker & { seller: Customer };
+export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transactionDatetime'> & { seller: Customer };

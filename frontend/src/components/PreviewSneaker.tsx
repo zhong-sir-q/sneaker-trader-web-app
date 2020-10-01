@@ -25,7 +25,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>
-        <Button color='primary' onClick={onSubmit}>
+        <Button type='button' color='primary' onClick={onSubmit}>
           Confirm
         </Button>
       </CardFooter>

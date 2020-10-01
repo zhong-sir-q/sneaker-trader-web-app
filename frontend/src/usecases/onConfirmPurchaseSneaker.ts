@@ -10,19 +10,17 @@ const onConfirmPurchaseSneaker = async (
   transaction: CreateTransactionPayload,
   listedSneakerId: number,
   sellerId: number,
-  decreaseWalletBalPayload: DecreaseWalletPayload,
-  onEmailSent: () => void
+  decreaseWalletBalPayload: DecreaseWalletPayload
 ) => {
   await mailAfterPurchase(mailPayload);
 
-  onEmailSent()
+  await ListedSneakerControllerInstance.handlePurchase(listedSneakerId, sellerId);
 
-  await ListedSneakerControllerInstance.handlePurchase(listedSneakerId, sellerId)
+  await TransactionControllerInstance.create(transaction);
 
-  await TransactionControllerInstance.create(transaction)
-
-  const { userId, amount } = decreaseWalletBalPayload
-  await WalletControllerInstance.decreaseBalance(userId, amount)
+  // decrease the wallet balance of the seller
+  const { userId, amount } = decreaseWalletBalPayload;
+  await WalletControllerInstance.decreaseBalance(userId, amount);
 
   // increment the ranking points of both users
 };

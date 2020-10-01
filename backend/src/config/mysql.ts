@@ -15,15 +15,21 @@ const mysqlPoolConnection = (): Promise<PromisifiedConnection> => {
       if (err) reject(err);
 
       const query = (sql: string): Promise<any> => {
-        return new Promise(async (resolve, reject) => {
-          await poolQuery('START TRANSACTION');
+        return new Promise((resolve, reject) => {
+          conn.query('START TRANSACTION')
 
           conn.query(sql, (queryErr, queryResult) => {
-            if (queryErr) reject(queryErr);
+            if (queryErr) {
+              reject(queryErr);
+              return
+            }
+
+            conn.query('COMMIT')
             resolve(queryResult);
           });
         })
           .catch((err) => {
+            console.log(`Encountered error: ${err.message}, rolling back...`)
             conn.query('ROLLBACK');
             reject(err);
           })

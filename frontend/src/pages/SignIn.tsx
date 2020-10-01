@@ -89,7 +89,7 @@ const SignIn = () => {
                     </CardBody>
                     <CardFooter>
                       <Button block type='submit' color='primary' size='lg' className='mb-3 btn-round'>
-                        Get Started
+                        Login
                       </Button>
                       <div className='pull-left'>
                         <h6>

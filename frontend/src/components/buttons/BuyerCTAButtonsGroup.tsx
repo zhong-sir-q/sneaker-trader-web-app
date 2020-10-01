@@ -19,7 +19,7 @@ const BuyerCTAButtonsGroup = (props: BuyerCTAButtonsGroupProps) => {
 
   useEffect(() => {
     (async () => setHasBuyerRatedSeller(await TransactionControllerInstance.hasBuyerRatedSeller(listedProdId)))();
-  });
+  }, [listedProdId]);
 
   const onCompelteRating = async (listedProductId: number, rating: number, comment: string) => {
     TransactionControllerInstance.rateSeller(listedProductId, rating, comment);

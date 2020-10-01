@@ -58,7 +58,7 @@ export const checkDuplicateUsername = () =>
 
 export const noSpecialChar = () =>
   Yup.string()
-    .matches(/^[a-zA-Z0-9]+$/, 'No special characters')
+    .matches(/^[a-zA-Z0-9\s]+$/, 'No special characters')
     .required(REQUIRED);
 
 export const minNumber = (lowerLim: number, msg: string) => Yup.number().min(lowerLim, msg).required(REQUIRED);

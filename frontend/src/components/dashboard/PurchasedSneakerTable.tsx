@@ -1,24 +1,46 @@
 import React from 'react';
 
 import { Table } from 'reactstrap';
+import styled from 'styled-components';
+
+import moment from 'moment'
 
 import BuyerCTAButtonsGroup from 'components/buttons/BuyerCTAButtonsGroup';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 import { upperCaseFirstLetter } from 'utils/utils';
-import styled from 'styled-components';
 
 const PurchasedSneakerTableHeader = () => (
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Status</th>
-      <th>PRICE</th>
-      <th>QTY</th>
-      <th>AMOUNT</th>
+      <th>name</th>
+      <th>bought date</th>
+      <th>status</th>
+      <th>price</th>
+      <th>qty</th>
+      <th>amount</th>
     </tr>
   </thead>
 );
+
+const ImgContainer = styled.div`
+  float: left;
+  @media (min-width: 150px) {
+    width: 60px;
+  }
+
+  @media (min-width: 768px) {
+    width: 80px;
+  }
+`;
+
+const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
+  let total = 0;
+
+  for (const s of sneakers) total += (s.quantity || 1) * Number(s.price);
+
+  return total;
+};
 
 type PurchasedSneakerRowProps = {
   sneaker: BuyerPurchasedSneaker;
@@ -30,14 +52,6 @@ type PurchasedSneakerTableProps = {
 
 const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
   const { sneakers } = props;
-
-  const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
-    let total = 0;
-
-    for (const s of sneakers) total += (s.quantity || 1) * Number(s.price);
-
-    return total;
-  };
 
   const PurchasedSneakerRow = (props: PurchasedSneakerRowProps) => {
     const {
@@ -52,23 +66,13 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       prodStatus,
       seller,
       sizeSystem,
+      transactionDatetime
     } = props.sneaker;
 
     const displayImg = imageUrls.split(',')[0];
 
     const displayName = `${brand} ${name} ${colorway}`;
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
-
-    const ImgContainer = styled.div`
-      float: left;
-      @media (min-width: 150px) {
-        width: 60px;
-      }
-
-      @media (min-width: 768px) {
-        width: 80px;
-      }
-    `;
 
     return (
       <tr>
@@ -95,6 +99,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
             </span>
           </div>
         </td>
+        <td>{moment(transactionDatetime).format('YYYY-MM-DD')}</td>
         <td>{upperCaseFirstLetter(prodStatus)}</td>
         <td>
           <small>$</small>
@@ -120,7 +125,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
           <PurchasedSneakerRow key={idx} sneaker={s} />
         ))}
         <tr>
-          <td colSpan={4} />
+          <td colSpan={5} />
           <td className='td-total'>Total</td>
           <td className='td-price'>
             <small>$</small>

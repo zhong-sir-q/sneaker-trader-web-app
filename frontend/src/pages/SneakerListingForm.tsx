@@ -23,7 +23,7 @@ const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: nu
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
   prodStatus: 'listed' as SneakerStatus,
-  conditionRating: sneaker.conditionRating
+  conditionRating: sneaker.conditionRating,
 });
 
 const formatSneaker = (s: SneakerListingFormStateType) => {
@@ -37,7 +37,9 @@ const SneakerListingForm = () => {
   const [step, setStep] = useState(0);
 
   const { currentUser } = useAuth();
-  const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
+
+  const { formDataFromFiles, getMainDisplayFile } = usePreviewImgDropzoneCtx();
+
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
   const goPrevStep = () => setStep(step - 1);
@@ -47,29 +49,25 @@ const SneakerListingForm = () => {
   const onFinishSubmit = async () => {
     const { name, colorway, size, brand } = listingSneakerFormState;
 
-    try {
-      const nameColorway = `${name} ${colorway}`;
-      const imgFormData = formDataFromFiles();
-      const sneakerPayload = formatSneaker(listingSneakerFormState);
-      const listedProductPayload = formatListedProduct(listingSneakerFormState);
+    const nameColorway = `${name} ${colorway}`;
+    const imgFormData = formDataFromFiles();
+    const sneakerPayload = formatSneaker(listingSneakerFormState);
+    const listedProductPayload = formatListedProduct(listingSneakerFormState);
 
-      await onListingSneaker(
-        imgFormData,
-        nameColorway,
-        size as number,
-        currentUser!.id!,
-        sneakerPayload,
-        listedProductPayload,
-        !brandOptions.includes(brand) ? brand : undefined,
-        !colorwayOptions.includes(colorway) ? colorway : undefined,
-        !sneakerNamesOptions.includes(name) ? name : undefined
-      );
+    await onListingSneaker(
+      imgFormData,
+      nameColorway,
+      size as number,
+      currentUser!.id!,
+      sneakerPayload,
+      listedProductPayload,
+      !brandOptions.includes(brand) ? brand : undefined,
+      !colorwayOptions.includes(colorway) ? colorway : undefined,
+      !sneakerNamesOptions.includes(name) ? name : undefined
+    );
 
-      destroyFiles();
-
-      // Go to the success message
-      goNextstep();
-    } catch {}
+    // Go to the success message
+    goNextstep();
   };
 
   const renderStep = () => {

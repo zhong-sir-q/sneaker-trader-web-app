@@ -56,6 +56,7 @@ export type Transaction = {
   sellerRatingFromBuyer: number;
   buyerCommentFromSeller: string | null;
   sellerCommentFromBuyer: string | null;
+  transactionDatetime: string;
 };
 
 export type Brand = {

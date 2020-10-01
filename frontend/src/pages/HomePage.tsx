@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import queryString from 'query-string';
-import { useHistory } from 'react-router-dom';
 import { Row, Col, Container } from 'reactstrap';
 import styled from 'styled-components';
 
+import queryString from 'query-string';
+import { useHistory } from 'react-router-dom';
+
 import SneakerGallery from 'components/SneakerGallery';
 
-import { GallerySneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
-import { range } from 'utils/utils';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+
 import { useAuth } from 'providers/AuthProvider';
 import { HOME } from 'routes';
+
+import { range } from 'utils/utils';
+import { GallerySneaker } from '../../../shared';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;

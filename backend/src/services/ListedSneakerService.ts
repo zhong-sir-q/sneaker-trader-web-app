@@ -32,13 +32,14 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     const getBuyersInfo = `
-      SELECT email, name, username, phoneNo, U.id as userId FROM
+      SELECT email, name, username, phoneNo, U.id as userId, transactionDatetime FROM
         Transactions T, Users U WHERE listedProductId = L.id AND T.buyerId = U.id
     `;
 
     const getBuyerQuery = `
       SELECT JSON_OBJECT("email", email, "username", username, 
-      "phoneNo", phoneNo, "buyerRating", buyerRating)
+      "phoneNo", phoneNo, "buyerRating", buyerRating,
+      "transactionDatetime", transactionDatetime)
         FROM ( ${getBuyersInfo} ) q1 LEFT JOIN
           ( ${getBuyersAvgRatingQuery('buyerRating')} ) q2
             ON q1.userId = q2.buyerId

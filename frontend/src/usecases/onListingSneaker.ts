@@ -22,8 +22,8 @@ const onListingSneaker = async (
   let prodId: number;
   const product = await SneakerControllerInstance.getByNameColorwaySize(nameColorway, size);
 
-  if (product) prodId = product.id!;
-  else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: formattedUrls })
+  if (product) prodId = product.id;
+  else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: formattedUrls });
 
   await ListedSneakerControllerInstance.create({
     ...listedSneakerPayload,

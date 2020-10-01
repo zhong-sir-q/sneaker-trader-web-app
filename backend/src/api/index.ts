@@ -21,8 +21,8 @@ import ListedSneakerService from '../services/ListedSneakerService';
 import SneakerService from '../services/SneakerService';
 import HelperInfoService from '../services/HelperInfoService';
 
-import CustomAwsService from '../services/external/aws';
-import MailService from '../services/external/mail';
+import CustomAwsService from '../services/external/AwsService';
+import MailService from '../services/external/MailService';
 
 import WalletService from '../services/WalletService';
 import TransactionService from '../services/TransactionService';
