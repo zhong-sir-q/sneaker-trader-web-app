@@ -14,7 +14,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
 import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormCtxProvider';
 
-import handleListingSneaker from 'usecases/handleListingSneaker';
+import onListingSneaker from 'usecases/onListingSneaker';
 
 const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: number) => ({
   askingPrice: Number(sneaker.askingPrice),
@@ -53,7 +53,7 @@ const SneakerListingForm = () => {
       const sneakerPayload = formatSneaker(listingSneakerFormState);
       const listedProductPayload = formatListedProduct(listingSneakerFormState);
 
-      await handleListingSneaker(
+      await onListingSneaker(
         imgFormData,
         nameColorway,
         size as number,
@@ -105,7 +105,7 @@ const SneakerListingForm = () => {
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content' style={{ paddingTop: '2.2rem' }}>
-        <Container style={{ maxWidth: step === 2 ? '500px' : undefined }}>
+        <Container style={{ maxWidth: step === 2 ? '625px' : undefined }}>
           <Col className='text-center'>
             <p style={{ margin: 0 }}>{calcProgress()}%</p>
             <div style={{ marginBottom: '1rem' }}>

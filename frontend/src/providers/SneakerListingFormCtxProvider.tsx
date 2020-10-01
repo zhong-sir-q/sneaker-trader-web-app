@@ -2,7 +2,7 @@ import React, { useState, createContext, useContext, useEffect } from 'react';
 import * as Yup from 'yup';
 
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
-import { required, requiredPositiveNumber } from 'utils/yup';
+import { required, noSpecialChar, minNumber, allowedRange } from 'utils/yup';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 export type SneakerListingFormStateType = Pick<
@@ -37,16 +37,14 @@ const INIT_FORM_STATE: SneakerListingFormStateType = {
 };
 
 const sneakerListingFormValidationSchema: SneakerListingFormValidationSchemaType = Yup.object({
-  name: required(),
-  brand: required(),
-  colorway: required(),
+  name: noSpecialChar(),
+  brand: noSpecialChar(),
+  colorway: noSpecialChar(),
   currencyCode: required(),
   sizeSystem: required(),
   prodCondition: required() as Yup.Schema<SneakerCondition>,
-  // TODO: minimum price of $20
-  askingPrice: requiredPositiveNumber('Price'),
-  // NOTE: should be between size 1 to 15 or something
-  size: requiredPositiveNumber('Size'),
+  askingPrice: minNumber(20, 'Minimum $20'),
+  size: allowedRange(1, 15),
 });
 
 const INIT_CTX: SneakerListingFormCtxType = {

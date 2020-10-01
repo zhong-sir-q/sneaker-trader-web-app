@@ -137,9 +137,8 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>
-              </Row>
-              {values.prodCondition === 'used' && (
-                <Row>
+
+                {values.prodCondition === 'used' && (
                   <Col md='4'>
                     <FormGroup>
                       <FormikLabelSelect
@@ -155,8 +154,8 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                       </FormikLabelSelect>
                     </FormGroup>
                   </Col>
-                </Row>
-              )}
+                )}
+              </Row>
               <FormGroup>
                 {/* TODO: add new line after enter is pressed */}
                 <FormikLabelInput

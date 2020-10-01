@@ -33,7 +33,7 @@ export const requiredPositiveNumber = (fieldName: string) =>
     .positive(`${fieldName} must be greater than zero`)
     .required(`${fieldName} is Required`);
 
-// the val !== undefined check here is necessaru otherwise the web will become errorenous
+// the val !== undefined check here is necessary otherwise the web will become errorenous
 export const validPhoneNo = () =>
   Yup.string()
     .matches(/^[0-9]+/, 'Must be all digits')
@@ -55,3 +55,11 @@ export const checkDuplicateUsername = () =>
       }
     })
     .required(REQUIRED);
+
+export const noSpecialChar = () =>
+  Yup.string()
+    .matches(/^[a-zA-Z0-9]+$/, 'No special characters')
+    .required(REQUIRED);
+
+export const minNumber = (lowerLim: number, msg: string) => Yup.number().min(lowerLim, msg).required(REQUIRED);
+export const allowedRange = (lo: number, hi: number) => Yup.number().min(lo).max(hi).required(REQUIRED);

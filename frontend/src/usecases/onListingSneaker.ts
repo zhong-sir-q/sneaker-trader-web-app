@@ -5,7 +5,7 @@ import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerContro
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 
-const handleListingSneaker = async (
+const onListingSneaker = async (
   imgFormData: FormData,
   nameColorway: string,
   size: number,
@@ -37,4 +37,4 @@ const handleListingSneaker = async (
   if (name) await HelperInfoControllerInstance.createSneakerName({ name });
 };
 
-export default handleListingSneaker;
+export default onListingSneaker;
