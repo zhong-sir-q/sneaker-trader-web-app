@@ -8,6 +8,7 @@ export interface UserEntity {
   getByUsername(username: string): Promise<User>;
   update(user: User): Promise<any>;
   deleteByUsername(username: string): Promise<any>;
+  getRankingPointsByUserId(userId: number): Promise<number>;
 }
 
 interface UserUseCase {

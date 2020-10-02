@@ -2,14 +2,14 @@ import React, {  } from 'react';
 import StatisticsDisplay from './StatisticsDisplay';
 
 type UserRankingPointsProps = {
-  rankingPoint: number;
+  rankingPoints: number;
 };
 
 const UserRankingPoints = (props: UserRankingPointsProps) => (
   <StatisticsDisplay
     iconColor='icon-primary'
     iconName='objects_spaceship'
-    primaryText={props.rankingPoint}
+    primaryText={props.rankingPoints}
     secondaryText='Ranking Points'
   />
 );

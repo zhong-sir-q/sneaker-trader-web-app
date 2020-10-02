@@ -8,7 +8,7 @@ import {
 
 import { User, UserServiceEntity } from '../../../shared';
 import mysqlPoolConnection from '../config/mysql';
-import { USERS } from '../config/tables';
+import { USERS, TRANSACTION } from '../config/tables';
 
 class UserService implements UserServiceEntity {
   async update(user: User) {
@@ -65,6 +65,18 @@ class UserService implements UserServiceEntity {
   async deleteByUsername(username: string) {
     const poolConn = await mysqlPoolConnection();
     return poolConn.query(formatDeleteQuery(USERS, `username = ${doubleQuotedValue(username)}`));
+  }
+
+  async getRankingPointsByUserId(userId: number): Promise<number> {
+    const poolConn = await mysqlPoolConnection();
+    const getNumTransactionQuery = `
+      SELECT COUNT(*) AS numTransactions FROM ${TRANSACTION} WHERE
+        buyerId = ${userId} OR sellerId = ${userId}
+    `;
+    const res = await poolConn.query(getNumTransactionQuery);
+    const rankingPoints = res[0].numTransactions;
+
+    return rankingPoints;
   }
 }
 

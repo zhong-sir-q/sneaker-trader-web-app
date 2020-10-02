@@ -9,7 +9,7 @@ export type User = {
   dob: string;
   email: string;
   phoneNo: string;
-  rankingPoint: number;
+  rankingPoints: number;
   profilePicUrl: string;
   signinMethod: 'email' | SocialProvider;
 };
@@ -22,7 +22,6 @@ export type Sneaker = {
   brand: string;
   colorway: string;
   imageUrls: string;
-  description: string;
 };
 
 export type SneakerCondition = 'new' | 'used' | 'dead stock';
@@ -42,6 +41,8 @@ export type ListedProduct = {
   prodCondition: SneakerCondition;
   conditionRating: number;
   imageUrls: string;
+  description: string;
+  serialNumber: string;
 };
 
 export type Transaction = {

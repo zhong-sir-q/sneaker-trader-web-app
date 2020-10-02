@@ -3,20 +3,24 @@ import React, { useState } from 'react';
 import { Col, Container, Progress } from 'reactstrap';
 
 import PanelHeader from 'components/PanelHeader';
-import SubmissionSuccess from 'components/SubmissionSuccess';
+import ListedSneakerSuccess from 'components/ListSneakerSuccess';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
 import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 
-import { SneakerStatus } from '../../../shared';
+import { SneakerStatus, ListedSneakerFormPayload } from '../../../shared';
 
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
 import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormCtxProvider';
 
 import onListingSneaker from 'usecases/onListingSneaker';
+import { mapUpperCaseFirstLetter } from 'utils/utils';
 
-const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: number) => ({
+const formatListedSneakerPayload = (
+  sneaker: SneakerListingFormStateType,
+  quantity?: number
+): ListedSneakerFormPayload => ({
   askingPrice: Number(sneaker.askingPrice),
   sizeSystem: sneaker.sizeSystem,
   currencyCode: sneaker.currencyCode,
@@ -24,12 +28,18 @@ const formatListedProduct = (sneaker: SneakerListingFormStateType, quantity?: nu
   quantity: quantity || 1,
   prodStatus: 'listed' as SneakerStatus,
   conditionRating: sneaker.conditionRating,
+  description: sneaker.description,
+  serialNumber: '',
 });
 
 const formatSneaker = (s: SneakerListingFormStateType) => {
-  const { name, colorway, brand, size, description } = s;
+  const name = mapUpperCaseFirstLetter(s.name, ' ');
+  const colorway = mapUpperCaseFirstLetter(s.colorway, ' ');
+  const brand = mapUpperCaseFirstLetter(s.brand, ' ');
 
-  return { name, colorway, brand, size: Number(size), description };
+  const size = Number(s.size);
+
+  return { name, colorway, brand, size };
 };
 
 // the providers reside in routes.tsx
@@ -38,12 +48,11 @@ const SneakerListingForm = () => {
 
   const { currentUser } = useAuth();
 
-  const { formDataFromFiles, getMainDisplayFile } = usePreviewImgDropzoneCtx();
+  const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
 
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
   const goPrevStep = () => setStep(step - 1);
-
   const goNextstep = () => setStep(step + 1);
 
   const onFinishSubmit = async () => {
@@ -52,7 +61,7 @@ const SneakerListingForm = () => {
     const nameColorway = `${name} ${colorway}`;
     const imgFormData = formDataFromFiles();
     const sneakerPayload = formatSneaker(listingSneakerFormState);
-    const listedProductPayload = formatListedProduct(listingSneakerFormState);
+    const listedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
 
     await onListingSneaker(
       imgFormData,
@@ -68,6 +77,8 @@ const SneakerListingForm = () => {
 
     // Go to the success message
     goNextstep();
+
+    destroyFiles()
   };
 
   const renderStep = () => {
@@ -91,7 +102,7 @@ const SneakerListingForm = () => {
           />
         );
       case 3:
-        return <SubmissionSuccess />;
+        return <ListedSneakerSuccess />;
       default:
         return undefined;
     }

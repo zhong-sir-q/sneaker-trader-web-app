@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 
 import HomeNavbar from 'components/navbars/HomeNavbar';
 import Footer from 'components/Footer';
-import SellersList from 'pages/SellersList';
+import ViewSellersList from 'pages/ViewSellersList';
 import BuySneakerPage from 'pages/BuySneakerPage';
 
 import { formatSneakerPathName } from 'utils/utils';
@@ -27,7 +27,7 @@ const HomeLayout = () => {
       const routes = (
         <React.Fragment key={idx}>
           {!seenPaths.has(path) ? <Route exact path={concatPaths(HOME, path)} component={BuySneakerPage} /> : undefined}
-          <Route path={concatPaths(HOME, path, size)} component={SellersList} />
+          <Route path={concatPaths(HOME, path, size)} component={ViewSellersList} />
         </React.Fragment>
       );
 

@@ -18,8 +18,8 @@ type SneakerInfoFormProps = {
   goNextStep: () => void;
 };
 
-const currencyCodeOptions = ['AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'NZD', 'USD', 'YUAN'];
-const shoeSizeOptions = ['EU', 'Japan', 'UK', 'US'];
+const currencyCodeOptions = ['NZD', 'USD', 'AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'YUAN'];
+const shoeSizeOptions = ['US', 'EU', 'Japan', 'UK'];
 const sneakerConditionRatings = range(1, 10, 0.5);
 
 const SneakerInfoForm = (props: SneakerInfoFormProps) => {
@@ -90,7 +90,6 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 <Col md='4'>
                   <FormGroup>
                     <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
-                      <option value=''>None</option>
                       {shoeSizeOptions.map((sOpt, idx) => (
                         <option value={sOpt} key={idx}>
                           {sOpt}
@@ -109,7 +108,6 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 <Col md='4'>
                   <FormGroup>
                     <FormikLabelSelect name='currencyCode' label='Price Currency Code' id='sneaker-price-currency'>
-                      <option value=''>None</option>
                       {currencyCodeOptions.map((cOpt, idx) => (
                         <option key={idx} value={cOpt}>
                           {cOpt}

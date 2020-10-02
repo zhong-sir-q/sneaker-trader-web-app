@@ -20,6 +20,7 @@ import { useAuth } from 'providers/AuthProvider';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import WalletBalance from './dashboard/WalletBalance';
 import WalletCtxProvider from 'providers/WalletCtxProvider';
+import UserControllerInstance from 'api/controllers/UserController';
 
 /**
  * TODO:
@@ -30,7 +31,7 @@ import WalletCtxProvider from 'providers/WalletCtxProvider';
  */
 
 const Dashboard = () => {
-  const [rankingPoint, setRankingPoint] = useState(0);
+  const [rankingPoints, setRankingPoint] = useState(0);
   const [listedSneakerCounts, setListedSneakerCounts] = useState(0);
   const [completedSaleCounts, setCompletedSaleCounts] = useState(0);
 
@@ -40,10 +41,11 @@ const Dashboard = () => {
     if (currentUser) {
       const sellerListedSneakers = await ListedSneakerControllerInstance.getUnsoldListedSneakers(currentUser.id);
       const soldSneakers = await ListedSneakerControllerInstance.getSoldListedSneakers(currentUser.id);
+      const userRankingPoints = await UserControllerInstance.getRankingPointsByUserId(currentUser.id);
 
       setListedSneakerCounts(sellerListedSneakers.length);
       setCompletedSaleCounts(soldSneakers.length);
-      setRankingPoint(currentUser.rankingPoint);
+      setRankingPoint(userRankingPoints);
     }
   };
 
@@ -63,7 +65,7 @@ const Dashboard = () => {
               <CardBody>
                 <Row>
                   <Col md='3'>
-                    <UserRankingPoints rankingPoint={rankingPoint} />
+                    <UserRankingPoints rankingPoints={rankingPoints} />
                   </Col>
                   <Col md='3'>
                     <ListedSneakerCounts counts={listedSneakerCounts} />

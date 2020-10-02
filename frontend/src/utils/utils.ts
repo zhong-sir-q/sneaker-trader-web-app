@@ -7,6 +7,10 @@ export const upperCaseFirstLetter = (s: string | undefined) => {
   return firstLetter.toUpperCase() + s.slice(1);
 };
 
+export const mapUpperCaseFirstLetter = (s: string, separator: string): string => {
+  const arr = s.split(separator);
+  return arr.map(upperCaseFirstLetter).join(separator);
+};
 
 export const range = (start: number, end: number, step: number): number[] => {
   let result: number[] = [];

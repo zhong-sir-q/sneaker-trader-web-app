@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Container } from 'reactstrap';
+import { Row, Col, Container, Button } from 'reactstrap';
+import { Drawer } from '@material-ui/core';
 import styled from 'styled-components';
 
 import queryString from 'query-string';
@@ -36,6 +37,20 @@ const FilterTitle = styled.div`
   letter-spacing: 1px;
 `;
 
+const CollapseFilters = styled(Col)`
+  @media (max-width: 786px) {
+    display: none;
+  }
+`;
+
+const CollapseButtonDiv = styled.div`
+  text-align: end;
+
+  @media (min-width: 786px) {
+    display: none;
+  }
+`;
+
 type FilterType = string | number;
 type FilterByKey = 'brand' | 'size';
 
@@ -50,7 +65,7 @@ const Filters = (props: FiltersProps) => {
 
   const { filters, filterKey, title } = props;
 
-  const formatQueryParams = (params: URLSearchParams) => `/?${params.toString()}`;
+  const formatQueryParams = (params: URLSearchParams) => `?${params.toString()}`;
 
   const onSelectFilter = (filter: FilterType) => {
     const params = new URLSearchParams(history.location.search);
@@ -140,13 +155,36 @@ const HomePage = () => {
     return () => unlisten();
   });
 
+  const FiltersDrawer = () => {
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    return (
+      <React.Fragment>
+        <CollapseButtonDiv>
+          <Button onClick={handleOpen}>Filter</Button>
+        </CollapseButtonDiv>
+        {/* TODO: change the functionality of these drawers, add save changes functionality */}
+        <Drawer anchor='bottom' open={open} onClose={handleClose}>
+          <div style={{ padding: '50px' }}>
+            <Filters filters={range(1, 15, 0.5)} filterKey='size' title='us sizes' />
+            <Filters filters={brands} filterKey='brand' title='brands' />
+          </div>
+        </Drawer>
+      </React.Fragment>
+    );
+  };
+
   return (
     <Container fluid='sm' style={{ minHeight: 'calc(100vh - 150px)' }}>
+      <FiltersDrawer />
       <Row>
-        <Col sm={2}>
-          <Filters filters={range(1, 12, 1)} filterKey='size' title='us sizes' />
+        <CollapseFilters sm={2}>
+          <Filters filters={range(1, 15, 0.5)} filterKey='size' title='us sizes' />
           <Filters filters={brands} filterKey='brand' title='brands' />
-        </Col>
+        </CollapseFilters>
         <Col sm={10}>
           <SneakerGallery sneakers={filterSneakers} />
         </Col>

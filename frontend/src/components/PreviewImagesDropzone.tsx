@@ -42,7 +42,7 @@ const Thumb = styled.div<ThumbProps>`
   align-items: center;
   border: 2.5px solid;
   margin-top: 10px;
-  max-width: 185px;
+  max-width: 250px;
   margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
   border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;

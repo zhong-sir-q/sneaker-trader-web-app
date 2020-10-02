@@ -30,6 +30,14 @@ export default (app: Router, UserServiceInstance: UserService) => {
       .catch(next);
   });
 
+  userRoute.get('/rankingPoints/:userId', (req, res, next) => {
+    const { userId } = req.params;
+
+    UserServiceInstance.getRankingPointsByUserId(Number(userId))
+      .then((rankingPoints) => res.json(rankingPoints))
+      .catch(next);
+  });
+
   userRoute.post('/', (req, res, next) => {
     const user = req.body;
 

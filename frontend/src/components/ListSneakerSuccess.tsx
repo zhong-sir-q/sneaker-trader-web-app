@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardBody, CardText, CardFooter, Button } f
 
 import { ADMIN, DASHBOARD } from 'routes';
 
-const SubmissionSuccess = () => (
+const ListedSneakerSuccess = () => (
   <Card>
     <CardHeader>
       <CardTitle tag='h4'>Congratulations, you successfully listed the sneakers!!!</CardTitle>
@@ -13,13 +13,11 @@ const SubmissionSuccess = () => (
       <CardText>CUSTOM SUCCESS MESSAGE GOES HERE</CardText>
     </CardBody>
     <CardFooter>
-      <Button color='primary'>
-        <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
-          Go back home
-        </Link>
-      </Button>
+      <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
+        <Button color='primary'>Go back home</Button>
+      </Link>
     </CardFooter>
   </Card>
 );
 
-export default SubmissionSuccess;
+export default ListedSneakerSuccess;

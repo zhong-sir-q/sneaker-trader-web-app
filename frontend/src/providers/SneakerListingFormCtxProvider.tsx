@@ -30,10 +30,10 @@ const INIT_FORM_STATE: SneakerListingFormStateType = {
   colorway: '',
   askingPrice: '',
   description: '',
-  sizeSystem: '',
-  currencyCode: '',
+  sizeSystem: 'US',
+  currencyCode: 'NZD',
   prodCondition: '' as SneakerCondition,
-  conditionRating: 10,
+  conditionRating: 5,
 };
 
 const sneakerListingFormValidationSchema: SneakerListingFormValidationSchemaType = Yup.object({

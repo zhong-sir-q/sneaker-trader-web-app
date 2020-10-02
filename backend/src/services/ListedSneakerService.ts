@@ -101,9 +101,9 @@ class ListedSneakerService implements ListedSneakerEntity {
   }
 
   /**
-   * @param name space separated name, e.g. Kobe 4 Black
+   * @param nameColorway space separated name, e.g. Kobe 4 Black
    */
-  getSizeMinPriceGroupByName = async (name: string): Promise<SizeMinPriceGroupType> => {
+  getSizeMinPriceGroupByNameColorway = async (nameColorway: string): Promise<SizeMinPriceGroupType> => {
     const poolConn = await mysqlPoolConnection();
 
     /**
@@ -117,8 +117,8 @@ class ListedSneakerService implements ListedSneakerEntity {
     const query = `
       SELECT P.size, MIN(L.askingPrice) as minPrice FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L
         WHERE P.id = L.productId AND L.prodStatus = "listed" AND 
-          CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(name)}
-            GROUP BY L.productId
+          CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)}
+            GROUP BY P.id AND P.size
     `;
 
     return poolConn.query(query);

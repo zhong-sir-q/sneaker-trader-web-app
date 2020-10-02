@@ -1,3 +1,5 @@
-const getTransactionFees = (price: number) => price * 0.1;
+const roundTwoDecimalPlaces = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100
 
-export default getTransactionFees
+const getTransactionFees = (price: number) => roundTwoDecimalPlaces(price * 0.1)
+
+export default getTransactionFees;

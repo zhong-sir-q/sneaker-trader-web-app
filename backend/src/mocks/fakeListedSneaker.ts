@@ -13,6 +13,8 @@ const fakeListedSneaker = (userId: number, productId: number) => ({
   conditionRating: faker.random.number({ min: 1, max: 10 }),
   prodCondition: conditions[faker.random.number(2)],
   imageUrls: fakeImgUrls(),
+  description: faker.lorem.lines(),
+  serialNumber: faker.lorem.words(),
 });
 
 export default fakeListedSneaker;

@@ -11,7 +11,7 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
     const sneakerName = req.query.name as string;
 
     try {
-      if (sneakerName) ListedSneakerServiceInstance.getSizeMinPriceGroupByName(sneakerName).then((r) => res.json(r));
+      if (sneakerName) ListedSneakerServiceInstance.getSizeMinPriceGroupByNameColorway(sneakerName).then((r) => res.json(r));
       else ListedSneakerServiceInstance.getAllListedSneakers().then((r) => res.json(r));
     } catch (err) {
       next(err);

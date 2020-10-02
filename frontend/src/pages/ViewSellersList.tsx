@@ -97,13 +97,13 @@ const SneakerCarousel = (props: SneakerCarouselProps) => {
   );
 };
 
-const SellersList = () => {
+const ViewSellersList = () => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [sneaker, setSneaker] = useState<Sneaker>();
 
   const history = useHistory();
-  const redirect = useRedirect(HOME);
+  const redirectHome = useRedirect(HOME);
 
   const { signedIn, currentUser } = useAuth();
 
@@ -145,13 +145,15 @@ const SellersList = () => {
 
   const onEmailSent = () => {
     alert('The seller will be in touch with you shortly');
-    redirect();
+    redirectHome();
     window.location.reload();
   };
 
   const onConfirm = async () => {
-    const sellerId = sellers![selectedSellerIdx].id;
-    const { askingPrice, listedProductId, email, username } = sellers![selectedSellerIdx];
+    if (!sellers) return;
+
+    const sellerId = sellers[selectedSellerIdx].id;
+    const { askingPrice, listedProductId, email, username } = sellers[selectedSellerIdx];
 
     const processingFee = getTransactionFees(askingPrice);
 
@@ -183,12 +185,34 @@ const SellersList = () => {
   };
 
   const sortSellersByAskingPriceAscending = () => {
+    if (!sellers) return;
+
     const ascSellers = _.orderBy(sellers, ['askingPrice'], ['asc']);
+
+    if (selectedSellerIdx > -1) {
+      const sellerListedSneakerIdBeforeSort = sellers[selectedSellerIdx].listedProductId;
+      const sellerIdxAfterSort = ascSellers.findIndex(
+        (seller) => seller.listedProductId === sellerListedSneakerIdBeforeSort
+      );
+      setSelectedSellerIdx(sellerIdxAfterSort);
+    }
+
     setSellers(ascSellers);
   };
 
   const sortSellersByAskingPriceDescending = () => {
+    if (!sellers) return;
+
     const descSellers = _.orderBy(sellers, ['askingPrice'], ['desc']);
+
+    if (selectedSellerIdx > -1) {
+      const sellerListedSneakerIdBeforeSort = sellers[selectedSellerIdx].listedProductId;
+      const sellerIdxAfterSort = descSellers.findIndex(
+        (seller) => seller.listedProductId === sellerListedSneakerIdBeforeSort
+      );
+      setSelectedSellerIdx(sellerIdxAfterSort);
+    }
+
     setSellers(descSellers);
   };
 
@@ -272,4 +296,4 @@ const SellersList = () => {
   );
 };
 
-export default SellersList;
+export default ViewSellersList;
