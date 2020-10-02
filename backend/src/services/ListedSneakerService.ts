@@ -7,7 +7,9 @@ import {
   GallerySneaker,
   AppSneaker,
   SellerListedSneaker,
+  CreateListedSneakerPayload,
 } from '../../../shared';
+
 import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
 
 import mysqlPoolConnection from '../config/mysql';
@@ -132,11 +134,12 @@ class ListedSneakerService implements ListedSneakerEntity {
     return poolConn.query(allListedProductsQuery);
   }
 
-  async create(listedSneaker: ListedProduct) {
+  async create(listedSneaker: CreateListedSneakerPayload) {
     const poolConn = await mysqlPoolConnection();
     const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedSneaker);
+    const res = await poolConn.query(createListedProductQuery)
 
-    return poolConn.query(createListedProductQuery);
+    return res.insertId;
   }
 
   async handlePurchase(listedSneakerId: number, sellerId: number) {

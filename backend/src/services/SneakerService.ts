@@ -34,6 +34,10 @@ class SneakerService implements SneakerEntity {
 
   async create(sneaker: AppSneaker): Promise<number> {
     const poolConn = await mysqlPoolConnection();
+    const dbSneaker = await this.getByNameColorwaySize(`${sneaker.name} ${sneaker.colorway}`, sneaker.size);
+
+    if (dbSneaker) throw Error('Sneaker already exists');
+
     const createSneakerQuery = formatInsertColumnsQuery(PRODUCTS, sneaker);
 
     return poolConn.query(createSneakerQuery).then((res) => res.insertId);

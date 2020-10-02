@@ -2,15 +2,21 @@ import request from 'supertest';
 
 import app from '../../app';
 
-import listedProductOne from '../../mocks/listed_product_1.json';
+import fakeUser from '../../mocks/fakeUser';
+import clearTable from '../../mocks/teardown/clearTable';
 
-import mysqlPoolConnection, { poolQuery } from '../../config/mysql';
+import fakeSneaker from '../../mocks/fakeSneaker';
 
-afterEach(async () => await poolQuery('ROLLBACK'))
+import { PRODUCTS, LISTED_PRODUCTS, USERS } from '../../config/tables';
+import initListedSneakerTable from '../../mocks/setup/initListedSneakerTable';
+import fakeListedSneaker from '../../mocks/fakeListedSneaker';
+
+beforeAll(() => initListedSneakerTable());
 
 afterAll(async () => {
-  const poolConn = await mysqlPoolConnection()
-  await poolConn.close()
+  await clearTable(LISTED_PRODUCTS);
+  await clearTable(PRODUCTS);
+  await clearTable(USERS);
 });
 
 describe('Listed product routes', () => {
@@ -27,55 +33,33 @@ describe('Listed product routes', () => {
     done();
   });
 
-  test('Get none by name only', async (done) => {
-    const emptySet = await request(app).get('/api/listedSneaker?name=Kobe 14');
-    expect(emptySet.body).toHaveLength(0);
-
-    done();
-  });
-
-  // NOTE: another thing to test possibly is the properties of the object returned
-  test('Get listed products by size', async (done) => {
-    const size12Listed = await request(app)
-      .get('/api/listedSneaker?size=12')
+  test('Get all listed sneakers', async (done) => {
+    const allSneakers = await request(app)
+      .get('/api/listedSneaker')
       .then((r) => r.body);
 
     const desiredListedProduct = {
       brand: expect.any(String),
       colorway: expect.any(String),
       name: expect.any(String),
-      size: 12,
-    };
-
-    expect(size12Listed).toBeInstanceOf(Array);
-
-    if (size12Listed.length > 0) expect(size12Listed[0]).toMatchObject(desiredListedProduct);
-
-    done();
-  });
-
-  test('Get all listed products', async (done) => {
-    const allListedProducts = await request(app)
-      .get('/api/listedSneaker')
-      .then((r) => r.body);
-
-    const desiredListedProducts = {
-      brand: expect.any(String),
-      colorway: expect.any(String),
-      name: expect.any(String),
       size: expect.any(Number),
     };
 
-    expect(allListedProducts).toBeInstanceOf(Array);
+    expect(allSneakers).toBeInstanceOf(Array);
 
-    if (allListedProducts.length > 0) expect(allListedProducts[0]).toMatchObject(desiredListedProducts);
+    if (allSneakers.length > 0) expect(allSneakers[0]).toMatchObject(desiredListedProduct);
 
     done();
   });
 
   test('Get gallery sneakers', async (done) => {
+    const dummyUserId = await request(app)
+      .post('/api/user/')
+      .send(fakeUser())
+      .then((r) => r.body);
+
     const gallerySneakers = await request(app)
-      .get('/api/listedSneaker/gallery')
+      .get(`/api/listedSneaker/gallery/${dummyUserId}`)
       .then((r) => r.body);
 
     const desiredGallerySneakers = {
@@ -83,7 +67,7 @@ describe('Listed product routes', () => {
       colorway: expect.any(String),
       name: expect.any(String),
       imageUrls: expect.any(String),
-      price: expect.any(Number),
+      minPrice: expect.any(Number),
       size: expect.any(Number),
     };
 
@@ -94,12 +78,21 @@ describe('Listed product routes', () => {
     done();
   });
 
-  test('Create a listed product', async (done) => {
-    const response = await request(app)
-      .post('/api/listedSneaker')
-      .send(listedProductOne)
+  test('Create a listed sneaker', async (done) => {
+    const mockSellerId = await request(app)
+      .post('/api/user/')
+      .send(fakeUser())
+      .then((r) => r.body);
+
+    const mockSneakerId = await request(app)
+      .post('/api/sneaker')
+      .send(fakeSneaker())
+      .then((r) => r.body);
+
+    const response = await request(app).post('/api/listedSneaker').send(fakeListedSneaker(mockSellerId, mockSneakerId));
 
     expect(response.status).toBe(200);
+    expect(typeof response.body).toBe('number');
 
     done();
   });

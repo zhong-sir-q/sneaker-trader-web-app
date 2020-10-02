@@ -1,6 +1,6 @@
 import { uploadS3MultipleImages } from 'api/api';
 
-import { ListedSneakerPayload, ListingFormSneaker } from '../../../shared';
+import { ListedSneakerFormPayload, ListingFormSneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
@@ -11,7 +11,7 @@ const onListingSneaker = async (
   size: number,
   currentUserId: number,
   listingFormSneaker: ListingFormSneaker,
-  listedSneakerPayload: ListedSneakerPayload,
+  listedSneakerFormPayload: ListedSneakerFormPayload,
   brand: string | undefined,
   colorway: string | undefined,
   name: string | undefined
@@ -26,7 +26,7 @@ const onListingSneaker = async (
   else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: formattedUrls });
 
   await ListedSneakerControllerInstance.create({
-    ...listedSneakerPayload,
+    ...listedSneakerFormPayload,
     userId: currentUserId,
     productId: prodId,
     imageUrls: formattedUrls

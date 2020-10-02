@@ -47,12 +47,9 @@ export const checkDuplicateUsername = () =>
   Yup.string()
     .test('check duplicate user name in db', 'Username is chosen', async (username) => {
       if (!username) return true;
-      try {
-        await UserControllerInstance.isDuplicateUsername(username);
-        return true;
-      } catch (err) {
-        return false;
-      }
+      const user = await UserControllerInstance.getByUsername(username);
+      if (user) return false;
+      return true;
     })
     .required(REQUIRED);
 

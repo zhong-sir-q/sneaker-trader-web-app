@@ -9,6 +9,8 @@ export type PromisifiedConnection = {
 
 const pool = mysql.createPool(config.sqlConnectionConfig);
 
+export const endPool = () => pool.end();
+
 const mysqlPoolConnection = (): Promise<PromisifiedConnection> => {
   return new Promise((resolve, reject) => {
     pool.getConnection((err, conn) => {
@@ -16,26 +18,23 @@ const mysqlPoolConnection = (): Promise<PromisifiedConnection> => {
 
       const query = (sql: string): Promise<any> => {
         return new Promise((resolve, reject) => {
-          conn.query('START TRANSACTION')
+          conn.beginTransaction();
 
           conn.query(sql, (queryErr, queryResult) => {
             if (queryErr) {
+              console.log(`Encountered error: ${queryErr.message}, rolling back...`);
+              conn.rollback();
+
               reject(queryErr);
-              return
+              return;
             }
 
-            conn.query('COMMIT')
+            conn.commit();
             resolve(queryResult);
           });
-        })
-          .catch((err) => {
-            console.log(`Encountered error: ${err.message}, rolling back...`)
-            conn.query('ROLLBACK');
-            reject(err);
-          })
-          .finally(() => {
-            conn.release();
-          });
+        }).finally(() => {
+          conn.release();
+        });
       };
 
       const close = () => util.promisify(conn.destroy).call(conn);

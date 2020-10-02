@@ -20,10 +20,12 @@ export type GallerySneaker = AppSneaker & { minPrice: number };
 
 export type AppListedSneaker = Omit<ListedProduct, 'id'>;
 
-export type ListedSneakerPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId' | 'imageUrls'>;
+export type ListedSneakerFormPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId' | 'imageUrls'>;
 
 export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 
 export type SellerListedSneaker = CustomerSneaker & { buyer: Customer & Pick<Transaction, 'transactionDatetime'> };
 
 export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transactionDatetime'> & { seller: Customer };
+
+export type CreateListedSneakerPayload = Omit<ListedProduct, 'id' | 'prodStatus'>

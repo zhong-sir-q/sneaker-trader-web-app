@@ -1,8 +1,8 @@
-import { User, UserControllerEntity, AppUser } from '../../../../shared';
+import { User, UserEntity, AppUser } from '../../../../shared';
 import formatApiEndpoint from 'api/formatApiEndpoint';
 import formatRequestOptions from 'api/formatRequestOptions';
 
-class UserController implements UserControllerEntity {
+class UserController implements UserEntity {
   userPath: string;
 
   constructor() {
@@ -13,20 +13,6 @@ class UserController implements UserControllerEntity {
 
   getByUsername = (username: string): Promise<User> =>
     fetch(`${this.userPath}/name/${username}`).then((res) => res.json());
-
-  isDuplicateUsername = async (username: string) => {
-    const user = await this.getByUsername(username);
-    if (user) throw new Error('Username is chosen');
-
-    return false;
-  };
-
-  isDuplicateEmail = async (email: string) => {
-    const user = await this.getByEmail(email);
-    if (user) throw new Error('Email is chosen');
-
-    return false;
-  };
 
   create = (user: Partial<AppUser>) => fetch(this.userPath, formatRequestOptions(user)).then((res) => res.json());
 

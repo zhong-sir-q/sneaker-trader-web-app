@@ -1,12 +1,12 @@
-import faker from 'faker'
+import faker from 'faker';
 
-const fakeUser = {
+const fakeUser = () => ({
   firstName: faker.name.firstName(),
   lastName: faker.name.lastName(),
-  username: faker.name.findName(),
+  username: faker.internet.userName(),
   gender: faker.random.word(),
-  dob: faker.date.past(),
+  dob: faker.date.past().toString(),
   email: faker.internet.email(),
-};
+});
 
 export default fakeUser;

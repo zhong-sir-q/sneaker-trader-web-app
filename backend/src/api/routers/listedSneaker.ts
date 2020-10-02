@@ -54,7 +54,7 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
     const listedSneaker = req.body;
 
     ListedSneakerServiceInstance.create(listedSneaker)
-      .then(() => res.json('A sneaker is listed'))
+      .then((listedSneakerId) => res.json(listedSneakerId))
       .catch(next);
   });
 

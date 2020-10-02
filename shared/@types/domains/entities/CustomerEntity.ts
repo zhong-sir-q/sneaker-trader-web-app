@@ -10,10 +10,12 @@ export interface UserEntity {
   deleteByUsername(username: string): Promise<any>;
 }
 
-export interface UserControllerEntity extends UserEntity {
-  isDuplicateUsername(username: string): Promise<boolean | void>;
-  isDuplicateEmail(email: string): Promise<boolean | void>;
+interface UserUseCase {
+  checkDuplicateUsername(username: string): Promise<void>;
+  checkDuplicateEmail(email: string): Promise<void>;
 }
+
+export interface UserServiceEntity extends UserEntity, UserUseCase {}
 
 export interface SellerEntity {
   getSellersBySneakerNameSize(

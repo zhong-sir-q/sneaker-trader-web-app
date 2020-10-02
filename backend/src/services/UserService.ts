@@ -6,11 +6,11 @@ import {
   formatDeleteQuery,
 } from '../utils/formatDbQuery';
 
-import { User, UserEntity } from '../../../shared';
+import { User, UserServiceEntity } from '../../../shared';
 import mysqlPoolConnection from '../config/mysql';
 import { USERS } from '../config/tables';
 
-class UserService implements UserEntity {
+class UserService implements UserServiceEntity {
   async update(user: User) {
     const poolConn = await mysqlPoolConnection();
     const condition = 'email = ' + doubleQuotedValue(user.email);
@@ -22,10 +22,27 @@ class UserService implements UserEntity {
   async create(user: Partial<User>) {
     const poolConn = await mysqlPoolConnection();
 
+    if (!user.email) throw new Error('Email is required');
+    if (!user) throw new Error('Recieved a null user');
+
+    await this.checkDuplicateEmail(user.email);
+
+    if (user.username) await this.checkDuplicateUsername(user.username);
+
     const createUserQuery = formatInsertColumnsQuery(USERS, user);
     const userId = await poolConn.query(createUserQuery).then((result) => result.insertId);
 
     return userId;
+  }
+
+  async checkDuplicateUsername(username: string) {
+    const user = await this.getByUsername(username);
+    if (user) throw new Error('Username is chosen');
+  }
+
+  async checkDuplicateEmail(email: string) {
+    const user = await this.getByEmail(email);
+    if (user) throw new Error('Email is chosen');
   }
 
   async getByUsername(username: string): Promise<User> {
