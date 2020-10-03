@@ -7,10 +7,11 @@
     "buildAll": "tsc -b frontend backend",
     "buildBackend": "tsc -b backend",
     "start": "node --prefix backend build/src/start.js",
-    "postinstall": "npm run buildBackend",
+    "postinstall": "npm run installBackend && npm run buildBackend",
     "dev": "concurrently 'npm --prefix frontend start' 'npm --prefix backend start'",
     "deployAll": "./build_and_deploy.sh && npm --prefix frontend run build && npm --prefix frontend run deploy",
-    "push": "npm --prefix backend test && git push && npm run deployAll"
+    "push": "npm --prefix backend test && git push && npm run deployAll",
+    "installBackend": "npm --prefix backend install"
   },
   "keywords": [],
   "author": "",
