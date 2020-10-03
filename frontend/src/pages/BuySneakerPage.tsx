@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
 
 import styled from 'styled-components';
 import { DialogTitle, DialogContent, DialogActions, Dialog } from '@material-ui/core';
@@ -7,12 +6,7 @@ import { Container, Button, Row, Col, Table } from 'reactstrap';
 
 import CenterSpinner from 'components/CenterSpinner';
 
-import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../shared';
-
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
-import SneakerControllerInstance from 'api/controllers/SneakerController';
-import { HOME } from 'routes';
-import { concatPaths } from 'api/formatApiEndpoint';
+import { useBuySneakerPageCtx } from 'providers/marketplace/BuySneakerPageCtxProvider';
 
 const CenterContainer = styled(Container)`
   display: flex;
@@ -43,98 +37,65 @@ const ShoePrice = styled.div`
   color: #08a05c;
 `;
 
-const nameColorwayFromPath = () => {
-  const { pathname } = window.location;
+type SizeTileComponentProps = {
+  onClick: () => void;
+  sizeText: string;
+  price: number;
+  isSelected: boolean;
+};
 
-  const pathArray = pathname.split('/');
-  const shoeNameColorway = pathArray[pathArray.length - 1].split('-').join(' ');
+const SizeTileComponent = (props: SizeTileComponentProps) => {
+  const { onClick, sizeText, price, isSelected } = props;
 
-  return shoeNameColorway;
+  return (
+    <SizeTile onClick={onClick} style={{ border: isSelected ? '2px solid green' : '' }}>
+      <ShoeSize>{sizeText}</ShoeSize>
+      <ShoePrice>${price}</ShoePrice>
+    </SizeTile>
+  );
 };
 
 // use the path name to query the sneaker
 const BuySneakerPage = () => {
-  const [selectedSize, setSelectedSize] = useState<number | 'all'>('all');
-  const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
-  const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
-
-  const [allAsks, setAllAsks] = useState<SneakerAsk[]>();
-  const [filterAllAsks, setFilterAllAsks] = useState<SneakerAsk[]>();
-
-  const [openModal, setOpenModal] = useState(false);
-  const [chooseBuyAll, setChooseBuyAll] = useState(false);
-
-  const history = useHistory();
-
-  const onComponentMounted = useCallback(async () => {
-    const shoeNameColorway = nameColorwayFromPath();
-    const items = await ListedSneakerControllerInstance.getSizeMinPriceGroupByNameColorway(shoeNameColorway);
-    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeNameColorway);
-
-    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeNameColorway);
-
-    if (!sneaker) {
-      history.push(HOME);
-      return;
-    }
-
-    setAllAsks(asks);
-    setFilterAllAsks(asks);
-
-    setDisplaySneaker(sneaker);
-    setSizeMinPriceGroup(items);
-  }, [history]);
-
-  useEffect(() => {
-    onComponentMounted();
-  }, [onComponentMounted]);
-
-  const onClickSize = (size: number | 'all') => setSelectedSize(size);
+  const {
+    selectedSize,
+    displaySneaker,
+    sizeMinPriceGroup,
+    filterAllAsks,
+    openViewAskModal,
+    chooseBuyAll,
+    onCloseViewAllAsksModal,
+    onViewAllAsks,
+    onBuy,
+    onClickSize,
+  } = useBuySneakerPageCtx();
 
   const renderTiles = () => {
     if (!sizeMinPriceGroup) return [];
 
-    const minPrice = Math.min(...sizeMinPriceGroup.map((item) => item.minPrice));
+    const allSizeMinPrice = Math.min(...sizeMinPriceGroup.map((item) => item.minPrice));
 
     const allSize = [
-      <SizeTile
-        onClick={() => onClickSize('all')}
+      <SizeTileComponent
         key={-1}
-        style={{ border: selectedSize === 'all' ? '2px solid green' : '' }}
-      >
-        <ShoeSize>US All</ShoeSize>
-        <ShoePrice>${minPrice}</ShoePrice>
-      </SizeTile>,
+        onClick={() => onClickSize('all')}
+        isSelected={selectedSize === 'all'}
+        sizeText='US All'
+        price={allSizeMinPrice}
+      />,
     ];
 
     const sizeTiles = sizeMinPriceGroup.map(({ size, minPrice }, idx) => (
-      <SizeTile
-        onClick={() => onClickSize(size)}
+      <SizeTileComponent
         key={idx}
-        style={{ border: selectedSize === size ? '2px solid green' : '' }}
-      >
-        <ShoeSize>US {size}</ShoeSize>
-        <ShoePrice>${minPrice}</ShoePrice>
-      </SizeTile>
+        onClick={() => onClickSize(size)}
+        isSelected={selectedSize === size}
+        sizeText={`US ${size}`}
+        price={minPrice}
+      />
     ));
 
     return !chooseBuyAll ? allSize.concat(sizeTiles) : sizeTiles;
-  };
-
-  const onViewAllAsks = () => {
-    setOpenModal(true);
-
-    if (selectedSize === 'all') setFilterAllAsks(allAsks);
-    else setFilterAllAsks(allAsks?.filter((ask) => ask.size === selectedSize));
-  };
-
-  const onBuy = () => {
-    if (selectedSize === 'all') {
-      setChooseBuyAll(true);
-      return;
-    }
-
-    history.push(concatPaths(history.location.pathname, selectedSize));
   };
 
   if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
@@ -142,24 +103,23 @@ const BuySneakerPage = () => {
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
-          <Col sm='3' md='3'>
+          <Col sm='4' md='3'>
             <Container fluid='md'>
               <Row>{renderTiles()}</Row>
             </Container>
           </Col>
-          <Col sm='9' md='9'>
+          <Col sm='8' md='9'>
             <CenterContainer>
-              {/* TODO: try use the sneaker card here */}
               <img
-                style={{ width: '100%', height: '100%', minHeight: '45vh' }}
+                style={{ width: '100%', height: '100%' }}
                 alt={displaySneaker.name}
-                src={displaySneaker.imageUrls!.split(',')[0]}
+                src={displaySneaker.imageUrls.split(',')[0]}
               />
-              <Button onClick={() => onViewAllAsks()}>View All Asks</Button>
+              <Button onClick={onViewAllAsks}>View All Asks</Button>
               <Button style={{ display: 'block', margin: 'auto' }} color='primary' onClick={onBuy}>
                 Buy
               </Button>
-              <Dialog fullWidth maxWidth='md' onClose={() => setOpenModal(false)} open={openModal}>
+              <Dialog fullWidth maxWidth='md' onClose={onCloseViewAllAsksModal} open={openViewAskModal}>
                 <DialogTitle>All Asks</DialogTitle>
                 <DialogContent dividers>
                   <Table striped>
@@ -182,7 +142,7 @@ const BuySneakerPage = () => {
                   </Table>
                 </DialogContent>
                 <DialogActions>
-                  <Button autoFocus onClick={() => setOpenModal(false)}>
+                  <Button autoFocus onClick={onCloseViewAllAsksModal}>
                     Close
                   </Button>
                 </DialogActions>

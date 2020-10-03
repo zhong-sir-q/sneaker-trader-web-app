@@ -11,6 +11,8 @@ import { formatSneakerPathName } from 'utils/utils';
 import { homeRoutes, HOME } from 'routes';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import { concatPaths } from 'api/formatApiEndpoint';
+import BuySneakerPageCtxProvider from 'providers/marketplace/BuySneakerPageCtxProvider';
+import ViewSellersListCtxProvider from 'providers/marketplace/ViewSellersListCtxProvider';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
@@ -19,6 +21,8 @@ const HomeLayout = () => {
     const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
 
     // prevent duplicate routes from rendering
+    // because there can be multiple sneakers with the same
+    // name, but each of them can have a different size
     const seenPaths: Set<string> = new Set();
 
     return sneakers.map(({ name, colorway, size }, idx) => {
@@ -26,8 +30,25 @@ const HomeLayout = () => {
 
       const routes = (
         <React.Fragment key={idx}>
-          {!seenPaths.has(path) ? <Route exact path={concatPaths(HOME, path)} component={BuySneakerPage} /> : undefined}
-          <Route path={concatPaths(HOME, path, size)} component={ViewSellersList} />
+          {!seenPaths.has(path) ? (
+            <Route
+              exact
+              path={concatPaths(HOME, path)}
+              component={() => (
+                <BuySneakerPageCtxProvider>
+                  <BuySneakerPage />
+                </BuySneakerPageCtxProvider>
+              )}
+            />
+          ) : undefined}
+          <Route
+            path={concatPaths(HOME, path, size)}
+            component={() => (
+              <ViewSellersListCtxProvider>
+                <ViewSellersList />
+              </ViewSellersListCtxProvider>
+            )}
+          />
         </React.Fragment>
       );
 

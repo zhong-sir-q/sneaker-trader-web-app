@@ -17,14 +17,17 @@ import { LISTED_PRODUCTS, PRODUCTS } from '../config/tables';
 import { getBuyersAvgRatingQuery } from '../utils/queries';
 
 class ListedSneakerService implements ListedSneakerEntity {
+  // get all sneaker asks along with the min asking price of each size the
+  // the available numbers
   async getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]> {
     const poolConn = await mysqlPoolConnection();
-    // if the size is not defined, return all asks of the shoes with the name
+
     const getAllAsksQuery = `
-    SELECT size, askingPrice, SUM(L.quantity) as numsAvailable FROM ListedProducts L, Products P
-      WHERE L.prodStatus = "listed" AND L.productId = P.id 
-        AND CONCAT(P.name, ' ', P.colorWay) = ${doubleQuotedValue(nameColorway)}
-          GROUP BY askingPrice ORDER BY askingPrice;
+      SELECT size, Min(askingPrice) as askingPrice, SUM(L.quantity) as numsAvailable 
+        FROM ListedProducts L, Products P
+          WHERE L.prodStatus = "listed" AND L.productId = P.id 
+            AND CONCAT(P.name, ' ', P.colorWay) = ${doubleQuotedValue(nameColorway)}
+              GROUP BY size ORDER BY askingPrice;
     `;
 
     return poolConn.query(getAllAsksQuery);
@@ -118,7 +121,7 @@ class ListedSneakerService implements ListedSneakerEntity {
       SELECT P.size, MIN(L.askingPrice) as minPrice FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L
         WHERE P.id = L.productId AND L.prodStatus = "listed" AND 
           CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)}
-            GROUP BY P.id AND P.size
+            GROUP BY P.id
     `;
 
     return poolConn.query(query);

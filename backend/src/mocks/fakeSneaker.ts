@@ -6,8 +6,7 @@ const fakeSneaker = () => ({
   brand: faker.lorem.word(),
   size: faker.random.number(),
   colorway: faker.internet.color(),
-  imageUrls: fakeImgUrls(),
-  description: faker.lorem.words(),
+  imageUrls: fakeImgUrls()
 });
 
 export default fakeSneaker;

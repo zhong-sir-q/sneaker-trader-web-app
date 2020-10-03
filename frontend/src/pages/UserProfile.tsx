@@ -1,59 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
 
 // reactstrap components
 import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from 'reactstrap';
 
+import * as Yup from 'yup';
+
 // core components
 import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
 
-import { User, AppUser } from '../../../shared';
+import { User } from '../../../shared';
 
 import UserControllerInstance from 'api/controllers/UserController';
 import { AccountCircle } from '@material-ui/icons';
 import { useAuth } from 'providers/AuthProvider';
+import CenterSpinner from 'components/CenterSpinner';
+import { checkDuplicateUsername } from 'utils/yup';
 
-const INIT_USER: Omit<AppUser, 'signinMethod'> = {
-  username: '',
-  firstName: '',
-  lastName: '',
-  dob: '',
-  gender: '',
-  phoneNo: '',
-  // email is not in the form, but it is used to query the user
-  email: '',
-  // this field is the same as above
-  profilePicUrl: '',
-};
-
-const nameIfUndefined = (message: string, ...names: (string | undefined)[]) => {
+// user may have empty firstname or empty lastname or both
+const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
   const validNames = names.filter((n) => n);
-  const name = validNames.length > 0 ? validNames.reduce((prev, curr) => prev + ' ' + curr, '') : message;
+  const name = validNames.length > 0 ? validNames.reduce((prev, curr) => prev + ' ' + curr, '') : alternativeName;
 
   return name;
 };
 
+const validationSchema = Yup.object({
+  username: checkDuplicateUsername(),
+});
+
 const UserProfile = () => {
-  const [user, setUser] = useState(INIT_USER);
   const [successEdit, setSuccessEdit] = useState(false);
-  const { currentUser } = useAuth();
+  const { currentUser, updateCurrentUser } = useAuth();
 
   const onAlertDismiss = () => setSuccessEdit(false);
-
-  useEffect(() => {
-    (async () => {
-      if (currentUser) setUser(currentUser);
-    })();
-  }, [currentUser]);
 
   const handleSubmit = async (formStates: User) => {
     await UserControllerInstance.update(formStates);
     setSuccessEdit(true);
-    setUser(formStates);
+    updateCurrentUser(formStates);
   };
 
-  return (
+  return !currentUser ? (
+    <CenterSpinner />
+  ) : (
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content'>
@@ -62,18 +53,10 @@ const UserProfile = () => {
         </Alert>
         <Row>
           <Formik
-            initialValues={user as User}
+            initialValues={currentUser}
             enableReinitialize
-            onSubmit={async (formStates, { setFieldError }) => {
-              try {
-                await UserControllerInstance.getByUsername(formStates.username);
-              } catch (err) {
-                setFieldError('username', err.message);
-                return;
-              }
-
-              await handleSubmit(formStates);
-            }}
+            validationSchema={validationSchema}
+            onSubmit={(formStates) => handleSubmit(formStates)}
           >
             <Col md='8'>
               <Card>
@@ -106,7 +89,7 @@ const UserProfile = () => {
                         </FormGroup>
                       </Col>
                       {/* TODO: one should be select and the other is datetime or force check
-                          the date must be in the correct format and gender should have the desired values */}
+                        the date must be in the correct format and gender should have the desired values */}
                       <Col className='pr-1' md='3'>
                         <FormGroup>
                           <FormikLabelInput name='gender' placeholder='Gender' type='text' label='Gender' />
@@ -131,13 +114,15 @@ const UserProfile = () => {
             <Card className='card-user'>
               <CardBody>
                 <div className='text-center'>
-                  {user.profilePicUrl ? (
-                    <img style={{ maxWidth: '100px' }} alt='user profile' src={user.profilePicUrl} />
+                  {currentUser.profilePicUrl !== '' ? (
+                    <img style={{ maxWidth: '100px' }} alt='user profile' src={currentUser.profilePicUrl} />
                   ) : (
                     <AccountCircle style={{ maxWidth: '100px', width: '100%', height: '100%' }} />
                   )}
-                  <h5 className='title'>{nameIfUndefined('Opps, no full name', user.firstName, user.lastName)}</h5>
-                  <p className='description'>{nameIfUndefined('Ouch, where is my username', user.username)}</p>
+                  <h5 className='title'>
+                    {nameIfUndefined('Opps, no full name', currentUser.firstName, currentUser.lastName)}
+                  </h5>
+                  <p className='description'>{nameIfUndefined('Ouch, where is my username', currentUser.username)}</p>
                 </div>
               </CardBody>
               <hr />

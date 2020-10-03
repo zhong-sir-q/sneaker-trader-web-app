@@ -19,6 +19,15 @@ describe('Sneaker route', () => {
     done();
   });
 
+  test('Error creating a sneaker already exists', async (done) => {
+    const mockSneaker = fakeSneaker()
+    await request(app).post('/api/sneaker').send(mockSneaker);
+
+    const failedRes = await request(app).post('/api/sneaker').send(mockSneaker);
+    expect(failedRes.status).toBe(500)
+    done()
+  })
+
   test('Return null for getting a product with unknown shoe name and size', async (done) => {
     const randName = faker.name.firstName();
     const randNum = faker.random.number();

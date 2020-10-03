@@ -7,11 +7,15 @@ import { User } from '../../../shared/@types/models';
 type AuthContextType = {
   signedIn: boolean;
   currentUser: User | undefined;
+  updateCurrentUser: (user: User) => void;
 };
 
 const INIT_AUTH_CONTEXT: AuthContextType = {
   signedIn: false,
   currentUser: undefined,
+  updateCurrentUser: () => {
+    throw new Error('Must override!');
+  },
 };
 
 const AuthContext = createContext(INIT_AUTH_CONTEXT);
@@ -19,20 +23,22 @@ const AuthContext = createContext(INIT_AUTH_CONTEXT);
 const AuthProvider = (props: { children: ReactNode }) => {
   // TODO: can use a better cache strategy, so I can safely store
   // the user object as well maybe use something like mobx
-  const storedSignedIn = JSON.parse(localStorage.getItem('signedIn') || 'false') as boolean
+  const storedSignedIn = JSON.parse(localStorage.getItem('signedIn') || 'false') as boolean;
   const [signedIn, setSignedIn] = useState(storedSignedIn);
   const [currentUser, setCurrentUser] = useState<User>();
+
+  const updateCurrentUser = (user: User) => setCurrentUser(user);
 
   const handleSignIn = async () => {
     setSignedIn(true);
     setCurrentUser(await getCurrentUser());
-    localStorage.setItem('signedIn', 'true')
+    localStorage.setItem('signedIn', 'true');
   };
 
   const handleSignOut = () => {
     setSignedIn(false);
     setCurrentUser(undefined);
-    localStorage.setItem('signedIn', 'false')
+    localStorage.setItem('signedIn', 'false');
   };
 
   useEffect(() => {
@@ -52,7 +58,9 @@ const AuthProvider = (props: { children: ReactNode }) => {
     };
   });
 
-  return <AuthContext.Provider value={{ signedIn, currentUser }}>{props.children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ signedIn, currentUser, updateCurrentUser }}>{props.children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);
