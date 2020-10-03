@@ -45,6 +45,7 @@ const CollapseFilters = styled(Col)`
 
 const CollapseButtonDiv = styled.div`
   text-align: end;
+  display: block;
 
   @media (min-width: 786px) {
     display: none;
@@ -181,11 +182,11 @@ const HomePage = () => {
     <Container fluid='sm' style={{ minHeight: 'calc(100vh - 150px)' }}>
       <FiltersDrawer />
       <Row>
-        <CollapseFilters sm={2}>
+        <CollapseFilters md={2}>
           <Filters filters={range(1, 15, 0.5)} filterKey='size' title='us sizes' />
           <Filters filters={brands} filterKey='brand' title='brands' />
         </CollapseFilters>
-        <Col sm={10}>
+        <Col sm={12} md={10}>
           <SneakerGallery sneakers={filterSneakers} />
         </Col>
       </Row>
