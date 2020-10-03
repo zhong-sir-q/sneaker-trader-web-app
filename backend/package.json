@@ -5,7 +5,8 @@
   "main": "app.ts",
   "scripts": {
     "test": "jest",
-    "start": "export NODE_ENV=development && nodemon ./src/start.ts"
+    "dev": "export NODE_ENV=development && nodemon ./src/start.ts",
+    "start": "ts-node ./src/start.ts"
   },
   "author": "Sneaker Trader",
   "license": "ISC",
