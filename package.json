@@ -9,7 +9,7 @@
     "start": "npm --prefix backend start",
     "postinstall": "npm run installBackend && npm run buildBackend",
     "dev": "concurrently 'npm --prefix frontend start' 'npm --prefix backend run dev'",
-    "deployAll": "git push heroku master && npm --prefix frontend run build && npm --prefix frontend run deploy",
+    "deployAll": "git push heroku prod:master && npm --prefix frontend run build && npm --prefix frontend run deploy",
     "push": "npm --prefix backend test && git push && npm run deployAll",
     "installBackend": "npm --prefix backend install"
   },
@@ -21,6 +21,5 @@
   },
   "dependencies": {
     "typescript": "^4.0.2"
-  },
-  "type": "module"
+  }
 }

@@ -31,9 +31,9 @@ import UserControllerInstance from 'api/controllers/UserController';
  */
 
 const Dashboard = () => {
-  const [rankingPoints, setRankingPoint] = useState(0);
-  const [listedSneakerCounts, setListedSneakerCounts] = useState(0);
-  const [completedSaleCounts, setCompletedSaleCounts] = useState(0);
+  const [rankingPoints, setRankingPoint] = useState<number>();
+  const [listedSneakerCounts, setListedSneakerCounts] = useState<number>();
+  const [completedSaleCounts, setCompletedSaleCounts] = useState<number>();
 
   const { currentUser } = useAuth();
 
@@ -53,7 +53,7 @@ const Dashboard = () => {
     onLoaded();
   });
 
-  return !currentUser ? (
+  return !rankingPoints || !listedSneakerCounts || !completedSaleCounts ? (
     <CenterSpinner />
   ) : (
     <React.Fragment>

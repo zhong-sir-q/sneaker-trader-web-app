@@ -16,6 +16,7 @@ import { HOME } from 'routes';
 
 import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
+import CenterSpinner from 'components/CenterSpinner';
 
 const FilterBlock = styled(Col)<{ selected: boolean }>`
   font-weight: 600;
@@ -106,8 +107,8 @@ const Filters = (props: FiltersProps) => {
 
 const HomePage = () => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>([]);
-  const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
+  const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>();
+  const [brands, setBrands] = useState<string[]>();
 
   const { currentUser, signedIn } = useAuth();
   const history = useHistory();
@@ -156,7 +157,7 @@ const HomePage = () => {
     return () => unlisten();
   });
 
-  const FiltersDrawer = () => {
+  const FiltersDrawer = (props: { sizeFilters: number[]; brandFilters: string[] }) => {
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => setOpen(true);
@@ -170,17 +171,19 @@ const HomePage = () => {
         {/* TODO: change the functionality of these drawers, add save changes functionality */}
         <Drawer anchor='bottom' open={open} onClose={handleClose}>
           <div style={{ padding: '50px' }}>
-            <Filters filters={range(1, 15, 0.5)} filterKey='size' title='us sizes' />
-            <Filters filters={brands} filterKey='brand' title='brands' />
+            <Filters filters={props.sizeFilters} filterKey='size' title='us sizes' />
+            <Filters filters={props.brandFilters} filterKey='brand' title='brands' />
           </div>
         </Drawer>
       </React.Fragment>
     );
   };
 
-  return (
+  return !brands || !filterSneakers ? (
+    <CenterSpinner />
+  ) : (
     <Container fluid='sm' style={{ minHeight: 'calc(100vh - 150px)' }}>
-      <FiltersDrawer />
+      <FiltersDrawer brandFilters={brands} sizeFilters={range(1, 15, 0.5)} />
       <Row>
         <CollapseFilters md={2}>
           <Filters filters={range(1, 15, 0.5)} filterKey='size' title='us sizes' />
