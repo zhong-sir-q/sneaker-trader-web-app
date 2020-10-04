@@ -6,9 +6,15 @@ const usePagination = (numRecords: number, pageSize: number) => {
 
   const pagesCount = Math.ceil(numRecords / pageSize);
 
-  const goPrevPage = () => setCurrentPage(currentPage - 1);
+  const goPrevPage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    setCurrentPage(currentPage - 1);
+  };
 
-  const goNextPage = () => setCurrentPage(currentPage + 1);
+  const goNextPage = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    setCurrentPage(currentPage + 1);
+  };
 
   const startRecordCount = () => currentPage * pageSize;
 

@@ -3,7 +3,7 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { AccountCircle } from '@material-ui/icons';
 
 // reactstrap components
-import { Nav, Collapse } from 'reactstrap';
+import { Nav, Collapse, Button } from 'reactstrap';
 
 // core components
 import logo from 'assets/img/logo_transparent_background.png';
@@ -164,6 +164,13 @@ const Sidebar = (props: SideBarProps) => {
           <Link to={HOME} className='simple-text logo-normal'>
             Home
           </Link>
+
+          <div className='navbar-minimize'>
+            <Button outline className='btn-round btn-icon' color='neutral' id='minimizeSidebar' onClick={props.minimizeSidebar}>
+              <i className='now-ui-icons text_align-center visible-on-sidebar-regular' />
+              <i className='now-ui-icons design_bullet-list-67 visible-on-sidebar-mini' />
+            </Button>
+          </div>
         </div>
 
         <div className='sidebar-wrapper' ref={sidebar}>

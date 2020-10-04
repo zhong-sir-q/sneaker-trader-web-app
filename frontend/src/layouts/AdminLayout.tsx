@@ -66,12 +66,13 @@ const AdminLayout = () => {
     };
   }, []);
 
-  const minimizeSideBar = () => {
-    let message = 'Sidebar mini ';
-    if (document.body.classList.contains('sidebar-mini')) message += 'deactivated...';
-    else message += 'activated...';
+  const pinSidebar = () => {
+    let message = 'Sidebar ';
+    if (document.body.classList.contains('sidebar-mini')) message += 'pinned...';
+    else message += 'unpinned...';
 
     document.body.classList.toggle('sidebar-mini');
+
     const options = {
       place: 'tr',
       message,
@@ -86,7 +87,7 @@ const AdminLayout = () => {
   return (
     <div className='wrapper'>
       <NotificationAlert ref={notificationAlert} />
-      <Sidebar {...defaultSideBarProps} minimizeSidebar={minimizeSideBar} routes={sidebarRoutes} />
+      <Sidebar {...defaultSideBarProps} minimizeSidebar={pinSidebar} routes={sidebarRoutes} />
       {/* NOTE: a temporary solution to make the panel scrollable, would
           not need it when the dashboard is properly implemented */}
       <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>
