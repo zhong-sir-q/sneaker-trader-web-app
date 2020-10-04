@@ -58,6 +58,7 @@ class ListedSneakerService implements ListedSneakerEntity {
       SELECT L.id, L.sizeSystem, L.imageUrls, name, brand, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
         askingPrice as price, quantity FROM ListedProducts L, Products P
           WHERE L.userId = ${sellerId} AND L.productId = P.id
+            ORDER BY JSON_EXTRACT(stringifiedBuyer, '$.transactionDatetime') DESC
     `;
 
     const sellerListedSneakers = await poolConn.query(getSellerListedProductsQuery);

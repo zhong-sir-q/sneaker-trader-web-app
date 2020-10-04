@@ -63,6 +63,7 @@ class TransactionService implements TranscationEntity {
       SELECT T.amount as price, T.transactionDatetime, T.quantity, L.id, name, L.imageUrls, colorway, brand, size, prodStatus, sizeSystem,
         ${sellerIfPendingOrSoldProduct} FROM Transactions T, ListedProducts L, Products P
           WHERE T.buyerId = ${buyerId} AND T.listedProductId = L.id AND L.productId = P.id
+            ORDER BY T.transactionDatetime DESC
     `;
 
     const poolConn = await mysqlPoolConnection();
