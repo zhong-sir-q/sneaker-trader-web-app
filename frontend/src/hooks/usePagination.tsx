@@ -45,7 +45,7 @@ const usePagination = (numRecords: number, pageSize: number) => {
     </Pagination>
   );
 
-  return { startRecordCount, endRecordCount, PaginationComponent };
+  return { currentPage, pagesCount, startRecordCount, endRecordCount, PaginationComponent };
 };
 
 export default usePagination;

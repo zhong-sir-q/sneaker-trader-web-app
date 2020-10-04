@@ -44,7 +44,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
 
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<SellerListedSneaker>(sneakers);
 
-  const { startRecordCount, endRecordCount, PaginationComponent } = usePagination(sneakers.length, 5);
+  const { currentPage, pagesCount, startRecordCount, endRecordCount, PaginationComponent } = usePagination(sneakers.length, 5);
 
   const ListedSneakerTableHeader = () => (
     <thead>
@@ -187,6 +187,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       </Table>
       <div className='flex justify-center'>
         <PaginationComponent />
+          <span style={{ alignSelf: 'center' }}>{currentPage + 1} of {pagesCount}</span>
       </div>
     </React.Fragment>
   ) : (
