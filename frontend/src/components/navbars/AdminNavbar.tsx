@@ -70,6 +70,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
         <div className='navbar-wrapper'>
           <div className='navbar-toggle'>
             <button type='button' ref={sidebarToggle} className='navbar-toggler' onClick={() => openSidebar()}>
+
               <span className='navbar-toggler-bar bar1' />
               <span className='navbar-toggler-bar bar2' />
               <span className='navbar-toggler-bar bar3' />

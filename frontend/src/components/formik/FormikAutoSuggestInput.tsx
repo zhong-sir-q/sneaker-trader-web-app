@@ -6,7 +6,7 @@ import { useField, FieldHookConfig } from 'formik';
 type FormikAutoSuggestInputProps = {
   label: string;
   options: string[];
-  setfieldvalue: (field: string, value: any) => void
+  setfieldvalue: (field: string, value: any) => void;
 } & FieldHookConfig<string>;
 
 const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
@@ -23,7 +23,7 @@ const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
   const onInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     field.onChange(evt);
 
-    const { value } = evt.target
+    const { value } = evt.target;
 
     if (value === '') {
       setShowSuggestions(false);
@@ -38,14 +38,15 @@ const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
     if (e.key === 'Enter') {
       setActiveSuggestionIdx(0);
       setShowSuggestions(false);
-      if (activeSuggestionIdx < filteredSuggestions.length) setfieldvalue(props.name, filteredSuggestions[activeSuggestionIdx]);
+      if (activeSuggestionIdx < filteredSuggestions.length)
+        setfieldvalue(props.name, filteredSuggestions[activeSuggestionIdx]);
     } else if (e.key === 'ArrowUp') {
       if (activeSuggestionIdx === 0) return;
       setActiveSuggestionIdx(activeSuggestionIdx - 1);
     } else if (e.key === 'ArrowDown') {
       if (activeSuggestionIdx === filteredSuggestions.length - 1) return;
       setActiveSuggestionIdx(activeSuggestionIdx + 1);
-    } else if (e.key === 'Tab') setShowSuggestions(false)
+    } else if (e.key === 'Tab') setShowSuggestions(false);
   };
 
   const onClickSuggestion = (e: React.MouseEvent<any, MouseEvent>) => {
@@ -86,7 +87,7 @@ const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
 
   return (
     <React.Fragment>
-      <label>{props.label}</label>
+      {props.label && <label>{props.label}</label>}
       <Input
         {...field}
         {...(inputProps as InputProps)}

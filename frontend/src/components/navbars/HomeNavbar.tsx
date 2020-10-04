@@ -1,17 +1,17 @@
-import React from 'react'
-import { Navbar, NavbarBrand, Nav, NavItem } from "reactstrap";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
-import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from "routes";
+import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
 
-import { signOut } from "utils/auth";
+import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
 const HomeNavbar = () => {
-  const { signedIn } = useAuth()
+  const { signedIn } = useAuth();
 
   return (
-    <Navbar color='light' light>
+    <Navbar style={{ paddingLeft: '3.5rem', paddingRight: '3.5rem' }} color='light' light>
       <NavbarBrand style={{ color: 'black' }} href={HOME}>
         Sneaker Trader
       </NavbarBrand>
@@ -46,4 +46,4 @@ const HomeNavbar = () => {
   );
 };
 
-export default HomeNavbar
+export default HomeNavbar;
