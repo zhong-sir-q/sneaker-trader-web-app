@@ -13,6 +13,7 @@ type ViewSellersListCtxType = {
   sellers: ListedSneakerSeller[] | undefined;
   selectedSellerIdx: number;
   displaySneaker: Sneaker | undefined;
+  processingPurchase: boolean;
   sortSellersByAskingPriceAscending: () => void;
   sortSellersByAskingPriceDescending: () => void;
   onCancel: () => void;
@@ -24,6 +25,7 @@ const INIT_CTX: ViewSellersListCtxType = {
   sellers: undefined,
   selectedSellerIdx: -1,
   displaySneaker: undefined,
+  processingPurchase: false,
   sortSellersByAskingPriceAscending: () => {
     throw new Error('Must override!');
   },
@@ -57,6 +59,7 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
+  const [processingPurchase, setProcessingPurchase] = useState(false);
 
   const history = useHistory();
 
@@ -95,48 +98,58 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
     if (sellers && sellers.length === 0) history.push(HOME);
   }, [sellers, history]);
 
-  const onEmailSent = () => {
-    alert('The seller will be in touch with you shortly');
-    history.push(HOME);
-    window.location.reload();
-  };
+  // handleConfirmPurchase
+  useEffect(() => {
+    if (processingPurchase) {
+      (async () => {
+        if (!sellers) return;
 
-  const formatSneakerName = () => `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`;
+        const sellerId = sellers[selectedSellerIdx].id;
+        const { askingPrice, listedProductId, email, username } = sellers[selectedSellerIdx];
 
-  const onConfirm = async () => {
-    if (!sellers) return;
+        const processingFee = getTransactionFees(askingPrice);
 
-    const sellerId = sellers[selectedSellerIdx].id;
-    const { askingPrice, listedProductId, email, username } = sellers[selectedSellerIdx];
+        const transaction: CreateTransactionPayload = {
+          buyerId: currentUser!.id!,
+          sellerId,
+          amount: askingPrice,
+          processingFee,
+          listedProductId,
+        };
 
-    const processingFee = getTransactionFees(askingPrice);
+        const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
 
-    const transaction: CreateTransactionPayload = {
-      buyerId: currentUser!.id!,
-      sellerId,
-      amount: askingPrice,
-      processingFee,
-      listedProductId,
-    };
+        await onConfirmPurchaseSneaker(
+          {
+            sellerEmail: email,
+            sellerUserName: username,
+            buyerUserName: currentUser!.username,
+            buyerEmail: currentUser!.email,
+            productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
+          },
+          transaction,
+          listedProductId,
+          sellerId,
+          decreaseWalletBalPayload
+        );
 
-    const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
+        // after success purchase
+        alert('The seller will be in touch with you shortly');
+        history.push(HOME);
+        window.location.reload();
 
-    await onConfirmPurchaseSneaker(
-      {
-        sellerEmail: email,
-        sellerUserName: username,
-        buyerUserName: currentUser!.username,
-        buyerEmail: currentUser!.email,
-        productName: formatSneakerName(),
-      },
-      transaction,
-      listedProductId,
-      sellerId,
-      decreaseWalletBalPayload
-    );
-
-    onEmailSent();
-  };
+        setProcessingPurchase(false);
+      })();
+    }
+  }, [
+    processingPurchase,
+    history,
+    currentUser,
+    sellers,
+    selectedSellerIdx,
+    sneakerInfo.nameColorway,
+    sneakerInfo.size,
+  ]);
 
   const sortSellersByAskingPriceAscending = () => {
     if (!sellers) return;
@@ -172,6 +185,8 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
 
   const onCancel = () => history.goBack();
 
+  const onConfirm = () => setProcessingPurchase(true);
+
   const onSelectSeller = (idx: number) => setSelectedSellerIdx(idx);
 
   return (
@@ -185,6 +200,7 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
         onSelectSeller,
         onCancel,
         onConfirm,
+        processingPurchase,
       }}
     >
       {props.children}

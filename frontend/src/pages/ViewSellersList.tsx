@@ -54,10 +54,11 @@ const ViewSellersList = () => {
     sortSellersByAskingPriceDescending,
     onCancel,
     onConfirm,
+    processingPurchase,
     onSelectSeller,
   } = useViewSellersListCtx();
 
-  return !sellers || !displaySneaker ? (
+  return !sellers || !displaySneaker || processingPurchase ? (
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
@@ -115,8 +116,6 @@ const ViewSellersList = () => {
         ) : null}
         <div className='text-center'>
           <div>
-            {/* NOTE: Not sure why accessing the sneaker route via the name colorway
-            force redirect me back to the gallery page  */}
             <Button style={{ marginRight: '25px' }} onClick={onCancel}>
               Cancel
             </Button>

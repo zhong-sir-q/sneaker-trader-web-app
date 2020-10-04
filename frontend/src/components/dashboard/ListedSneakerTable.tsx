@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table } from 'reactstrap';
 
+import clsx from 'clsx';
 import moment from 'moment';
 
 import styled from 'styled-components';
@@ -13,19 +14,8 @@ import { upperCaseFirstLetter } from 'utils/utils';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
-
-const ListedSneakerTableHeader = () => (
-  <thead>
-    <tr>
-      <th>name</th>
-      <th>sold date</th>
-      <th>status</th>
-      <th>price</th>
-      <th>qty</th>
-      <th>amount</th>
-    </tr>
-  </thead>
-);
+import useSortableColData from 'hooks/useSortableColData';
+import usePagination from 'hooks/usePagination';
 
 type ListedSneakerTableRowProps = {
   sneaker: SellerListedSneaker;
@@ -51,6 +41,52 @@ const ImgContainer = styled.div`
 
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, isFetchingData, setShowCompleteSaleSuccess } = props;
+
+  const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<SellerListedSneaker>(sneakers);
+
+  const { startRecordCount, endRecordCount, PaginationComponent } = usePagination(sneakers.length, 5);
+
+  const ListedSneakerTableHeader = () => (
+    <thead>
+      <tr>
+        <th
+          style={{ cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('name'))}
+          onClick={() => requestSort('name')}
+        >
+          name
+        </th>
+        <th
+          style={{ minWidth: '105px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'))}
+          onClick={() => requestSort('buyer.transactionDatetime')}
+        >
+          sold date
+        </th>
+        <th
+          style={{ minWidth: '80px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('prodStatus'))}
+          onClick={() => requestSort('prodStatus')}
+        >
+          status
+        </th>
+        <th
+          style={{ minWidth: '75px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('price'))}
+          onClick={() => requestSort('price')}
+        >
+          price
+        </th>
+        <th
+          style={{ minWidth: '60px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('quantity'))}
+          onClick={() => requestSort('quantity')}
+        >
+          qty
+        </th>
+      </tr>
+    </thead>
+  );
 
   const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
     let total = 0;
@@ -117,10 +153,6 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           {price}
         </td>
         <td>{quantity || 1}</td>
-        <td>
-          <small>$</small>
-          {(quantity || 1) * Number(price)}
-        </td>
         <td style={{ minWidth: '220px' }}>
           <SellerCTAButtonsGroup
             listedProdId={id}
@@ -135,23 +167,28 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
 
   return isFetchingData ? (
     <CenterSpinner />
-  ) : sneakers && sneakers.length > 0 ? (
-    <Table responsive className='table-shopping'>
-      <ListedSneakerTableHeader />
-      <tbody>
-        {sneakers.map((s, idx) => (
-          <ListedSneakerRow key={idx} sneaker={s} />
-        ))}
-        <tr>
-          <td colSpan={5} />
-          <td className='td-total'>Total</td>
-          <td className='td-price'>
-            <small>$</small>
-            {computeTotalAmount(sneakers)}
-          </td>
-        </tr>
-      </tbody>
-    </Table>
+  ) : sortedItems && sortedItems.length > 0 ? (
+    <React.Fragment>
+      <Table responsive className='table-shopping'>
+        <ListedSneakerTableHeader />
+        <tbody>
+          {sortedItems.slice(startRecordCount(), endRecordCount()).map((s, idx) => (
+            <ListedSneakerRow key={idx} sneaker={s} />
+          ))}
+          <tr>
+            <td colSpan={5} />
+            <td className='td-total'>Total</td>
+            <td className='td-price'>
+              <small>$</small>
+              {computeTotalAmount(sortedItems)}
+            </td>
+          </tr>
+        </tbody>
+      </Table>
+      <div className='flex justify-center'>
+        <PaginationComponent />
+      </div>
+    </React.Fragment>
   ) : (
     <div>No listed sneakers</div>
   );

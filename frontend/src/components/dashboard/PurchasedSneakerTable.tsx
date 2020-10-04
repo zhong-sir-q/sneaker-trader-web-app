@@ -1,27 +1,18 @@
 import React from 'react';
+import clsx from 'clsx';
 
 import { Table } from 'reactstrap';
 import styled from 'styled-components';
 
-import moment from 'moment'
+import moment from 'moment';
+
+import useSortableColData from 'hooks/useSortableColData';
 
 import BuyerCTAButtonsGroup from 'components/buttons/BuyerCTAButtonsGroup';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 import { upperCaseFirstLetter } from 'utils/utils';
-
-const PurchasedSneakerTableHeader = () => (
-  <thead>
-    <tr>
-      <th>name</th>
-      <th>bought date</th>
-      <th>status</th>
-      <th>price</th>
-      <th>qty</th>
-      <th>amount</th>
-    </tr>
-  </thead>
-);
+import usePagination from 'hooks/usePagination';
 
 const ImgContainer = styled.div`
   float: left;
@@ -53,6 +44,52 @@ type PurchasedSneakerTableProps = {
 const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
   const { sneakers } = props;
 
+  const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<BuyerPurchasedSneaker>(sneakers);
+
+  const { startRecordCount, endRecordCount, PaginationComponent } = usePagination(sneakers.length, 5);
+
+  const PurchasedSneakerTableHeader = () => (
+    <thead>
+      <tr>
+        <th
+          style={{ cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('name'))}
+          onClick={() => requestSort('name')}
+        >
+          name
+        </th>
+        <th
+          style={{ minWidth: '105px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('transactionDatetime'))}
+          onClick={() => requestSort('transactionDatetime')}
+        >
+          bought date
+        </th>
+        <th
+          style={{ minWidth: '80px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('prodStatus'))}
+          onClick={() => requestSort('prodStatus')}
+        >
+          status
+        </th>
+        <th
+          style={{ minWidth: '75px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('price'))}
+          onClick={() => requestSort('price')}
+        >
+          price
+        </th>
+        <th
+          style={{ minWidth: '60px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('quantity'))}
+          onClick={() => requestSort('quantity')}
+        >
+          qty
+        </th>
+      </tr>
+    </thead>
+  );
+
   const PurchasedSneakerRow = (props: PurchasedSneakerRowProps) => {
     const {
       id,
@@ -66,7 +103,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       prodStatus,
       seller,
       sizeSystem,
-      transactionDatetime
+      transactionDatetime,
     } = props.sneaker;
 
     const displayImg = imageUrls.split(',')[0];
@@ -106,10 +143,6 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
           {price}
         </td>
         <td>{quantity || 1}</td>
-        <td>
-          <small>$</small>
-          {(quantity || 1) * Number(price)}
-        </td>
         <td style={{ minWidth: '220px' }}>
           <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} />
         </td>
@@ -117,23 +150,28 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
     );
   };
 
-  return sneakers && sneakers.length > 0 ? (
-    <Table responsive className='table-shopping'>
-      <PurchasedSneakerTableHeader />
-      <tbody>
-        {sneakers.map((s, idx) => (
-          <PurchasedSneakerRow key={idx} sneaker={s} />
-        ))}
-        <tr>
-          <td colSpan={5} />
-          <td className='td-total'>Total</td>
-          <td className='td-price'>
-            <small>$</small>
-            {computeTotalAmount(sneakers)}
-          </td>
-        </tr>
-      </tbody>
-    </Table>
+  return sortedItems && sortedItems.length > 0 ? (
+    <React.Fragment>
+      <Table responsive className='table-shopping'>
+        <PurchasedSneakerTableHeader />
+        <tbody>
+          {sortedItems.slice(startRecordCount(), endRecordCount()).map((s, idx) => (
+            <PurchasedSneakerRow key={idx} sneaker={s} />
+          ))}
+          <tr>
+            <td colSpan={5} />
+            <td className='td-total'>Total</td>
+            <td className='td-price'>
+              <small>$</small>
+              {computeTotalAmount(sortedItems)}
+            </td>
+          </tr>
+        </tbody>
+      </Table>
+      <div className='flex justify-center'>
+        <PaginationComponent />
+      </div>
+    </React.Fragment>
   ) : (
     <div>No purchased sneakers</div>
   );

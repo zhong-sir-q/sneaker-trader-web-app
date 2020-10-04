@@ -2,6 +2,10 @@
   display: flex;
 }
 
+.justify-center {
+  justify-content: center;
+}
+
 /* make the arrows of the carousel black */
 .carousel-control-next,
 .carousel-control-prev {
@@ -15,6 +19,20 @@
 
 .margin-right-except-last :not(:last-child) {
   margin-right: 20px;
+}
+
+.sortable {
+  background-repeat: no-repeat;
+  background-position: 100% 50%;
+  background-image: url(//stockx-assets.imgix.net/png/icons/sort_both.png?auto=compress%2Cformat);
+}
+
+.ascending {
+  background-image: url(https://stockx-assets.imgix.net/png/icons/sort_ascBlack.png?auto=compress%2Cformat);
+}
+
+.descending {
+  background-image: url(https://stockx-assets.imgix.net/png/icons/sort_descBlack.png?auto=compress%2Cformat);
 }
 
 .fb-btn {
