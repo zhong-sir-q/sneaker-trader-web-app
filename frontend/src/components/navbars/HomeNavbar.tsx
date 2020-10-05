@@ -20,6 +20,10 @@ const IconBar = styled.span`
 `;
 
 const StyledNavItem = styled(NavItem)`
+  @media (max-width: 688px) {
+    display: none;
+  }
+
   @media (min-width: 991px) {
     margin: auto;
   }
@@ -53,6 +57,7 @@ const HomeNavbar = () => {
             <StyledNavItem>
               <SneakerSearchBar items={mockSneakerSearchOptions} />
             </StyledNavItem>
+
             {signedIn && (
               <NavItem>
                 <Link style={{ color: 'black' }} to={ADMIN + DASHBOARD} className='nav-link'>

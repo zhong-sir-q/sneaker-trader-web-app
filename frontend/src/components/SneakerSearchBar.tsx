@@ -159,6 +159,33 @@ const ListItemImg = styled.img`
   }
 `;
 
+const StyledInput = styled.input`
+  width: 100%;
+  max-width: 650px;
+  padding-left: 35px;
+
+  /* apply margin to the input before collapse */
+  @media (min-width: 991px) {
+    margin-right: 15px;
+  }
+`;
+
+const StyledListGroup = styled(InputGroup)`
+  position: absolute;
+  margin-top: 5px;
+  z-index: 1;
+  width: 100%;
+  overflow: auto;
+  max-height: 500px;
+  max-width: 650px;
+`;
+
+const SearchIconWrapper = styled.div`
+  position: absolute;
+  padding: 2px;
+  padding-left: 8px;
+`;
+
 const SneakerSearchBar = (props: { items: any[] }) => {
   const [searchVal, setSearchVal] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -182,61 +209,52 @@ const SneakerSearchBar = (props: { items: any[] }) => {
     setSearchVal(value);
   };
 
+  const onConfirmVal = () => setSearchVal(result[activeSuggestionIdx].name + ' ' + result[activeSuggestionIdx].colorway);
+
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setActiveSuggestionIdx(0);
       setShowSuggestions(false);
-      if (activeSuggestionIdx < props.items.length) setSearchVal(props.items[activeSuggestionIdx]);
+      if (activeSuggestionIdx < result.length)
+        onConfirmVal()
     } else if (e.key === 'ArrowUp') {
       if (activeSuggestionIdx === 0) return;
       setActiveSuggestionIdx(activeSuggestionIdx - 1);
     } else if (e.key === 'ArrowDown') {
-      if (activeSuggestionIdx === props.items.length - 1) return;
+      if (activeSuggestionIdx === result.length - 1) return;
       setActiveSuggestionIdx(activeSuggestionIdx + 1);
     } else if (e.key === 'Tab') hideSuggestions();
   };
 
+  const onMouseDown = (e: any) => {
+    setShowSuggestions(false)
+    onConfirmVal()
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <InputGroup>
-        <div
-          style={{
-            position: 'absolute',
-            padding: '2px',
-            paddingLeft: '8px',
-          }}
-        >
+        <SearchIconWrapper>
           <SearchIcon />
-        </div>
-        <input
-          placeholder='Search...'
-          style={{ width: '500px', paddingLeft: '35px' }}
-          value={searchVal}
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-        />
+        </SearchIconWrapper>
+        <StyledInput placeholder='Search...' value={searchVal} onChange={onChange} onKeyDown={onKeyDown} />
       </InputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>
-          <ListGroup
-            style={{
-              position: 'absolute',
-              marginTop: '5px',
-              zIndex: 1,
-              width: '100%',
-              overflow: 'auto',
-              maxHeight: '500px',
-            }}
-          >
+          <StyledListGroup>
             {result.map((item, idx) => (
-              <ListGroupItem style={{ padding: '0 0 10px 0' }} key={idx}>
-                <div>
-                  <ListItemImg src={item.imageUrls.split(',')[0]} />
-                  <ListGroupItemText>{formatName(item)}</ListGroupItemText>
-                </div>
+              <ListGroupItem
+                active={activeSuggestionIdx === idx}
+                style={{ width: '100%', padding: '10px 0' }}
+                key={idx}
+                onMouseOver={() => setActiveSuggestionIdx(idx)}
+                onMouseDown={onMouseDown}
+              >
+                <ListItemImg src={item.imageUrls.split(',')[0]} />
+                <ListGroupItemText>{formatName(item)}</ListGroupItemText>
               </ListGroupItem>
             ))}
-          </ListGroup>
+          </StyledListGroup>
         </OutsideClickHandler>
       )}
     </div>

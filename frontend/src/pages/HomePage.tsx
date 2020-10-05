@@ -12,7 +12,6 @@ import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerContro
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 import { useAuth } from 'providers/AuthProvider';
-import { HOME } from 'routes';
 
 import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
