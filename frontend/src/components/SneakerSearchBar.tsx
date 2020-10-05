@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
+import SearchIcon from '@material-ui/icons/Search';
+import { ListGroup, ListGroupItem, ListGroupItemText, InputGroup } from 'reactstrap';
 
-const options = [
+import OutsideClickHandler from './OutsideClickHandler';
+
+export const mockSneakerSearchOptions = [
   {
     id: 8,
     name: 'Stephen Curry 4',
@@ -158,38 +161,85 @@ const ListItemImg = styled.img`
 
 const SneakerSearchBar = (props: { items: any[] }) => {
   const [searchVal, setSearchVal] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
 
   const formatName = (sneaker: any) => [sneaker.brand, sneaker.name, sneaker.colorway].join(' ');
+
+  const hideSuggestions = () => setShowSuggestions(false);
+  const openSuggestions = () => setShowSuggestions(true);
 
   const result = !searchVal
     ? props.items
     : props.items.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
 
-  const onChange = (evt: any) => setSearchVal(evt.target.value);
+  const onChange = (evt: any) => {
+    const { value } = evt.target;
+
+    if (value === '') hideSuggestions();
+    else openSuggestions();
+
+    setSearchVal(value);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setActiveSuggestionIdx(0);
+      setShowSuggestions(false);
+      if (activeSuggestionIdx < props.items.length) setSearchVal(props.items[activeSuggestionIdx]);
+    } else if (e.key === 'ArrowUp') {
+      if (activeSuggestionIdx === 0) return;
+      setActiveSuggestionIdx(activeSuggestionIdx - 1);
+    } else if (e.key === 'ArrowDown') {
+      if (activeSuggestionIdx === props.items.length - 1) return;
+      setActiveSuggestionIdx(activeSuggestionIdx + 1);
+    } else if (e.key === 'Tab') hideSuggestions();
+  };
 
   return (
-    <React.Fragment>
-      <input style={{ width: '650px' }} value={searchVal} onChange={onChange} />
-      <ListGroup
-        style={{
-          position: 'absolute',
-          marginTop: '5px',
-          zIndex: 1,
-          width: '100%',
-          overflow: 'auto',
-          maxHeight: '500px',
-        }}
-      >
-        {result.map((item, idx) => (
-          <ListGroupItem style={{ padding: '0 0 10px 0' }} key={idx}>
-            <div>
-              <ListItemImg src={item.imageUrls.split(',')[0]} />
-              <ListGroupItemText>{formatName(item)}</ListGroupItemText>
-            </div>
-          </ListGroupItem>
-        ))}
-      </ListGroup>
-    </React.Fragment>
+    <div style={{ position: 'relative' }}>
+      <InputGroup>
+        <div
+          style={{
+            position: 'absolute',
+            padding: '2px',
+            paddingLeft: '8px',
+          }}
+        >
+          <SearchIcon />
+        </div>
+        <input
+          placeholder='Search...'
+          style={{ width: '500px', paddingLeft: '35px' }}
+          value={searchVal}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+        />
+      </InputGroup>
+      {showSuggestions && (
+        <OutsideClickHandler handler={hideSuggestions}>
+          <ListGroup
+            style={{
+              position: 'absolute',
+              marginTop: '5px',
+              zIndex: 1,
+              width: '100%',
+              overflow: 'auto',
+              maxHeight: '500px',
+            }}
+          >
+            {result.map((item, idx) => (
+              <ListGroupItem style={{ padding: '0 0 10px 0' }} key={idx}>
+                <div>
+                  <ListItemImg src={item.imageUrls.split(',')[0]} />
+                  <ListGroupItemText>{formatName(item)}</ListGroupItemText>
+                </div>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        </OutsideClickHandler>
+      )}
+    </div>
   );
 };
 

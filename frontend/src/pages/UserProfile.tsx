@@ -122,6 +122,7 @@ const UserProfile = () => {
                   <h5 className='title'>
                     {nameIfUndefined('Opps, no full name', currentUser.firstName, currentUser.lastName)}
                   </h5>
+                  <p className='description'>{currentUser.email}</p>
                   <p className='description'>{nameIfUndefined('Ouch, where is my username', currentUser.username)}</p>
                 </div>
               </CardBody>

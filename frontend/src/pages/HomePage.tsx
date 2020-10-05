@@ -3,7 +3,7 @@ import { Row, Col, Container, Button } from 'reactstrap';
 import { Drawer } from '@material-ui/core';
 import styled from 'styled-components';
 
-import queryString from 'query-string';
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 
 import SneakerGallery from 'components/SneakerGallery';
@@ -18,13 +18,17 @@ import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
 
-const FilterBlock = styled(Col)<{ selected: boolean }>`
+type FilterBlockProps = { selected: boolean };
+
+const FilterBlock = styled(Col)<FilterBlockProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font-weight: 600;
   font-family: BebasNeue;
-  text-align: center;
   background-color: #f5f5f5;
-  margin: 2%;
-  padding: 1% 5px;
+  margin: 3px;
   cursor: pointer;
   color: ${(props) => (props.selected ? '#f96332' : '')};
 `;
@@ -53,55 +57,77 @@ const CollapseButtonDiv = styled.div`
   }
 `;
 
-type FilterType = string | number;
 type FilterByKey = 'brand' | 'size';
+type SelectFilterHandler = (filterKey: FilterByKey, filter: string) => void;
+type FilterSelectedFunc = (filterVal: string) => boolean;
 
 type FiltersProps = {
-  filters: FilterType[];
+  filters: string[];
   filterKey: FilterByKey;
   title: string;
+  onSelectFilter: SelectFilterHandler;
+  filterSelected: FilterSelectedFunc;
 };
 
 const Filters = (props: FiltersProps) => {
-  const history = useHistory();
-
-  const { filters, filterKey, title } = props;
-
-  const formatQueryParams = (params: URLSearchParams) => `?${params.toString()}`;
-
-  const onSelectFilter = (filter: FilterType) => {
-    const params = new URLSearchParams(history.location.search);
-
-    if (String(filter) === params.get(filterKey)) {
-      params.delete(filterKey);
-      if (params.toString().length === 0) history.push(HOME);
-      else history.push(formatQueryParams(params));
-    } else {
-      params.delete(filterKey);
-      params.append(filterKey, String(filter));
-      history.push(formatQueryParams(params));
-    }
-  };
-
-  const isFilterSelected = (val: string) => val === queryString.parse(history.location.search)[filterKey];
-
-  const renderGrid = (items: any[]) => {
-    return (
-      <Row>
-        {items.map((iVal, idx) => (
-          <FilterBlock onClick={() => onSelectFilter(iVal)} selected={isFilterSelected(String(iVal))} key={idx}>
-            {iVal}
-          </FilterBlock>
-        ))}
-      </Row>
-    );
-  };
+  const { filters, filterKey, title, onSelectFilter, filterSelected } = props;
 
   return (
     <div style={{ marginBottom: '25px' }}>
       <FilterTitle>{title}</FilterTitle>
-      {renderGrid(filters)}
+      <Row>
+        {filters.map((val, idx) => (
+          <FilterBlock onClick={() => onSelectFilter(filterKey, val)} selected={filterSelected(String(val))} key={idx}>
+            {val}
+          </FilterBlock>
+        ))}
+      </Row>
     </div>
+  );
+};
+
+type FilterItemType = {
+  key: FilterByKey;
+  value: string;
+};
+
+type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] } & Pick<
+  FiltersProps,
+  'onSelectFilter' | 'filterSelected'
+>;
+
+const FiltersDrawer = (props: FiltersDrawerProps) => {
+  const [open, setOpen] = useState(false);
+
+  const { sizeFilters, brandFilters, onSelectFilter, filterSelected } = props;
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  return (
+    <React.Fragment>
+      <CollapseButtonDiv>
+        <Button onClick={handleOpen}>Filter</Button>
+      </CollapseButtonDiv>
+      <Drawer anchor='bottom' open={open} onClose={handleClose}>
+        <div style={{ padding: '50px' }}>
+          <Filters
+            onSelectFilter={onSelectFilter}
+            filterSelected={filterSelected}
+            filterKey='size'
+            filters={sizeFilters}
+            title='us sizes'
+          />
+          <Filters
+            onSelectFilter={onSelectFilter}
+            filterSelected={filterSelected}
+            filterKey='brand'
+            filters={brandFilters}
+            title='brands'
+          />
+        </div>
+      </Drawer>
+    </React.Fragment>
   );
 };
 
@@ -128,68 +154,75 @@ const HomePage = () => {
     })();
   }, [signedIn, currentUser]);
 
-  const queryHandler = async (brand: string, size: number) => {
-    if (brand && size) {
-      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(
-        currentUser ? currentUser.id : -1,
-        size
-      );
-      setFilterSneakers(sneakersBySize.filter((s) => s.brand === brand));
-    } else if (brand) {
-      setFilterSneakers(defaultSneakers.filter((s) => s.brand === brand));
-    } else if (size) {
-      const sneakersBySize = await ListedSneakerControllerInstance.getGallerySneakersBySize(
-        currentUser ? currentUser.id : -1,
-        size
-      );
-      setFilterSneakers(sneakersBySize);
-    } else setFilterSneakers(defaultSneakers);
+  const [filters, setFilters] = useState<FilterItemType[]>([]);
+
+  const getSneakerBySizes = async (sizes: number[], sellerId: number) => {
+    const nestedSneakers = await Promise.all(
+      sizes.map((size) => ListedSneakerControllerInstance.getGallerySneakersBySize(sellerId, size))
+    );
+
+    const flattenedSneakers = _.flatten(nestedSneakers);
+    const uniqSneakersByNameColorway = _.uniqBy(flattenedSneakers, (sneaker) => sneaker.name + sneaker.colorway);
+
+    return uniqSneakersByNameColorway;
   };
 
-  const filtersHandler = useCallback(queryHandler, [filterSneakers]);
+  const filterHandler = useCallback(async () => {
+    const sizes = filters.filter((f) => f.key === 'size').map((item) => Number(item.value));
+    const brands = filters.filter((f) => f.key === 'brand').map((item) => item.value);
+
+    const filterByBrands = (sneakers: GallerySneaker[], brands: string[]) =>
+      sneakers.filter((s) => brands.includes(s.brand));
+
+    if (!_.isEmpty(sizes) && !_.isEmpty(brands)) {
+      const sneakerBySizes = await getSneakerBySizes(sizes, currentUser ? currentUser.id : -1);
+      setFilterSneakers(filterByBrands(sneakerBySizes, brands as string[]));
+    } else if (!_.isEmpty(sizes)) {
+      const sneakerBySizes = await getSneakerBySizes(sizes, currentUser ? currentUser.id : -1);
+      setFilterSneakers(sneakerBySizes);
+    } else if (!_.isEmpty(brands)) setFilterSneakers(filterByBrands(defaultSneakers, brands as string[]));
+    else setFilterSneakers(defaultSneakers);
+  }, [currentUser, defaultSneakers, filters]);
 
   useEffect(() => {
-    const unlisten = history.listen((location) => {
-      const { brand, size } = queryString.parse(location.search);
-      filtersHandler(brand as string, Number(size));
-    });
+    filterHandler();
+  }, [filterHandler]);
 
-    return () => unlisten();
-  });
+  const filterSelected = (selectedVal: string) => filters.findIndex((f) => f.value === selectedVal) > -1;
 
-  const FiltersDrawer = (props: { sizeFilters: number[]; brandFilters: string[] }) => {
-    const [open, setOpen] = useState(false);
-
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    return (
-      <React.Fragment>
-        <CollapseButtonDiv>
-          <Button onClick={handleOpen}>Filter</Button>
-        </CollapseButtonDiv>
-        {/* TODO: change the functionality of these drawers, add save changes functionality */}
-        <Drawer anchor='bottom' open={open} onClose={handleClose}>
-          <div style={{ padding: '50px' }}>
-            <Filters filters={props.sizeFilters} filterKey='size' title='us sizes' />
-            <Filters filters={props.brandFilters} filterKey='brand' title='brands' />
-          </div>
-        </Drawer>
-      </React.Fragment>
-    );
+  const onSelectFilter = (filterKey: FilterByKey, filter: string) => {
+    if (filterSelected(String(filter))) setFilters(filters.filter((f) => f.value !== filter));
+    else setFilters([...filters, { key: filterKey, value: String(filter) }]);
   };
 
   return !brands || !filterSneakers ? (
     <CenterSpinner />
   ) : (
     <Container fluid='sm' style={{ minHeight: 'calc(100vh - 150px)' }}>
-      <FiltersDrawer brandFilters={brands} sizeFilters={range(1, 15, 0.5)} />
+      <FiltersDrawer
+        onSelectFilter={onSelectFilter}
+        filterSelected={filterSelected}
+        brandFilters={brands}
+        sizeFilters={range(3, 14, 0.5).map((n) => String(n))}
+      />
       <Row>
-        <CollapseFilters md={2}>
-          <Filters filters={range(1, 15, 0.5)} filterKey='size' title='us sizes' />
-          <Filters filters={brands} filterKey='brand' title='brands' />
+        <CollapseFilters md={2} lg={2}>
+          <Filters
+            onSelectFilter={onSelectFilter}
+            filterSelected={filterSelected}
+            filters={range(3, 14, 0.5).map((n) => String(n))}
+            filterKey='size'
+            title='us sizes'
+          />
+          <Filters
+            onSelectFilter={onSelectFilter}
+            filterSelected={filterSelected}
+            filters={brands}
+            filterKey='brand'
+            title='brands'
+          />
         </CollapseFilters>
-        <Col sm={12} md={10}>
+        <Col sm={12} md={10} lg={10}>
           <SneakerGallery sneakers={filterSneakers} />
         </Col>
       </Row>

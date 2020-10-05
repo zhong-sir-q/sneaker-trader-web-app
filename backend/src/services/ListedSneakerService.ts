@@ -79,7 +79,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     // similar to the get gallery sneakers query, but because the sneakers with different
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
-    SELECT name, colorway, brand, P.imageUrls, L.minPrice FROM ${PRODUCTS} P JOIN (
+    SELECT name, colorway, brand, size, P.imageUrls, L.minPrice FROM ${PRODUCTS} P JOIN (
       SELECT MIN(askingPrice) as minPrice, productId FROM ${LISTED_PRODUCTS} 
       WHERE prodStatus = "listed" AND NOT userId = ${sellerId} GROUP BY productId
     ) L ON P.id = L.productId WHERE size = ${size}`;
