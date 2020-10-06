@@ -5,7 +5,7 @@ const fakeUser = () => ({
   lastName: faker.name.lastName(),
   username: faker.internet.userName(),
   gender: faker.random.word(),
-  dob: faker.date.past().toString(),
+  dob: faker.random.word(),
   email: faker.internet.email(),
 });
 

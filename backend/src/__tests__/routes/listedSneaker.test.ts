@@ -20,19 +20,6 @@ afterAll(async () => {
 });
 
 describe('Listed product routes', () => {
-  test('Get size and min price grouped by name and colorway', async (done) => {
-    const sizeMinPriceGroupByName = await request(app)
-      .get('/api/listedSneaker?name=Kobe 14 Black')
-      .then((r) => r.body);
-
-    expect(sizeMinPriceGroupByName).toBeInstanceOf(Array);
-
-    if (sizeMinPriceGroupByName.length > 0)
-      expect(sizeMinPriceGroupByName[0]).toMatchObject({ size: expect.any(Number), minPrice: expect.any(Number) });
-
-    done();
-  });
-
   test('Get all listed sneakers', async (done) => {
     const allSneakers = await request(app)
       .get('/api/listedSneaker')
@@ -53,13 +40,8 @@ describe('Listed product routes', () => {
   });
 
   test('Get gallery sneakers', async (done) => {
-    const dummyUserId = await request(app)
-      .post('/api/user/')
-      .send(fakeUser())
-      .then((r) => r.body);
-
     const gallerySneakers = await request(app)
-      .get(`/api/listedSneaker/gallery/${dummyUserId}`)
+      .get(`/api/listedSneaker/gallery/${-1}`)
       .then((r) => r.body);
 
     const desiredGallerySneakers = {

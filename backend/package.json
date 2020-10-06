@@ -4,7 +4,7 @@
   "description": "Express server to handle client API calls",
   "main": "app.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand --detectOpenHandles",
     "dev": "export NODE_ENV=development && nodemon ./src/start.ts",
     "start": "node build/src/start.js"
   },

@@ -20,7 +20,10 @@ describe('User routes', () => {
 
   test('Error creating user with duplicate username or email', async (done) => {
     const mockUser = fakeUser();
-    await request(app).post('/api/user/').send(fakeUser());
+    const successRes = await request(app).post('/api/user/').send(mockUser);
+
+    expect(successRes.status).toBe(200)
+
     const tmpUsername = mockUser.username;
     mockUser.username = faker.lorem.words();
 
@@ -29,8 +32,11 @@ describe('User routes', () => {
 
     mockUser.username = tmpUsername;
     mockUser.email = faker.internet.email();
+
     const duplicateUsernameRes = await request(app).post('/api/user/').send(mockUser);
     expect(duplicateUsernameRes.status).toBe(500);
+
+    done()
   });
 
   test('Get null from a random email', async (done) => {
