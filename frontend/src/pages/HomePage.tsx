@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Container, Button } from 'reactstrap';
 import { Drawer } from '@material-ui/core';
+
 import styled from 'styled-components';
 
 import _ from 'lodash';
-import { useHistory } from 'react-router-dom';
 
 import SneakerGallery from 'components/SneakerGallery';
 
@@ -136,7 +136,6 @@ const HomePage = () => {
   const [brands, setBrands] = useState<string[]>();
 
   const { currentUser, signedIn } = useAuth();
-  const history = useHistory();
 
   useEffect(() => {
     (async () => {

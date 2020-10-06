@@ -161,7 +161,6 @@ const ListItemImg = styled.img`
 
 const StyledInput = styled.input`
   width: 100%;
-  max-width: 650px;
   padding-left: 35px;
 
   /* apply margin to the input before collapse */
@@ -170,20 +169,33 @@ const StyledInput = styled.input`
   }
 `;
 
-const StyledListGroup = styled(InputGroup)`
+const StyledListGroup = styled(ListGroup)`
   position: absolute;
   margin-top: 5px;
   z-index: 1;
   width: 100%;
   overflow: auto;
   max-height: 500px;
-  max-width: 650px;
 `;
 
 const SearchIconWrapper = styled.div`
   position: absolute;
   padding: 2px;
   padding-left: 8px;
+`;
+
+const StyledListGroupItem = styled(ListGroupItem)`
+  display: flex;
+  align-items: center;
+  padding: 8px;
+`;
+
+const StyledListGroupItemText = styled(ListGroupItemText)`
+ line-height: 18px;
+
+ @media (max-width: 688px) {
+  font-size: 0.9em;
+}
 `;
 
 const SneakerSearchBar = (props: { items: any[] }) => {
@@ -209,14 +221,14 @@ const SneakerSearchBar = (props: { items: any[] }) => {
     setSearchVal(value);
   };
 
-  const onConfirmVal = () => setSearchVal(result[activeSuggestionIdx].name + ' ' + result[activeSuggestionIdx].colorway);
+  const onConfirmVal = () =>
+    setSearchVal(result[activeSuggestionIdx].name + ' ' + result[activeSuggestionIdx].colorway);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setActiveSuggestionIdx(0);
       setShowSuggestions(false);
-      if (activeSuggestionIdx < result.length)
-        onConfirmVal()
+      if (activeSuggestionIdx < result.length) onConfirmVal();
     } else if (e.key === 'ArrowUp') {
       if (activeSuggestionIdx === 0) return;
       setActiveSuggestionIdx(activeSuggestionIdx - 1);
@@ -226,10 +238,10 @@ const SneakerSearchBar = (props: { items: any[] }) => {
     } else if (e.key === 'Tab') hideSuggestions();
   };
 
-  const onMouseDown = (e: any) => {
+  const onMouseDown = () => {
     setShowSuggestions(false)
     onConfirmVal()
-  }
+  };
 
   return (
     <div style={{ position: 'relative' }}>
@@ -243,16 +255,15 @@ const SneakerSearchBar = (props: { items: any[] }) => {
         <OutsideClickHandler handler={hideSuggestions}>
           <StyledListGroup>
             {result.map((item, idx) => (
-              <ListGroupItem
+              <StyledListGroupItem
                 active={activeSuggestionIdx === idx}
-                style={{ width: '100%', padding: '10px 0' }}
                 key={idx}
                 onMouseOver={() => setActiveSuggestionIdx(idx)}
                 onMouseDown={onMouseDown}
               >
                 <ListItemImg src={item.imageUrls.split(',')[0]} />
-                <ListGroupItemText>{formatName(item)}</ListGroupItemText>
-              </ListGroupItem>
+                <StyledListGroupItemText>{formatName(item)}</StyledListGroupItemText>
+              </StyledListGroupItem>
             ))}
           </StyledListGroup>
         </OutsideClickHandler>

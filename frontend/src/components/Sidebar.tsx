@@ -158,7 +158,7 @@ const Sidebar = (props: SideBarProps) => {
         <div className='logo'>
           <Link to={HOME} className='simple-text logo-mini'>
             <div className='logo-img'>
-              <img src={logo} alt='react-logo' />
+              <img src={logo} alt='sneakertrader-logo' />
             </div>
           </Link>
           <Link to={HOME} className='simple-text logo-normal'>
