@@ -47,9 +47,7 @@ const SneakerListingForm = () => {
   const [step, setStep] = useState(0);
 
   const { currentUser } = useAuth();
-
   const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
-
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
   const goPrevStep = () => setStep(step - 1);
@@ -78,7 +76,7 @@ const SneakerListingForm = () => {
     // Go to the success message
     goNextstep();
 
-    destroyFiles()
+    destroyFiles();
   };
 
   const renderStep = () => {

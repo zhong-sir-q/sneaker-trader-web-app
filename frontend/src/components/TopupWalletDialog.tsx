@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Dialog, TextField, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
-import { Button } from 'reactstrap';
+import { Dialog, TextField, DialogTitle, DialogContent } from '@material-ui/core';
 
 import { useWalletCtx } from 'providers/WalletCtxProvider';
 import { useAuth } from 'providers/AuthProvider';
 
 import WalletControllerInstance from 'api/controllers/WalletController';
+import StripePaymentCheckout from './stripe/StripePaymentCheckout';
 
 type TopupWalletDialogProps = {
   handleClose: () => void;
@@ -29,29 +29,28 @@ const TopupWalletDialog = (props: TopupWalletDialogProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={handleClose}>
       <DialogTitle>Topup Wallet</DialogTitle>
       <DialogContent>
-        <TextField
-          inputProps={{ onChange }}
-          autoFocus
-          margin='dense'
-          name='topupAmount'
-          label='Amount'
-          type='number'
-          fullWidth
+        <div style={{ marginBottom: '12px' }}>
+          <TextField
+            inputProps={{ onChange }}
+            autoFocus
+            margin='dense'
+            name='topupAmount'
+            label='Amount'
+            type='number'
+            fullWidth
+          />
+        </div>
+        <StripePaymentCheckout
+          dollarAmountToCharge={topupAmount || 0}
+          title={`Topup Amount: $${topupAmount || 0}`}
+          onConfirmPayment={onTopup}
         />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color='primary'>
-          Cancel
-        </Button>
-        <Button disabled={!topupAmount || topupAmount <= 0} onClick={onTopup} color='primary'>
-          Topup
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
 
-export default TopupWalletDialog
+export default TopupWalletDialog;

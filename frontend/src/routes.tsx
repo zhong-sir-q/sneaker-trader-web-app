@@ -22,7 +22,7 @@ export const FORGOT_PW = '/reset';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
 export const HOME = '/home';
-const TOPUP_WALLET = '/topup';
+export const TOPUP_WALLET = '/topup';
 
 type AppLayout = '/auth' | '/admin' | '/home';
 

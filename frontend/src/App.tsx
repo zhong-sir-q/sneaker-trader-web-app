@@ -2,6 +2,9 @@ import Amplify from 'aws-amplify';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect, RouteComponentProps } from 'react-router-dom';
 
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
 // layouts
 import HomeLayout from 'layouts/HomeLayout';
 import AuthLayout from 'layouts/AuthLayout';
@@ -20,6 +23,8 @@ import 'assets/css/sneakertrader.css';
 import awsconfig from 'aws-exports';
 
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
 Amplify.configure({
   ...awsconfig,
@@ -42,23 +47,25 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <Router>
-        <Switch>
-          <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
+    <Elements stripe={stripePromise}>
+      <AuthProvider>
+        <Router>
+          <Switch>
+            <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
-          <Route path={ADMIN}>
-            <ProtectedAdmin />
-          </Route>
+            <Route path={ADMIN}>
+              <ProtectedAdmin />
+            </Route>
 
-          <Route path={HOME}>
-            <HomeLayout />
-          </Route>
+            <Route path={HOME}>
+              <HomeLayout />
+            </Route>
 
-          <Redirect from='/' to={HOME} />
-        </Switch>
-      </Router>
-    </AuthProvider>
+            <Redirect from='/' to={HOME} />
+          </Switch>
+        </Router>
+      </AuthProvider>
+    </Elements>
   );
 };
 

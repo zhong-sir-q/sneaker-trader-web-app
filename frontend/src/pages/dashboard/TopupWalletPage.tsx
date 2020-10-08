@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardBody, Button } from 'reactstrap';
 
-import PanelHeader from 'components/PanelHeader';
 import { Paper } from '@material-ui/core';
+
+import PanelHeader from 'components/PanelHeader';
+import CenterSpinner from 'components/CenterSpinner';
 import TopupWalletDialog from 'components/TopupWalletDialog';
 
 import styled from 'styled-components';
@@ -24,7 +26,9 @@ const TopupWalletPage = () => {
 
   const { walletBalance } = useWalletCtx();
 
-  return (
+  return walletBalance === undefined ? (
+    <CenterSpinner />
+  ) : (
     <div>
       <PanelHeader size='sm' />
       <PaperContainer>

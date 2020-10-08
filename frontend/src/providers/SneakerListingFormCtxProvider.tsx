@@ -4,6 +4,10 @@ import * as Yup from 'yup';
 import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
 import { required, noSpecialChar, minNumber, allowedRange } from 'utils/yup';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
+import { useAuth } from './AuthProvider';
+
+import { useHistory } from 'react-router-dom';
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
@@ -69,13 +73,21 @@ const SneakerListingFormCtxProvider = (props: { children: React.ReactNode }) => 
   const [sneakerNamesOptions, setSneakerNamesOptions] = useState<string[]>([]);
   const [colorwayOptions, setColorwayOptions] = useState<string[]>([]);
 
+  const { currentUser } = useAuth();
+  const history = useHistory()
+
   useEffect(() => {
-    (async () => {
-      setBrandOptions(await HelperInfoControllerInstance.getBrands())
-      setSneakerNamesOptions(await HelperInfoControllerInstance.getSneakerNames())
-      setColorwayOptions(await HelperInfoControllerInstance.getColorways())
-    })();
-  }, []);
+    if (currentUser) {
+      (async () => {
+        const isWalletBalancePositive = await checkUserWalletBalance(currentUser.id, history);
+        if (!isWalletBalancePositive) return;
+
+        setBrandOptions(await HelperInfoControllerInstance.getBrands());
+        setSneakerNamesOptions(await HelperInfoControllerInstance.getSneakerNames());
+        setColorwayOptions(await HelperInfoControllerInstance.getColorways());
+      })();
+    }
+  }, [currentUser, history]);
 
   const onSubmit = (newState: SneakerListingFormStateType) => setListingSneakerFormState(newState);
 

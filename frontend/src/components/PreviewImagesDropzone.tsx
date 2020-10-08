@@ -28,6 +28,7 @@ const DropZoneContainer = styled.div`
 
 const PreviewAside = styled.aside`
   display: flex;
+  max-height: 300px;
 `;
 
 type ThumbProps = {

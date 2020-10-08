@@ -53,7 +53,8 @@ const Dashboard = () => {
     onLoaded();
   });
 
-  return !rankingPoints || !listedSneakerCounts || !completedSaleCounts ? (
+  // check against undefined, because if if any of the value is 0, then it will render the spinner forever
+  return rankingPoints === undefined || listedSneakerCounts === undefined || completedSaleCounts === undefined ? (
     <CenterSpinner />
   ) : (
     <React.Fragment>

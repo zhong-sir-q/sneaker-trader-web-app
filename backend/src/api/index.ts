@@ -6,10 +6,12 @@ import seller from './routers/seller';
 import sneaker from './routers/sneaker';
 import listedSneaker from './routers/listedSneaker';
 
+import mail from './routers/mail';
 import aws from './routers/aws';
+import poli from './routers/poli';
+import stripe from './routers/stripe';
 
 import helperInfo from './routers/helperInfo';
-import mail from './routers/mail';
 
 import wallet from './routers/wallet';
 import transaction from './routers/transaction';
@@ -26,6 +28,7 @@ import MailService from '../services/external/MailService';
 
 import WalletService from '../services/WalletService';
 import TransactionService from '../services/TransactionService';
+import StripeService from '../services/external/StripeService';
 
 export default () => {
   const app = Router();
@@ -45,6 +48,8 @@ export default () => {
   // external apis
   mail(app, new MailService());
   aws(app, new CustomAwsService());
+  stripe(app, new StripeService());
+  poli(app);
 
   return app;
 };

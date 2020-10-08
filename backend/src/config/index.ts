@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import Stripe from 'stripe';
 
 // load variables from .env to process.env
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
@@ -13,6 +14,10 @@ const config = {
   region: process.env.REGION as string,
   imageBucket: process.env.IMAGE_UPLOADS_BUCKET as string,
   sendgridApiKey: process.env.SENDGRID_API_KEY as string,
+  poliAuthKey: Buffer.from(`${process.env.POLI_MERCH_CODE}:${process.env.POLI_AUTH_CODE}`).toString('base64'),
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY as string,
 };
+
+export const StripeObj = new Stripe(config.stripeSecretKey, { apiVersion: '2020-08-27' });
 
 export default config;
