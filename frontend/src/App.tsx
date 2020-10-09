@@ -23,6 +23,7 @@ import 'assets/css/sneakertrader.css';
 import awsconfig from 'aws-exports';
 
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
+import HomePageCtxProvider from 'providers/marketplace/HomePageCtxProvider';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -41,8 +42,9 @@ const ProtectedAdmin = () => {
 
 const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
+  const { state } = props.location;
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={props.location.state || HOME} />;
+  return !signedIn ? <AuthLayout /> : <Redirect to={state || HOME} />;
 };
 
 const App = () => {
@@ -58,7 +60,9 @@ const App = () => {
             </Route>
 
             <Route path={HOME}>
-              <HomeLayout />
+              <HomePageCtxProvider>
+                <HomeLayout />
+              </HomePageCtxProvider>
             </Route>
 
             <Redirect from='/' to={HOME} />

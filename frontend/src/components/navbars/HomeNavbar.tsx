@@ -6,12 +6,13 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import logo from 'assets/img/logo_transparent_background.png';
-import SneakerSearchBar, { mockSneakerSearchOptions } from 'components/SneakerSearchBar';
+import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
+import { useHomePageCtx } from 'providers/marketplace/HomePageCtxProvider';
 
 const SearchBarWrapper = styled.div`
   padding: 0.5rem 0.7rem;
@@ -33,9 +34,10 @@ const StyledNavbar = styled(Navbar)`
 `;
 
 const HomeNavbar = () => {
-  const { signedIn } = useAuth();
-
   const [openNav, setOpenNav] = useState(false);
+
+  const { signedIn } = useAuth();
+  const { defaultSneakers } = useHomePageCtx()
 
   const toggleNav = () => setOpenNav(!openNav);
 
@@ -56,7 +58,7 @@ const HomeNavbar = () => {
 
       <Collapse isOpen={openNav} navbar>
         <SearchBarWrapper>
-          <SneakerSearchBar items={mockSneakerSearchOptions} />
+          <SneakerSearchBar items={defaultSneakers || []} />
         </SearchBarWrapper>
 
         <Nav navbar>

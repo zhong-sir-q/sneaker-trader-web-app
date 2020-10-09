@@ -9,8 +9,9 @@ import SneakerControllerInstance from 'api/controllers/SneakerController';
 import { HOME } from 'routes';
 
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../../shared';
+import { useAuth } from 'providers/AuthProvider';
 
-type Size = number | 'all';
+type Size = number | 'all' | undefined;
 
 type BuySneakerPageCtxType = {
   selectedSize: Size;
@@ -19,9 +20,10 @@ type BuySneakerPageCtxType = {
   filterAllAsks: SneakerAsk[] | undefined;
   openViewAskModal: boolean;
   chooseBuyAll: boolean;
+  selectedSizeMinPrice: number | undefined;
   onViewAllAsks: () => void;
   onCloseViewAllAsksModal: () => void;
-  onClickSize: (size: Size) => void;
+  onClickSizeTile: (size: Size, minPrice: number) => void;
   onBuy: () => void;
 };
 
@@ -32,13 +34,14 @@ const INIT_CTX: BuySneakerPageCtxType = {
   filterAllAsks: undefined,
   openViewAskModal: false,
   chooseBuyAll: false,
+  selectedSizeMinPrice: undefined,
   onCloseViewAllAsksModal: () => {
     throw new Error('Must override!');
   },
   onViewAllAsks: () => {
     throw new Error('Must override!');
   },
-  onClickSize: () => {
+  onClickSizeTile: () => {
     throw new Error('Must override!');
   },
   onBuy: () => {
@@ -60,7 +63,7 @@ const nameColorwayFromPath = () => {
 };
 
 const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
-  const [selectedSize, setSelectedSize] = useState<Size>('all');
+  const [selectedSize, setSelectedSize] = useState<Size>();
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
   const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
 
@@ -70,12 +73,17 @@ const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
   const [openViewAskModal, setOpenViewAskModal] = useState(false);
   const [chooseBuyAll, setChooseBuyAll] = useState(false);
 
+  const [selectedSizeMinPrice, setSelectedSizeMinPrice] = useState<number>();
+
+  const { currentUser } = useAuth();
+
   const history = useHistory();
 
   const onComponentMounted = useCallback(async () => {
     const shoeNameColorway = nameColorwayFromPath();
     const sizeMinPriceItems = await ListedSneakerControllerInstance.getSizeMinPriceGroupByNameColorway(
-      shoeNameColorway
+      shoeNameColorway,
+      currentUser ? currentUser.id : -1
     );
     const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeNameColorway);
 
@@ -91,13 +99,16 @@ const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
 
     setDisplaySneaker(sneaker);
     setSizeMinPriceGroup(sizeMinPriceItems);
-  }, [history]);
+  }, [history, currentUser]);
 
   useEffect(() => {
     onComponentMounted();
   }, [onComponentMounted]);
 
-  const onClickSize = (size: Size) => setSelectedSize(size);
+  const onClickSizeTile = (size: Size, minPrice: number) => {
+    setSelectedSize(size);
+    setSelectedSizeMinPrice(minPrice);
+  };
 
   const onViewAllAsks = () => {
     setOpenViewAskModal(true);
@@ -107,6 +118,8 @@ const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
   };
 
   const onBuy = () => {
+    if (!selectedSize) return;
+
     if (selectedSize === 'all') {
       setChooseBuyAll(true);
       return;
@@ -115,7 +128,7 @@ const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
     history.push(concatPaths(history.location.pathname, selectedSize));
   };
 
-  const onCloseViewAllAsksModal = () => setOpenViewAskModal(false)
+  const onCloseViewAllAsksModal = () => setOpenViewAskModal(false);
 
   return (
     <BuySneakerPageCtx.Provider
@@ -126,10 +139,11 @@ const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
         filterAllAsks,
         openViewAskModal,
         chooseBuyAll,
+        selectedSizeMinPrice,
         onCloseViewAllAsksModal,
         onViewAllAsks,
         onBuy,
-        onClickSize,
+        onClickSizeTile,
       }}
     >
       {props.children}

@@ -7,6 +7,8 @@ import { Container, Button, Row, Col, Table } from 'reactstrap';
 import CenterSpinner from 'components/CenterSpinner';
 
 import { useBuySneakerPageCtx } from 'providers/marketplace/BuySneakerPageCtxProvider';
+import SneakerCard from 'components/SneakerCard';
+import { Sneaker } from '../../../shared';
 
 const CenterContainer = styled(Container)`
   display: flex;
@@ -64,10 +66,11 @@ const BuySneakerPage = () => {
     filterAllAsks,
     openViewAskModal,
     chooseBuyAll,
+    selectedSizeMinPrice,
     onCloseViewAllAsksModal,
     onViewAllAsks,
     onBuy,
-    onClickSize,
+    onClickSizeTile,
   } = useBuySneakerPageCtx();
 
   const renderTiles = () => {
@@ -78,7 +81,7 @@ const BuySneakerPage = () => {
     const allSize = [
       <SizeTileComponent
         key={-1}
-        onClick={() => onClickSize('all')}
+        onClick={() => onClickSizeTile('all', allSizeMinPrice)}
         isSelected={selectedSize === 'all'}
         sizeText='US All'
         price={allSizeMinPrice}
@@ -88,7 +91,7 @@ const BuySneakerPage = () => {
     const sizeTiles = sizeMinPriceGroup.map(({ size, minPrice }, idx) => (
       <SizeTileComponent
         key={idx}
-        onClick={() => onClickSize(size)}
+        onClick={() => onClickSizeTile(size, minPrice)}
         isSelected={selectedSize === size}
         sizeText={`US ${size}`}
         price={minPrice}
@@ -98,25 +101,28 @@ const BuySneakerPage = () => {
     return !chooseBuyAll ? allSize.concat(sizeTiles) : sizeTiles;
   };
 
+  const formatSneaker = (): Partial<Sneaker> => ({
+    name: displaySneaker?.name,
+    colorway: displaySneaker?.colorway,
+    size: selectedSize === 'all' ? undefined : selectedSize,
+    imageUrls: displaySneaker?.imageUrls,
+  });
+
   if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
     return (
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
-          <Col sm='4' md='3'>
+          <Col md='4'>
             <Container fluid='md'>
               <Row>{renderTiles()}</Row>
             </Container>
           </Col>
-          <Col sm='8' md='9'>
+          <Col md='8'>
             <CenterContainer>
-              <img
-                style={{ width: '100%', height: '100%' }}
-                alt={displaySneaker.name}
-                src={displaySneaker.imageUrls.split(',')[0]}
-              />
+              <SneakerCard sneaker={formatSneaker()} price={selectedSizeMinPrice} />
               <Button onClick={onViewAllAsks}>View All Asks</Button>
-              <Button style={{ display: 'block', margin: 'auto' }} color='primary' onClick={onBuy}>
+              <Button style={{ display: 'block', margin: 'auto' }} color='primary' onClick={onBuy} disabled={selectedSize === undefined}>
                 Buy
               </Button>
               <Dialog fullWidth maxWidth='md' onClose={onCloseViewAllAsksModal} open={openViewAskModal}>

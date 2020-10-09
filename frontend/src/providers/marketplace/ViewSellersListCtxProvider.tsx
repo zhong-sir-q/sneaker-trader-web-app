@@ -1,12 +1,19 @@
 import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
-import { ListedSneakerSeller, Sneaker, CreateTransactionPayload } from '../../../../shared';
+
 import { useHistory } from 'react-router-dom';
+
 import { useAuth } from 'providers/AuthProvider';
-import { AUTH, SIGNIN, HOME } from 'routes';
+
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import SellerControllerInstance from 'api/controllers/SellerController';
+
 import getTransactionFees from 'usecases/getTransactionFee';
 import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
+
+import { AUTH, SIGNIN, HOME } from 'routes';
+
+import { ListedSneakerSeller, Sneaker, CreateTransactionPayload } from '../../../../shared';
+
 import _ from 'lodash';
 
 type ViewSellersListCtxType = {

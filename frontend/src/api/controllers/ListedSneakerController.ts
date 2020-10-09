@@ -28,8 +28,8 @@ class ListedSneakerController implements ListedSneakerEntity {
   getGallerySneakers = (sellerId: number): Promise<GallerySneaker[]> =>
     fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId)).then((res) => res.json());
 
-  getSizeMinPriceGroupByNameColorway = (sneakerName: string): Promise<SizeMinPriceGroupType> =>
-    fetch(this.listedSneakerPath + `/?name=${sneakerName}`).then((res) => res.json());
+  getSizeMinPriceGroupByNameColorway = (nameColorway: string, sellerId: number): Promise<SizeMinPriceGroupType> =>
+    fetch(concatPaths(this.listedSneakerPath, 'sizeMinPriceGroup', nameColorway, sellerId)).then((res) => res.json());
 
   getGallerySneakersBySize = (sellerId: number, size: number): Promise<GallerySneaker[]> =>
     fetch(concatPaths(this.listedSneakerPath, 'gallery', 'size', sellerId, size)).then((res) => res.json());

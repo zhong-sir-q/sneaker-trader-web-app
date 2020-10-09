@@ -9,13 +9,13 @@ import _ from 'lodash';
 import SneakerGallery from 'components/SneakerGallery';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
-import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 import { useAuth } from 'providers/AuthProvider';
 
 import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
+import { useHomePageCtx } from 'providers/marketplace/HomePageCtxProvider';
 
 type FilterBlockProps = { selected: boolean };
 
@@ -131,26 +131,8 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
 };
 
 const HomePage = () => {
-  const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>([]);
-  const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>();
-  const [brands, setBrands] = useState<string[]>();
-
-  const { currentUser, signedIn } = useAuth();
-
-  useEffect(() => {
-    (async () => {
-      let gallerySneakers: GallerySneaker[] = [];
-
-      // if the user is not logged in, then render all gallery sneakers
-      if (!signedIn) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(-1);
-      else if (currentUser) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(currentUser.id);
-
-      setDefaultSneakers(gallerySneakers);
-      setFilterSneakers(gallerySneakers);
-
-      setBrands(await HelperInfoControllerInstance.getBrands());
-    })();
-  }, [signedIn, currentUser]);
+  const { currentUser } = useAuth();
+  const { defaultSneakers, filterSneakers, brands, updateFilterSneakers } = useHomePageCtx();
 
   const [filters, setFilters] = useState<FilterItemType[]>([]);
 
@@ -166,6 +148,8 @@ const HomePage = () => {
   };
 
   const filterHandler = useCallback(async () => {
+    if (!defaultSneakers) return;
+
     const sizes = filters.filter((f) => f.key === 'size').map((item) => Number(item.value));
     const brands = filters.filter((f) => f.key === 'brand').map((item) => item.value);
 
@@ -174,13 +158,13 @@ const HomePage = () => {
 
     if (!_.isEmpty(sizes) && !_.isEmpty(brands)) {
       const sneakerBySizes = await getSneakerBySizes(sizes, currentUser ? currentUser.id : -1);
-      setFilterSneakers(filterByBrands(sneakerBySizes, brands as string[]));
+      updateFilterSneakers(filterByBrands(sneakerBySizes, brands as string[]));
     } else if (!_.isEmpty(sizes)) {
       const sneakerBySizes = await getSneakerBySizes(sizes, currentUser ? currentUser.id : -1);
-      setFilterSneakers(sneakerBySizes);
-    } else if (!_.isEmpty(brands)) setFilterSneakers(filterByBrands(defaultSneakers, brands as string[]));
-    else setFilterSneakers(defaultSneakers);
-  }, [currentUser, defaultSneakers, filters]);
+      updateFilterSneakers(sneakerBySizes);
+    } else if (!_.isEmpty(brands)) updateFilterSneakers(filterByBrands(defaultSneakers, brands as string[]));
+    else updateFilterSneakers(defaultSneakers);
+  }, [currentUser, defaultSneakers, filters, updateFilterSneakers]);
 
   useEffect(() => {
     filterHandler();

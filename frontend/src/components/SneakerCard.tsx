@@ -2,13 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { Card } from 'reactstrap';
 
-import { useHistory } from 'react-router-dom';
-
 import { AppSneaker } from '../../../shared';
-
-import { formatSneakerPathName } from 'utils/utils';
-import { concatPaths } from 'api/formatApiEndpoint';
-import { HOME } from 'routes';
+import { useHistory } from 'react-router-dom';
+import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -43,13 +39,13 @@ const StyledImage = styled.img`
 `;
 
 const SneakerCard = (props: SneakerCardProps) => {
+  const history = useHistory();
+
   const { sneaker, isListed, price, maxWidth } = props;
   const { imageUrls, name, size, colorway } = sneaker;
 
-  const history = useHistory();
-
   const onClick = () => {
-    if (isListed && name && colorway) history.push(concatPaths(HOME, formatSneakerPathName(name, colorway)));
+    if (isListed && name && colorway) redirectBuySneakerPage(history, name, colorway);
   };
 
   const firstImageUrl = () => imageUrls!.split(',')[0];

@@ -8,10 +8,11 @@ import SneakerListingForm from 'pages/SneakerListingForm';
 
 import Dashboard from 'components/Dashboard';
 import HomePage from 'pages/HomePage';
+import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
+
+import WalletCtxProvider from 'providers/WalletCtxProvider';
 import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
 import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
-import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
-import WalletCtxProvider from 'providers/WalletCtxProvider';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
