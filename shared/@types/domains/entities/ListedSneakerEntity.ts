@@ -7,7 +7,7 @@ interface ListedSneakerEntity {
   getBySellerId(sellerId: number): Promise<SellerListedSneaker[]>;
   getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]>;
   getGallerySneakers(sellerId: number): Promise<GallerySneaker[]>;
-  getSizeMinPriceGroupByNameColorway(name: string): Promise<SizeMinPriceGroupType>;
+  getSizeMinPriceGroupByNameColorway(name: string, sellerId: number): Promise<SizeMinPriceGroupType>;
   getAllListedSneakers(): Promise<AppSneaker[]>;
 
   create(p: CreateListedSneakerPayload): Promise<number>;

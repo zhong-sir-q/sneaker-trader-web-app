@@ -9,14 +9,9 @@ class WalletService implements WalletEntity {
     const getBalanceByUserIdQuery = formateGetColumnsQuery(WALLET, `userId = ${userId}`);
     const poolConn = await mysqlPoolConnection();
 
-    return poolConn.query(getBalanceByUserIdQuery).then(async (queryResult) => {
-      if (queryResult.length === 0) {
-        await this.create(Number(userId));
-        return 0;
-      }
+    const queryRes = await poolConn.query(getBalanceByUserIdQuery);
 
-      return queryResult[0].balance;
-    });
+    return queryRes.length === 0 ? null : queryRes[0];
   }
 
   async create(userId: number) {
