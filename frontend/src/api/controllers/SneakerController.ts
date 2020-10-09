@@ -3,7 +3,7 @@ import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
 import { AppSneaker, Sneaker } from '../../../../shared';
 import formatRequestOptions from 'api/formatRequestOptions';
 
-class SneakerController implements SneakerEntity {
+export class SneakerController implements SneakerEntity {
   sneakerPath: string;
 
   constructor() {

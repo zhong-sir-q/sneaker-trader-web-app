@@ -4,7 +4,7 @@ import { Transaction, CreateTransactionPayload, BuyerPurchasedSneaker } from '..
 import formatApiEndpoint, { concatPaths } from '../formatApiEndpoint';
 import formatRequestOptions from '../formatRequestOptions';
 
-class TransactionController implements TranscationEntity {
+export class TransactionController implements TranscationEntity {
   transactionPath: string;
 
   constructor() {

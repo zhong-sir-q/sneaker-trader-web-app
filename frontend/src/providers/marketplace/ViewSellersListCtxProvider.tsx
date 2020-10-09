@@ -15,6 +15,9 @@ import { AUTH, SIGNIN, HOME } from 'routes';
 import { ListedSneakerSeller, Sneaker, CreateTransactionPayload } from '../../../../shared';
 
 import _ from 'lodash';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import TransactionControllerInstance from 'api/controllers/TransactionController';
+import WalletControllerInstance from 'api/controllers/WalletController';
 
 type ViewSellersListCtxType = {
   sellers: ListedSneakerSeller[] | undefined;
@@ -127,6 +130,10 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
         const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
 
         await onConfirmPurchaseSneaker(
+          ListedSneakerControllerInstance,
+          TransactionControllerInstance,
+          WalletControllerInstance
+        )(
           {
             sellerEmail: email,
             sellerUserName: username,

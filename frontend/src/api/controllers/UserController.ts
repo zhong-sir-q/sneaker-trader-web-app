@@ -2,7 +2,7 @@ import { User, UserEntity, AppUser } from '../../../../shared';
 import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
 import formatRequestOptions from 'api/formatRequestOptions';
 
-class UserController implements UserEntity {
+export class UserController implements UserEntity {
   userPath: string;
 
   constructor() {

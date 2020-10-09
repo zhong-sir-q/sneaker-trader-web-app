@@ -13,7 +13,7 @@ import ListedSneakerEntity from '../../../../shared/@types/domains/entities/List
 import formatApiEndpoint, { concatPaths } from '../formatApiEndpoint';
 import formatRequestOptions from '../formatRequestOptions';
 
-class ListedSneakerController implements ListedSneakerEntity {
+export class ListedSneakerController implements ListedSneakerEntity {
   listedSneakerPath: string;
 
   constructor() {

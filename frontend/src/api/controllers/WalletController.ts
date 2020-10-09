@@ -3,7 +3,7 @@ import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
 import { TopupWalletPayload, DecreaseWalletPayload } from '../../../../shared';
 import formatRequestOptions from 'api/formatRequestOptions';
 
-class WalletController implements WalletEntity {
+export class WalletController implements WalletEntity {
   walletPath: string;
 
   constructor() {

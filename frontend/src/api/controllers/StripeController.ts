@@ -1,6 +1,6 @@
 import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
 
-class StripeController {
+export class StripeController {
   stripePath: string;
 
   constructor() {

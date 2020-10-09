@@ -1,14 +1,24 @@
 import WalletControllerInstance from 'api/controllers/WalletController';
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 
-import { useHistory } from 'react-router-dom';
+import reactRouterDom from 'react-router-dom';
 
-jest.mock('../../api/controllers/WalletController');
-jest.mock('react-router-dom');
+jest.mock('react-router-dom', () => ({
+  useHistory: () => ({
+    push: jest.fn(),
+  }),
+}));
 
-describe('', () => {
-  const history = useHistory();
-  checkUserWalletBalance(-1, history);
+describe('Check user wallet balance', () => {
+  test('Calling getBalanceByUserId once', async (done) => {
+    const history = reactRouterDom.useHistory();
+    const spyGetBalanceByUserId = jest
+      .spyOn(WalletControllerInstance, 'getBalanceByUserId')
+      .mockImplementation((_userId: number) => Promise.resolve(100));
 
-  expect(WalletControllerInstance.getBalanceByUserId).toBeCalledTimes(1);
+    await checkUserWalletBalance(WalletControllerInstance, 2, history);
+
+    expect(spyGetBalanceByUserId).toBeCalledTimes(1);
+    done();
+  });
 });

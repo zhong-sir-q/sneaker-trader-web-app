@@ -8,6 +8,7 @@ import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import { useAuth } from './AuthProvider';
 
 import { useHistory } from 'react-router-dom';
+import WalletControllerInstance from 'api/controllers/WalletController';
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
@@ -79,7 +80,7 @@ const SneakerListingFormCtxProvider = (props: { children: React.ReactNode }) => 
   useEffect(() => {
     if (currentUser) {
       (async () => {
-        const isWalletBalancePositive = await checkUserWalletBalance(currentUser.id, history);
+        const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id, history);
         if (!isWalletBalancePositive) return;
 
         setBrandOptions(await HelperInfoControllerInstance.getBrands());

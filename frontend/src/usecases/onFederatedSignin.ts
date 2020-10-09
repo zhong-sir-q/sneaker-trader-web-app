@@ -1,10 +1,10 @@
 import { Auth } from 'aws-amplify';
 
-import UserControllerInstance from 'api/controllers/UserController';
+import { UserController } from 'api/controllers/UserController';
 
 import { SocialProvider } from '../../../shared';
 
-const onFederatedSignin = async (
+const onFederatedSignin = (UserControllerInstance: UserController) => async (
   provider: SocialProvider,
   token: string,
   expires_at: number,

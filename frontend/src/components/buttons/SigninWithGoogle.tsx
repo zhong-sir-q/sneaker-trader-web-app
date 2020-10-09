@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import onFederatedSignin from 'usecases/onFederatedSignin';
+import UserControllerInstance from 'api/controllers/UserController';
 
 type SignInWithGoogleProps = {
   handleSignin: (errMessage: string) => void;
@@ -12,7 +13,8 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
   constructor(props: any) {
     super(props);
     this.signIn = this.signIn.bind(this);
-    this.btnImg = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png';
+    this.btnImg =
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png';
   }
 
   componentDidMount() {
@@ -42,7 +44,7 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
     };
 
     try {
-      await onFederatedSignin('google', id_token, expires_at, user);
+      await onFederatedSignin(UserControllerInstance)('google', id_token, expires_at, user);
     } catch (err) {
       this.props.handleSignin(err.message);
     }
@@ -83,12 +85,7 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
           marginBottom: '15px',
         }}
       >
-        <img
-          style={{ marginBottom: '3px', marginRight: '5px' }}
-          width='20px'
-          alt='Google signin'
-          src={this.btnImg}
-        />
+        <img style={{ marginBottom: '3px', marginRight: '5px' }} width='20px' alt='Google signin' src={this.btnImg} />
         Sign in with Google
       </button>
     );

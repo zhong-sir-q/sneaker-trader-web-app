@@ -41,6 +41,8 @@ import { CreateUserPayload } from '../../../shared';
 
 import bgImage from 'assets/img/bg16.jpg';
 import onSignup from 'usecases/onSignup';
+import UserControllerInstance from 'api/controllers/UserController';
+import WalletControllerInstance from 'api/controllers/WalletController';
 
 // TODO: This component can be refactored
 const SideContent = () => (
@@ -156,7 +158,10 @@ const SignupForm = () => {
 
   const handleSubmit = async (formStates: SignupFormStateType) => {
     try {
-      await onSignup(convertFormValuesToUser(formStates), formStates.password);
+      await onSignup(UserControllerInstance, WalletControllerInstance)(
+        convertFormValuesToUser(formStates),
+        formStates.password
+      );
       setSignUpSuccess(true);
     } catch (err) {
       setSignUpError(err.message);

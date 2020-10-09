@@ -17,6 +17,10 @@ import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers
 import onListingSneaker from 'usecases/onListingSneaker';
 import { mapUpperCaseFirstLetter } from 'utils/utils';
 
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
+
 const formatListedSneakerPayload = (
   sneaker: SneakerListingFormStateType,
   quantity?: number
@@ -61,7 +65,7 @@ const SneakerListingForm = () => {
     const sneakerPayload = formatSneaker(listingSneakerFormState);
     const listedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
 
-    await onListingSneaker(
+    await onListingSneaker(SneakerControllerInstance, ListedSneakerControllerInstance, HelperInfoControllerInstance)(
       imgFormData,
       nameColorway,
       size as number,

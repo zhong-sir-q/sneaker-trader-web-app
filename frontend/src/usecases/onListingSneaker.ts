@@ -1,11 +1,16 @@
 import { uploadS3MultipleImages } from 'api/api';
 
 import { ListedSneakerFormPayload, ListingFormSneaker } from '../../../shared';
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
-import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
-import SneakerControllerInstance from 'api/controllers/SneakerController';
 
-const onListingSneaker = async (
+import { ListedSneakerController } from 'api/controllers/ListedSneakerController';
+import { HelperInfoController } from 'api/controllers/HelperInfoController';
+import { SneakerController } from 'api/controllers/SneakerController';
+
+const onListingSneaker = (
+  SneakerControllerInstance: SneakerController,
+  ListedSneakerControllerInstance: ListedSneakerController,
+  HelperInfoControllerInstance: HelperInfoController
+) => async (
   imgFormData: FormData,
   nameColorway: string,
   size: number,
@@ -29,7 +34,7 @@ const onListingSneaker = async (
     ...listedSneakerFormPayload,
     userId: currentUserId,
     productId: prodId,
-    imageUrls: formattedUrls
+    imageUrls: formattedUrls,
   });
 
   if (brand) await HelperInfoControllerInstance.createBrand({ brand });

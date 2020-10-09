@@ -3,7 +3,7 @@ import formatRequestOptions from 'api/formatRequestOptions';
 
 import { HelperInfoControllerEntity, Brand, SneakerName, Colorway } from '../../../../shared';
 
-class HelperInfoController implements HelperInfoControllerEntity {
+export class HelperInfoController implements HelperInfoControllerEntity {
   helperInfoPath: string;
 
   constructor() {

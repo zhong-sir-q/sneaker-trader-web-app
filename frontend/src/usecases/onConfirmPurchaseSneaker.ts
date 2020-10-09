@@ -1,11 +1,15 @@
 import { mailAfterPurchase } from 'api/api';
 import { MailAfterPurchasePayload, CreateTransactionPayload, DecreaseWalletPayload } from '../../../shared';
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
-import TransactionControllerInstance from 'api/controllers/TransactionController';
+import { ListedSneakerController } from 'api/controllers/ListedSneakerController';
+import { TransactionController } from 'api/controllers/TransactionController';
 
-import WalletControllerInstance from 'api/controllers/WalletController';
+import { WalletController } from 'api/controllers/WalletController';
 
-const onConfirmPurchaseSneaker = async (
+const onConfirmPurchaseSneaker = (
+  ListedSneakerControllerInstance: ListedSneakerController,
+  TransactionControllerInstance: TransactionController,
+  WalletControllerInstance: WalletController
+) => async (
   mailPayload: MailAfterPurchasePayload,
   transaction: CreateTransactionPayload,
   listedSneakerId: number,
