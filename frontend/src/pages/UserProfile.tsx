@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
 
 // reactstrap components
-import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert, CardFooter } from 'reactstrap';
 
 import * as Yup from 'yup';
 
@@ -23,6 +23,7 @@ import ImageUpload from 'components/ImageUpload';
 import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import AwsControllerInstance from 'api/controllers/AwsController';
+import AddressVerificationForm from 'components/AddressVerificationForm';
 
 // user may have empty firstname or empty lastname or both
 const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
@@ -181,6 +182,28 @@ const UserProfile = () => {
             </Row>
           )}
         </Formik>
+
+        <Card>
+          <CardHeader>
+          <h5 className='title'>Address</h5>
+          </CardHeader>
+          <CardBody>
+            <AddressVerificationForm
+              values={{
+                street: '',
+                city: '',
+                zipcode: ('' as unknown) as number,
+                region: '',
+                country: 'New Zealand',
+              }}
+            />
+          </CardBody>
+          <CardFooter>
+            <Button color='primary'>Verify Address</Button>
+            <Button>Update Address</Button>
+            <Button>Complete Verification</Button>
+          </CardFooter>
+        </Card>
       </div>
     </React.Fragment>
   );
