@@ -1,4 +1,4 @@
-import { User } from '../models';
+import { User, Transaction } from '../models';
 
 // customer can either be a seller or buyer
 export type Customer = Pick<User, 'email' | 'username' | 'phoneNo'> & { buyerRating: number; sellerRating: number };
@@ -14,5 +14,9 @@ export type ListedSneakerSeller = {
   rating: number;
   imageUrls: string;
 };
+
+export type Buyer = Customer & Pick<Transaction, 'transactionDatetime'> & { hasSellerRatedBuyer: 0 | 1 };
+
+export type Seller = Customer & { hasBuyerRatedSeller: 0 | 1 };
 
 export type CreateUserPayload = Omit<AppUser, 'profilePicUrl'>;

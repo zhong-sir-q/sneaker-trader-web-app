@@ -46,7 +46,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
 
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<BuyerPurchasedSneaker>(sneakers);
 
-  const { currentPage, pagesCount, startRecordCount, endRecordCount, PaginationComponent } = usePagination(
+  const { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent } = usePagination(
     sneakers.length,
     5
   );
@@ -158,7 +158,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       <Table responsive className='table-shopping'>
         <PurchasedSneakerTableHeader />
         <tbody>
-          {sortedItems.slice(startRecordCount(), endRecordCount()).map((s, idx) => (
+          {sortedItems.slice(startRowCount(), endRowCount()).map((s, idx) => (
             <PurchasedSneakerRow key={idx} sneaker={s} />
           ))}
           <tr>

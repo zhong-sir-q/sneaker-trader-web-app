@@ -1,4 +1,4 @@
-import { User, UserEntity, AppUser } from '../../../../shared';
+import { User, UserEntity, AppUser, UserRankingRow } from '../../../../shared';
 import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
 import formatRequestOptions from 'api/formatRequestOptions';
 
@@ -12,9 +12,13 @@ export class UserController implements UserEntity {
   getRankingPointsByUserId = (userId: number): Promise<number> =>
     fetch(concatPaths(this.userPath, 'rankingPoints', userId)).then((res) => res.json());
 
-  getByEmail = (email: string): Promise<User> => fetch(concatPaths(this.userPath, email)).then((res) => res.json());
+  getAllUserRankingPoints = (): Promise<UserRankingRow[]> =>
+    fetch(concatPaths(this.userPath, 'all', 'rankingPoints')).then((r) => r.json());
 
-  getByUsername = (username: string): Promise<User> =>
+  getByEmail = (email: string): Promise<User | null> =>
+    fetch(concatPaths(this.userPath, email)).then((res) => res.json());
+
+  getByUsername = (username: string): Promise<User | null> =>
     fetch(`${this.userPath}/name/${username}`).then((res) => res.json());
 
   create = (user: Partial<AppUser>) => fetch(this.userPath, formatRequestOptions(user)).then((res) => res.json());

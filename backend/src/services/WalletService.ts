@@ -5,13 +5,13 @@ import { WALLET } from '../config/tables';
 import WalletEntity from '../../../shared/@types/domains/entities/WalletEntity';
 
 class WalletService implements WalletEntity {
-  async getBalanceByUserId(userId: number) {
+  async getBalanceByUserId(userId: number): Promise<number | null> {
     const getBalanceByUserIdQuery = formateGetColumnsQuery(WALLET, `userId = ${userId}`);
     const poolConn = await mysqlPoolConnection();
 
     const queryRes = await poolConn.query(getBalanceByUserIdQuery);
 
-    return queryRes.length === 0 ? null : queryRes[0];
+    return queryRes.length === 0 ? null : queryRes[0].balance;
   }
 
   async create(userId: number) {

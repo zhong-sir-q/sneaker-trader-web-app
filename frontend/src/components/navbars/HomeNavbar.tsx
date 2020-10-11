@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, NavItem, Collapse, NavbarToggler } from 'reactstrap';
+
+import { Dialog, DialogContent } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import logo from 'assets/img/logo_transparent_background.png';
 import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import { signOut } from 'utils/auth';
@@ -13,6 +14,12 @@ import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
 import { useHomePageCtx } from 'providers/marketplace/HomePageCtxProvider';
+import { UserRankingRow } from '../../../../shared';
+import UserControllerInstance from 'api/controllers/UserController';
+
+import UserRankingLeaderBoard from 'components/UserRankingLeaderBoard';
+
+import logo from 'assets/img/logo_transparent_background.png';
 
 const SearchBarWrapper = styled.div`
   padding: 0.5rem 0.7rem;
@@ -35,11 +42,24 @@ const StyledNavbar = styled(Navbar)`
 
 const HomeNavbar = () => {
   const [openNav, setOpenNav] = useState(false);
+  const [openUserLeaderBoard, setOpenUserLeaderBoard] = useState(false);
+
+  const [rankingRows, setRankingRows] = useState<UserRankingRow[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const rows = await UserControllerInstance.getAllUserRankingPoints();
+      setRankingRows(rows);
+    })();
+  }, []);
 
   const { signedIn } = useAuth();
-  const { defaultSneakers } = useHomePageCtx()
+  const { defaultSneakers } = useHomePageCtx();
 
   const toggleNav = () => setOpenNav(!openNav);
+
+  const onOpenUserLeaderBoard = () => setOpenUserLeaderBoard(true);
+  const onCloseUserLeaderBoard = () => setOpenUserLeaderBoard(false);
 
   return (
     <StyledNavbar expand='lg'>
@@ -62,20 +82,31 @@ const HomeNavbar = () => {
         </SearchBarWrapper>
 
         <Nav navbar>
+          <NavItem>
+            <Link
+              type='button'
+              style={{ color: 'black' }}
+              onClick={onOpenUserLeaderBoard}
+              to={HOME}
+              className='nav-link'
+            >
+              Leaderbord
+            </Link>
+          </NavItem>
+
           {signedIn && (
             <NavItem>
               <Link style={{ color: 'black' }} to={ADMIN + DASHBOARD} className='nav-link'>
-                <i className='now-ui-icons design_bullet-list-67' /> Dashboard
+                Dashboard
               </Link>
             </NavItem>
           )}
 
           {signedIn ? (
             <NavItem style={{ cursor: 'pointer' }} onClick={() => signOut()}>
-              <p className='nav-link'>
-                <i className='now-ui-icons users_circle-08' />
+              <Link style={{ color: 'black' }} to={HOME} className='nav-link'>
                 Logout
-              </p>
+              </Link>
             </NavItem>
           ) : (
             <NavItem>
@@ -86,6 +117,12 @@ const HomeNavbar = () => {
           )}
         </Nav>
       </Collapse>
+
+      <Dialog fullWidth maxWidth='xs' open={openUserLeaderBoard} onClose={onCloseUserLeaderBoard}>
+        <DialogContent>
+          <UserRankingLeaderBoard items={rankingRows} />
+        </DialogContent>
+      </Dialog>
     </StyledNavbar>
   );
 };

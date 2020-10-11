@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import moment from 'moment';
+
 import UserControllerInstance from 'api/controllers/UserController';
 
 const REQUIRED = '* Required';
@@ -20,7 +21,7 @@ export const validEmail = () => Yup.string().email('Invalid email address').requ
 export const validDate = () =>
   Yup.string()
     .required(REQUIRED)
-    .test('valid-date', 'Invalid date format', (datevalue) => moment(datevalue, DATE_FORMAT, true).isValid());
+    .test('valid-date', 'Valid date format: MM/DD/YYYY', (datevalue) => moment(datevalue, DATE_FORMAT, true).isValid());
 
 export const matchingPassword = (pwFieldName: string) =>
   Yup.string()
@@ -43,12 +44,16 @@ export const validPhoneNo = () =>
       (val) => val !== undefined && val!.length >= 8 && val!.length <= 10
     );
 
-export const checkDuplicateUsername = () =>
+export const checkDuplicateUsername = (userId?: number) =>
   Yup.string()
     .test('check duplicate user name in db', 'Username is chosen', async (username) => {
       if (!username) return true;
+
       const user = await UserControllerInstance.getByUsername(username);
-      if (user) return false;
+
+      // the username is duplicate
+      if (user && user.id !== userId) return false;
+
       return true;
     })
     .required(REQUIRED);

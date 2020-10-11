@@ -1,14 +1,14 @@
-export * from './sneaker'
-export * from './user'
-export * from './transaction'
+export * from './sneaker';
+export * from './user';
+export * from './transaction';
 
-export * from './entities/CustomerEntity'
-export * from './entities/ListedSneakerEntity'
-export * from './entities/TransactionEntity'
-export * from './entities/WalletEntity'
-export * from './entities/HelperInfoEntity'
-export * from './entities/TransactionsEntity'
-export * from './entities/SneakerEntity'
+export * from './entities/CustomerEntity';
+export * from './entities/ListedSneakerEntity';
+export * from './entities/TransactionEntity';
+export * from './entities/WalletEntity';
+export * from './entities/HelperInfoEntity';
+export * from './entities/TransactionsEntity';
+export * from './entities/SneakerEntity';
 
 export type DecreaseWalletPayload = {
   userId: number;
@@ -29,3 +29,5 @@ export type MailAfterPurchasePayload = {
 };
 
 export type HelperInfoType = 'sneakernames' | 'colorways' | 'brands';
+
+export type UserRankingRow = { username: string; profilePicUrl: string; rankingPoints: number };

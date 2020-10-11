@@ -1,24 +1,29 @@
-import WalletControllerInstance from 'api/controllers/WalletController';
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
+import { MockWalletControllerInstance } from '__mocks__/controllers';
 
-import reactRouterDom from 'react-router-dom';
+import faker from 'faker';
 
-jest.mock('react-router-dom', () => ({
-  useHistory: () => ({
-    push: jest.fn(),
-  }),
-}));
+afterEach(() => jest.clearAllMocks())
 
 describe('Check user wallet balance', () => {
-  test('Calling getBalanceByUserId once', async (done) => {
-    const history = reactRouterDom.useHistory();
-    const spyGetBalanceByUserId = jest
-      .spyOn(WalletControllerInstance, 'getBalanceByUserId')
-      .mockImplementation((_userId: number) => Promise.resolve(100));
+  test('Balance is positive', async (done) => {
+    const spyGetBalanceByUserId = jest.spyOn(MockWalletControllerInstance, 'getBalanceByUserId').mockResolvedValue(100);
 
-    await checkUserWalletBalance(WalletControllerInstance, 2, history);
+    const isBalancePositvie = await checkUserWalletBalance(MockWalletControllerInstance, faker.random.number());
 
     expect(spyGetBalanceByUserId).toBeCalledTimes(1);
+    expect(isBalancePositvie).toBe(true);
+
     done();
   });
+
+  test('User does not exist if the balance is null', async (done) => {
+    const spyGetBalanceByUserId = jest.spyOn(MockWalletControllerInstance, 'getBalanceByUserId').mockResolvedValue(null);
+    
+    try {
+      expect(await checkUserWalletBalance(MockWalletControllerInstance, faker.random.number()))
+    } catch {}
+
+    done()
+  })
 });

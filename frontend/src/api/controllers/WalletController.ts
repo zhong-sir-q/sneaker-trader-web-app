@@ -20,7 +20,7 @@ export class WalletController implements WalletEntity {
       r.json()
     );
 
-  getBalanceByUserId = (userId: number): Promise<number> =>
+  getBalanceByUserId = (userId: number): Promise<number | null> =>
     fetch(concatPaths(this.walletPath, userId)).then((res) => res.json());
 
   async topup(userId: number, amount: number) {

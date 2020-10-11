@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { AccountCircle } from '@material-ui/icons';
 
 // reactstrap components
 import { Nav, Collapse, Button } from 'reactstrap';
@@ -11,6 +10,8 @@ import logo from 'assets/img/logo_transparent_background.png';
 // routes
 import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE, HOME } from 'routes';
 import { useAuth } from 'providers/AuthProvider';
+
+import defaultAvatar from 'assets/img/placeholder.jpg';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -166,7 +167,13 @@ const Sidebar = (props: SideBarProps) => {
           </Link>
 
           <div className='navbar-minimize'>
-            <Button outline className='btn-round btn-icon' color='neutral' id='minimizeSidebar' onClick={props.minimizeSidebar}>
+            <Button
+              outline
+              className='btn-round btn-icon'
+              color='neutral'
+              id='minimizeSidebar'
+              onClick={props.minimizeSidebar}
+            >
               <i className='now-ui-icons text_align-center visible-on-sidebar-regular' />
               <i className='now-ui-icons design_bullet-list-67 visible-on-sidebar-mini' />
             </Button>
@@ -175,8 +182,8 @@ const Sidebar = (props: SideBarProps) => {
 
         <div className='sidebar-wrapper' ref={sidebar}>
           <div className='user'>
-            <div className='photo'>
-              <AccountCircle style={{ width: '100%', height: '100%' }} />
+            <div className='photo' style={{ backgroundColor: 'white' }}>
+              <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
             </div>
             <div className='info'>
               <a

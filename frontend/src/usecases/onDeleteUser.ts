@@ -6,6 +6,8 @@ const onDeleteUser = (WalletControllerInstance: WalletController, UserController
 ) => {
   const user = await UserControllerInstance.getByUsername(username);
 
+  if (!user) return
+
   // NOTE: there are also multiple fk constraints I need to check!!!
   // such as ListedProducts and Transactions, need to discuss with Aaron
   // what we want to do about it

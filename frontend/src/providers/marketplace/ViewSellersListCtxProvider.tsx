@@ -18,6 +18,7 @@ import _ from 'lodash';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import TransactionControllerInstance from 'api/controllers/TransactionController';
 import WalletControllerInstance from 'api/controllers/WalletController';
+import MailControllerInstance from 'api/controllers/MailController';
 
 type ViewSellersListCtxType = {
   sellers: ListedSneakerSeller[] | undefined;
@@ -129,23 +130,20 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
 
         const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
 
+        const mailPayload = {
+          sellerEmail: email,
+          sellerUserName: username,
+          buyerUserName: currentUser!.username,
+          buyerEmail: currentUser!.email,
+          productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
+        };
+
         await onConfirmPurchaseSneaker(
           ListedSneakerControllerInstance,
           TransactionControllerInstance,
-          WalletControllerInstance
-        )(
-          {
-            sellerEmail: email,
-            sellerUserName: username,
-            buyerUserName: currentUser!.username,
-            buyerEmail: currentUser!.email,
-            productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
-          },
-          transaction,
-          listedProductId,
-          sellerId,
-          decreaseWalletBalPayload
-        );
+          WalletControllerInstance,
+          MailControllerInstance
+        )(mailPayload, transaction, decreaseWalletBalPayload);
 
         // after success purchase
         alert('The seller will be in touch with you shortly');

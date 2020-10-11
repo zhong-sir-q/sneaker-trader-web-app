@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import RateCustomer from 'components/RateCustomer';
 import ContactCustomerButton from './ContactCustomerButton';
 import { CompleteSaleButton } from './StyledButton';
 
-import { SneakerStatus, Customer } from '../../../../shared';
+import { SneakerStatus, Buyer } from '../../../../shared';
 import TransactionControllerInstance from 'api/controllers/TransactionController';
 
 type SellerCTAButtonsGroupProps = {
   prodStatus: SneakerStatus;
   listedProdId: number;
-  buyer: Customer;
+  buyer: Buyer;
   onCompleteSale: () => void;
 };
 
 const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
   const { prodStatus, listedProdId, buyer, onCompleteSale } = props;
 
-  // set to true so the rate button does not render initially straight away
-  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      const hasRated = await TransactionControllerInstance.hasSellerRatedBuyer(listedProdId)
-      setHasSellerRatedBuyer(hasRated);
-    })();
-  }, [listedProdId]);
+  // DIRTY TRICK: update the state after the rating is completed to hide the RateCustomer
+  // button, if this state is not used, I have to tell the parent to fetch all data in order to update
+  // which will be very slow
+  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(buyer ? buyer.hasSellerRatedBuyer : 0)
 
   const onCompleteRating = async (listedProductId: number, rating: number, comment: string) => {
-    TransactionControllerInstance.rateBuyer(listedProductId, rating, comment);
-    setHasSellerRatedBuyer(true);
+    await TransactionControllerInstance.rateBuyer(listedProductId, rating, comment);
+    setHasSellerRatedBuyer(1)
   };
 
   switch (prodStatus) {

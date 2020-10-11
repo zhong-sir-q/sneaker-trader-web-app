@@ -6,7 +6,7 @@ import {
   formatDeleteQuery,
 } from '../utils/formatDbQuery';
 
-import { User, UserServiceEntity } from '../../../shared';
+import { User, UserServiceEntity, UserRankingRow } from '../../../shared';
 import mysqlPoolConnection from '../config/mysql';
 import { USERS, TRANSACTION } from '../config/tables';
 
@@ -45,7 +45,7 @@ class UserService implements UserServiceEntity {
     if (user) throw new Error('Email is chosen');
   }
 
-  async getByUsername(username: string): Promise<User> {
+  async getByUsername(username: string): Promise<User | null> {
     const poolConn = await mysqlPoolConnection();
 
     const getQuery = formateGetColumnsQuery(USERS, `username = ${doubleQuotedValue(username)}`);
@@ -77,6 +77,17 @@ class UserService implements UserServiceEntity {
     const rankingPoints = res[0].numTransactions;
 
     return rankingPoints;
+  }
+
+  async getAllUserRankingPoints(): Promise<UserRankingRow[]> {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT U.username, U.profilePicUrl, COUNT(*) AS rankingPoints FROM Transactions T, Users U 
+        WHERE sellerId = U.id OR buyerId = U.id GROUP BY U.id ORDER BY rankingPoints DESC
+    `;
+
+    return poolConn.query(query);
   }
 }
 

@@ -1,5 +1,5 @@
 import { Sneaker, ListedProduct } from '../..';
-import { Customer } from './user';
+import { Buyer, Seller } from './user';
 import { Transaction } from '../models';
 
 export type SneakerAsk = {
@@ -24,8 +24,8 @@ export type ListedSneakerFormPayload = Omit<ListedProduct, 'id' | 'productId' | 
 
 export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 
-export type SellerListedSneaker = CustomerSneaker & { buyer: Customer & Pick<Transaction, 'transactionDatetime'> };
+export type SellerListedSneaker = CustomerSneaker & { buyer: Buyer };
 
-export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transactionDatetime'> & { seller: Customer };
+export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transactionDatetime'> & { seller: Seller };
 
-export type CreateListedSneakerPayload = Omit<ListedProduct, 'id' | 'prodStatus'>
+export type CreateListedSneakerPayload = Omit<ListedProduct, 'id' | 'prodStatus'>;

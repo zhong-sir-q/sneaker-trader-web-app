@@ -6,13 +6,13 @@ import { User } from '../../../shared/@types/models';
 
 type AuthContextType = {
   signedIn: boolean;
-  currentUser: User | undefined;
+  currentUser: User | null;
   updateCurrentUser: (user: User) => void;
 };
 
 const INIT_AUTH_CONTEXT: AuthContextType = {
   signedIn: false,
-  currentUser: undefined,
+  currentUser: null,
   updateCurrentUser: () => {
     throw new Error('Must override!');
   },
@@ -25,7 +25,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
   // the user object as well maybe use something like mobx
   const storedSignedIn = JSON.parse(localStorage.getItem('signedIn') || 'false') as boolean;
   const [signedIn, setSignedIn] = useState(storedSignedIn);
-  const [currentUser, setCurrentUser] = useState<User>();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const updateCurrentUser = (user: User) => setCurrentUser(user);
 
@@ -37,7 +37,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
   const handleSignOut = () => {
     setSignedIn(false);
-    setCurrentUser(undefined);
+    setCurrentUser(null);
     localStorage.setItem('signedIn', 'false');
   };
 

@@ -1,5 +1,5 @@
 interface WalletEntity {
-  getBalanceByUserId(userId: number): Promise<number>;
+  getBalanceByUserId(userId: number): Promise<number | null>;
   topup(userId: number, amount: number): Promise<any>;
   decreaseBalance(userId: number, amount: number): Promise<any>;
   create(userId: number): Promise<any>;

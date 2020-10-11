@@ -16,9 +16,9 @@ const usePagination = (numRecords: number, pageSize: number) => {
     setCurrentPage(currentPage + 1);
   };
 
-  const startRecordCount = () => currentPage * pageSize;
+  const startRowCount = () => currentPage * pageSize;
 
-  const endRecordCount = () => (currentPage + 1) * pageSize;
+  const endRowCount = () => (currentPage + 1) * pageSize;
 
   const onPageClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, page: number) => {
     e.preventDefault();
@@ -45,7 +45,7 @@ const usePagination = (numRecords: number, pageSize: number) => {
     </Pagination>
   );
 
-  return { currentPage, pagesCount, startRecordCount, endRecordCount, PaginationComponent };
+  return { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent };
 };
 
 export default usePagination;

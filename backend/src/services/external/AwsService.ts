@@ -10,7 +10,7 @@ const s3 = new aws.S3({
 export const s3BucketFolder = 'sneakers/';
 
 class CustomAwsService {
-  uploadFileToS3 = (file: Express.Multer.File, s3Folder: string): Promise<aws.S3.ManagedUpload.SendData> => {
+  uploadFileToS3 = async (file: Express.Multer.File, s3Folder: string): Promise<string> => {
     const params: aws.S3.PutObjectRequest = {
       Bucket: config.imageBucket,
       ACL: 'public-read',
@@ -20,11 +20,11 @@ class CustomAwsService {
       Key: s3Folder + file.filename,
     };
 
-    return s3.upload(params).promise();
+    return s3.upload(params).promise().then(r => r.Location);
   };
 
   s3UploadFiles = (files: Express.Multer.File[]): Promise<string[]> => {
-    const s3Promises = files.map((file) => this.uploadFileToS3(file, s3BucketFolder).then((data) => data.Location));
+    const s3Promises = files.map((file) => this.uploadFileToS3(file, s3BucketFolder).then((url) => url));
 
     return Promise.all(s3Promises);
   };

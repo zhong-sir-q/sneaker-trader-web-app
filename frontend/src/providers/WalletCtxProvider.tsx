@@ -5,12 +5,12 @@ import WalletControllerInstance from 'api/controllers/WalletController';
 import { useAuth } from './AuthProvider';
 
 type WalletCtxType = {
-  walletBalance: number | undefined;
+  walletBalance: number | null;
   goFetchBalance: () => void;
 };
 
 const INIT_CTX: WalletCtxType = {
-  walletBalance: undefined,
+  walletBalance: null,
   goFetchBalance: () => {
     throw new Error('Must override!');
   },
@@ -22,7 +22,7 @@ export const useWalletCtx = () => useContext(WalletCtx);
 
 const WalletCtxProvider = (props: { children: ReactNode }) => {
   const [fetchBalance, setFetchBalance] = useState(true);
-  const [walletBalance, setWalletBalance] = useState<number>();
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
 
   const { currentUser } = useAuth();
 

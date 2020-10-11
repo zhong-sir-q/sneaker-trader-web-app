@@ -44,13 +44,14 @@ class TransactionService implements TranscationEntity {
 
   async getPurchasedSneakersByBuyerId(buyerId: number): Promise<BuyerPurchasedSneaker[]> {
     const getSellersInfo = `
-      SELECT email, name, username, phoneNo, U.id as userId FROM
-        Transactions T, Users U WHERE listedProductId = L.id AND T.sellerId = U.id
+      SELECT email, name, username, phoneNo, U.id as userId, 
+        IF(T.sellerRatingFromBuyer > 0, 1, 0) AS hasBuyerRatedSeller FROM
+          Transactions T, Users U WHERE listedProductId = L.id AND T.sellerId = U.id
     `;
 
     const getSellerObjectQuery = `
       SELECT JSON_OBJECT("email", email, "username", username, 
-        "phoneNo", phoneNo, "sellerRating", sellerRating)
+        "phoneNo", phoneNo, "sellerRating", sellerRating, "hasBuyerRatedSeller", hasBuyerRatedSeller)
           FROM ( ${getSellersInfo} ) q1 LEFT JOIN
             ( ${getSellersAvgRatingQuery('sellerRating')} ) q2 ON q1.userId = q2.sellerId
     `;

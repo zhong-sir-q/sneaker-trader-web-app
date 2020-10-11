@@ -17,6 +17,7 @@ import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
 import { useHomePageCtx } from 'providers/marketplace/HomePageCtxProvider';
 
+
 type FilterBlockProps = { selected: boolean };
 
 const FilterBlock = styled(Col)<FilterBlockProps>`

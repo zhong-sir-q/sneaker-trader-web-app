@@ -1,5 +1,7 @@
 export const formatSneakerPathName = (name: string, color: string) => (name + ' ' + color).split(' ').join('-');
 
+export const formatSneakerNameColorway = (name: string, colorway: string) => `${name} ${colorway}`
+
 export const upperCaseFirstLetter = (s: string | undefined) => {
   if (!s) return s;
 

@@ -20,6 +20,7 @@ import { mapUpperCaseFirstLetter } from 'utils/utils';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
+import AwsControllerInstance from 'api/controllers/AwsController';
 
 const formatListedSneakerPayload = (
   sneaker: SneakerListingFormStateType,
@@ -58,17 +59,19 @@ const SneakerListingForm = () => {
   const goNextstep = () => setStep(step + 1);
 
   const onFinishSubmit = async () => {
-    const { name, colorway, size, brand } = listingSneakerFormState;
+    const { name, colorway, brand } = listingSneakerFormState;
 
-    const nameColorway = `${name} ${colorway}`;
     const imgFormData = formDataFromFiles();
     const sneakerPayload = formatSneaker(listingSneakerFormState);
     const listedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
 
-    await onListingSneaker(SneakerControllerInstance, ListedSneakerControllerInstance, HelperInfoControllerInstance)(
+    await onListingSneaker(
+      AwsControllerInstance,
+      SneakerControllerInstance,
+      ListedSneakerControllerInstance,
+      HelperInfoControllerInstance
+    )(
       imgFormData,
-      nameColorway,
-      size as number,
       currentUser!.id!,
       sneakerPayload,
       listedProductPayload,

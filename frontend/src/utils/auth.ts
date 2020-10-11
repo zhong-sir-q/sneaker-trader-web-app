@@ -4,7 +4,7 @@ import UserControllerInstance from 'api/controllers/UserController';
 
 export const fetchCognitoUser = () => Auth.currentAuthenticatedUser();
 
-export const getCurrentUser = async (cognitoData?: any): Promise<User> => {
+export const getCurrentUser = async (cognitoData?: any): Promise<User | null> => {
   const cognitoUser = cognitoData || (await fetchCognitoUser());
   const email = cognitoUser.email || cognitoUser.attributes.email;
 

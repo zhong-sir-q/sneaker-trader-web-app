@@ -7,6 +7,8 @@ import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 import onDeleteUser from 'usecases/onDeleteUser';
 import { HOME } from 'routes';
+import UserControllerInstance from 'api/controllers/UserController';
+import WalletControllerInstance from 'api/controllers/WalletController';
 
 const DeleteAccountButton = () => {
   const [open, setOpen] = React.useState(false);
@@ -17,7 +19,7 @@ const DeleteAccountButton = () => {
   const handleClose = () => setOpen(false);
 
   const onConfirmDelete = async () => {
-    await onDeleteUser(currentUser!.username);
+    await onDeleteUser(WalletControllerInstance, UserControllerInstance)(currentUser!.username);
     await signOut(history, HOME);
     handleClose();
   };

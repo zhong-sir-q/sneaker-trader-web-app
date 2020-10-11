@@ -1,14 +1,12 @@
-import WalletControllerInstance from 'api/controllers/WalletController';
-import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
+import getTransactionFees from 'usecases/getTransactionFee';
 
-import reactRouterDom from 'react-router-dom';
+test('Calculate transaction fees', () => {
+  const transactionFeeOne = getTransactionFees(235)
+  expect(transactionFeeOne).toBe(23.5)
 
-jest.mock('../../api/controllers/WalletController');
+  const transactionFeeTwo = getTransactionFees(44211)
+  expect(transactionFeeTwo).toBe(4421.1)
 
-
-describe('On sign up user', () => {
-  test('Create the ', async (done) => {
-    expect(true).toBe(true)
-    done()
-  });
+  const transactionFeeThree = getTransactionFees(200)
+  expect(transactionFeeThree).toBe(20)
 });

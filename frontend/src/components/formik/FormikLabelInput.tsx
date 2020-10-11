@@ -9,11 +9,12 @@ const FormikLabelInput = (props: FieldHookConfig<string> & { label: string }) =>
   return (
     <React.Fragment>
       <Label>{props.label}</Label>
-      <Input {...field} {...props as InputProps} />
+      <Input {...field} {...(props as InputProps)}>
+        {props.children}
+      </Input>
       {meta.touched && meta.error && <InputFieldError error={meta.error} />}
     </React.Fragment>
   );
 };
 
 export default FormikLabelInput;
-

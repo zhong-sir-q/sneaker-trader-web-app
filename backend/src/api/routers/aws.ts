@@ -11,7 +11,7 @@ export default (app: Router, CustomAwsServiceInstance: CustomAwsService) => {
 
   awsRoute.post('/upload', upload.single('file'), (req, res, next) => {
     CustomAwsServiceInstance.uploadFileToS3(req.file, s3BucketFolder)
-      .then((data) => res.json(data.Location))
+      .then((locationUrl) => res.json(locationUrl))
       .catch((err) => next(err));
   });
 

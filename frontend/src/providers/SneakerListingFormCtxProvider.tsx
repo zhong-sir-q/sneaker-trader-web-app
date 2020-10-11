@@ -9,6 +9,7 @@ import { useAuth } from './AuthProvider';
 
 import { useHistory } from 'react-router-dom';
 import WalletControllerInstance from 'api/controllers/WalletController';
+import { ADMIN, TOPUP_WALLET } from 'routes';
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
@@ -75,13 +76,18 @@ const SneakerListingFormCtxProvider = (props: { children: React.ReactNode }) => 
   const [colorwayOptions, setColorwayOptions] = useState<string[]>([]);
 
   const { currentUser } = useAuth();
-  const history = useHistory()
+  const history = useHistory();
 
   useEffect(() => {
     if (currentUser) {
       (async () => {
-        const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id, history);
-        if (!isWalletBalancePositive) return;
+        const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id);
+
+        if (!isWalletBalancePositive) {
+          history.push(ADMIN + TOPUP_WALLET);
+          alert('Please topup first, your wallet balance must be greater than 0');
+          return;
+        }
 
         setBrandOptions(await HelperInfoControllerInstance.getBrands());
         setSneakerNamesOptions(await HelperInfoControllerInstance.getSneakerNames());
