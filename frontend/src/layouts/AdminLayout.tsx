@@ -11,11 +11,6 @@ import Footer from 'components/Footer';
 
 import routes, { SneakerTraderRoute, sidebarRoutes } from 'routes';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
-import WalletCtxProvider from 'providers/WalletCtxProvider';
-import TransactionTableContextProvider from 'providers/TransactionTableContextProvider';
-import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
-import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
-import UserStatsCtxProvider from 'providers/marketplace/UserStatsCtxProvider';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map(({ collapse, views, layout, path, component }, idx) => {
@@ -97,20 +92,11 @@ const AdminLayout = () => {
           not need it when the dashboard is properly implemented */}
       <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>
         <AdminNavbar brandText={getActiveRoute(routes)} />
-        <WalletCtxProvider>
-          <TransactionTableContextProvider>
-            <UserStatsCtxProvider>
-              <SneakerListingFormCtxProvider>
-                <PreviewImgDropzoneCtxProvider>
-                  <Switch>
-                    {getRoutes(routes)}
-                    <Redirect from='/admin' to='/admin/dashboard' />
-                  </Switch>
-                </PreviewImgDropzoneCtxProvider>
-              </SneakerListingFormCtxProvider>
-            </UserStatsCtxProvider>
-          </TransactionTableContextProvider>
-        </WalletCtxProvider>
+        <Switch>
+          {getRoutes(routes)}
+          <Redirect from='/admin' to='/admin/dashboard' />
+        </Switch>
+
         {
           // do not render footer on full screen maps page
           window.location.href.indexOf('full-screen-maps') !== -1 ? null : <Footer fluid default={false} />

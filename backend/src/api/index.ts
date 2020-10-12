@@ -32,6 +32,7 @@ import TransactionService from '../services/TransactionService';
 import StripeService from '../services/external/StripeService';
 
 import AddressService from '../services/AddressService';
+import AddressVerificationCodeService from '../services/AddressVerificationCodeService';
 
 export default () => {
   const app = Router();
@@ -45,7 +46,7 @@ export default () => {
 
   user(app, new UserService());
   seller(app, new SellerService());
-  address(app, new AddressService());
+  address(app, new AddressService(new AddressVerificationCodeService()));
 
   sneaker(app, new SneakerService());
   listedSneaker(app, new ListedSneakerService());

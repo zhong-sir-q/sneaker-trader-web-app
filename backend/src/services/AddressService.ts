@@ -1,15 +1,26 @@
-import { AddressEntity, Address } from '../../../shared';
+import { AddressEntity, Address, AddrVerificationStatus } from '../../../shared';
 import { formateGetColumnsQuery, formatUpdateColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
 
 import { ADDRESS } from '../config/tables';
 import mysqlPoolConnection from '../config/mysql';
+import AddressVerificationCodeService from './AddressVerificationCodeService';
 
 class AddressService implements AddressEntity {
+  AddressVerificationCodeServiceInstance: AddressVerificationCodeService;
+
+  constructor(AddrVerifyCodeServ: AddressVerificationCodeService) {
+    this.AddressVerificationCodeServiceInstance = AddrVerifyCodeServ;
+  }
+
   async addUserAddress(userId: number, addr: Address): Promise<void> {
     const poolConn = await mysqlPoolConnection();
 
-    const addUserAddrQuery = formatInsertColumnsQuery(ADDRESS, addr);
+    const addUserAddrQuery = formatInsertColumnsQuery(ADDRESS, { ...addr, userId });
     await poolConn.query(addUserAddrQuery);
+  }
+
+  async onSuccessGenerateCode(userId: number): Promise<void> {
+    await this.updateVerificationStatus(userId, 'in_progress');
   }
 
   async getAddressByUserId(userId: number): Promise<Address | null> {
@@ -25,16 +36,11 @@ class AddressService implements AddressEntity {
     const addr = await this.getAddressByUserId(userId);
     if (!addr) return false;
 
-    return addr.verificationCode === code;
+    return this.AddressVerificationCodeServiceInstance.validateCode(userId, code);
   }
 
   async generateAndUpdateVerifcationCode(userId: number): Promise<void> {
-    const poolConn = await mysqlPoolConnection();
-
-    const sixDigitCode = Math.floor(100000 + Math.random() * 900000);
-
-    const updateQuery = formatUpdateColumnsQuery(ADDRESS, { verificationCode: sixDigitCode }, `userId = ${userId}`);
-    await poolConn.query(updateQuery);
+    this.AddressVerificationCodeServiceInstance.generateAndUpdateVerifcationCode(userId);
   }
 
   async updateAddressByUserId(userId: number, addr: Address): Promise<void> {
@@ -42,6 +48,13 @@ class AddressService implements AddressEntity {
     const updateQuery = formatUpdateColumnsQuery(ADDRESS, addr, `userId = ${userId}`);
 
     await poolConn.query(updateQuery);
+  }
+
+  private async updateVerificationStatus(userId: number, status: AddrVerificationStatus) {
+    const poolConn = await mysqlPoolConnection();
+
+    const updateStatusQuery = formatUpdateColumnsQuery(ADDRESS, { verificationStatus: status }, `userId = ${userId}`);
+    poolConn.query(updateStatusQuery);
   }
 }
 

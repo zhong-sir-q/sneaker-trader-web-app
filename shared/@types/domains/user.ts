@@ -21,13 +21,13 @@ export type Seller = Customer & { hasBuyerRatedSeller: 0 | 1 };
 
 export type CreateUserPayload = Omit<AppUser, 'profilePicUrl'>;
 
+export type AddrVerificationStatus = 'not_verified' | 'in_progress' | 'verified';
+
 export type Address = {
   street: string;
   city: string;
   region: string;
   zipcode: number;
   country: string;
-  verificationStatus: 'not_verified' | 'in_progress' | 'verified';
-  // only the backend knows about the code!!!
-  verificationCode?: number
+  verificationStatus: AddrVerificationStatus;
 };

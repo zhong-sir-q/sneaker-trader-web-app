@@ -6,4 +6,5 @@ export interface AddressEntity {
   generateAndUpdateVerifcationCode(userId: number): Promise<void>;
   updateAddressByUserId(userId: number, addr: Address): Promise<void>;
   addUserAddress(userId: number, addr: Address): Promise<void>;
+  onSuccessGenerateCode(userId: number): Promise<void>;
 }

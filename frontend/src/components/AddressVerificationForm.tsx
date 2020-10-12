@@ -77,17 +77,17 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
     alert('Address is updated!');
   };
 
-  const onSubmit = (formValues: Address) => {
+  const onSubmit = async (formValues: Address) => {
     if (!currentUser) return;
 
     switch (address.verificationStatus) {
       case 'in_progress':
         return;
       case 'not_verified':
-        onVerifyAddress(currentUser.id, formValues);
+        await onVerifyAddress(currentUser.id, formValues);
         break;
       case 'verified':
-        updateAddress(currentUser.id, formValues);
+        await updateAddress(currentUser.id, formValues);
         break;
       default:
         throw new Error('Invalid address status');
@@ -101,7 +101,8 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
 
   const onConfirmCode = async () => {
     if (!verificationCode || !currentUser) return;
-    completeVerifyAddress(currentUser.id, verificationCode);
+    await completeVerifyAddress(currentUser.id, verificationCode);
+
     props.goLoadAddress();
   };
 
@@ -194,6 +195,14 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
             label='Verification Code'
             type='number'
             placeholder='6 digit code'
+            // restrict the text field input to 6 digits
+            onInput={(e) => {
+              if (!(e.target as any).value) return;
+
+              (e.target as any).value = Math.max(0, parseInt((e.target as any).value))
+                .toString()
+                .slice(0, 6);
+            }}
             fullWidth
           />
         </DialogContent>

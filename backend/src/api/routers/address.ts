@@ -23,6 +23,14 @@ export default (app: Router, AddressServiceInstance: AddressService) => {
       .catch(next);
   });
 
+  userAddrRoute.get('/codeGeneratedSuccess/:userId', (req, res, next) => {
+    const { userId } = req.params;
+
+    AddressServiceInstance.onSuccessGenerateCode(Number(userId))
+      .then(() => res.json('Verifcation status is now in_progress'))
+      .catch(next);
+  });
+
   userAddrRoute.post('/validateCode/:userId', (req, res, next) => {
     const { verificationCode } = req.body;
     const { userId } = req.params;

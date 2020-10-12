@@ -22,8 +22,14 @@ import 'assets/css/sneakertrader.css';
 // @ts-ignore
 import awsconfig from 'aws-exports';
 
+// providers
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
 import HomePageCtxProvider from 'providers/marketplace/HomePageCtxProvider';
+import WalletCtxProvider from 'providers/WalletCtxProvider';
+import TransactionTableContextProvider from 'providers/TransactionTableContextProvider';
+import UserStatsCtxProvider from 'providers/marketplace/UserStatsCtxProvider';
+import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
+import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -51,23 +57,34 @@ const App = () => {
   return (
     <Elements stripe={stripePromise}>
       <AuthProvider>
-        <Router>
-          <Switch>
-            <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
+        <HomePageCtxProvider>
+          {/* admin layout specific providers */}
+          <WalletCtxProvider>
+            <TransactionTableContextProvider>
+              <UserStatsCtxProvider>
+                <SneakerListingFormCtxProvider>
+                  <PreviewImgDropzoneCtxProvider>
+                    <Router>
+                      <Switch>
+                        <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
-            <Route path={ADMIN}>
-              <ProtectedAdmin />
-            </Route>
+                        <Route path={ADMIN}>
+                          <ProtectedAdmin />
+                        </Route>
 
-            <Route path={HOME}>
-              <HomePageCtxProvider>
-                <HomeLayout />
-              </HomePageCtxProvider>
-            </Route>
+                        <Route path={HOME}>
+                          <HomeLayout />
+                        </Route>
 
-            <Redirect from='/' to={HOME} />
-          </Switch>
-        </Router>
+                        <Redirect from='/' to={HOME} />
+                      </Switch>
+                    </Router>
+                  </PreviewImgDropzoneCtxProvider>
+                </SneakerListingFormCtxProvider>
+              </UserStatsCtxProvider>
+            </TransactionTableContextProvider>
+          </WalletCtxProvider>
+        </HomePageCtxProvider>
       </AuthProvider>
     </Elements>
   );
