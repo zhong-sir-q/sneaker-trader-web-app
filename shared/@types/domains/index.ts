@@ -9,6 +9,7 @@ export * from './entities/WalletEntity';
 export * from './entities/HelperInfoEntity';
 export * from './entities/TransactionsEntity';
 export * from './entities/SneakerEntity';
+export * from './entities/AddressEntity';
 
 export type DecreaseWalletPayload = {
   userId: number;

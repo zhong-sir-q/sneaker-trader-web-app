@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
 
 // reactstrap components
-import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert, CardFooter } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from 'reactstrap';
 
 import * as Yup from 'yup';
 
@@ -183,27 +183,16 @@ const UserProfile = () => {
           )}
         </Formik>
 
-        <Card>
-          <CardHeader>
-          <h5 className='title'>Address</h5>
-          </CardHeader>
-          <CardBody>
-            <AddressVerificationForm
-              values={{
-                street: '',
-                city: '',
-                zipcode: ('' as unknown) as number,
-                region: '',
-                country: 'New Zealand',
-              }}
-            />
-          </CardBody>
-          <CardFooter>
-            <Button color='primary'>Verify Address</Button>
-            <Button>Update Address</Button>
-            <Button>Complete Verification</Button>
-          </CardFooter>
-        </Card>
+        <AddressVerificationForm
+          address={{
+            street: '',
+            city: '',
+            zipcode: ('' as unknown) as number,
+            region: '',
+            country: 'New Zealand',
+            verificationStatus: 'in_progress',
+          }}
+        />
       </div>
     </React.Fragment>
   );

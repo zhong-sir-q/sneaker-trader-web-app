@@ -2,7 +2,7 @@ import util from 'util';
 import mysql from 'mysql';
 import config from '.';
 
-export type PromisifiedConnection = {
+export type DataConnection = {
   query(sql: string | mysql.QueryOptions): Promise<any>;
   close(): Promise<any>;
 };
@@ -11,7 +11,7 @@ const pool = mysql.createPool(config.sqlConnectionConfig);
 
 export const endPool = () => pool.end();
 
-const mysqlPoolConnection = (): Promise<PromisifiedConnection> => {
+const mysqlPoolConnection = (): Promise<DataConnection> => {
   return new Promise((resolve, reject) => {
     pool.getConnection((err, conn) => {
       if (err) reject(err);

@@ -5,6 +5,7 @@ import { useAuth } from './AuthProvider';
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../shared';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import TransactionControllerInstance from 'api/controllers/TransactionController';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 type TransactionTableContextType = {
   isFetchingTransactions: boolean;
@@ -35,7 +36,12 @@ const TransactionTableContext = createContext(INIT_TRANSACTION_CONTEXT);
 export const useTransactionTableContext = () => useContext(TransactionTableContext);
 
 const TransactionTableContextProvider = (props: { children: ReactNode }) => {
-  const [isOpenSaleSuccessPopup, showIsOpenSaleSuccessPopup] = useState(false);
+  const openCloseSaleSuccessHook = useOpenCloseComp()
+
+  const isOpenSaleSuccessPopup = openCloseSaleSuccessHook.open
+  const handleClosePopup = openCloseSaleSuccessHook.onClose
+  const handleOpenPopup = openCloseSaleSuccessHook.onOpen
+
   const [showListed, setShowListed] = useState(true);
   const [isFetchingTransactions, setisFetchingTransactions] = useState(true);
 
@@ -64,9 +70,6 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
       }
     })();
   }, [isOpenSaleSuccessPopup, currentUser]);
-
-  const handleOpenPopup = () => showIsOpenSaleSuccessPopup(true);
-  const handleClosePopup = () => showIsOpenSaleSuccessPopup(false);
 
   const toggleShowListed = () => setShowListed(!showListed);
 

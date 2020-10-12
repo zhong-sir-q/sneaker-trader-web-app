@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardHeader, CardTitle, CardBody, Button } from 'reactstrap';
 
 import { Paper } from '@material-ui/core';
@@ -11,6 +11,8 @@ import styled from 'styled-components';
 
 import { useWalletCtx } from 'providers/WalletCtxProvider';
 
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+
 const PaperContainer = styled(Paper)`
   display: flex;
   justify-content: center;
@@ -19,14 +21,11 @@ const PaperContainer = styled(Paper)`
 `;
 
 const TopupWalletPage = () => {
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const { open, onOpen, onClose } = useOpenCloseComp()
 
   const { walletBalance } = useWalletCtx();
 
-  return walletBalance === undefined ? (
+  return walletBalance === null ? (
     <CenterSpinner />
   ) : (
     <div>
@@ -43,12 +42,12 @@ const TopupWalletPage = () => {
               <h3 style={{ margin: 0 }}>{`$${walletBalance}`}</h3>
             </CardBody>
           </Card>
-          <Button onClick={handleOpen} style={{ width: '100%', fontSize: '1.25em' }} color='primary'>
+          <Button onClick={onOpen} style={{ width: '100%', fontSize: '1.25em' }} color='primary'>
             Topup
           </Button>
         </div>
       </PaperContainer>
-      <TopupWalletDialog isOpen={open} handleClose={handleClose} />
+      <TopupWalletDialog isOpen={open} handleClose={onClose} />
     </div>
   );
 };
