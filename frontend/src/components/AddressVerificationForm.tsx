@@ -21,8 +21,18 @@ import { useAuth } from 'providers/AuthProvider';
 
 import onVerifyAddress from 'usecases/onVerifyAddress';
 
+export const DEFAULT_ADDRESS: Address = {
+  street: '',
+  city: '',
+  region: '',
+  zipcode: ('' as unknown) as number,
+  country: 'New Zealand',
+  verificationStatus: 'not_verified',
+};
+
 type AddressVerificationFormProps = {
   address: Address;
+  goLoadAddress: () => void;
 };
 
 const validationSchema = Yup.object({
@@ -48,9 +58,12 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
       ? 'Complte Verification'
       : 'Update Address';
 
+  const disableField = () => address.verificationStatus === 'in_progress';
+
   // match the code
   const completeVerifyAddress = async (userId: number, code: number) => {
     const isValidCode = await AddressControllerInstance.validateCodeByUserID(userId, code);
+
     if (!isValidCode) {
       alert('Verification code is not valid');
       return;
@@ -72,89 +85,105 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
         return;
       case 'not_verified':
         onVerifyAddress(currentUser.id, formValues);
-        return;
+        break;
       case 'verified':
         updateAddress(currentUser.id, formValues);
-        return;
+        break;
       default:
         throw new Error('Invalid address status');
     }
+
+    props.goLoadAddress();
   };
 
   const onChangeVerificationCode = (evt: React.ChangeEvent<HTMLInputElement>) =>
     setVerificationCode(Number(evt.target.value));
 
+  const onConfirmCode = async () => {
+    if (!verificationCode || !currentUser) return;
+    completeVerifyAddress(currentUser.id, verificationCode);
+    props.goLoadAddress();
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <h5 className='title'>Address</h5>
-      </CardHeader>
-      <CardBody>
-        <Formik
-          initialValues={address}
-          validationSchema={validationSchema}
-          enableReinitialize
-          onSubmit={(formValues) => onSubmit(formValues)}
-        >
-          {(formikProps) => (
-            <FormikForm>
-              <FormGroup>
-                <FormikLabelInput name='street' type='text' label='Street Address' />
-              </FormGroup>
-              <Row>
-                <Col>
-                  <FormGroup>
-                    <FormikAutoSuggestInput
-                      name='city'
-                      label='City'
-                      options={cities}
-                      setfieldvalue={formikProps.setFieldValue}
-                    />
-                  </FormGroup>
-                </Col>
+    <React.Fragment>
+      <Formik
+        initialValues={address}
+        validationSchema={validationSchema}
+        enableReinitialize
+        onSubmit={(formValues) => onSubmit(formValues)}
+      >
+        {(formikProps) => (
+          <FormikForm>
+            <Card>
+              <CardHeader>
+                <h5 className='title'>Address</h5>
+              </CardHeader>
+              <CardBody>
+                <FormGroup>
+                  <FormikLabelInput disabled={disableField()} name='street' type='text' label='Street Address' />
+                </FormGroup>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <FormikAutoSuggestInput
+                        disabled={disableField()}
+                        name='city'
+                        label='City'
+                        options={cities}
+                        setfieldvalue={formikProps.setFieldValue}
+                      />
+                    </FormGroup>
+                  </Col>
 
-                <Col>
-                  <FormGroup>
-                    <FormikAutoSuggestInput
-                      name='region'
-                      label='Region'
-                      options={regions}
-                      setfieldvalue={formikProps.setFieldValue}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
+                  <Col>
+                    <FormGroup>
+                      <FormikAutoSuggestInput
+                        disabled={disableField()}
+                        name='region'
+                        label='Region'
+                        options={regions}
+                        setfieldvalue={formikProps.setFieldValue}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
 
-              <Row>
-                <Col>
-                  <FormGroup>
-                    <FormikLabelInput name='zipcode' type='number' label='Postal / Zip Code' />
-                  </FormGroup>
-                </Col>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <FormikLabelInput
+                        disabled={disableField()}
+                        name='zipcode'
+                        type='number'
+                        label='Postal / Zip Code'
+                      />
+                    </FormGroup>
+                  </Col>
 
-                <Col>
-                  <FormGroup>
-                    <FormikLabelInput disabled name='country' type='text' label='Country' />
-                  </FormGroup>
-                </Col>
-              </Row>
-            </FormikForm>
-          )}
-        </Formik>
-      </CardBody>
-      <CardFooter>
-        <Button
-          color='primary'
-          type='submit'
-          onClick={() => {
-            if (address.verificationStatus !== 'in_progress') return;
+                  <Col>
+                    <FormGroup>
+                      <FormikLabelInput disabled name='country' type='text' label='Country' />
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </CardBody>
+              <CardFooter>
+                {address.verificationStatus === 'in_progress' ? (
+                  <Button color='primary' type='button' onClick={onOpen}>
+                    {btnText()}
+                  </Button>
+                ) : (
+                  <Button color='primary' type='submit'>
+                    {btnText()}
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          </FormikForm>
+        )}
+      </Formik>
 
-            onOpen();
-          }}
-        >
-          {btnText()}
-        </Button>
-      </CardFooter>
       <Dialog open={open} onClose={onClose}>
         <DialogTitle>Complete Address Verification</DialogTitle>
         <DialogContent>
@@ -170,18 +199,12 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button
-            color='primary'
-            onClick={() => {
-              if (!verificationCode || !currentUser) return;
-              completeVerifyAddress(currentUser.id, verificationCode);
-            }}
-          >
+          <Button color='primary' onClick={onConfirmCode}>
             Confirm
           </Button>
         </DialogActions>
       </Dialog>
-    </Card>
+    </React.Fragment>
   );
 };
 

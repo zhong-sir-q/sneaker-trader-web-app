@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form as FormikForm, Formik } from 'formik';
 
 // reactstrap components
@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
 
-import { User } from '../../../shared';
+import { User, Address } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
 
 import UserControllerInstance from 'api/controllers/UserController';
@@ -23,7 +23,9 @@ import ImageUpload from 'components/ImageUpload';
 import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import AwsControllerInstance from 'api/controllers/AwsController';
-import AddressVerificationForm from 'components/AddressVerificationForm';
+import AddressVerificationForm, { DEFAULT_ADDRESS } from 'components/AddressVerificationForm';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import AddressControllerInstance from 'api/controllers/AddressController';
 
 // user may have empty firstname or empty lastname or both
 const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
@@ -40,12 +42,36 @@ const validationSchema = (userId: number) =>
   });
 
 const UserProfile = () => {
-  const [successEdit, setSuccessEdit] = useState(false);
+  const openCloseAlertHook = useOpenCloseComp();
+
+  const openAlert = openCloseAlertHook.open;
+  const onShowAlert = openCloseAlertHook.onOpen;
+  const onDismissAlert = openCloseAlertHook.onClose;
+
   const [profileImgFile, setProfileImgFile] = useState<File>();
 
   const { currentUser, updateCurrentUser } = useAuth();
+  const [userAddr, setUserAddr] = useState<Address>();
 
-  const onAlertDismiss = () => setSuccessEdit(false);
+  const [loadAddress, setLoadAddress] = useState(true);
+
+  const goLoadAddress = () => setLoadAddress(true);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchAddr = async () => {
+      const addr = await AddressControllerInstance.getAddressByUserId(currentUser.id);
+      if (!addr) return;
+
+      setUserAddr(addr);
+    };
+
+    if (loadAddress) {
+      fetchAddr();
+      setLoadAddress(false);
+    }
+  }, [currentUser, loadAddress]);
 
   const handleSubmit = async (formStates: User) => {
     if (profileImgFile) {
@@ -58,7 +84,7 @@ const UserProfile = () => {
     }
 
     await UserControllerInstance.update(formStates);
-    setSuccessEdit(true);
+    onShowAlert();
     updateCurrentUser(formStates);
   };
 
@@ -86,7 +112,7 @@ const UserProfile = () => {
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content'>
-        <Alert color='info' isOpen={successEdit} toggle={onAlertDismiss}>
+        <Alert color='info' isOpen={openAlert} toggle={onDismissAlert}>
           Changes have been saved
         </Alert>
         <Formik
@@ -183,16 +209,7 @@ const UserProfile = () => {
           )}
         </Formik>
 
-        <AddressVerificationForm
-          address={{
-            street: '',
-            city: '',
-            zipcode: ('' as unknown) as number,
-            region: '',
-            country: 'New Zealand',
-            verificationStatus: 'in_progress',
-          }}
-        />
+        <AddressVerificationForm address={userAddr || DEFAULT_ADDRESS} goLoadAddress={goLoadAddress} />
       </div>
     </React.Fragment>
   );

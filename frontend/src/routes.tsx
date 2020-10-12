@@ -1,4 +1,3 @@
-import React from 'react';
 
 import SignUp from 'pages/SignUp';
 import SignIn from 'pages/SignIn';
@@ -10,9 +9,6 @@ import Dashboard from 'components/Dashboard';
 import HomePage from 'pages/HomePage';
 import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
 
-import WalletCtxProvider from 'providers/WalletCtxProvider';
-import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
-import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -142,23 +138,13 @@ const routes: SneakerTraderRoute[] = [
   {
     path: PRODUCT_LISTING,
     name: 'Product Listing',
-    component: () => (
-      <SneakerListingFormCtxProvider>
-        <PreviewImgDropzoneCtxProvider>
-          <SneakerListingForm />
-        </PreviewImgDropzoneCtxProvider>
-      </SneakerListingFormCtxProvider>
-    ),
+    component: SneakerListingForm,
     layout: ADMIN,
   },
   {
     path: TOPUP_WALLET,
     name: 'Topup Wallet',
-    component: () => (
-      <WalletCtxProvider>
-        <TopupWalletPage />
-      </WalletCtxProvider>
-    ),
+    component: TopupWalletPage,
     layout: ADMIN,
   },
 ];
