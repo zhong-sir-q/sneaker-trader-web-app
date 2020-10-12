@@ -1,8 +1,9 @@
 import mysqlPoolConnection from '../../config/mysql';
 
 const clearTable = async (tableName: string) => {
+  const poolConn = await mysqlPoolConnection()
   
-  await this.conn.query(`DELETE FROM ${tableName}`);
+  await poolConn.query(`DELETE FROM ${tableName}`);
 };
 
 export default clearTable;

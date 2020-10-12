@@ -21,11 +21,15 @@ const initListedSneakerTable = async () => {
   const sneakerIds: number[] = [];
 
   for (let i = 0; i < 3; i++) userIds.push(await UserServiceInstance.create(fakeUser()));
-  for (let j = 0; j < 10; j++) sneakerIds.push(await SneakerServiceInstance.create(fakeSneaker()));
+  for (let j = 0; j < 10; j++) {
+    const sneakerId = await SneakerServiceInstance.create(fakeSneaker());
+    sneakerIds.push(sneakerId);
+  }
 
   for (const userId of userIds) {
     for (let k = 0; k < 3; k++) {
-      const num = getRand(0, sneakerIds.length);
+      const num = getRand(0, sneakerIds.length - 1);
+
       const productId = sneakerIds[num];
 
       await ListedSneakerServiceInstance.create(fakeListedSneaker(userId, productId));

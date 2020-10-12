@@ -10,8 +10,14 @@ import fakeSneaker from '../../mocks/fakeSneaker';
 import { PRODUCTS, LISTED_PRODUCTS, USERS } from '../../config/tables';
 import initListedSneakerTable from '../../mocks/setup/initListedSneakerTable';
 import fakeListedSneaker from '../../mocks/fakeListedSneaker';
+import mysqlPoolConnection from '../../config/mysql';
 
-beforeAll(() => initListedSneakerTable());
+beforeAll(async () => {
+  const poolConn = await mysqlPoolConnection();
+  // disable only full group by
+  await poolConn.query(`SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY', ''))`);
+  await initListedSneakerTable();
+});
 
 afterAll(async () => {
   await clearTable(LISTED_PRODUCTS);
