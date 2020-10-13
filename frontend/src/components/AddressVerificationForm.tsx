@@ -19,7 +19,8 @@ import { cities, regions } from 'data/nz';
 import AddressControllerInstance from 'api/controllers/AddressController';
 import { useAuth } from 'providers/AuthProvider';
 
-import onVerifyAddress from 'usecases/onVerifyAddress';
+import onSubmitAddrVerificationForm from 'usecases/address_verification/onSubmitAddrVerificationForm';
+import completeVerifyAddress from 'usecases/address_verification/completeVerifyAddress';
 
 export const DEFAULT_ADDRESS: Address = {
   street: '',
@@ -51,6 +52,9 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
 
   const [verificationCode, setVerificationCode] = useState<number>();
 
+  const onChangeVerificationCode = (evt: React.ChangeEvent<HTMLInputElement>) =>
+    setVerificationCode(Number(evt.target.value));
+
   const btnText = () =>
     address.verificationStatus === 'not_verified'
       ? 'Verify Address'
@@ -60,48 +64,27 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
 
   const disableField = () => address.verificationStatus === 'in_progress';
 
-  // match the code
-  const completeVerifyAddress = async (userId: number, code: number) => {
-    const isValidCode = await AddressControllerInstance.validateCodeByUserID(userId, code);
+  const onFailCompleteVerification = () => alert('Verification code is not valid');
+  const onSuccessCompleteVerification = () => alert('Congratulations, your address is verified!');
 
-    if (!isValidCode) {
-      alert('Verification code is not valid');
-      return;
-    }
+  const onConfirmCode = async () => {
+    if (!verificationCode || !currentUser) return;
 
-    alert('Congratulations, your address is verified!');
-  };
-
-  const updateAddress = async (userId: number, addressValues: Address) => {
-    await AddressControllerInstance.updateAddressByUserId(userId, addressValues);
-    alert('Address is updated!');
-  };
-
-  const onSubmit = async (formValues: Address) => {
-    if (!currentUser) return;
-
-    switch (address.verificationStatus) {
-      case 'in_progress':
-        return;
-      case 'not_verified':
-        await onVerifyAddress(AddressControllerInstance)(currentUser.id, formValues);
-        break;
-      case 'verified':
-        await updateAddress(currentUser.id, formValues);
-        break;
-      default:
-        throw new Error('Invalid address status');
-    }
+    await completeVerifyAddress(
+      AddressControllerInstance,
+      onFailCompleteVerification,
+      onSuccessCompleteVerification
+    )(currentUser.id, verificationCode);
 
     props.goLoadAddress();
   };
 
-  const onChangeVerificationCode = (evt: React.ChangeEvent<HTMLInputElement>) =>
-    setVerificationCode(Number(evt.target.value));
+  const onUpdateAddressSuccess = () => alert('Address is updated!');
 
-  const onConfirmCode = async () => {
-    if (!verificationCode || !currentUser) return;
-    await completeVerifyAddress(currentUser.id, verificationCode);
+  const onSubmit = async (addr: Address) => {
+    if (!currentUser) return;
+
+    await onSubmitAddrVerificationForm(AddressControllerInstance, onUpdateAddressSuccess)(currentUser.id, addr);
 
     props.goLoadAddress();
   };

@@ -1,4 +1,4 @@
-import { Address } from '../../../shared';
+import { Address } from '../../../../shared';
 import { AddressController } from 'api/controllers/AddressController';
 
 const onVerifyAddress = (AddressControllerInstance: AddressController) => async (userId: number, addr: Address) => {

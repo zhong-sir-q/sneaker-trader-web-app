@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import onVerifyAddress from 'usecases/onVerifyAddress';
+import onVerifyAddress from 'usecases/address_verification/onVerifyAddress';
 import { MockAddressControllerInstance } from '__mocks__/controllers';
 import fakeUserAddress from '__mocks__/data/fakeUserAddress';
 
