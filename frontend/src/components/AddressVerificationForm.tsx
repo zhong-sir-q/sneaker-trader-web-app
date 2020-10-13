@@ -84,7 +84,7 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
       case 'in_progress':
         return;
       case 'not_verified':
-        await onVerifyAddress(currentUser.id, formValues);
+        await onVerifyAddress(AddressControllerInstance)(currentUser.id, formValues);
         break;
       case 'verified':
         await updateAddress(currentUser.id, formValues);

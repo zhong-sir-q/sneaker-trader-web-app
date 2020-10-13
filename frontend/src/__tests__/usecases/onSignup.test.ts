@@ -1,9 +1,7 @@
-import UserControllerInstance from 'api/controllers/UserController';
-import WalletControllerInstance from 'api/controllers/WalletController';
-
 import Amplify from 'aws-amplify';
 import onSignup from 'usecases/onSignup';
 import fakeUser from '__mocks__/data/fakeUser';
+import { MockUserControllerInstance, MockWalletControllerInstance } from '__mocks__/controllers';
 
 jest.mock('aws-amplify', () => ({
   Auth: {
@@ -16,10 +14,10 @@ jest.mock('api/controllers/WalletController');
 
 describe('On sign up user', () => {
   test('Create the user in db and amplify and create the wallet', async (done) => {
-    await onSignup(UserControllerInstance, WalletControllerInstance)(fakeUser(), '123456');
+    await onSignup(MockUserControllerInstance, MockWalletControllerInstance)(fakeUser(), '123456');
 
-    expect(UserControllerInstance.create).toBeCalledTimes(1);
-    expect(WalletControllerInstance.create).toBeCalledTimes(1);
+    expect(MockUserControllerInstance.create).toBeCalledTimes(1);
+    expect(MockWalletControllerInstance.create).toBeCalledTimes(1);
     expect(Amplify.Auth.signUp).toBeCalledTimes(1);
 
     done();

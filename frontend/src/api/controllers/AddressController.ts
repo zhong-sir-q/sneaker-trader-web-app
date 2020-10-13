@@ -3,7 +3,7 @@ import { AddressEntity, Address } from '../../../../shared';
 
 import formatRequestOptions from 'api/formatRequestOptions';
 
-class AddressController implements AddressEntity {
+export class AddressController implements AddressEntity {
   addrPath: string;
 
   constructor() {
