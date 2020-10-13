@@ -37,7 +37,7 @@ const PreviewImgDropzoneCtx = createContext(INIT_CTX);
 
 export const usePreviewImgDropzoneCtx = () => useContext(PreviewImgDropzoneCtx);
 
-const PreviewImgDropzoneCtxProvider = (props: { children: React.ReactNode }) => {
+const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
   const [files, setFiles] = useState<PreviewFile[]>([]);
   const [mainFileId, setMainFileId] = useState<string>();
 
@@ -106,4 +106,4 @@ const PreviewImgDropzoneCtxProvider = (props: { children: React.ReactNode }) => 
   );
 };
 
-export default PreviewImgDropzoneCtxProvider;
+export default PreviewImgDropzoneProvider;

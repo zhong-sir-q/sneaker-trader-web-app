@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 
 import ListedSneakerTable from './ListedSneakerTable';
 
-import { useTransactionTableContext } from 'providers/TransactionTableContextProvider';
+import { useTransactionTableContext } from 'providers/TransactionTableProvider';
 
 const SaleHistoryTable = () => {
   const { sellerSoldSneakers, isFetchingTransactions } = useTransactionTableContext();

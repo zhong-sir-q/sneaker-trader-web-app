@@ -11,7 +11,7 @@ import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 
 import { DASHBOARD, ADMIN } from 'routes';
 
-import { useSneakerListingFormCtx } from 'providers/SneakerListingFormCtxProvider';
+import { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
 import { range } from 'utils/utils';
 
 type SneakerInfoFormProps = {

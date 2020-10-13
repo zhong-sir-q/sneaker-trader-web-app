@@ -27,7 +27,7 @@ const HomePageCtx = createContext(INIT_CTX);
 
 export const useHomePageCtx = () => useContext(HomePageCtx);
 
-const HomePageCtxProvider = (props: { children: ReactNode }) => {
+const HomePageProvider = (props: { children: ReactNode }) => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>();
   const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>();
   const [brands, setBrands] = useState<string[]>();
@@ -58,4 +58,4 @@ const HomePageCtxProvider = (props: { children: ReactNode }) => {
   );
 };
 
-export default HomePageCtxProvider;
+export default HomePageProvider;

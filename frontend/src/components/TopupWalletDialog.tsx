@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, TextField, DialogTitle, DialogContent } from '@material-ui/core';
 
-import { useWalletCtx } from 'providers/WalletCtxProvider';
+import { useWalletCtx } from 'providers/WalletProvider';
 import { useAuth } from 'providers/AuthProvider';
 
 import WalletControllerInstance from 'api/controllers/WalletController';

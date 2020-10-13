@@ -6,7 +6,7 @@ import { Container, Button, Row, Col, Table } from 'reactstrap';
 
 import CenterSpinner from 'components/CenterSpinner';
 
-import { useBuySneakerPageCtx } from 'providers/marketplace/BuySneakerPageCtxProvider';
+import { useBuySneakerPageCtx } from 'providers/marketplace/BuySneakerPageProvider';
 import SneakerCard from 'components/SneakerCard';
 import { Sneaker } from '../../../shared';
 

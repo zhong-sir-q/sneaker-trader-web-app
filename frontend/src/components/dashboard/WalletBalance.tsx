@@ -2,7 +2,7 @@ import React from 'react';
 
 import StatisticsDisplay from './StatisticsDisplay';
 
-import { useWalletCtx } from 'providers/WalletCtxProvider';
+import { useWalletCtx } from 'providers/WalletProvider';
 import TopupWalletDialog from 'components/TopupWalletDialog';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 

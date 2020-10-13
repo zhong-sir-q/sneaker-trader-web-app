@@ -20,7 +20,7 @@ const WalletCtx = createContext(INIT_CTX);
 
 export const useWalletCtx = () => useContext(WalletCtx);
 
-const WalletCtxProvider = (props: { children: ReactNode }) => {
+const WalletProvider = (props: { children: ReactNode }) => {
   const [fetchBalance, setFetchBalance] = useState(true);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
 
@@ -43,4 +43,4 @@ const WalletCtxProvider = (props: { children: ReactNode }) => {
   return <WalletCtx.Provider value={{ walletBalance, goFetchBalance }}>{props.children}</WalletCtx.Provider>;
 };
 
-export default WalletCtxProvider;
+export default WalletProvider;

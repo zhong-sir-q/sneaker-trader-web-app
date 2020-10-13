@@ -15,7 +15,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
-import { useHomePageCtx } from 'providers/marketplace/HomePageCtxProvider';
+import { useHomePageCtx } from 'providers/marketplace/HomePageProvider';
 
 
 type FilterBlockProps = { selected: boolean };

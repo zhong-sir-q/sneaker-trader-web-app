@@ -62,7 +62,7 @@ const nameColorwayFromPath = () => {
   return shoeNameColorway;
 };
 
-const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
+const BuySneakerPageProvider = (props: { children: ReactNode }) => {
   const [selectedSize, setSelectedSize] = useState<Size>();
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
   const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
@@ -151,4 +151,4 @@ const BuySneakerPageCtxProvider = (props: { children: ReactNode }) => {
   );
 };
 
-export default BuySneakerPageCtxProvider;
+export default BuySneakerPageProvider;

@@ -66,7 +66,7 @@ const sneakerInfoFromPath = (history: any) => {
   return { nameColorway: sneakerNameColorway, size: sneakerSize };
 };
 
-const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
+const ViewSellersListProvider = (props: { children: ReactNode }) => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
@@ -220,4 +220,4 @@ const ViewSellersListCtxProvider = (props: { children: ReactNode }) => {
   );
 };
 
-export default ViewSellersListCtxProvider;
+export default ViewSellersListProvider;

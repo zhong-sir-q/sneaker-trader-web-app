@@ -68,7 +68,7 @@ const SneakerListingFormCtx = createContext(INIT_CTX);
 
 export const useSneakerListingFormCtx = () => useContext(SneakerListingFormCtx);
 
-const SneakerListingFormCtxProvider = (props: { children: React.ReactNode }) => {
+const SneakerListingFormProvider = (props: { children: React.ReactNode }) => {
   const [listingSneakerFormState, setListingSneakerFormState] = useState(INIT_FORM_STATE);
 
   const [brandOptions, setBrandOptions] = useState<string[]>([]);
@@ -114,4 +114,4 @@ const SneakerListingFormCtxProvider = (props: { children: React.ReactNode }) => 
   );
 };
 
-export default SneakerListingFormCtxProvider;
+export default SneakerListingFormProvider;

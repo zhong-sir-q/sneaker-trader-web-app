@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogTitle, Switch } from '@material-ui/core';
 import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 
-import { useTransactionTableContext } from 'providers/TransactionTableContextProvider';
+import { useTransactionTableContext } from 'providers/TransactionTableProvider';
 import ListedSneakerTable from './ListedSneakerTable';
 import PurchasedSneakerTable from './PurchasedSneakerTable';
 

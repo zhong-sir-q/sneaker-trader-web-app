@@ -11,8 +11,8 @@ import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 import { SneakerStatus, ListedSneakerFormPayload } from '../../../shared';
 
 import { useAuth } from 'providers/AuthProvider';
-import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
-import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormCtxProvider';
+import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
+import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
 
 import onListingSneaker from 'usecases/onListingSneaker';
 import { mapUpperCaseFirstLetter } from 'utils/utils';

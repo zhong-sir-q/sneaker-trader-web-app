@@ -9,7 +9,7 @@ import TopupWalletDialog from 'components/TopupWalletDialog';
 
 import styled from 'styled-components';
 
-import { useWalletCtx } from 'providers/WalletCtxProvider';
+import { useWalletCtx } from 'providers/WalletProvider';
 
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 

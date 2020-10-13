@@ -24,12 +24,12 @@ import awsconfig from 'aws-exports';
 
 // providers
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
-import HomePageCtxProvider from 'providers/marketplace/HomePageCtxProvider';
-import WalletCtxProvider from 'providers/WalletCtxProvider';
-import TransactionTableContextProvider from 'providers/TransactionTableContextProvider';
-import UserStatsCtxProvider from 'providers/marketplace/UserStatsCtxProvider';
-import SneakerListingFormCtxProvider from 'providers/SneakerListingFormCtxProvider';
-import PreviewImgDropzoneCtxProvider from 'providers/PreviewImgDropzoneCtxProvider';
+import HomePageProvider from 'providers/marketplace/HomePageProvider';
+import WalletProvider from 'providers/WalletProvider';
+import TransactionTableProvider from 'providers/TransactionTableProvider';
+import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
+import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
+import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -57,13 +57,13 @@ const App = () => {
   return (
     <Elements stripe={stripePromise}>
       <AuthProvider>
-        <HomePageCtxProvider>
+        <HomePageProvider>
           {/* admin layout specific providers */}
-          <WalletCtxProvider>
-            <TransactionTableContextProvider>
-              <UserStatsCtxProvider>
-                <SneakerListingFormCtxProvider>
-                  <PreviewImgDropzoneCtxProvider>
+          <WalletProvider>
+            <TransactionTableProvider>
+              <UserStatsProvider>
+                <SneakerListingFormProvider>
+                  <PreviewImgDropzoneProvider>
                     <Router>
                       <Switch>
                         <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
@@ -79,12 +79,12 @@ const App = () => {
                         <Redirect from='/' to={HOME} />
                       </Switch>
                     </Router>
-                  </PreviewImgDropzoneCtxProvider>
-                </SneakerListingFormCtxProvider>
-              </UserStatsCtxProvider>
-            </TransactionTableContextProvider>
-          </WalletCtxProvider>
-        </HomePageCtxProvider>
+                  </PreviewImgDropzoneProvider>
+                </SneakerListingFormProvider>
+              </UserStatsProvider>
+            </TransactionTableProvider>
+          </WalletProvider>
+        </HomePageProvider>
       </AuthProvider>
     </Elements>
   );

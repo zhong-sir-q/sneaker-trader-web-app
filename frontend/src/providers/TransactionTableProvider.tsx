@@ -35,7 +35,7 @@ const TransactionTableContext = createContext(INIT_TRANSACTION_CONTEXT);
 
 export const useTransactionTableContext = () => useContext(TransactionTableContext);
 
-const TransactionTableContextProvider = (props: { children: ReactNode }) => {
+const TransactionTableProvider = (props: { children: ReactNode }) => {
   const openCloseSaleSuccessHook = useOpenCloseComp()
 
   const isOpenSaleSuccessPopup = openCloseSaleSuccessHook.open
@@ -92,4 +92,4 @@ const TransactionTableContextProvider = (props: { children: ReactNode }) => {
   );
 };
 
-export default TransactionTableContextProvider;
+export default TransactionTableProvider;

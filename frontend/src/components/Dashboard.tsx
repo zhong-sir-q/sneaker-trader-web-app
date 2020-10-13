@@ -15,7 +15,7 @@ import MonthSneakerValue from './dashboard/charts/MonthSneakerValue';
 import CenterSpinner from './CenterSpinner';
 
 import WalletBalance from './dashboard/WalletBalance';
-import { useUserStatsCtx } from 'providers/marketplace/UserStatsCtxProvider';
+import { useUserStatsCtx } from 'providers/marketplace/UserStatsProvider';
 
 /**
  * TODO:

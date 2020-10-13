@@ -11,8 +11,8 @@ import { formatSneakerPathName } from 'utils/utils';
 import { homeRoutes, HOME } from 'routes';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import { concatPaths } from 'api/formatApiEndpoint';
-import BuySneakerPageCtxProvider from 'providers/marketplace/BuySneakerPageCtxProvider';
-import ViewSellersListCtxProvider from 'providers/marketplace/ViewSellersListCtxProvider';
+import BuySneakerPageProvider from 'providers/marketplace/BuySneakerPageProvider';
+import ViewSellersListProvider from 'providers/marketplace/ViewSellersListProvider';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
@@ -35,18 +35,18 @@ const HomeLayout = () => {
               exact
               path={concatPaths(HOME, path)}
               component={() => (
-                <BuySneakerPageCtxProvider>
+                <BuySneakerPageProvider>
                   <BuySneakerPage />
-                </BuySneakerPageCtxProvider>
+                </BuySneakerPageProvider>
               )}
             />
           ) : undefined}
           <Route
             path={concatPaths(HOME, path, size)}
             component={() => (
-              <ViewSellersListCtxProvider>
+              <ViewSellersListProvider>
                 <ViewSellersList />
-              </ViewSellersListCtxProvider>
+              </ViewSellersListProvider>
             )}
           />
         </React.Fragment>

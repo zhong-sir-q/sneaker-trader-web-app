@@ -3,7 +3,7 @@ import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
 import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
-import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneCtxProvider';
+import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {

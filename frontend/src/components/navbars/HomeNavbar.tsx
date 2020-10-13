@@ -13,7 +13,7 @@ import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
-import { useHomePageCtx } from 'providers/marketplace/HomePageCtxProvider';
+import { useHomePageCtx } from 'providers/marketplace/HomePageProvider';
 import { UserRankingRow } from '../../../../shared';
 import UserControllerInstance from 'api/controllers/UserController';
 

@@ -21,7 +21,7 @@ const UserStatsCtx = createContext(INIT_CTX);
 
 export const useUserStatsCtx = () => useContext(UserStatsCtx);
 
-const UserStatsCtxProvider = (props: { children: ReactNode }) => {
+const UserStatsProvider = (props: { children: ReactNode }) => {
   const [rankingPoints, setRankingPoint] = useState<number>();
   const [listedSneakerCounts, setListedSneakerCounts] = useState<number>();
   const [completedSaleCounts, setCompletedSaleCounts] = useState<number>();
@@ -51,4 +51,4 @@ const UserStatsCtxProvider = (props: { children: ReactNode }) => {
   );
 };
 
-export default UserStatsCtxProvider;
+export default UserStatsProvider;

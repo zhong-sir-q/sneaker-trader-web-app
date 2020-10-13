@@ -15,7 +15,7 @@ import CenterSpinner from 'components/CenterSpinner';
 
 import getTransactionFees from 'usecases/getTransactionFee';
 import SneakerCarousel from 'components/SneakerCarousel';
-import { useViewSellersListCtx } from 'providers/marketplace/ViewSellersListCtxProvider';
+import { useViewSellersListCtx } from 'providers/marketplace/ViewSellersListProvider';
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
