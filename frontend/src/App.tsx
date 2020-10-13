@@ -53,37 +53,40 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   return !signedIn ? <AuthLayout /> : <Redirect to={state || HOME} />;
 };
 
+const DashboardProviders = (props: { children: React.ReactNode }) => (
+  <TransactionTableProvider>
+    <WalletProvider>
+      <UserStatsProvider>
+        <SneakerListingFormProvider>
+          <PreviewImgDropzoneProvider>{props.children}</PreviewImgDropzoneProvider>
+        </SneakerListingFormProvider>
+      </UserStatsProvider>
+    </WalletProvider>
+  </TransactionTableProvider>
+);
+
 const App = () => {
   return (
     <Elements stripe={stripePromise}>
       <AuthProvider>
         <HomePageProvider>
-          {/* admin layout specific providers */}
-          <WalletProvider>
-            <TransactionTableProvider>
-              <UserStatsProvider>
-                <SneakerListingFormProvider>
-                  <PreviewImgDropzoneProvider>
-                    <Router>
-                      <Switch>
-                        <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
+          <DashboardProviders>
+            <Router>
+              <Switch>
+                <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
-                        <Route path={ADMIN}>
-                          <ProtectedAdmin />
-                        </Route>
+                <Route path={ADMIN}>
+                  <ProtectedAdmin />
+                </Route>
 
-                        <Route path={HOME}>
-                          <HomeLayout />
-                        </Route>
+                <Route path={HOME}>
+                  <HomeLayout />
+                </Route>
 
-                        <Redirect from='/' to={HOME} />
-                      </Switch>
-                    </Router>
-                  </PreviewImgDropzoneProvider>
-                </SneakerListingFormProvider>
-              </UserStatsProvider>
-            </TransactionTableProvider>
-          </WalletProvider>
+                <Redirect from='/' to={HOME} />
+              </Switch>
+            </Router>
+          </DashboardProviders>
         </HomePageProvider>
       </AuthProvider>
     </Elements>
