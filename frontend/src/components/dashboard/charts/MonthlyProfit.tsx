@@ -1,10 +1,10 @@
 import React from 'react';
 import { CardBody, Card, CardHeader, CardTitle } from 'reactstrap';
 
-import { Line } from 'react-chartjs-2'
+import { Line } from 'react-chartjs-2';
 import gradientChartOptionsConfig from './gradientChartOptionsConfig';
 
-const monthlyProfitMock = {
+const monthlyProfitConfig = (mothlyCumProfit: number[]) => ({
   data: (canvas: any) => {
     var ctx = canvas.getContext('2d');
 
@@ -15,7 +15,7 @@ const monthlyProfitMock = {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       datasets: [
         {
-          label: 'Active Users',
+          label: 'Amount ($)',
           borderColor: '#f96332',
           pointBorderColor: '#FFF',
           pointBackgroundColor: '#f96332',
@@ -26,15 +26,22 @@ const monthlyProfitMock = {
           fill: true,
           backgroundColor: gradientFill,
           borderWidth: 2,
-          data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 630],
+          data: mothlyCumProfit,
         },
       ],
     };
   },
   options: gradientChartOptionsConfig,
+});
+
+type MonthlyProfitProps = {
+  monthlyCumProfit: number[];
 };
 
-const MonthlyProfit = () => {
+const MonthlyProfit = (props: MonthlyProfitProps) => {
+  const config = monthlyProfitConfig(props.monthlyCumProfit);
+  const { data, options } = config;
+
   return (
     <Card className='card-chart'>
       <CardHeader>
@@ -43,7 +50,7 @@ const MonthlyProfit = () => {
       </CardHeader>
       <CardBody>
         <div className='chart-area'>
-          <Line data={monthlyProfitMock.data} options={monthlyProfitMock.options} />
+          <Line data={data} options={options} />
         </div>
       </CardBody>
     </Card>

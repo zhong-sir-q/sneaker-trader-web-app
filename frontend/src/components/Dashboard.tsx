@@ -21,15 +21,17 @@ import { useUserStatsCtx } from 'providers/marketplace/UserStatsProvider';
  * TODO:
  *
  * Graphs
- * - Profit over time (compare to the og purchased price, add it to the listing form)
  * - the value of your sneakers going up or down monthly (Trend)
  */
 
 const Dashboard = () => {
-  const { rankingPoints, listedSneakerCounts, completedSaleCounts } = useUserStatsCtx();
+  const { rankingPoints, listedSneakerCounts, completedSaleCounts, monthlyCumProfit } = useUserStatsCtx();
 
   // check against undefined, because if if any of the value is 0, then it will render the spinner forever
-  return rankingPoints === undefined || listedSneakerCounts === undefined || completedSaleCounts === undefined ? (
+  return rankingPoints === undefined ||
+    listedSneakerCounts === undefined ||
+    completedSaleCounts === undefined ||
+    !monthlyCumProfit ? (
     <CenterSpinner />
   ) : (
     <React.Fragment>
@@ -59,7 +61,7 @@ const Dashboard = () => {
         </Row>
         <Row>
           <Col xs={12} md={6}>
-            <MonthlyProfit />
+            <MonthlyProfit monthlyCumProfit={monthlyCumProfit} />
           </Col>
           <Col xs={12} md={6}>
             <MonthSneakerValue />

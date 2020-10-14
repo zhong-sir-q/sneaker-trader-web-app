@@ -85,9 +85,10 @@ class TransactionService implements TranscationEntity {
     const poolConn = await mysqlPoolConnection();
 
     const getMonthlyCumProfitQuery = `
-      SELECT SUM((T.amount - T.processingFee - L.originalPurchasePrice)) as cumMonthlyProfit, MONTH(T.transactionDatetime) AS transactionMonth
-        FROM Transactions T, ListedProducts L WHERE sellerId = ${sellerId} AND T.listedProductId = L.id
-          AND T.transactionDatetime > DATE_SUB(NOW(), INTERVAL 12 MONTH) GROUP BY MONTH(T.transactionDatetime)
+      SELECT ROUND(SUM((T.amount - T.processingFee - L.originalPurchasePrice))) as cumMonthlyProfit, 
+        MONTH(T.transactionDatetime) AS transactionMonth FROM Transactions T, 
+          ListedProducts L WHERE sellerId = ${sellerId} AND T.listedProductId = L.id
+            AND T.transactionDatetime > DATE_SUB(NOW(), INTERVAL 12 MONTH) GROUP BY MONTH(T.transactionDatetime)
     `;
 
     return poolConn.query(getMonthlyCumProfitQuery);
