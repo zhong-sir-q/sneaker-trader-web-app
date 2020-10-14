@@ -20,3 +20,15 @@ The project implements a typical client-server model. In the *react* app, all bu
 
 ### Note
 - Anytime type declarations are added to the shared folder, run `npm run buildAll` to sync the updates between the folders.
+
+## Development
+
+Steps for adding new data to the app
+
+1. Add a column to the sql table (if necessary)
+2. Modify the type of the respective model (if step 1 was done)
+3. Update the respective model entity
+4. Add the sql query method in the service
+5. Expose the route using the service
+6. Interact with the endpoint using the controller
+7. Get/Send/Manipulate the data in the client

@@ -61,14 +61,14 @@ class MailService {
 
     const toSellerMsg = {
       to: `${sellerEmail}`,
-      from: 'alex.zhong@sneakertrader.com',
+      from: 'hello@sneakertrader.com',
       subject: TO_SELLER_SUBJECT_AFTER_PURCHASE,
       html: formatToSellerHtmlMessage({ sellerUserName, buyerUserName, buyerEmail, productName }),
     };
 
     const toBuyerMsg = {
       to: `${buyerEmail}`,
-      from: 'alex.zhong@sneakertrader.com',
+      from: 'hello@sneakertrader.com',
       subject: TO_BUYER_SUBJECT_AFTER_PURCHASE,
       html: formatToBuyerHtmlMessage({ sellerUserName, buyerUserName, productName, sellerEmail }),
     };

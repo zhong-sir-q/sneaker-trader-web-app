@@ -86,8 +86,8 @@ class TransactionService implements TranscationEntity {
 
     const getMonthlyCumProfitQuery = `
       SELECT ROUND(SUM((T.amount - T.processingFee - L.originalPurchasePrice))) as cumMonthlyProfit, 
-        MONTH(T.transactionDatetime) AS transactionMonth FROM Transactions T, 
-          ListedProducts L WHERE sellerId = ${sellerId} AND T.listedProductId = L.id
+        MONTH(T.transactionDatetime) AS transactionMonth FROM Transactions T,
+          ListedProducts L WHERE sellerId = ${sellerId} AND T.listedProductId = L.id AND L.prodStatus = 'sold'
             AND T.transactionDatetime > DATE_SUB(NOW(), INTERVAL 12 MONTH) GROUP BY MONTH(T.transactionDatetime)
     `;
 

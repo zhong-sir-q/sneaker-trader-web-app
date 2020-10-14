@@ -7,9 +7,9 @@ import hexToRGB from './hexToRGB';
 
 const monthlySneakerValueMock = {
   data: (canvas: any) => {
-    var ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
 
-    var gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    const gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
     gradientFill.addColorStop(0, 'rgba(128, 182, 244, 0)');
     gradientFill.addColorStop(1, hexToRGB('#18ce0f', 0.4));
     return {

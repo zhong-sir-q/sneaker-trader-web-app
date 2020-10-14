@@ -29,5 +29,6 @@ export type Address = {
   region: string;
   zipcode: number;
   country: string;
+  suburb: string;
   verificationStatus: AddrVerificationStatus;
 };

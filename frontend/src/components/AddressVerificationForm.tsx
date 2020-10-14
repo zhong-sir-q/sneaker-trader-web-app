@@ -26,6 +26,7 @@ export const DEFAULT_ADDRESS: Address = {
   street: '',
   city: '',
   region: '',
+  suburb: '',
   zipcode: ('' as unknown) as number,
   country: 'New Zealand',
   verificationStatus: 'not_verified',
@@ -42,6 +43,7 @@ const validationSchema = Yup.object({
   region: required(),
   zipcode: required(),
   country: required(),
+  suburb: required(),
 });
 
 const AddressVerificationForm = (props: AddressVerificationFormProps) => {
@@ -104,9 +106,18 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
                 <h5 className='title'>Address</h5>
               </CardHeader>
               <CardBody>
-                <FormGroup>
-                  <FormikLabelInput disabled={disableField()} name='street' type='text' label='Street Address' />
-                </FormGroup>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <FormikLabelInput disabled={disableField()} name='street' type='text' label='Street Address' />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <FormikLabelInput disabled={disableField()} name='suburb' type='text' label='Suburb' />
+                    </FormGroup>
+                  </Col>
+                </Row>
                 <Row>
                   <Col>
                     <FormGroup>
