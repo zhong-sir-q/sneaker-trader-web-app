@@ -1,9 +1,9 @@
 import faker from 'faker';
-import { SneakerCondition } from '../../../shared';
+import { SneakerCondition, CreateListedSneakerPayload } from '../../../shared';
 import fakeImgUrls from './fakeImgUrls';
 
 const conditions: SneakerCondition[] = ['new', 'used', 'dead stock'];
-const fakeListedSneaker = (userId: number, productId: number) => ({
+const fakeListedSneaker = (userId: number, productId: number): CreateListedSneakerPayload => ({
   userId,
   productId,
   askingPrice: faker.random.number(),
@@ -15,6 +15,7 @@ const fakeListedSneaker = (userId: number, productId: number) => ({
   imageUrls: fakeImgUrls(),
   description: faker.lorem.lines(),
   serialNumber: faker.lorem.words(),
+  originalPurchasePrice: faker.random.number(),
 });
 
 export default fakeListedSneaker;

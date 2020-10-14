@@ -43,6 +43,7 @@ export type ListedProduct = {
   imageUrls: string;
   description: string;
   serialNumber: string;
+  originalPurchasePrice: number;
 };
 
 export type Transaction = {

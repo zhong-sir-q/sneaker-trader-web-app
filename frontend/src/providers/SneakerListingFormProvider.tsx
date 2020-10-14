@@ -13,8 +13,18 @@ import { ADMIN, TOPUP_WALLET } from 'routes';
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
-  'name' | 'brand' | 'colorway' | 'description' | 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'conditionRating'
-> & { size: number | ''; askingPrice: number | '' };
+  | 'name'
+  | 'brand'
+  | 'colorway'
+  | 'description'
+  | 'sizeSystem'
+  | 'currencyCode'
+  | 'prodCondition'
+  | 'conditionRating'
+  | 'size'
+  | 'askingPrice'
+  | 'originalPurchasePrice'
+>;
 
 type SneakerListingFormValidationSchemaType = Yup.ObjectSchema<
   Omit<SneakerListingFormStateType, 'conditionRating' | 'description'> | undefined
@@ -32,10 +42,11 @@ type SneakerListingFormCtxType = {
 const INIT_FORM_STATE: SneakerListingFormStateType = {
   name: '',
   brand: '',
-  size: '',
+  size: ('' as unknown) as number,
   colorway: '',
-  askingPrice: '',
+  askingPrice: ('' as unknown) as number,
   description: '',
+  originalPurchasePrice: ('' as unknown) as number,
   sizeSystem: 'US',
   currencyCode: 'NZD',
   prodCondition: '' as SneakerCondition,
@@ -51,6 +62,7 @@ const sneakerListingFormValidationSchema: SneakerListingFormValidationSchemaType
   prodCondition: required() as Yup.Schema<SneakerCondition>,
   askingPrice: minNumber(20, 'Minimum $20'),
   size: allowedRange(1, 15),
+  originalPurchasePrice: minNumber(1, 'Minimum $1'),
 });
 
 const INIT_CTX: SneakerListingFormCtxType = {

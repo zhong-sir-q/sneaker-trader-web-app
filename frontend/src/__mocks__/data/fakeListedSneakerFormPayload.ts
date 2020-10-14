@@ -12,6 +12,7 @@ const fakeListedSneakerFormPayload = (): ListedSneakerFormPayload => ({
   conditionRating: faker.random.number(),
   description: faker.random.word(),
   serialNumber: faker.random.word(),
+  originalPurchasePrice: faker.random.number(),
 });
 
 export default fakeListedSneakerFormPayload;

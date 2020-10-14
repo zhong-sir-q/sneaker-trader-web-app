@@ -35,6 +35,7 @@ const formatListedSneakerPayload = (
   conditionRating: sneaker.conditionRating,
   description: sneaker.description,
   serialNumber: '',
+  originalPurchasePrice: sneaker.originalPurchasePrice,
 });
 
 const formatSneaker = (s: SneakerListingFormStateType) => {
