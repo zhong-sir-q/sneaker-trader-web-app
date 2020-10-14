@@ -1,5 +1,5 @@
 import TranscationEntity from '../../../../shared/@types/domains/entities/TransactionEntity';
-import { Transaction, CreateTransactionPayload, BuyerPurchasedSneaker } from '../../../../shared';
+import { Transaction, CreateTransactionPayload, BuyerPurchasedSneaker, MonthlyProfit } from '../../../../shared';
 
 import formatApiEndpoint, { concatPaths } from '../formatApiEndpoint';
 import formatRequestOptions from '../formatRequestOptions';
@@ -13,6 +13,9 @@ export class TransactionController implements TranscationEntity {
 
   get = (listedSneakerId: number): Promise<Transaction> =>
     fetch(`${this.transactionPath}/${listedSneakerId}`).then((r) => r.json());
+
+  getCumMonthlyProfit = (sellerId: number): Promise<MonthlyProfit[]> =>
+    fetch(concatPaths(this.transactionPath, 'cumMonthlyProfit', sellerId)).then((r) => r.json());
 
   getPurchasedSneakersByBuyerId = (buyerId: number): Promise<BuyerPurchasedSneaker[]> =>
     fetch(concatPaths(this.transactionPath, 'purchased', buyerId)).then((r) => r.json());

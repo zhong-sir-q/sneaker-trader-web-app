@@ -2,7 +2,7 @@ import mysqlPoolConnection from '../config/mysql';
 import { formatInsertColumnsQuery, formatUpdateColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
 import { TRANSACTION } from '../config/tables';
 import TranscationEntity from '../../../shared/@types/domains/entities/TransactionEntity';
-import { Transaction, BuyerPurchasedSneaker } from '../../../shared';
+import { Transaction, BuyerPurchasedSneaker, MonthlyProfit } from '../../../shared';
 import { getSellersAvgRatingQuery } from '../utils/queries';
 
 class TransactionService implements TranscationEntity {
@@ -78,6 +78,19 @@ class TransactionService implements TranscationEntity {
     }
 
     return purchasedSneakers;
+  }
+
+  // get the cumulative monthly profit of the last 12 month
+  async getCumMonthlyProfit(sellerId: number): Promise<MonthlyProfit[]> {
+    const poolConn = await mysqlPoolConnection();
+
+    const getMonthlyCumProfitQuery = `
+      SELECT SUM((T.amount - T.processingFee - L.originalPurchasePrice)) as cumMonthlyProfit, MONTH(T.transactionDatetime) AS transactionMonth
+        FROM Transactions T, ListedProducts L WHERE sellerId = ${sellerId} AND T.listedProductId = L.id
+          AND T.transactionDatetime > DATE_SUB(NOW(), INTERVAL 12 MONTH) GROUP BY MONTH(T.transactionDatetime)
+    `;
+
+    return poolConn.query(getMonthlyCumProfitQuery);
   }
 }
 

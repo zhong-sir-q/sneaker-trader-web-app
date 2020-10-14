@@ -31,6 +31,14 @@ export default (app: Router, TransactionServiceInstance: TransactionService) => 
       .catch(next);
   });
 
+  transactionRoute.get('/cumMonthlyProfit/:sellerId', (req, res, next) => {
+    const { sellerId } = req.params;
+
+    TransactionServiceInstance.getCumMonthlyProfit(Number(sellerId))
+      .then((cumProfit) => res.json(cumProfit))
+      .catch(next);
+  });
+
   transactionRoute.put('/rating/buyer/:listedProductId', (req, res, next) => {
     const { listedProductId } = req.params;
     const { rating, comment } = req.body;
@@ -45,7 +53,7 @@ export default (app: Router, TransactionServiceInstance: TransactionService) => 
     const { rating, comment } = req.body;
 
     TransactionServiceInstance.rateSeller(Number(listedProductId), rating, comment)
-      .then(() => res.json('Buyer is rated'))
+      .then(() => res.json('Seller is rated'))
       .catch(next);
   });
 };
