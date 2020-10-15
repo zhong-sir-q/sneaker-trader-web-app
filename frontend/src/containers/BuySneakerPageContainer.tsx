@@ -1,57 +1,17 @@
-import React, { createContext, ReactNode, useContext, useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { useAuth } from 'providers/AuthProvider';
+
+import { HOME } from 'routes';
 import { concatPaths } from 'api/formatApiEndpoint';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 
-import { HOME } from 'routes';
+import BuySneakerPage from 'pages/BuySneakerPage';
 
-import { Sneaker, SizeMinPriceGroupType, SneakerAsk } from '../../../../shared';
-import { useAuth } from 'providers/AuthProvider';
-
-type Size = number | 'all' | undefined;
-
-type BuySneakerPageCtxType = {
-  selectedSize: Size;
-  displaySneaker: Sneaker | undefined;
-  sizeMinPriceGroup: SizeMinPriceGroupType | undefined;
-  filterAllAsks: SneakerAsk[] | undefined;
-  openViewAskModal: boolean;
-  chooseBuyAll: boolean;
-  selectedSizeMinPrice: number | undefined;
-  onViewAllAsks: () => void;
-  onCloseViewAllAsksModal: () => void;
-  onClickSizeTile: (size: Size, minPrice: number) => void;
-  onBuy: () => void;
-};
-
-const INIT_CTX: BuySneakerPageCtxType = {
-  selectedSize: 'all',
-  displaySneaker: undefined,
-  sizeMinPriceGroup: undefined,
-  filterAllAsks: undefined,
-  openViewAskModal: false,
-  chooseBuyAll: false,
-  selectedSizeMinPrice: undefined,
-  onCloseViewAllAsksModal: () => {
-    throw new Error('Must override!');
-  },
-  onViewAllAsks: () => {
-    throw new Error('Must override!');
-  },
-  onClickSizeTile: () => {
-    throw new Error('Must override!');
-  },
-  onBuy: () => {
-    throw new Error('Must override!');
-  },
-};
-
-const BuySneakerPageCtx = createContext(INIT_CTX);
-
-export const useBuySneakerPageCtx = () => useContext(BuySneakerPageCtx);
+import { Sneaker, SizeMinPriceGroupType, SneakerAsk, Size } from '../../../shared';
 
 const nameColorwayFromPath = () => {
   const { pathname } = window.location;
@@ -62,7 +22,7 @@ const nameColorwayFromPath = () => {
   return shoeNameColorway;
 };
 
-const BuySneakerPageProvider = (props: { children: ReactNode }) => {
+const BuySneakerPageContainer = () => {
   const [selectedSize, setSelectedSize] = useState<Size>();
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
   const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
@@ -131,8 +91,8 @@ const BuySneakerPageProvider = (props: { children: ReactNode }) => {
   const onCloseViewAllAsksModal = () => setOpenViewAskModal(false);
 
   return (
-    <BuySneakerPageCtx.Provider
-      value={{
+    <BuySneakerPage
+      {...{
         selectedSize,
         displaySneaker,
         sizeMinPriceGroup,
@@ -145,10 +105,8 @@ const BuySneakerPageProvider = (props: { children: ReactNode }) => {
         onBuy,
         onClickSizeTile,
       }}
-    >
-      {props.children}
-    </BuySneakerPageCtx.Provider>
+    />
   );
 };
 
-export default BuySneakerPageProvider;
+export default BuySneakerPageContainer;

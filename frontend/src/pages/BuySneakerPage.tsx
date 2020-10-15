@@ -1,14 +1,14 @@
 import React from 'react';
 
 import styled from 'styled-components';
+
 import { DialogTitle, DialogContent, DialogActions, Dialog } from '@material-ui/core';
 import { Container, Button, Row, Col, Table } from 'reactstrap';
 
 import CenterSpinner from 'components/CenterSpinner';
-
-import { useBuySneakerPageCtx } from 'providers/marketplace/BuySneakerPageProvider';
 import SneakerCard from 'components/SneakerCard';
-import { Sneaker } from '../../../shared';
+
+import { Sneaker, SizeMinPriceGroupType, SneakerAsk, Size } from '../../../shared';
 
 const CenterContainer = styled(Container)`
   display: flex;
@@ -57,8 +57,22 @@ const SizeTileComponent = (props: SizeTileComponentProps) => {
   );
 };
 
+type BuySneakerPageProps = {
+  selectedSize: Size;
+  displaySneaker: Sneaker | undefined;
+  sizeMinPriceGroup: SizeMinPriceGroupType | undefined;
+  filterAllAsks: SneakerAsk[] | undefined;
+  openViewAskModal: boolean;
+  chooseBuyAll: boolean;
+  selectedSizeMinPrice: number | undefined;
+  onViewAllAsks: () => void;
+  onCloseViewAllAsksModal: () => void;
+  onClickSizeTile: (size: Size, minPrice: number) => void;
+  onBuy: () => void;
+};
+
 // use the path name to query the sneaker
-const BuySneakerPage = () => {
+const BuySneakerPage = (props: BuySneakerPageProps) => {
   const {
     selectedSize,
     displaySneaker,
@@ -71,7 +85,7 @@ const BuySneakerPage = () => {
     onViewAllAsks,
     onBuy,
     onClickSizeTile,
-  } = useBuySneakerPageCtx();
+  } = props;
 
   const renderTiles = () => {
     if (!sizeMinPriceGroup) return [];
@@ -122,7 +136,12 @@ const BuySneakerPage = () => {
             <CenterContainer>
               <SneakerCard sneaker={formatSneaker()} price={selectedSizeMinPrice} />
               <Button onClick={onViewAllAsks}>View All Asks</Button>
-              <Button style={{ display: 'block', margin: 'auto' }} color='primary' onClick={onBuy} disabled={selectedSize === undefined}>
+              <Button
+                style={{ display: 'block', margin: 'auto' }}
+                color='primary'
+                onClick={onBuy}
+                disabled={selectedSize === undefined}
+              >
                 Buy
               </Button>
               <Dialog fullWidth maxWidth='md' onClose={onCloseViewAllAsksModal} open={openViewAskModal}>

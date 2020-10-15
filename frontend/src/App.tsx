@@ -67,29 +67,29 @@ const DashboardProviders = (props: { children: React.ReactNode }) => (
 
 const App = () => {
   return (
-    <Elements stripe={stripePromise}>
-      <AuthProvider>
-        <HomePageProvider>
-          <DashboardProviders>
-            <Router>
-              <Switch>
-                <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
+    <Router>
+      <Switch>
+        <AuthProvider>
+          <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
-                <Route path={ADMIN}>
-                  <ProtectedAdmin />
-                </Route>
+          <Route path={ADMIN}>
+            <DashboardProviders>
+              <Elements stripe={stripePromise}>
+                <ProtectedAdmin />
+              </Elements>
+            </DashboardProviders>
+          </Route>
 
-                <Route path={HOME}>
-                  <HomeLayout />
-                </Route>
+          <Route path={HOME}>
+            <HomePageProvider>
+              <HomeLayout />
+            </HomePageProvider>
+          </Route>
 
-                <Redirect from='/' to={HOME} />
-              </Switch>
-            </Router>
-          </DashboardProviders>
-        </HomePageProvider>
-      </AuthProvider>
-    </Elements>
+          <Redirect from='/' to={HOME} />
+        </AuthProvider>
+      </Switch>
+    </Router>
   );
 };
 

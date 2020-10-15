@@ -1,62 +1,24 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 
-import { useAuth } from 'providers/AuthProvider';
+import ViewSellersList from 'pages/ViewSellersList';
 
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import SellerControllerInstance from 'api/controllers/SellerController';
-
-import getTransactionFees from 'usecases/getTransactionFee';
-import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
-
-import { AUTH, SIGNIN, HOME } from 'routes';
-
-import { ListedSneakerSeller, Sneaker, CreateTransactionPayload } from '../../../../shared';
-
-import _ from 'lodash';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import TransactionControllerInstance from 'api/controllers/TransactionController';
 import WalletControllerInstance from 'api/controllers/WalletController';
 import MailControllerInstance from 'api/controllers/MailController';
 
-type ViewSellersListCtxType = {
-  sellers: ListedSneakerSeller[] | undefined;
-  selectedSellerIdx: number;
-  displaySneaker: Sneaker | undefined;
-  processingPurchase: boolean;
-  sortSellersByAskingPriceAscending: () => void;
-  sortSellersByAskingPriceDescending: () => void;
-  onCancel: () => void;
-  onSelectSeller: (sellerIdx: number) => void;
-  onConfirm: () => void;
-};
+import getTransactionFees from 'usecases/getTransactionFee';
+import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
 
-const INIT_CTX: ViewSellersListCtxType = {
-  sellers: undefined,
-  selectedSellerIdx: -1,
-  displaySneaker: undefined,
-  processingPurchase: false,
-  sortSellersByAskingPriceAscending: () => {
-    throw new Error('Must override!');
-  },
-  sortSellersByAskingPriceDescending: () => {
-    throw new Error('Must override!');
-  },
-  onCancel: () => {
-    throw new Error('Must override!');
-  },
-  onSelectSeller: () => {
-    throw new Error('Must override!');
-  },
-  onConfirm: () => {
-    throw new Error('Must override!');
-  },
-};
+import { AUTH, SIGNIN, HOME } from 'routes';
+import { useAuth } from 'providers/AuthProvider';
 
-const ViewSellersListCtx = createContext(INIT_CTX);
-
-export const useViewSellersListCtx = () => useContext(ViewSellersListCtx);
+import { ListedSneakerSeller, Sneaker, CreateTransactionPayload } from '../../../shared';
 
 const sneakerInfoFromPath = (history: any) => {
   const sneakerInfo = history.location.pathname.split('/');
@@ -66,7 +28,7 @@ const sneakerInfoFromPath = (history: any) => {
   return { nameColorway: sneakerNameColorway, size: sneakerSize };
 };
 
-const ViewSellersListProvider = (props: { children: ReactNode }) => {
+const ViewSellersListContainer = () => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
@@ -76,14 +38,14 @@ const ViewSellersListProvider = (props: { children: ReactNode }) => {
 
   const { signedIn, currentUser } = useAuth();
 
-  const sneakerInfo = sneakerInfoFromPath(history);
-
   useEffect(() => {
     (async () => {
       if (!signedIn) {
         history.push(AUTH + SIGNIN, history.location.pathname);
         return;
       }
+
+      const sneakerInfo = sneakerInfoFromPath(history);
 
       const sneakerToBuy = await SneakerControllerInstance.getByNameColorwaySize(
         sneakerInfo.nameColorway,
@@ -102,7 +64,7 @@ const ViewSellersListProvider = (props: { children: ReactNode }) => {
         setSellers(sellersBySneakerNameSize);
       }
     })();
-  }, [currentUser, history, signedIn, sneakerInfo.nameColorway, sneakerInfo.size]);
+  }, [currentUser, history, signedIn]);
 
   useEffect(() => {
     // all listed sneakers are from the current user, hence redirect the user back home
@@ -114,6 +76,8 @@ const ViewSellersListProvider = (props: { children: ReactNode }) => {
     if (processingPurchase) {
       (async () => {
         if (!sellers) return;
+
+        const sneakerInfo = sneakerInfoFromPath(history);
 
         const sellerId = sellers[selectedSellerIdx].id;
         const { askingPrice, listedProductId, email, username } = sellers[selectedSellerIdx];
@@ -153,15 +117,7 @@ const ViewSellersListProvider = (props: { children: ReactNode }) => {
         setProcessingPurchase(false);
       })();
     }
-  }, [
-    processingPurchase,
-    history,
-    currentUser,
-    sellers,
-    selectedSellerIdx,
-    sneakerInfo.nameColorway,
-    sneakerInfo.size,
-  ]);
+  }, [processingPurchase, history, currentUser, sellers, selectedSellerIdx]);
 
   const sortSellersByAskingPriceAscending = () => {
     if (!sellers) return;
@@ -202,8 +158,8 @@ const ViewSellersListProvider = (props: { children: ReactNode }) => {
   const onSelectSeller = (idx: number) => setSelectedSellerIdx(idx);
 
   return (
-    <ViewSellersListCtx.Provider
-      value={{
+    <ViewSellersList
+      {...{
         sellers,
         selectedSellerIdx,
         displaySneaker,
@@ -214,10 +170,8 @@ const ViewSellersListProvider = (props: { children: ReactNode }) => {
         onConfirm,
         processingPurchase,
       }}
-    >
-      {props.children}
-    </ViewSellersListCtx.Provider>
+    />
   );
 };
 
-export default ViewSellersListProvider;
+export default ViewSellersListContainer;

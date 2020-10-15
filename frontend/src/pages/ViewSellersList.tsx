@@ -12,10 +12,11 @@ import {
 
 import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
+import SneakerCarousel from 'components/SneakerCarousel';
 
 import getTransactionFees from 'usecases/getTransactionFee';
-import SneakerCarousel from 'components/SneakerCarousel';
-import { useViewSellersListCtx } from 'providers/marketplace/ViewSellersListProvider';
+
+import { ListedSneakerSeller, Sneaker } from '../../../shared';
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
@@ -45,7 +46,19 @@ const SortByPriceDropdown = (props: SortByPriceDropdownProps) => {
 
 const getSellerSeneakrImgUrls = (imageUrls: string) => imageUrls.split(',');
 
-const ViewSellersList = () => {
+type ViewSellersListProps = {
+  sellers: ListedSneakerSeller[] | undefined;
+  selectedSellerIdx: number;
+  displaySneaker: Sneaker | undefined;
+  processingPurchase: boolean;
+  sortSellersByAskingPriceAscending: () => void;
+  sortSellersByAskingPriceDescending: () => void;
+  onCancel: () => void;
+  onSelectSeller: (sellerIdx: number) => void;
+  onConfirm: () => void;
+};
+
+const ViewSellersList = (props: ViewSellersListProps) => {
   const {
     sellers,
     selectedSellerIdx,
@@ -56,7 +69,7 @@ const ViewSellersList = () => {
     onConfirm,
     processingPurchase,
     onSelectSeller,
-  } = useViewSellersListCtx();
+  } = props;
 
   return !sellers || !displaySneaker || processingPurchase ? (
     <CenterSpinner />

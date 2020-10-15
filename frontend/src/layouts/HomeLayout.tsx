@@ -3,16 +3,15 @@ import { Route } from 'react-router-dom';
 
 import HomeNavbar from 'components/navbars/HomeNavbar';
 import Footer from 'components/Footer';
-import ViewSellersList from 'pages/ViewSellersList';
-import BuySneakerPage from 'pages/BuySneakerPage';
 
 import { formatSneakerPathName } from 'utils/utils';
 
 import { homeRoutes, HOME } from 'routes';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import { concatPaths } from 'api/formatApiEndpoint';
-import BuySneakerPageProvider from 'providers/marketplace/BuySneakerPageProvider';
-import ViewSellersListProvider from 'providers/marketplace/ViewSellersListProvider';
+
+import BuySneakerPageContainer from 'containers/BuySneakerPageContainer';
+import ViewSellersListContainer from 'containers/ViewSellersListContainer';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
@@ -34,20 +33,12 @@ const HomeLayout = () => {
             <Route
               exact
               path={concatPaths(HOME, path)}
-              component={() => (
-                <BuySneakerPageProvider>
-                  <BuySneakerPage />
-                </BuySneakerPageProvider>
-              )}
+              component={BuySneakerPageContainer}
             />
           ) : undefined}
           <Route
             path={concatPaths(HOME, path, size)}
-            component={() => (
-              <ViewSellersListProvider>
-                <ViewSellersList />
-              </ViewSellersListProvider>
-            )}
+            component={ViewSellersListContainer}
           />
         </React.Fragment>
       );

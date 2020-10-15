@@ -29,3 +29,5 @@ export type SellerListedSneaker = CustomerSneaker & { buyer: Buyer };
 export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transactionDatetime'> & { seller: Seller };
 
 export type CreateListedSneakerPayload = Omit<ListedProduct, 'id' | 'prodStatus'>;
+
+export type Size = number | 'all' | undefined;
