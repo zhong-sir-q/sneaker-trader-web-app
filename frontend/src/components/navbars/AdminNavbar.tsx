@@ -1,24 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 // reactstrap components
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  Container,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  Button,
-} from 'reactstrap';
-
-
-import { signOut } from 'utils/auth';
+import { Collapse, Container, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem } from 'reactstrap';
 import { HOME } from 'routes';
+import { signOut } from 'utils/auth';
 
 type NavbarColor = 'transparent' | 'white';
 
@@ -31,8 +16,6 @@ const AdminNavbar = (props: AdminNavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useState<NavbarColor>('transparent');
   const sidebarToggle = useRef<HTMLButtonElement>(null);
-
-  const history = useHistory();
 
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   const updateColor = () => setColor(window.innerWidth < 993 && isOpen ? 'white' : 'transparent');
@@ -70,7 +53,6 @@ const AdminNavbar = (props: AdminNavbarProps) => {
         <div className='navbar-wrapper'>
           <div className='navbar-toggle'>
             <button type='button' ref={sidebarToggle} className='navbar-toggler' onClick={() => openSidebar()}>
-
               <span className='navbar-toggler-bar bar1' />
               <span className='navbar-toggler-bar bar2' />
               <span className='navbar-toggler-bar bar3' />
@@ -84,19 +66,12 @@ const AdminNavbar = (props: AdminNavbarProps) => {
           <span className='navbar-toggler-bar navbar-kebab' />
         </NavbarToggler>
         <Collapse isOpen={isOpen} navbar className='justify-content-end'>
-          <form>
-            <InputGroup className='no-border'>
-              <Input placeholder='Search...' />
-
-              <InputGroupAddon addonType='append'>
-                <InputGroupText>
-                  <i className='now-ui-icons ui-1_zoom-bold' />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </form>
           <Nav navbar>
-            <Button onClick={() => signOut(history, HOME)}>Log out</Button>
+            <NavItem>
+              <Link to={HOME} onClick={() => signOut()}>
+                Log out
+              </Link>
+            </NavItem>
           </Nav>
         </Collapse>
       </Container>

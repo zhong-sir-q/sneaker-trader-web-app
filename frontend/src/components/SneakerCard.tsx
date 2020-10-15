@@ -1,10 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
-import { Card } from 'reactstrap';
-
-import { AppSneaker } from '../../../shared';
 import { useHistory } from 'react-router-dom';
+import { Card } from 'reactstrap';
+import styled from 'styled-components';
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+import { AppSneaker } from '../../../shared';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -35,7 +34,7 @@ type SneakerCardProps = {
 const StyledImage = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 `;
 
 const SneakerCard = (props: SneakerCardProps) => {

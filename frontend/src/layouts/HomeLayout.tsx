@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Route } from 'react-router-dom';
-
-import HomeNavbar from 'components/navbars/HomeNavbar';
-import Footer from 'components/Footer';
-
-import { formatSneakerPathName } from 'utils/utils';
-
-import { homeRoutes, HOME } from 'routes';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import { concatPaths } from 'api/formatApiEndpoint';
-
+import Footer from 'components/Footer';
+import HomeNavbar from 'components/navbars/HomeNavbar';
 import BuySneakerPageContainer from 'containers/BuySneakerPageContainer';
 import ViewSellersListContainer from 'containers/ViewSellersListContainer';
+import React, { useEffect, useState } from 'react';
+import { Route } from 'react-router-dom';
+import { HOME, homeRoutes } from 'routes';
+import { formatSneakerPathName } from 'utils/utils';
 
 const HomeLayout = () => {
   const [buySneakerRoutes, setBuySneakerRoutes] = useState<JSX.Element[]>([]);
@@ -30,16 +26,9 @@ const HomeLayout = () => {
       const routes = (
         <React.Fragment key={idx}>
           {!seenPaths.has(path) ? (
-            <Route
-              exact
-              path={concatPaths(HOME, path)}
-              component={BuySneakerPageContainer}
-            />
+            <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} />
           ) : undefined}
-          <Route
-            path={concatPaths(HOME, path, size)}
-            component={ViewSellersListContainer}
-          />
+          <Route path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
         </React.Fragment>
       );
 

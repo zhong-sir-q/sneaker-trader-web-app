@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from 'react';
-
-import _ from 'lodash';
-import { useHistory } from 'react-router-dom';
-
-import ViewSellersList from 'pages/ViewSellersList';
-
-import SneakerControllerInstance from 'api/controllers/SneakerController';
-import SellerControllerInstance from 'api/controllers/SellerController';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import MailControllerInstance from 'api/controllers/MailController';
+import SellerControllerInstance from 'api/controllers/SellerController';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
 import TransactionControllerInstance from 'api/controllers/TransactionController';
 import WalletControllerInstance from 'api/controllers/WalletController';
-import MailControllerInstance from 'api/controllers/MailController';
-
+import _ from 'lodash';
+import ViewSellersList from 'pages/ViewSellersList';
+import { useAuth } from 'providers/AuthProvider';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AUTH, HOME, SIGNIN } from 'routes';
 import getTransactionFees from 'usecases/getTransactionFee';
 import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
-
-import { AUTH, SIGNIN, HOME } from 'routes';
-import { useAuth } from 'providers/AuthProvider';
-
-import { ListedSneakerSeller, Sneaker, CreateTransactionPayload } from '../../../shared';
+import { CreateTransactionPayload, ListedSneakerSeller, Sneaker } from '../../../shared';
 
 const sneakerInfoFromPath = (history: any) => {
   const sneakerInfo = history.location.pathname.split('/');

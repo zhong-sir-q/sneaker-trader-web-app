@@ -1,17 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-
-// reactstrap components
-import { Nav, Collapse, Button } from 'reactstrap';
-
 // core components
 import logo from 'assets/img/logo_transparent_background.png';
-
-// routes
-import { SneakerTraderRoute, RouteState, ADMIN, USER_PROFILE, HOME } from 'routes';
-import { useAuth } from 'providers/AuthProvider';
-
 import defaultAvatar from 'assets/img/placeholder.jpg';
+import { useAuth } from 'providers/AuthProvider';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+// reactstrap components
+import { Button, Collapse, Nav } from 'reactstrap';
+// routes
+import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
+
+
+
+
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 

@@ -1,35 +1,29 @@
-import Amplify from 'aws-amplify';
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect, RouteComponentProps } from 'react-router-dom';
-
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-
-// layouts
-import HomeLayout from 'layouts/HomeLayout';
-import AuthLayout from 'layouts/AuthLayout';
-import AdminLayout from 'layouts/AdminLayout';
-
-// routes
-import { AUTH, ADMIN, SIGNIN, HOME } from 'routes';
-
-// css
-import 'bootstrap/dist/css/bootstrap.css';
-import 'assets/scss/now-ui-dashboard.scss';
 import 'assets/css/demo.css';
 import 'assets/css/sneakertrader.css';
-
+import 'assets/scss/now-ui-dashboard.scss';
+import Amplify from 'aws-amplify';
 // @ts-ignore
 import awsconfig from 'aws-exports';
-
+// css
+import 'bootstrap/dist/css/bootstrap.css';
+import AdminLayout from 'layouts/AdminLayout';
+import AuthLayout from 'layouts/AuthLayout';
+// layouts
+import HomeLayout from 'layouts/HomeLayout';
 // providers
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
 import HomePageProvider from 'providers/marketplace/HomePageProvider';
-import WalletProvider from 'providers/WalletProvider';
-import TransactionTableProvider from 'providers/TransactionTableProvider';
 import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
-import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
 import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
+import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
+import TransactionTableProvider from 'providers/TransactionTableProvider';
+import WalletProvider from 'providers/WalletProvider';
+import React from 'react';
+import { BrowserRouter as Router, Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
+// routes
+import { ADMIN, AUTH, HOME, SIGNIN } from 'routes';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -85,8 +79,6 @@ const App = () => {
               <HomeLayout />
             </HomePageProvider>
           </Route>
-
-          <Redirect from='/' to={HOME} />
         </AuthProvider>
       </Switch>
     </Router>

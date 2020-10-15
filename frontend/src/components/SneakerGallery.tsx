@@ -1,9 +1,7 @@
 import React from 'react';
-import { Row, Container } from 'reactstrap';
-
-import SneakerCard from './SneakerCard';
-
+import { Container, Row } from 'reactstrap';
 import { GallerySneaker } from '../../../shared';
+import SneakerCard from './SneakerCard';
 
 type SneakerGalleryProps = {
   sneakers: GallerySneaker[];
@@ -15,7 +13,7 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
       <Container>
         <Row xs='2' sm='2' md='4'>
           {props.sneakers.map((s, idx) => {
-            return <SneakerCard className='pl-1 pl-sm-2 pl-md-3 pl-lg-4 pl-xl-5' isListed sneaker={s} key={idx} price={s.minPrice} />;
+            return <SneakerCard className='mr-4' isListed sneaker={s} key={idx} price={s.minPrice} />;
           })}
         </Row>
       </Container>

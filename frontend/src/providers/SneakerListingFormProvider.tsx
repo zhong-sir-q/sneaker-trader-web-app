@@ -1,15 +1,14 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
-import * as Yup from 'yup';
-
-import { Sneaker, ListedProduct, SneakerCondition } from '../../../shared';
-import { required, noSpecialChar, minNumber, allowedRange } from 'utils/yup';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+import WalletControllerInstance from 'api/controllers/WalletController';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
+import { allowedRange, minNumber, noSpecialChar, required } from 'utils/yup';
+import * as Yup from 'yup';
+import { ListedProduct, Sneaker, SneakerCondition } from '../../../shared';
 import { useAuth } from './AuthProvider';
 
-import { useHistory } from 'react-router-dom';
-import WalletControllerInstance from 'api/controllers/WalletController';
-import { ADMIN, TOPUP_WALLET } from 'routes';
+
 
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
@@ -95,11 +94,7 @@ const SneakerListingFormProvider = (props: { children: React.ReactNode }) => {
       (async () => {
         const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id);
 
-        if (!isWalletBalancePositive) {
-          history.push(ADMIN + TOPUP_WALLET);
-          alert('Please topup first, your wallet balance must be greater than 0');
-          return;
-        }
+        if (!isWalletBalancePositive) return;
 
         setBrandOptions(await HelperInfoControllerInstance.getBrands());
         setSneakerNamesOptions(await HelperInfoControllerInstance.getSneakerNames());

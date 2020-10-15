@@ -1,14 +1,10 @@
-import React from 'react';
-
-import styled from 'styled-components';
-
-import { DialogTitle, DialogContent, DialogActions, Dialog } from '@material-ui/core';
-import { Container, Button, Row, Col, Table } from 'reactstrap';
-
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import CenterSpinner from 'components/CenterSpinner';
 import SneakerCard from 'components/SneakerCard';
-
-import { Sneaker, SizeMinPriceGroupType, SneakerAsk, Size } from '../../../shared';
+import React from 'react';
+import { Button, Col, Container, Row, Table } from 'reactstrap';
+import styled from 'styled-components';
+import { Size, SizeMinPriceGroupType, Sneaker, SneakerAsk } from '../../../shared';
 
 const CenterContainer = styled(Container)`
   display: flex;

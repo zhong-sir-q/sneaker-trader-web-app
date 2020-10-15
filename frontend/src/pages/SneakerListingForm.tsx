@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
-
-import { Col, Container, Progress } from 'reactstrap';
-
-import PanelHeader from 'components/PanelHeader';
+import AwsControllerInstance from 'api/controllers/AwsController';
+import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
+import WalletControllerInstance from 'api/controllers/WalletController';
 import ListedSneakerSuccess from 'components/ListSneakerSuccess';
+import PanelHeader from 'components/PanelHeader';
+import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
-import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
-
-import { SneakerStatus, ListedSneakerFormPayload } from '../../../shared';
-
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
-import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
-
+import { SneakerListingFormStateType, useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Col, Container, Progress } from 'reactstrap';
+import { ADMIN, TOPUP_WALLET } from 'routes';
+import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 import { mapUpperCaseFirstLetter } from 'utils/utils';
+import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
 
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
-import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
-import SneakerControllerInstance from 'api/controllers/SneakerController';
-import AwsControllerInstance from 'api/controllers/AwsController';
+
+
+
+
+
 
 const formatListedSneakerPayload = (
   sneaker: SneakerListingFormStateType,
@@ -51,8 +55,25 @@ const formatSneaker = (s: SneakerListingFormStateType) => {
 // the providers reside in routes.tsx
 const SneakerListingForm = () => {
   const [step, setStep] = useState(0);
+  const history = useHistory();
 
   const { currentUser } = useAuth();
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const goTopupWalletIfNegativeWalletBalance = async () => {
+      const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id);
+
+      if (!isWalletBalancePositive) {
+        history.push(ADMIN + TOPUP_WALLET);
+        alert('Please topup first, your wallet balance must be greater than 0');
+      }
+    };
+
+    goTopupWalletIfNegativeWalletBalance()
+  });
+
   const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
