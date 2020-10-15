@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Container } from 'reactstrap';
 
 const PrivacyPolicy = () => {
   return (
-    <div style={{ padding: '0 350px' }}>
+    <Container fluid='sm'>
       <h1>Privacy Policy</h1>
       <p>Last updated: October 15, 2020</p>
       <p>
@@ -361,7 +362,7 @@ const PrivacyPolicy = () => {
       <ul>
         <li>By email: hello@sneakertrader.com</li>
       </ul>
-    </div>
+    </Container>
   );
 };
 

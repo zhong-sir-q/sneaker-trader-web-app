@@ -4,7 +4,7 @@ import { Collapse, Navbar, NavbarToggler, Nav, NavItem, Container } from 'reacts
 
 import logo from 'assets/img/logo_transparent_background.png';
 
-import { AUTH, SIGNIN, SIGNUP, MARKET_PLACE } from 'routes';
+import { AUTH, SIGNIN, SIGNUP, HOME } from 'routes';
 
 const AuthNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +20,7 @@ const AuthNavbar = () => {
               <span className='navbar-toggler-bar bar3' />
             </NavbarToggler>
           </div>
-          <Link to={MARKET_PLACE} style={{ width: '120px' }}>
+          <Link to={HOME} style={{ width: '120px' }}>
             <img src={logo} alt='sneakertrader-logo' />
           </Link>
         </div>

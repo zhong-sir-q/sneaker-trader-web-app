@@ -11,7 +11,7 @@ import AuthLayout from 'layouts/AuthLayout';
 import AdminLayout from 'layouts/AdminLayout';
 
 // routes
-import { AUTH, ADMIN, SIGNIN, HOME, MARKET_PLACE } from 'routes';
+import { AUTH, ADMIN, SIGNIN, HOME } from 'routes';
 
 // IMPORTANT: the order of the imports of the css files matters
 // css
@@ -33,6 +33,7 @@ import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
 import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
 
 import NotFound from 'pages/NotFound';
+import ListedSneakerRoutesProvider from 'providers/ListedSneakerRoutesProvider';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -53,7 +54,7 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
   const { state } = props.location;
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={state || MARKET_PLACE} />;
+  return !signedIn ? <AuthLayout /> : <Redirect to={state || HOME} />;
 };
 
 const DashboardProviders = (props: { children: React.ReactNode }) => (
@@ -84,13 +85,15 @@ const App = () => {
             </DashboardProviders>
           </Route>
 
-          <Route exact path={HOME}>
+          <ListedSneakerRoutesProvider>
             <MarketPlaceProvider>
               <HomeLayout />
             </MarketPlaceProvider>
-          </Route>
+          </ListedSneakerRoutesProvider>
 
-          <Route path='' component={NotFound} />
+          {/* this currently does not work, ideally we want to show the 404 page
+          when a random route is entered */}
+          <Route component={NotFound} />
         </Switch>
       </AuthProvider>
     </Router>

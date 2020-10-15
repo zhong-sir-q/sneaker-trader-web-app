@@ -1,17 +1,16 @@
-// core components
-import logo from 'assets/img/logo_transparent_background.png';
-import defaultAvatar from 'assets/img/placeholder.jpg';
-import { useAuth } from 'providers/AuthProvider';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+
 // reactstrap components
 import { Button, Collapse, Nav } from 'reactstrap';
+
 // routes
-import { ADMIN, MARKET_PLACE, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
+import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
 
+import { useAuth } from 'providers/AuthProvider';
 
-
-
+import logo from 'assets/img/logo_transparent_background.png';
+import defaultAvatar from 'assets/img/placeholder.jpg';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -157,12 +156,12 @@ const Sidebar = (props: SideBarProps) => {
     <React.Fragment>
       <div className='sidebar' data-color={props.backgroundColor}>
         <div className='logo'>
-          <Link to={MARKET_PLACE} className='simple-text logo-mini'>
+          <Link to={HOME} className='simple-text logo-mini'>
             <div className='logo-img'>
               <img src={logo} alt='sneakertrader-logo' />
             </div>
           </Link>
-          <Link to={MARKET_PLACE} className='simple-text logo-normal'>
+          <Link to={HOME} className='simple-text logo-normal'>
             Home
           </Link>
 

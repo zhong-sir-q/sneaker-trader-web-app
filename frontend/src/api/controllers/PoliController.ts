@@ -1,6 +1,6 @@
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 import { CreatePoliLinkPayload } from '../../../../shared';
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 class PoliController {
   poliPath: string;

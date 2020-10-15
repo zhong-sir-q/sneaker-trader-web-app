@@ -1,7 +1,7 @@
 import SneakerEntity from '../../../../shared/@types/domains/entities/SneakerEntity';
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 import { AppSneaker, Sneaker } from '../../../../shared';
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 export class SneakerController implements SneakerEntity {
   sneakerPath: string;

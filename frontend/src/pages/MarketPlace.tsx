@@ -15,7 +15,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
-import { useHomePageCtx } from 'providers/marketplace/MarketPlaceProvider';
+import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
 
 type FilterBlockProps = { selected: boolean };
@@ -133,7 +133,7 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
 
 const MarketPlace = () => {
   const { currentUser } = useAuth();
-  const { defaultSneakers, filterSneakers, brands, updateFilterSneakers } = useHomePageCtx();
+  const { defaultSneakers, filterSneakers, brands, updateFilterSneakers } = useMarketPlaceCtx();
 
   const [filters, setFilters] = useState<FilterItemType[]>([]);
 
@@ -148,6 +148,7 @@ const MarketPlace = () => {
     return uniqSneakersByNameColorway;
   };
 
+  // TODO: use a reducer instead
   const filterHandler = useCallback(async () => {
     if (!defaultSneakers) return;
 

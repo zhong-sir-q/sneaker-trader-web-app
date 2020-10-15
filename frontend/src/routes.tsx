@@ -22,8 +22,7 @@ export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
 export const TOPUP_WALLET = '/topup';
 
-export const PRIVACY_POLICY = '/policy';
-export const MARKET_PLACE = ''
+export const PRIVACY_POLICY = 'policy';
 
 type AppLayout = '/auth' | '/admin' | '/';
 
@@ -103,7 +102,7 @@ export type HomeRoute = {
 
 export const homeRoutes: HomeRoute[] = [
   {
-    path: MARKET_PLACE,
+    path: '',
     component: MarketPlace,
     layout: HOME
   },

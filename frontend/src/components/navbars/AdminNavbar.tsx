@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 // reactstrap components
 import { Collapse, Container, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem } from 'reactstrap';
 
-import { MARKET_PLACE, DASHBOARD, ADMIN } from 'routes';
+import { DASHBOARD, ADMIN, HOME } from 'routes';
 
 import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';
 
@@ -99,7 +99,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
               </Link>
             </NavItem>
             <NavItem>
-              <Link className='nav-link' to={MARKET_PLACE} onClick={() => signOut()}>
+              <Link className='nav-link' to={HOME} onClick={() => signOut()}>
                 Log out
               </Link>
             </NavItem>

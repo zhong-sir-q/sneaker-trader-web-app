@@ -25,7 +25,7 @@ const INIT_CTX: HomePageCtxType = {
 
 const HomePageCtx = createContext(INIT_CTX);
 
-export const useHomePageCtx = () => useContext(HomePageCtx);
+export const useMarketPlaceCtx = () => useContext(HomePageCtx);
 
 const MarketPlaceProvider = (props: { children: ReactNode }) => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>();
@@ -42,6 +42,7 @@ const MarketPlaceProvider = (props: { children: ReactNode }) => {
 
       // if the user is not logged in, then render all gallery sneakers
       if (!signedIn) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(-1);
+      // otherwise hide the sneakers the seller has listed
       else if (currentUser) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(currentUser.id);
 
       setDefaultSneakers(gallerySneakers);

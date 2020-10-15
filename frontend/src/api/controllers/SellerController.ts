@@ -1,5 +1,5 @@
 import { SellerEntity, ListedSneakerSeller } from '../../../../shared';
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 
 class SellerController implements SellerEntity {
   sellerPath: string;

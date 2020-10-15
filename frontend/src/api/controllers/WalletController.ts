@@ -1,7 +1,7 @@
 import WalletEntity from '../../../../shared/@types/domains/entities/WalletEntity';
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 import { TopupWalletPayload, DecreaseWalletPayload } from '../../../../shared';
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 export class WalletController implements WalletEntity {
   walletPath: string;

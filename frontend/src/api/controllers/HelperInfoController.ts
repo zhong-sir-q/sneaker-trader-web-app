@@ -1,5 +1,5 @@
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 import { HelperInfoControllerEntity, Brand, SneakerName, Colorway } from '../../../../shared';
 

@@ -1,4 +1,4 @@
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 
 export class AwsController {
   awsPath: string;

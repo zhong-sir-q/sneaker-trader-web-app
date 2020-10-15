@@ -1,6 +1,6 @@
 import { User, UserEntity, AppUser, UserRankingRow } from '../../../../shared';
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 export class UserController implements UserEntity {
   userPath: string;

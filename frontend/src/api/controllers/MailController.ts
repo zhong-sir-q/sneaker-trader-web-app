@@ -1,6 +1,6 @@
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 import { MailAfterPurchasePayload } from '../../../../shared';
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 export class MailController {
   mailPath: string;

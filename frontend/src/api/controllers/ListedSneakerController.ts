@@ -10,8 +10,8 @@ import {
 
 import ListedSneakerEntity from '../../../../shared/@types/domains/entities/ListedSneakerEntity';
 
-import formatApiEndpoint, { concatPaths } from '../formatApiEndpoint';
-import formatRequestOptions from '../formatRequestOptions';
+import formatApiEndpoint, { concatPaths } from '../../utils/formatApiEndpoint';
+import formatRequestOptions from '../../utils/formatRequestOptions';
 
 export class ListedSneakerController implements ListedSneakerEntity {
   listedSneakerPath: string;

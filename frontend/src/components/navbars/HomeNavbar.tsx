@@ -10,8 +10,8 @@ import SneakerSearchBar from 'components/SneakerSearchBar';
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
-import { ADMIN, DASHBOARD, AUTH, SIGNIN, MARKET_PLACE } from 'routes';
-import { useHomePageCtx } from 'providers/marketplace/MarketPlaceProvider';
+import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
+import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import { UserRankingRow } from '../../../../shared';
 import UserControllerInstance from 'api/controllers/UserController';
 
@@ -60,7 +60,7 @@ const HomeNavbar = () => {
   }, []);
 
   const { signedIn } = useAuth();
-  const { defaultSneakers } = useHomePageCtx();
+  const { defaultSneakers } = useMarketPlaceCtx();
 
   return (
     <StyledNavbar expand='lg'>
@@ -72,7 +72,7 @@ const HomeNavbar = () => {
             <span style={{ backgroundColor: '#888' }} className='navbar-toggler-bar bar3' />
           </NavbarToggler>
         </div>
-        <Link to={MARKET_PLACE} style={{ width: '120px' }}>
+        <Link to={HOME} style={{ width: '120px' }}>
           <img src={logo} alt='sneakertrader-logo' />
         </Link>
       </div>
@@ -84,15 +84,9 @@ const HomeNavbar = () => {
 
         <Nav navbar>
           <NavItem>
-            <Link
-              type='button'
-              style={{ color: 'black' }}
-              onClick={onOpenUserLeaderBoard}
-              to={MARKET_PLACE}
-              className='nav-link'
-            >
+            <div style={{ color: 'black', cursor: 'pointer' }} onClick={onOpenUserLeaderBoard} className='nav-link'>
               Leaderboard
-            </Link>
+            </div>
           </NavItem>
 
           {signedIn && (
@@ -104,8 +98,8 @@ const HomeNavbar = () => {
           )}
 
           {signedIn ? (
-            <NavItem style={{ cursor: 'pointer' }} onClick={() => signOut()}>
-              <Link style={{ color: 'black' }} to={MARKET_PLACE} className='nav-link'>
+            <NavItem onClick={() => signOut()}>
+              <Link style={{ color: 'black' }} to={HOME} className='nav-link'>
                 Logout
               </Link>
             </NavItem>

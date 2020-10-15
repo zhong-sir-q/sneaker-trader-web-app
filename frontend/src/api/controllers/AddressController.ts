@@ -1,7 +1,7 @@
-import formatApiEndpoint, { concatPaths } from 'api/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 import { AddressEntity, Address } from '../../../../shared';
 
-import formatRequestOptions from 'api/formatRequestOptions';
+import formatRequestOptions from 'utils/formatRequestOptions';
 
 export class AddressController implements AddressEntity {
   addrPath: string;

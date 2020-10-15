@@ -1,8 +1,8 @@
 import TranscationEntity from '../../../../shared/@types/domains/entities/TransactionEntity';
 import { Transaction, CreateTransactionPayload, BuyerPurchasedSneaker, MonthlyProfit } from '../../../../shared';
 
-import formatApiEndpoint, { concatPaths } from '../formatApiEndpoint';
-import formatRequestOptions from '../formatRequestOptions';
+import formatApiEndpoint, { concatPaths } from '../../utils/formatApiEndpoint';
+import formatRequestOptions from '../../utils/formatRequestOptions';
 
 export class TransactionController implements TranscationEntity {
   transactionPath: string;
