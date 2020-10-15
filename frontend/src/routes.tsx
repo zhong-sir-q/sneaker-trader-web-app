@@ -22,7 +22,7 @@ export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
 export const TOPUP_WALLET = '/topup';
 
-export const PRIVACY_POLICY = 'policy';
+export const PRIVACY_POLICY = '/policy';
 
 type AppLayout = '/auth' | '/admin' | '/';
 
@@ -68,9 +68,6 @@ export type SneakerTraderRoute =
       views?: undefined;
     };
 
-// NOTE: sidebarRoutes and homeRoutes contain duplicate
-// routes, currenty this is a dirty solution
-
 // And I have to put the route object in the routes variable first otherwise
 // it will force redirect back to the dashbord as implemented in AdminLayout
 export const sidebarRoutes = [
@@ -102,7 +99,7 @@ export type HomeRoute = {
 
 export const homeRoutes: HomeRoute[] = [
   {
-    path: '',
+    path: '/',
     component: MarketPlace,
     layout: HOME
   },

@@ -1,8 +1,6 @@
 import { concatPaths } from 'utils/formatApiEndpoint';
 import sneakerInfoFromPath from 'utils/sneakerInfoFromPath';
 
-import faker from 'faker';
-
 describe('Utility functions', () => {
   test('Concat paths', () => {
     expect(concatPaths('/', 'hello')).toBe('/hello');

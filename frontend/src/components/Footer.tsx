@@ -1,5 +1,7 @@
 import React from 'react';
 import { Container } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import { PRIVACY_POLICY } from 'routes';
 
 type FooterProps = {
   default: boolean;
@@ -22,9 +24,7 @@ const Footer = (props: FooterProps) => (
             </a>
           </li>
           <li>
-            <a href='#Blog' target='_blank'>
-              Blog
-            </a>
+            <Link to={PRIVACY_POLICY}>Privacy Policy</Link>
           </li>
         </ul>
       </nav>

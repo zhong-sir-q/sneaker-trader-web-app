@@ -85,11 +85,13 @@ const App = () => {
             </DashboardProviders>
           </Route>
 
-          <ListedSneakerRoutesProvider>
-            <MarketPlaceProvider>
-              <HomeLayout />
-            </MarketPlaceProvider>
-          </ListedSneakerRoutesProvider>
+          <Route path={HOME}>
+            <ListedSneakerRoutesProvider>
+              <MarketPlaceProvider>
+                <HomeLayout />
+              </MarketPlaceProvider>
+            </ListedSneakerRoutesProvider>
+          </Route>
 
           {/* this currently does not work, ideally we want to show the 404 page
           when a random route is entered */}

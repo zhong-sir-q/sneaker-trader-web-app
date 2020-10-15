@@ -12,7 +12,7 @@ const HomeLayout = () => {
 
   const renderHomeRoutes = () =>
     homeRoutes.map(({ path, layout, component }) => (
-      <Route exact path={layout + path} component={component} key={path} />
+      <Route exact path={layout === '/' ? path : layout + path} component={component} key={path} />
     ));
 
   return (

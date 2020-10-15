@@ -31,12 +31,11 @@ import {
   minCharacters,
   matchingPassword,
   validDate,
-  customRequired,
   validPhoneNo,
   checkDuplicateUsername,
 } from 'utils/yup';
 
-import { SIGNIN, AUTH } from 'routes';
+import { SIGNIN, AUTH, PRIVACY_POLICY } from 'routes';
 import { CreateUserPayload } from '../../../shared';
 
 import bgImage from 'assets/img/bg16.jpg';
@@ -81,7 +80,7 @@ const SideContent = () => (
   </Col>
 );
 
-type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: string };
+type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: boolean };
 
 // Typescript does not throw an error when using SignupFormStateType instead of User
 // so I have to manually transform the form values to a User object
@@ -101,7 +100,7 @@ const INIT_FORM_VALUES: SignupFormStateType = {
   phoneNo: '',
   confirmPassword: '',
   dob: '',
-  policyAgreed: '',
+  policyAgreed: false,
   signinMethod: 'email',
 };
 
@@ -116,7 +115,7 @@ const validationSchema = Yup.object({
   confirmPassword: matchingPassword('password'),
   dob: validDate(),
   // FIXME: this does not work
-  policyAgreed: customRequired('Please read and agree with the terms and conditions'),
+  policyAgreed: Yup.boolean().oneOf([true], 'Please read and accept the privacy policy and terms and conditions'),
 });
 
 const SignUpSuccess = () => (
@@ -265,13 +264,16 @@ const SignupForm = () => {
                           component={FormikDatetime}
                         />
 
-                        {/* TODO: check if the terms and condition is checked */}
                         <FormGroup check>
-                          <Label check>
+                          <Label style={{ marginLeft: '6px' }} check>
                             <Field name='policyAgreed' type='checkbox' />
                             <span className='form-check-sign' />
                             <div>
-                              I agree to the <a href='#policy'>terms and conditions</a>.
+                              By signing up, I agree to the{' '}
+                              <a href={PRIVACY_POLICY} target='_blank' rel='noopener noreferrer'>
+                                privacy policy
+                              </a>{' '}
+                              and <a href='#policy'>terms and conditions</a>.
                             </div>
                             <ErrorMessage name='policyAgreed' />
                           </Label>

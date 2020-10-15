@@ -61,7 +61,7 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
     address.verificationStatus === 'not_verified'
       ? 'Verify Address'
       : address.verificationStatus === 'in_progress'
-      ? 'Complte Verification'
+      ? 'Complete Verification'
       : 'Update Address';
 
   const disableField = () => address.verificationStatus === 'in_progress';
