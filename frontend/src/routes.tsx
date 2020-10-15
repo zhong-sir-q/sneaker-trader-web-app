@@ -1,4 +1,3 @@
-
 import SignUp from 'pages/SignUp';
 import SignIn from 'pages/SignIn';
 import ForgotPassword from 'pages/ForgotPassword';
@@ -6,22 +5,27 @@ import UserProfile from 'pages/UserProfile';
 import SneakerListingForm from 'pages/SneakerListingForm';
 
 import Dashboard from 'components/Dashboard';
-import HomePage from 'pages/HomePage';
+import MarketPlace from 'pages/MarketPlace';
 import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
-
+import PrivacyPolicy from 'pages/PrivacyPolicy';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
+export const HOME = '/';
+
 export const SIGNIN = '/signin';
 export const SIGNUP = '/signup';
-export const DASHBOARD = '/dashboard';
 export const FORGOT_PW = '/reset';
+
+export const DASHBOARD = '/dashboard';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
-export const HOME = '/home';
 export const TOPUP_WALLET = '/topup';
 
-type AppLayout = '/auth' | '/admin' | '/home';
+export const PRIVACY_POLICY = '/policy';
+export const MARKET_PLACE = ''
+
+type AppLayout = '/auth' | '/admin' | '/';
 
 export type RouteState = 'openPages' | 'openComponents' | 'openForms' | 'openTables' | 'openMaps';
 
@@ -93,13 +97,20 @@ export const sidebarRoutes = [
 
 export type HomeRoute = {
   path: string;
+  layout: string;
   component: () => JSX.Element;
 };
 
 export const homeRoutes: HomeRoute[] = [
   {
-    path: HOME,
-    component: HomePage,
+    path: MARKET_PLACE,
+    component: MarketPlace,
+    layout: HOME
+  },
+  {
+    path: PRIVACY_POLICY,
+    component: PrivacyPolicy,
+    layout: HOME
   },
 ];
 

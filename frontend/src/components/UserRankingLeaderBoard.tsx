@@ -10,6 +10,8 @@ import {
   makeStyles,
   Theme,
   createStyles,
+  Dialog,
+  DialogContent,
 } from '@material-ui/core';
 
 import defaultAvatar from 'assets/img/placeholder.jpg';
@@ -68,5 +70,23 @@ const UserRankingLeaderBoard = (props: UserRankingLeaderBoardProps) => (
     ))}
   </List>
 );
+
+type UserRankingLeaderBoardDialogProps = {
+  isDialogOpen: boolean;
+  closeDialog: () => void;
+  rankings: UserRankingRow[];
+};
+
+export const UserRankingLeaderBoardDialog = (props: UserRankingLeaderBoardDialogProps) => {
+  const { isDialogOpen, closeDialog, rankings } = props;
+
+  return (
+    <Dialog fullWidth maxWidth='xs' open={isDialogOpen} onClose={closeDialog}>
+      <DialogContent>
+        <UserRankingLeaderBoard items={rankings} />
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export default UserRankingLeaderBoard;

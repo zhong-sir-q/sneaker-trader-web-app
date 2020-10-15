@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 // reactstrap components
 import { Button, Collapse, Nav } from 'reactstrap';
 // routes
-import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
+import { ADMIN, MARKET_PLACE, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
 
 
 
@@ -157,12 +157,12 @@ const Sidebar = (props: SideBarProps) => {
     <React.Fragment>
       <div className='sidebar' data-color={props.backgroundColor}>
         <div className='logo'>
-          <Link to={HOME} className='simple-text logo-mini'>
+          <Link to={MARKET_PLACE} className='simple-text logo-mini'>
             <div className='logo-img'>
               <img src={logo} alt='sneakertrader-logo' />
             </div>
           </Link>
-          <Link to={HOME} className='simple-text logo-normal'>
+          <Link to={MARKET_PLACE} className='simple-text logo-normal'>
             Home
           </Link>
 

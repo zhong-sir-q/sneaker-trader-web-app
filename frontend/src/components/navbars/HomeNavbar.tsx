@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, NavItem, Collapse, NavbarToggler } from 'reactstrap';
 
-import { Dialog, DialogContent } from '@material-ui/core';
-
 import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
@@ -12,14 +10,15 @@ import SneakerSearchBar from 'components/SneakerSearchBar';
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
-import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
-import { useHomePageCtx } from 'providers/marketplace/HomePageProvider';
+import { ADMIN, DASHBOARD, AUTH, SIGNIN, MARKET_PLACE } from 'routes';
+import { useHomePageCtx } from 'providers/marketplace/MarketPlaceProvider';
 import { UserRankingRow } from '../../../../shared';
 import UserControllerInstance from 'api/controllers/UserController';
 
-import UserRankingLeaderBoard from 'components/UserRankingLeaderBoard';
+import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';
 
 import logo from 'assets/img/logo_transparent_background.png';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 const SearchBarWrapper = styled.div`
   padding: 0.5rem 0.7rem;
@@ -42,7 +41,14 @@ const StyledNavbar = styled(Navbar)`
 
 const HomeNavbar = () => {
   const [openNav, setOpenNav] = useState(false);
-  const [openUserLeaderBoard, setOpenUserLeaderBoard] = useState(false);
+
+  const toggleNav = () => setOpenNav(!openNav);
+
+  const openCloseRankingDialog = useOpenCloseComp();
+
+  const openUserLeaderBoard = openCloseRankingDialog.open;
+  const onOpenUserLeaderBoard = openCloseRankingDialog.onOpen;
+  const onCloseUserLeaderBoard = openCloseRankingDialog.onClose;
 
   const [rankingRows, setRankingRows] = useState<UserRankingRow[]>([]);
 
@@ -56,11 +62,6 @@ const HomeNavbar = () => {
   const { signedIn } = useAuth();
   const { defaultSneakers } = useHomePageCtx();
 
-  const toggleNav = () => setOpenNav(!openNav);
-
-  const onOpenUserLeaderBoard = () => setOpenUserLeaderBoard(true);
-  const onCloseUserLeaderBoard = () => setOpenUserLeaderBoard(false);
-
   return (
     <StyledNavbar expand='lg'>
       <div className='navbar-wrapper'>
@@ -71,7 +72,7 @@ const HomeNavbar = () => {
             <span style={{ backgroundColor: '#888' }} className='navbar-toggler-bar bar3' />
           </NavbarToggler>
         </div>
-        <Link to={HOME} style={{ width: '120px' }}>
+        <Link to={MARKET_PLACE} style={{ width: '120px' }}>
           <img src={logo} alt='sneakertrader-logo' />
         </Link>
       </div>
@@ -87,10 +88,10 @@ const HomeNavbar = () => {
               type='button'
               style={{ color: 'black' }}
               onClick={onOpenUserLeaderBoard}
-              to={HOME}
+              to={MARKET_PLACE}
               className='nav-link'
             >
-              Leaderbord
+              Leaderboard
             </Link>
           </NavItem>
 
@@ -104,7 +105,7 @@ const HomeNavbar = () => {
 
           {signedIn ? (
             <NavItem style={{ cursor: 'pointer' }} onClick={() => signOut()}>
-              <Link style={{ color: 'black' }} to={HOME} className='nav-link'>
+              <Link style={{ color: 'black' }} to={MARKET_PLACE} className='nav-link'>
                 Logout
               </Link>
             </NavItem>
@@ -118,11 +119,11 @@ const HomeNavbar = () => {
         </Nav>
       </Collapse>
 
-      <Dialog fullWidth maxWidth='xs' open={openUserLeaderBoard} onClose={onCloseUserLeaderBoard}>
-        <DialogContent>
-          <UserRankingLeaderBoard items={rankingRows} />
-        </DialogContent>
-      </Dialog>
+      <UserRankingLeaderBoardDialog
+        isDialogOpen={openUserLeaderBoard}
+        closeDialog={onCloseUserLeaderBoard}
+        rankings={rankingRows}
+      />
     </StyledNavbar>
   );
 };

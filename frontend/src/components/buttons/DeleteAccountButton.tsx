@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 import onDeleteUser from 'usecases/onDeleteUser';
-import { HOME } from 'routes';
+import { MARKET_PLACE } from 'routes';
 import UserControllerInstance from 'api/controllers/UserController';
 import WalletControllerInstance from 'api/controllers/WalletController';
 
@@ -20,7 +20,7 @@ const DeleteAccountButton = () => {
 
   const onConfirmDelete = async () => {
     await onDeleteUser(WalletControllerInstance, UserControllerInstance)(currentUser!.username);
-    await signOut(history, HOME);
+    await signOut(history, MARKET_PLACE);
     handleClose();
   };
 

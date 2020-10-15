@@ -15,7 +15,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
-import { useHomePageCtx } from 'providers/marketplace/HomePageProvider';
+import { useHomePageCtx } from 'providers/marketplace/MarketPlaceProvider';
 
 
 type FilterBlockProps = { selected: boolean };
@@ -131,7 +131,7 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
   );
 };
 
-const HomePage = () => {
+const MarketPlace = () => {
   const { currentUser } = useAuth();
   const { defaultSneakers, filterSneakers, brands, updateFilterSneakers } = useHomePageCtx();
 
@@ -213,4 +213,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default MarketPlace;

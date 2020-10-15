@@ -12,7 +12,7 @@ import FormikInput from 'components/formik/FormikInput';
 
 import { validEmail, minCharacters } from 'utils/yup';
 
-import { SIGNUP, AUTH, FORGOT_PW, HOME } from 'routes';
+import { SIGNUP, AUTH, FORGOT_PW, MARKET_PLACE } from 'routes';
 
 import stLogo from 'assets/img/logo_transparent_background.png';
 import bgImage from 'assets/img/bg14.jpg';
@@ -64,7 +64,7 @@ const SignIn = () => {
                   <Card className='card-login card-plain'>
                     <CardHeader>
                       <div className='logo-container' style={{ width: '120px', marginBottom: '35px' }}>
-                        <Link to={HOME}>
+                        <Link to={MARKET_PLACE}>
                           <img src={stLogo} alt='sneakertrader-logo' />
                         </Link>
                       </div>

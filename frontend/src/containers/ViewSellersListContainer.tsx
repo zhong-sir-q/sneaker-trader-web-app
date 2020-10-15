@@ -9,7 +9,7 @@ import ViewSellersList from 'pages/ViewSellersList';
 import { useAuth } from 'providers/AuthProvider';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { AUTH, HOME, SIGNIN } from 'routes';
+import { AUTH, MARKET_PLACE, SIGNIN } from 'routes';
 import getTransactionFees from 'usecases/getTransactionFee';
 import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
 import { CreateTransactionPayload, ListedSneakerSeller, Sneaker } from '../../../shared';
@@ -62,7 +62,7 @@ const ViewSellersListContainer = () => {
 
   useEffect(() => {
     // all listed sneakers are from the current user, hence redirect the user back home
-    if (sellers && sellers.length === 0) history.push(HOME);
+    if (sellers && sellers.length === 0) history.push(MARKET_PLACE);
   }, [sellers, history]);
 
   // handleConfirmPurchase
@@ -105,7 +105,7 @@ const ViewSellersListContainer = () => {
 
         // after success purchase
         alert('The seller will be in touch with you shortly');
-        history.push(HOME);
+        history.push(MARKET_PLACE);
         window.location.reload();
 
         setProcessingPurchase(false);

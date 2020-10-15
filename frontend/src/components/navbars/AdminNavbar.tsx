@@ -1,9 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 // reactstrap components
 import { Collapse, Container, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem } from 'reactstrap';
-import { HOME } from 'routes';
+
+import { MARKET_PLACE, DASHBOARD, ADMIN } from 'routes';
+
+import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';
+
 import { signOut } from 'utils/auth';
+
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+
+import UserControllerInstance from 'api/controllers/UserController';
+
+import { UserRankingRow } from '../../../../shared';
 
 type NavbarColor = 'transparent' | 'white';
 
@@ -13,12 +24,20 @@ type AdminNavbarProps = {
 };
 
 const AdminNavbar = (props: AdminNavbarProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenCollapse, setIsOpenCollapse] = useState(false);
   const [color, setColor] = useState<NavbarColor>('transparent');
+  const [rankingRows, setRankingRows] = useState<UserRankingRow[]>([]);
+
   const sidebarToggle = useRef<HTMLButtonElement>(null);
 
+  const openCloseRankingDialog = useOpenCloseComp();
+
+  const openUserLeaderBoard = openCloseRankingDialog.open;
+  const onOpenUserLeaderBoard = openCloseRankingDialog.onOpen;
+  const onCloseUserLeaderBoard = openCloseRankingDialog.onClose;
+
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
-  const updateColor = () => setColor(window.innerWidth < 993 && isOpen ? 'white' : 'transparent');
+  const updateColor = () => setColor(window.innerWidth < 993 && isOpenCollapse ? 'white' : 'transparent');
 
   useEffect(() => {
     // NOTE: currently not implementing what there is in the componentDidUpdate method
@@ -28,9 +47,16 @@ const AdminNavbar = (props: AdminNavbarProps) => {
     return () => window.removeEventListener('resize', updateColor);
   });
 
+  useEffect(() => {
+    (async () => {
+      const rows = await UserControllerInstance.getAllUserRankingPoints();
+      setRankingRows(rows);
+    })();
+  }, []);
+
   const toggle = () => {
-    setColor(isOpen ? 'transparent' : 'white');
-    setIsOpen(!isOpen);
+    setColor(isOpenCollapse ? 'transparent' : 'white');
+    setIsOpenCollapse(!isOpenCollapse);
   };
 
   const openSidebar = () => {
@@ -65,15 +91,25 @@ const AdminNavbar = (props: AdminNavbarProps) => {
           <span className='navbar-toggler-bar navbar-kebab' />
           <span className='navbar-toggler-bar navbar-kebab' />
         </NavbarToggler>
-        <Collapse isOpen={isOpen} navbar className='justify-content-end'>
+        <Collapse className="justify-content-end" isOpen={isOpenCollapse} navbar>
           <Nav navbar>
             <NavItem>
-              <Link to={HOME} onClick={() => signOut()}>
+              <Link className='nav-link' onClick={onOpenUserLeaderBoard} to={ADMIN + DASHBOARD}>
+                Leaderboard
+              </Link>
+            </NavItem>
+            <NavItem>
+              <Link className='nav-link' to={MARKET_PLACE} onClick={() => signOut()}>
                 Log out
               </Link>
             </NavItem>
           </Nav>
         </Collapse>
+        <UserRankingLeaderBoardDialog
+          isDialogOpen={openUserLeaderBoard}
+          closeDialog={onCloseUserLeaderBoard}
+          rankings={rankingRows}
+        />
       </Container>
     </Navbar>
   );

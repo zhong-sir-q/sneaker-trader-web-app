@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { useAuth } from 'providers/AuthProvider';
 
-import { HOME } from 'routes';
+import { MARKET_PLACE } from 'routes';
 import { concatPaths } from 'api/formatApiEndpoint';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
@@ -50,7 +50,7 @@ const BuySneakerPageContainer = () => {
     const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeNameColorway);
 
     if (!sneaker) {
-      history.push(HOME);
+      history.push(MARKET_PLACE);
       return;
     }
 

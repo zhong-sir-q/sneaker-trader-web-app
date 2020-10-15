@@ -6,7 +6,7 @@ import BuySneakerPageContainer from 'containers/BuySneakerPageContainer';
 import ViewSellersListContainer from 'containers/ViewSellersListContainer';
 import React, { useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
-import { HOME, homeRoutes } from 'routes';
+import { MARKET_PLACE, homeRoutes } from 'routes';
 import { formatSneakerPathName } from 'utils/utils';
 
 const HomeLayout = () => {
@@ -26,9 +26,9 @@ const HomeLayout = () => {
       const routes = (
         <React.Fragment key={idx}>
           {!seenPaths.has(path) ? (
-            <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} />
+            <Route exact path={concatPaths(MARKET_PLACE, path)} component={BuySneakerPageContainer} />
           ) : undefined}
-          <Route path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
+          <Route path={concatPaths(MARKET_PLACE, path, size)} component={ViewSellersListContainer} />
         </React.Fragment>
       );
 
@@ -43,7 +43,9 @@ const HomeLayout = () => {
   }, []);
 
   const renderHomeRoutes = () =>
-    homeRoutes.map(({ path, component }) => <Route exact path={path} component={component} key={path} />);
+    homeRoutes.map(({ path, layout, component }) => (
+      <Route exact path={layout + path} component={component} key={path} />
+    ));
 
   return (
     <React.Fragment>
