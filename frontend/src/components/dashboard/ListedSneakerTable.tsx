@@ -4,18 +4,18 @@ import { Table } from 'reactstrap';
 import clsx from 'clsx';
 import moment from 'moment';
 
-import styled from 'styled-components';
-
+import CenterSpinner from 'components/CenterSpinner';
+import SneakerNameCell from 'components/SneakerNameCell';
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 import { upperCaseFirstLetter } from 'utils/utils';
 
-import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
-import CenterSpinner from 'components/CenterSpinner';
 import useSortableColData from 'hooks/useSortableColData';
 import usePagination from 'hooks/usePagination';
+
+import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 
 type ListedSneakerTableRowProps = {
   sneaker: SellerListedSneaker;
@@ -27,24 +27,15 @@ type ListedSneakerTableProps = {
   setShowCompleteSaleSuccess?: () => void;
 };
 
-const ImgContainer = styled.div`
-  float: left;
-
-  @media (min-width: 150px) {
-    width: 60px;
-  }
-
-  @media (min-width: 768px) {
-    width: 80px;
-  }
-`;
-
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, isFetchingData, setShowCompleteSaleSuccess } = props;
 
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<SellerListedSneaker>(sneakers);
 
-  const { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent } = usePagination(sneakers.length, 5);
+  const { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent } = usePagination(
+    sneakers.length,
+    5
+  );
 
   const ListedSneakerTableHeader = () => (
     <thead>
@@ -118,34 +109,12 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       if (setShowCompleteSaleSuccess) setShowCompleteSaleSuccess();
     };
 
-    const displayName = `${brand} ${name} ${colorway}`;
+    const displayName = `${brand} ${name}`;
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
 
     return (
       <tr>
-        <td>
-          <ImgContainer>
-            <img src={displayImg} alt={name + colorway} />
-          </ImgContainer>
-          <div style={{ overflowX: 'hidden', paddingLeft: '8px', top: '5px' }}>
-            <span style={{ fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'hidden' }}>
-              {displayName}
-            </span>
-            <span
-              style={{
-                color: '#000',
-                fontSize: '0.85em',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                overflowX: 'hidden',
-                display: 'block',
-              }}
-              className='category'
-            >
-              {displaySize}
-            </span>
-          </div>
-        </td>
+        <SneakerNameCell imgSrc={displayImg} name={displayName} displaySize={displaySize} colorway={colorway} />
         <td>{buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</td>
         <td>{upperCaseFirstLetter(prodStatus)}</td>
         <td>
@@ -187,7 +156,9 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       </Table>
       <div className='flex justify-center'>
         <PaginationComponent />
-          <span style={{ alignSelf: 'center' }}>{currentPage + 1} of {pagesCount}</span>
+        <span style={{ alignSelf: 'center' }}>
+          {currentPage + 1} of {pagesCount}
+        </span>
       </div>
     </React.Fragment>
   ) : (

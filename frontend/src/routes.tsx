@@ -8,6 +8,7 @@ import Dashboard from 'components/Dashboard';
 import MarketPlace from 'pages/MarketPlace';
 import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
 import PrivacyPolicy from 'pages/PrivacyPolicy';
+import Portfolio from 'pages/Portfolio';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -21,6 +22,7 @@ export const DASHBOARD = '/dashboard';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
 export const TOPUP_WALLET = '/topup';
+export const PORTFOLIO = '/portfolio'
 
 export const PRIVACY_POLICY = '/policy';
 
@@ -89,6 +91,12 @@ export const sidebarRoutes = [
     icon: 'now-ui-icons business_money-coins',
     layout: ADMIN,
   },
+  {
+    path: PORTFOLIO,
+    name: 'Portfolio',
+    icon: 'now-ui-icons business_money-coins',
+    layout: ADMIN,
+  },
 ];
 
 export type HomeRoute = {
@@ -154,6 +162,12 @@ const routes: SneakerTraderRoute[] = [
     component: TopupWalletPage,
     layout: ADMIN,
   },
+  {
+    path: PORTFOLIO,
+    name: 'Porfolio',
+    component: Portfolio,
+    layout: ADMIN
+  }
 ];
 
 export default routes;
