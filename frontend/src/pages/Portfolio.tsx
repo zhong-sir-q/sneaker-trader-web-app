@@ -302,7 +302,7 @@ const PortfolioForm = (props: PortfolioFormProps) => {
   return (
     <Formik initialValues={INIT_PORTFOLIO_FORM_VALUES} onSubmit={(formValues) => props.onSubmit(formValues)}>
       <FormikForm>
-        <FormGroup>
+        <FormGroup style={{ padding: '20px' }}>
           <SearchResultChildren />
         </FormGroup>
         <FormGroup>
@@ -410,6 +410,7 @@ const Portfolio = () => {
     nextStep();
   };
 
+  // add the data to the view and the database
   const onSubmitForm = (formValues: PortfolioFormValues) => {
     onClose();
   };
@@ -442,7 +443,7 @@ const Portfolio = () => {
 
   return (
     <React.Fragment>
-      <PanelHeader size='lg' />
+      <PanelHeader size='sm' />
       <Container fluid='md'>
         <div className='text-right'>
           <Button onClick={onOpen} color='primary'>

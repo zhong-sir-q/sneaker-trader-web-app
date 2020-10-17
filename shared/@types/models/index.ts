@@ -47,6 +47,15 @@ export type ListedProduct = {
   mainDisplayImage: string;
 };
 
+export type PortfolioSneaker = {
+  id: number;
+  userId: number;
+  listedProductId: number;
+  sneakerCondition: number;
+  purchaseDate: string;
+  purchasePrice: number;
+};
+
 export type Transaction = {
   id: number;
   quantity: number;
