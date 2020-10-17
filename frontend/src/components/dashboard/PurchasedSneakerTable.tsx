@@ -99,7 +99,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       brand,
       name,
       colorway,
-      imageUrls,
+      mainDisplayImage,
       size,
       price,
       quantity,
@@ -109,8 +109,6 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       transactionDatetime,
     } = props.sneaker;
 
-    const displayImg = imageUrls.split(',')[0];
-
     const displayName = `${brand} ${name} ${colorway}`;
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
 
@@ -118,7 +116,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       <tr>
         <td>
           <ImgContainer>
-            <img src={displayImg} alt={name + colorway} />
+            <img src={mainDisplayImage} alt={name + colorway} />
           </ImgContainer>
           <div style={{ overflowX: 'hidden', paddingLeft: '8px', top: '5px' }}>
             <span style={{ fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'hidden' }}>

@@ -1,34 +1,35 @@
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import { Col, Container, Progress } from 'reactstrap';
+
 import AwsControllerInstance from 'api/controllers/AwsController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import WalletControllerInstance from 'api/controllers/WalletController';
+
 import ListedSneakerSuccess from 'components/ListSneakerSuccess';
 import PanelHeader from 'components/PanelHeader';
 import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 import PreviewSneaker from 'components/PreviewSneaker';
 import SneakerInfoForm from 'components/SneakerInfoForm';
+
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 import { SneakerListingFormStateType, useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Col, Container, Progress } from 'reactstrap';
+
 import { ADMIN, TOPUP_WALLET } from 'routes';
+
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
-import { mapUpperCaseFirstLetter } from 'utils/utils';
+
+import { mapUpperCaseFirstLetter, getMainDisplayImgUrl } from 'utils/utils';
+
 import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
 
-
-
-
-
-
-
-const formatListedSneakerPayload = (
-  sneaker: SneakerListingFormStateType,
-  quantity?: number
+const formatListedSneakerPayload = (sneaker: SneakerListingFormStateType, quantity?: number) => (
+  s3UploadedUrls: string[]
 ): ListedSneakerFormPayload => ({
   askingPrice: Number(sneaker.askingPrice),
   sizeSystem: sneaker.sizeSystem,
@@ -40,6 +41,7 @@ const formatListedSneakerPayload = (
   description: sneaker.description,
   serialNumber: '',
   originalPurchasePrice: sneaker.originalPurchasePrice,
+  mainDisplayImage: s3UploadedUrls[0],
 });
 
 const formatSneaker = (s: SneakerListingFormStateType) => {
@@ -71,7 +73,7 @@ const SneakerListingForm = () => {
       }
     };
 
-    goTopupWalletIfNegativeWalletBalance()
+    goTopupWalletIfNegativeWalletBalance();
   });
 
   const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
@@ -85,7 +87,7 @@ const SneakerListingForm = () => {
 
     const imgFormData = formDataFromFiles();
     const sneakerPayload = formatSneaker(listingSneakerFormState);
-    const listedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
+    const createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
 
     await onListingSneaker(
       AwsControllerInstance,
@@ -96,7 +98,7 @@ const SneakerListingForm = () => {
       imgFormData,
       currentUser!.id!,
       sneakerPayload,
-      listedProductPayload,
+      createListedProductPayload,
       !brandOptions.includes(brand) ? brand : undefined,
       !colorwayOptions.includes(colorway) ? colorway : undefined,
       !sneakerNamesOptions.includes(name) ? name : undefined
@@ -123,6 +125,7 @@ const SneakerListingForm = () => {
         return (
           <PreviewSneaker
             sneaker={previewSneaker}
+            mainDisplayImage={getMainDisplayImgUrl(previewSneaker.imageUrls)}
             price={Number(listingSneakerFormState.askingPrice)}
             onPrevStep={goPrevStep}
             onSubmit={onFinishSubmit}

@@ -86,6 +86,7 @@ const SneakerSearchBar = (props: { items: any[] }) => {
   const clearSearchVal = () => setSearchVal('')
 
   const onConfirmVal = () => {
+    // TODO: change this to a prop instead
     redirectBuySneakerPage(history, result[activeSuggestionIdx].name, result[activeSuggestionIdx].colorway);
     clearSearchVal()
   }
@@ -127,7 +128,7 @@ const SneakerSearchBar = (props: { items: any[] }) => {
                 onMouseOver={() => setActiveSuggestionIdx(idx)}
                 onMouseDown={onMouseDown}
               >
-                <ListItemImg src={item.imageUrls.split(',')[0]} />
+                <ListItemImg src={item.mainDisplayImage} />
                 <StyledListGroupItemText>{formatName(item)}</StyledListGroupItemText>
               </StyledListGroupItem>
             ))}

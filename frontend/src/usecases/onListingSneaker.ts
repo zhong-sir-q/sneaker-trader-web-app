@@ -15,14 +15,12 @@ const onListingSneaker = (
   imgFormData: FormData,
   currentUserId: number,
   listingFormSneaker: ListingFormSneaker,
-  listedSneakerFormPayload: ListedSneakerFormPayload,
+  getCreateListedSneakerPayload: (s3ImgUrls: string[]) => ListedSneakerFormPayload,
   brand: string | undefined,
   colorway: string | undefined,
   name: string | undefined
 ) => {
   const uploadedUrls = await AwsControllerInstance.uploadS3MultipleImages(imgFormData);
-
-  const formattedUrls = uploadedUrls.join(',');
 
   let prodId: number;
   const nameColorway = formatSneakerNameColorway(listingFormSneaker.name, listingFormSneaker.colorway);
@@ -30,13 +28,13 @@ const onListingSneaker = (
   const product = await SneakerControllerInstance.getByNameColorwaySize(nameColorway, listingFormSneaker.size);
 
   if (product) prodId = product.id;
-  else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: formattedUrls });
+  else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: uploadedUrls.join(',') });
 
   await ListedSneakerControllerInstance.create({
-    ...listedSneakerFormPayload,
+    ...getCreateListedSneakerPayload(uploadedUrls),
     userId: currentUserId,
     productId: prodId,
-    imageUrls: formattedUrls,
+    imageUrls: uploadedUrls.join(','),
   });
 
   if (brand) await HelperInfoControllerInstance.createBrand({ brand });

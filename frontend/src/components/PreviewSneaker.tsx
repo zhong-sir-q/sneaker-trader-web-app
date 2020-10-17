@@ -8,12 +8,13 @@ import { AppSneaker } from '../../../shared';
 type PreviewSneakerProps = {
   sneaker: AppSneaker;
   price: number;
+  mainDisplayImage: string | undefined;
   onPrevStep: () => void;
   onSubmit: () => void;
 };
 
 const PreviewSneaker = (props: PreviewSneakerProps) => {
-  const { sneaker, price, onPrevStep, onSubmit } = props;
+  const { sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
 
   return (
     <Card className='text-center'>
@@ -21,7 +22,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
       <CardBody>
-        <SneakerCard sneaker={sneaker} price={price} />
+        <SneakerCard sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>

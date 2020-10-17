@@ -2,6 +2,8 @@ export const formatSneakerPathName = (name: string, color: string) => `${name} $
 
 export const formatSneakerNameColorway = (name: string, colorway: string) => `${name} ${colorway}`;
 
+export const getMainDisplayImgUrl = (imgUrls: string | undefined) => imgUrls?.split(',')[0];
+
 export const upperCaseFirstLetter = (s: string | undefined) => {
   if (!s) return s;
 
@@ -18,7 +20,7 @@ export const mapUpperCaseFirstLetter = (s: string, separator: string): string =>
 export const range = (start: number, end: number, step: number): number[] => {
   let result: number[] = [];
 
-  for (let num = start; num <= end; num += step) result.push(num);
+  for (let num = start; num != end; num += step) result.push(num);
 
   return result;
 };

@@ -17,6 +17,7 @@ import SneakerCarousel from 'components/SneakerCarousel';
 import getTransactionFees from 'usecases/getTransactionFee';
 
 import { ListedSneakerSeller, Sneaker } from '../../../shared';
+import { getMainDisplayImgUrl } from 'utils/utils';
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
@@ -79,6 +80,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
         <SneakerCard
           styles={{ margin: 'auto', marginBottom: '15px' }}
           sneaker={displaySneaker}
+          mainDisplayImage={getMainDisplayImgUrl(displaySneaker.imageUrls)}
           price={undefined}
           maxWidth='400px'
         />

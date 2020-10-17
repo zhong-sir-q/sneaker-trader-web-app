@@ -29,7 +29,7 @@ test('Call respective functions on listing a sneaker', async (done) => {
     new FormData(),
     faker.random.number(),
     fakeListingFormSneaker(),
-    fakeListedSneakerFormPayload(),
+    fakeListedSneakerFormPayload,
     'Nike',
     undefined,
     undefined

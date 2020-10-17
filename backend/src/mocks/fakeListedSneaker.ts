@@ -16,6 +16,7 @@ const fakeListedSneaker = (userId: number, productId: number): CreateListedSneak
   description: faker.lorem.lines(),
   serialNumber: faker.lorem.words(),
   originalPurchasePrice: faker.random.number(),
+  mainDisplayImage: faker.internet.url(),
 });
 
 export default fakeListedSneaker;

@@ -5,6 +5,7 @@ import React from 'react';
 import { Button, Col, Container, Row, Table } from 'reactstrap';
 import styled from 'styled-components';
 import { Size, SizeMinPriceGroupType, Sneaker, SneakerAsk } from '../../../shared';
+import { getMainDisplayImgUrl } from 'utils/utils';
 
 const CenterContainer = styled(Container)`
   display: flex;
@@ -130,7 +131,11 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
           </Col>
           <Col md='8'>
             <CenterContainer>
-              <SneakerCard sneaker={formatSneaker()} price={selectedSizeMinPrice} />
+              <SneakerCard
+                mainDisplayImage={getMainDisplayImgUrl(formatSneaker().imageUrls)}
+                sneaker={formatSneaker()}
+                price={selectedSizeMinPrice}
+              />
               <Button onClick={onViewAllAsks}>View All Asks</Button>
               <Button
                 style={{ display: 'block', margin: 'auto' }}

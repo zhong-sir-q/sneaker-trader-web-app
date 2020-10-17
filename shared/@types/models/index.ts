@@ -44,6 +44,7 @@ export type ListedProduct = {
   description: string;
   serialNumber: string;
   originalPurchasePrice: number;
+  mainDisplayImage: string;
 };
 
 export type Transaction = {

@@ -93,7 +93,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       brand,
       name,
       colorway,
-      imageUrls,
+      mainDisplayImage,
       size,
       price,
       quantity,
@@ -101,8 +101,6 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       buyer,
       sizeSystem,
     } = props.sneaker;
-
-    const displayImg = imageUrls.split(',')[0];
 
     const onCompleteSale = async () => {
       await ListedSneakerControllerInstance.updateListedSneakerStatus(id, { prodStatus: 'sold' });
@@ -114,7 +112,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
 
     return (
       <tr>
-        <SneakerNameCell imgSrc={displayImg} name={displayName} displaySize={displaySize} colorway={colorway} />
+        <SneakerNameCell imgSrc={mainDisplayImage} name={displayName} displaySize={displaySize} colorway={colorway} />
         <td>{buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</td>
         <td>{upperCaseFirstLetter(prodStatus)}</td>
         <td>

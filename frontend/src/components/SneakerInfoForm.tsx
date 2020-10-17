@@ -121,7 +121,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
               <Row>
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput name='originalPurchasePrice' placeholder='$$ ~ $$$$$' type='number' label='Original Purchase Price' />
+                    <FormikLabelInput name='originalPurchasePrice' placeholder='$$ ~ $$$$$' type='number' label='Purchase Price' />
                   </FormGroup>
                 </Col>
 
