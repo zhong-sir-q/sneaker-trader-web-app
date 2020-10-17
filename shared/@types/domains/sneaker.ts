@@ -16,9 +16,9 @@ export type CustomerSneaker = Pick<Sneaker, 'name' | 'colorway' | 'size' | 'bran
 
 export type AppSneaker = Omit<Sneaker, 'id' | 'RRP'>;
 
-export type GallerySneaker = AppSneaker & { minPrice: number };
-
 export type AppListedSneaker = Omit<ListedProduct, 'id'>;
+
+export type GallerySneaker = AppSneaker & AppListedSneaker & { minPrice: number };
 
 export type ListedSneakerFormPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId' | 'imageUrls'>;
 

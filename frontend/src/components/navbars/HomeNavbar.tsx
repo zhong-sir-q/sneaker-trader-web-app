@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, NavItem, Collapse, NavbarToggler } from 'reactstrap';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import SneakerSearchBar from 'components/SneakerSearchBar';
+import SneakerSearchBar, { SearchBarSneaker } from 'components/SneakerSearchBar';
 
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
@@ -19,6 +19,7 @@ import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard'
 
 import logo from 'assets/img/logo_transparent_background.png';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
 const SearchBarWrapper = styled.div`
   padding: 0.5rem 0.7rem;
@@ -59,8 +60,12 @@ const HomeNavbar = () => {
     })();
   }, []);
 
+  const history = useHistory();
   const { signedIn } = useAuth();
   const { defaultSneakers } = useMarketPlaceCtx();
+
+  const navigateBuySneakerPage = (sneaker: SearchBarSneaker) =>
+    redirectBuySneakerPage(history, sneaker.name, sneaker.colorway);
 
   return (
     <StyledNavbar expand='lg'>
@@ -79,7 +84,7 @@ const HomeNavbar = () => {
 
       <Collapse isOpen={openNav} navbar>
         <SearchBarWrapper>
-          <SneakerSearchBar items={defaultSneakers || []} />
+          <SneakerSearchBar sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
         </SearchBarWrapper>
 
         <Nav navbar>

@@ -20,7 +20,7 @@ export const mapUpperCaseFirstLetter = (s: string, separator: string): string =>
 export const range = (start: number, end: number, step: number): number[] => {
   let result: number[] = [];
 
-  for (let num = start; num != end; num += step) result.push(num);
+  for (let num = start; num !== end; num += step) result.push(num);
 
   return result;
 };

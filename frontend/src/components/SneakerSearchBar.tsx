@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 
-import { useHistory } from 'react-router-dom';
-
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
 import { ListGroup, ListGroupItem, ListGroupItemText, InputGroup } from 'reactstrap';
 
 import OutsideClickHandler from './OutsideClickHandler';
-import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
 const ListItemImg = styled.img`
   width: 100px;
@@ -58,12 +55,19 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
   }
 `;
 
-const SneakerSearchBar = (props: { items: any[] }) => {
+export type SearchBarSneaker = { brand: string; name: string; colorway: string; mainDisplayImage: string };
+
+type SneakerSearchBarProps = {
+  sneakers: SearchBarSneaker[];
+  onChooseSneaker: (sneaker: SearchBarSneaker) => void;
+};
+
+const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [searchVal, setSearchVal] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
 
-  const history = useHistory();
+  console.log(props.sneakers)
 
   const formatName = (sneaker: any) => [sneaker.brand, sneaker.name, sneaker.colorway].join(' ');
 
@@ -71,8 +75,8 @@ const SneakerSearchBar = (props: { items: any[] }) => {
   const openSuggestions = () => setShowSuggestions(true);
 
   const result = !searchVal
-    ? props.items
-    : props.items.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
+    ? props.sneakers
+    : props.sneakers.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
 
   const onChange = (evt: any) => {
     const { value } = evt.target;
@@ -83,13 +87,12 @@ const SneakerSearchBar = (props: { items: any[] }) => {
     setSearchVal(value);
   };
 
-  const clearSearchVal = () => setSearchVal('')
+  const clearSearchVal = () => setSearchVal('');
 
   const onConfirmVal = () => {
-    // TODO: change this to a prop instead
-    redirectBuySneakerPage(history, result[activeSuggestionIdx].name, result[activeSuggestionIdx].colorway);
-    clearSearchVal()
-  }
+    props.onChooseSneaker(result[activeSuggestionIdx]);
+    clearSearchVal();
+  };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

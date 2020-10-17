@@ -40,6 +40,8 @@ type PortfolioSneaker = {
   condition: SneakerCondition;
   purchaseDate: string;
   purchasePrice: number;
+  // the marketValue is not part of the moel, instaed, it
+  // will be computed in real time when data is retrieved
   marketValue: number;
 };
 
@@ -257,6 +259,12 @@ const XButton = styled.div`
   cursor: pointer;
 `;
 
+type SearchResultItemProps = {
+  onClose: () => void;
+  imgSrc: string;
+  itemText: string;
+};
+
 const SearchResultItem = () => (
   <ListGroup>
     <StyledListGroupItem>
@@ -267,10 +275,30 @@ const SearchResultItem = () => (
   </ListGroup>
 );
 
+type PortfolioFormValues = {
+  size: number;
+  prodCondition: SneakerCondition;
+  purchaseMonth: string;
+  purchaseYear: string;
+  purchasePrice: number;
+};
+
+const INIT_PORTFOLIO_FORM_VALUES: PortfolioFormValues = {
+  size: ('' as unknown) as number,
+  prodCondition: 'dead stock',
+  purchaseMonth: '',
+  purchaseYear: '',
+  purchasePrice: ('' as unknown) as number,
+};
+
+type PortfolioFormProps = {
+  onSubmit: () => void
+}
+
 const PortfolioForm = () => {
   return (
     <Formik
-      initialValues={{}}
+      initialValues={INIT_PORTFOLIO_FORM_VALUES}
       onSubmit={() => {
         console.log('Form is submitted');
       }}

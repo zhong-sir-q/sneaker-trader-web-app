@@ -13,4 +13,4 @@ app.use('/api', apiRoutes());
 
 app.get('/', (_req, res) => res.send('SneakerTrader Limited'));
 
-export default app
+export default app;
