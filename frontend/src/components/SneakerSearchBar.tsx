@@ -67,8 +67,6 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
 
-  console.log(props.sneakers)
-
   const formatName = (sneaker: any) => [sneaker.brand, sneaker.name, sneaker.colorway].join(' ');
 
   const hideSuggestions = () => setShowSuggestions(false);

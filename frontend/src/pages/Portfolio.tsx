@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 
 import {
@@ -20,7 +20,7 @@ import styled from 'styled-components';
 
 import PanelHeader from 'components/PanelHeader';
 import SneakerNameCell from 'components/SneakerNameCell';
-import SneakerSearchBar from 'components/SneakerSearchBar';
+import SneakerSearchBar, { SearchBarSneaker } from 'components/SneakerSearchBar';
 
 import useSortableColData from 'hooks/useSortableColData';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
@@ -250,7 +250,7 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
   }
 `;
 
-const XButton = styled.div`
+const Cancel = styled.div`
   position: absolute;
   right: 8px;
   top: 0;
@@ -265,12 +265,12 @@ type SearchResultItemProps = {
   itemText: string;
 };
 
-const SearchResultItem = () => (
+const SearchResultItem = (props: SearchResultItemProps) => (
   <ListGroup>
     <StyledListGroupItem>
-      <XButton>x</XButton>
-      <ListItemImg src='https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083' />
-      <StyledListGroupItemText>Nike Kobe 14 Black</StyledListGroupItemText>
+      <Cancel onClick={props.onClose}>x</Cancel>
+      <ListItemImg src={props.imgSrc} />
+      <StyledListGroupItemText>{props.itemText}</StyledListGroupItemText>
     </StyledListGroupItem>
   </ListGroup>
 );
@@ -292,20 +292,18 @@ const INIT_PORTFOLIO_FORM_VALUES: PortfolioFormValues = {
 };
 
 type PortfolioFormProps = {
-  onSubmit: () => void
-}
+  onSubmit: (values: PortfolioFormValues) => void;
+  SearchResultChildren: () => JSX.Element;
+};
 
-const PortfolioForm = () => {
+const PortfolioForm = (props: PortfolioFormProps) => {
+  const { SearchResultChildren } = props;
+
   return (
-    <Formik
-      initialValues={INIT_PORTFOLIO_FORM_VALUES}
-      onSubmit={() => {
-        console.log('Form is submitted');
-      }}
-    >
+    <Formik initialValues={INIT_PORTFOLIO_FORM_VALUES} onSubmit={(formValues) => props.onSubmit(formValues)}>
       <FormikForm>
         <FormGroup>
-          <SearchResultItem />
+          <SearchResultChildren />
         </FormGroup>
         <FormGroup>
           {/* TODO: the sizes need to be retrieved from th database, here is only a mock */}
@@ -365,7 +363,9 @@ const PortfolioForm = () => {
             label='Purchase Price'
           />
         </FormGroup>
-        <Button color='primary'>Submit</Button>
+        <Button type='submit' color='primary'>
+          Submit
+        </Button>
       </FormikForm>
     </Formik>
   );
@@ -393,6 +393,52 @@ const Portfolio = () => {
   const { open, onOpen, onClose } = useOpenCloseComp();
 
   const classes = useStyles();
+
+  const [selectedSneaker, setSelectdSneaker] = useState<SearchBarSneaker>();
+
+  const [step, setStep] = useState(0);
+  const prevStep = () => setStep(step - 1);
+  const nextStep = () => setStep(step + 1);
+
+  const onCancelChosenSneaker = () => {
+    setSelectdSneaker(undefined);
+    prevStep();
+  };
+
+  const onConfirmSearchSneaker = (sneaker: SearchBarSneaker) => {
+    setSelectdSneaker(sneaker);
+    nextStep();
+  };
+
+  const onSubmitForm = (formValues: PortfolioFormValues) => {
+    onClose();
+  };
+
+  const renderComp = () => {
+    switch (step) {
+      case 0:
+        return <SneakerSearchBar sneakers={mockPortfolioSneakers} onChooseSneaker={onConfirmSearchSneaker} />;
+      case 1:
+        if (!selectedSneaker) return null;
+        const { brand, name, colorway } = selectedSneaker;
+        const resultItemText = `${brand} ${name} ${colorway}`;
+
+        return (
+          <PortfolioForm
+            onSubmit={onSubmitForm}
+            SearchResultChildren={() => (
+              <SearchResultItem
+                onClose={onCancelChosenSneaker}
+                imgSrc={selectedSneaker.mainDisplayImage}
+                itemText={resultItemText}
+              />
+            )}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <React.Fragment>
@@ -424,8 +470,7 @@ const Portfolio = () => {
               root: classes.dialogContentRoot,
             }}
           >
-            {/* <SneakerSearchBar items={mockPortfolioSneakers} /> */}
-            <PortfolioForm />
+            {renderComp()}
           </DialogContent>
         </Dialog>
       </Container>
