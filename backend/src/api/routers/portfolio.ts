@@ -1,11 +1,19 @@
 import { Router } from 'express';
 import PortfolioSneakerService from '../../services/PortfolioSneakerService';
+import { CodeStarNotifications } from 'aws-sdk';
 
 const portfolioRoute = Router();
 
-// NOTE: are there too much going on in this funtion? If so, how can I refactor it?
 export default (app: Router, PortfolioSneakerServiceInstance: PortfolioSneakerService) => {
   app.use('/portfolio', portfolioRoute);
+
+  portfolioRoute.get('/all/marketValue/:userId', (req, res, next) => {
+    const { userId } = req.params;
+
+    PortfolioSneakerServiceInstance.getAllWithMarketValueByUserId(Number(userId))
+      .then((sneakers) => res.json(sneakers))
+      .catch(next);
+  });
 
   portfolioRoute.get('/all/:userId', (req, res, next) => {
     const { userId } = req.params;

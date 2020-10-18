@@ -5,14 +5,14 @@ import { Link, useHistory } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import SneakerSearchBar, { SearchBarSneaker } from 'components/SneakerSearchBar';
+import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
-import { UserRankingRow } from '../../../../shared';
+import { UserRankingRow, SearchBarSneaker } from '../../../../shared';
 import UserControllerInstance from 'api/controllers/UserController';
 
 import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';

@@ -1,11 +1,11 @@
 import {
   AppListedSneaker,
-  AppSneaker,
   GallerySneaker,
   SizeMinPriceGroupType,
   SneakerAsk,
   SellerListedSneaker,
   ListedProduct,
+  GetListedSneaker,
 } from '../../../../shared';
 
 import ListedSneakerEntity from '../../../../shared/@types/domains/entities/ListedSneakerEntity';
@@ -23,7 +23,7 @@ export class ListedSneakerController implements ListedSneakerEntity {
   create = (listedSneaker: AppListedSneaker) =>
     fetch(this.listedSneakerPath, formatRequestOptions(listedSneaker)).then((res) => res.json());
 
-  getAllListedSneakers = (): Promise<AppSneaker[]> => fetch(this.listedSneakerPath).then((res) => res.json());
+  getAllListedSneakers = (): Promise<GetListedSneaker[]> => fetch(this.listedSneakerPath).then((res) => res.json());
 
   getGallerySneakers = (sellerId: number): Promise<GallerySneaker[]> =>
     fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId)).then((res) => res.json());

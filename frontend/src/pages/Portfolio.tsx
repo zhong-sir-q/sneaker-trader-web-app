@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 
 import {
@@ -14,122 +14,69 @@ import {
   Col,
   FormGroup,
 } from 'reactstrap';
-import { Dialog, DialogTitle, DialogContent, makeStyles } from '@material-ui/core';
+
+import { Dialog, DialogTitle, DialogContent, makeStyles, IconButton } from '@material-ui/core';
+import { Close as CloseIcon } from '@material-ui/icons';
+
 import { Formik, Form as FormikForm } from 'formik';
 import styled from 'styled-components';
 
+// util libraries
+import * as Yup from 'yup';
+import moment from 'moment';
+
 import PanelHeader from 'components/PanelHeader';
 import SneakerNameCell from 'components/SneakerNameCell';
-import SneakerSearchBar, { SearchBarSneaker } from 'components/SneakerSearchBar';
+import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import useSortableColData from 'hooks/useSortableColData';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
-import { SneakerCondition } from '../../../shared';
 import FormikLabelSelect from 'components/formik/FormikLabelSelect';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
-import moment from 'moment';
-import { range } from 'utils/utils';
 
-type PortfolioSneaker = {
+import { range } from 'utils/utils';
+import { useAuth } from 'providers/AuthProvider';
+import PortfolioControllerInstance from 'api/controllers/PortfolioController';
+import CenterSpinner from 'components/CenterSpinner';
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+
+import {
+  SneakerCondition,
+  PortfolioSneaker,
+  SearchBarSneaker,
+  PortfolioSneakerWithMarketValue,
+  GetListedSneaker,
+} from '../../../shared';
+import { requiredPositiveNumber, required } from 'utils/yup';
+import { months, MonthKey } from 'data/date';
+
+type TablePortfolioSneaker = {
+  id: number;
   brand: string;
   name: string;
   size: number;
   colorway: string;
   mainDisplayImage: string;
-  condition: SneakerCondition;
+  sneakerCondition: SneakerCondition;
   purchaseDate: string;
   purchasePrice: number;
-  // the marketValue is not part of the moel, instaed, it
-  // will be computed in real time when data is retrieved
-  marketValue: number;
+  marketValue: number | null;
 };
 
 type PortfolioTabaleRowProps = {
-  sneaker: PortfolioSneaker;
+  sneaker: TablePortfolioSneaker;
 };
 
-const mockPortfolioSneakers: PortfolioSneaker[] = [
-  {
-    mainDisplayImage:
-      'https://sneaker-trader-client-images-uploads.s3.ap-southeast-2.amazonaws.com/sneakers/7a8d285961ee67bb3dc38bafda5bf6cc',
-    name: 'KD 13',
-    brand: 'Nike',
-    colorway: 'The Easy Money Snipers',
-    size: 9.5,
-    purchaseDate: '19/08/2020',
-    condition: 'dead stock',
-    purchasePrice: 400,
-    marketValue: 550,
-  },
-  {
-    mainDisplayImage:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083',
-    name: 'Kobe 14',
-    brand: 'Nike',
-    colorway: 'Black',
-    size: 12,
-    purchaseDate: '19/07/2020',
-    condition: 'new',
-    purchasePrice: 900,
-    marketValue: 550,
-  },
-  {
-    mainDisplayImage:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083',
-    name: 'Kobe 14',
-    brand: 'Nike',
-    colorway: 'Black',
-    size: 10,
-    purchaseDate: '19/09/2020',
-    condition: 'dead stock',
-    purchasePrice: 600,
-    marketValue: 550,
-  },
-  {
-    mainDisplayImage:
-      'https://sneaker-trader-client-images-uploads.s3.ap-southeast-2.amazonaws.com/sneakers/7a8d285961ee67bb3dc38bafda5bf6cc',
-    name: 'KD 13',
-    brand: 'Nike',
-    colorway: 'The Easy Money Snipers',
-    size: 9.5,
-    purchaseDate: '19/08/2020',
-    condition: 'dead stock',
-    purchasePrice: 400,
-    marketValue: 550,
-  },
-  {
-    mainDisplayImage:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083',
-    name: 'Kobe 14',
-    brand: 'Nike',
-    colorway: 'Black',
-    size: 12,
-    purchaseDate: '19/07/2020',
-    condition: 'new',
-    purchasePrice: 900,
-    marketValue: 550,
-  },
-  {
-    mainDisplayImage:
-      'https://sneaker-trader-client-images-uploads.s3.amazonaws.com/sneakers/5a8c4e7f8895057e0348529a31bee083',
-    name: 'Kobe 14',
-    brand: 'Nike',
-    colorway: 'Black',
-    size: 10,
-    purchaseDate: '19/09/2020',
-    condition: 'dead stock',
-    purchasePrice: 600,
-    marketValue: 550,
-  },
-];
-
 type PortfolioTableProps = {
-  sneakers: PortfolioSneaker[];
+  sneakers: TablePortfolioSneaker[];
+  onDeleteRow: (portfolioSneakerId: number) => void;
 };
 
 const PortfolioTable = (props: PortfolioTableProps) => {
-  const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<PortfolioSneaker>(props.sneakers);
+  const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<TablePortfolioSneaker>(props.sneakers);
+
+  const { onDeleteRow } = props;
 
   const PortfolioTableHeader = () => (
     <thead>
@@ -143,8 +90,8 @@ const PortfolioTable = (props: PortfolioTableProps) => {
         </th>
         <th
           style={{ minWidth: '105px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('condition'))}
-          onClick={() => requestSort('condition')}
+          className={clsx('sortable', getHeaderClassName('sneakerCondition'))}
+          onClick={() => requestSort('sneakerCondition')}
         >
           condition
         </th>
@@ -171,18 +118,21 @@ const PortfolioTable = (props: PortfolioTableProps) => {
         </th>
 
         <th>Gain/Loss</th>
+        {/* empty column for row deleting */}
+        <th></th>
       </tr>
     </thead>
   );
 
   const PortfolioTableRow = (props: PortfolioTabaleRowProps) => {
     const {
+      id,
       brand,
       name,
       size,
       colorway,
       mainDisplayImage,
-      condition,
+      sneakerCondition,
       purchaseDate,
       purchasePrice,
       marketValue,
@@ -201,12 +151,23 @@ const PortfolioTable = (props: PortfolioTableProps) => {
           displaySize={`US Men's Size: ${size}`}
           imgSrc={mainDisplayImage}
         />
-        <td>{condition}</td>
+        <td>{sneakerCondition}</td>
         <td>{purchaseDate}</td>
         <td>${purchasePrice}</td>
-        <td>${marketValue}</td>
+        <td>{!marketValue ? 'Unknown' : '$' + marketValue}</td>
+        <td
+          style={{
+            color: marketValue === null ? '' : diffAmount(marketValue, purchasePrice) > 0 ? 'green' : 'red',
+          }}
+        >
+          {!marketValue
+            ? 'Unknown'
+            : `${diffAmount(marketValue, purchasePrice)} (${diffPercentage(marketValue, purchasePrice)}%)`}
+        </td>
         <td>
-          {diffAmount(marketValue, purchasePrice)} ({diffPercentage(marketValue, purchasePrice)}%)
+          <Button onClick={() => onDeleteRow(id)} color='danger'>
+            REMOVE
+          </Button>
         </td>
       </tr>
     );
@@ -222,10 +183,9 @@ const PortfolioTable = (props: PortfolioTableProps) => {
       </tbody>
     </Table>
   );
+
+  // NOTE: these are the smae styled components from SneakerSearchBar
 };
-
-// NOTE: these are the smae styled components from SneakerSearchBar
-
 const ListItemImg = styled.img`
   width: 100px;
   margin-right: 10px;
@@ -276,39 +236,51 @@ const SearchResultItem = (props: SearchResultItemProps) => (
 );
 
 type PortfolioFormValues = {
-  size: number;
-  prodCondition: SneakerCondition;
+  size: string;
+  sneakerCondition: SneakerCondition;
   purchaseMonth: string;
   purchaseYear: string;
-  purchasePrice: number;
+  purchasePrice: string;
 };
 
+const MIN_SNEAKER_SIZE = 3;
+
 const INIT_PORTFOLIO_FORM_VALUES: PortfolioFormValues = {
-  size: ('' as unknown) as number,
-  prodCondition: 'dead stock',
+  size: String(MIN_SNEAKER_SIZE),
+  sneakerCondition: 'dead stock',
   purchaseMonth: '',
   purchaseYear: '',
-  purchasePrice: ('' as unknown) as number,
+  purchasePrice: '',
 };
+
+const portfolioFormValidations = Yup.object({
+  purchaseMonth: required(),
+  purchaseYear: required(),
+  purchasePrice: requiredPositiveNumber('Purchase price'),
+});
 
 type PortfolioFormProps = {
   onSubmit: (values: PortfolioFormValues) => void;
-  SearchResultChildren: () => JSX.Element;
+  SearchResultChild: () => JSX.Element;
 };
 
 const PortfolioForm = (props: PortfolioFormProps) => {
-  const { SearchResultChildren } = props;
+  const { SearchResultChild } = props;
 
   return (
-    <Formik initialValues={INIT_PORTFOLIO_FORM_VALUES} onSubmit={(formValues) => props.onSubmit(formValues)}>
+    <Formik
+      initialValues={INIT_PORTFOLIO_FORM_VALUES}
+      validationSchema={portfolioFormValidations}
+      onSubmit={(formValues) => props.onSubmit(formValues)}
+    >
       <FormikForm>
         <FormGroup style={{ padding: '20px' }}>
-          <SearchResultChildren />
+          <SearchResultChild />
         </FormGroup>
         <FormGroup>
           {/* TODO: the sizes need to be retrieved from th database, here is only a mock */}
-          <FormikLabelSelect name='size' label='Size' id='portfolio-sneaker-size'>
-            {range(3, 16, 1).map((size) => (
+          <FormikLabelSelect name='size' label='U.S Size' id='portfolio-sneaker-size'>
+            {range(MIN_SNEAKER_SIZE, 16, 1).map((size) => (
               <option value={size} key={size}>
                 {size}
               </option>
@@ -317,7 +289,7 @@ const PortfolioForm = (props: PortfolioFormProps) => {
         </FormGroup>
 
         <FormGroup>
-          <FormikLabelSelect name='prodCondition' label='Condition' id='portfolio-sneaker-condition'>
+          <FormikLabelSelect name='sneakerCondition' label='Condition' id='portfolio-sneaker-condition'>
             <option value='dead stock'>Dead Stock</option>
             <option value='new'>New</option>
             <option value='used'>Used</option>
@@ -331,8 +303,8 @@ const PortfolioForm = (props: PortfolioFormProps) => {
             <FormGroup>
               <FormikLabelSelect name='purchaseMonth' label='' id='portfolio-sneaker-purchase-month'>
                 <option value=''>Month</option>
-                {moment.months().map((m) => (
-                  <option value='m' key={m}>
+                {Object.keys(months).map((m) => (
+                  <option value={m} key={m}>
                     {m}
                   </option>
                 ))}
@@ -357,7 +329,7 @@ const PortfolioForm = (props: PortfolioFormProps) => {
         <FormGroup>
           <FormikLabelInput
             style={{ width: '135px' }}
-            name='originalPurchasePrice'
+            name='purchasePrice'
             placeholder='$$ ~ $$$$$'
             type='number'
             label='Purchase Price'
@@ -371,13 +343,18 @@ const PortfolioForm = (props: PortfolioFormProps) => {
   );
 };
 
+const formatTablePortfolioSneaker = (sneaker: PortfolioSneakerWithMarketValue): TablePortfolioSneaker => ({
+  ...sneaker,
+  purchaseDate: `${moment().endOf('month').format('DD')}/${sneaker.purchaseMonth}/${sneaker.purchaseYear}`,
+});
+
 const DialogHeader = styled.div`
   background-color: #2e2e2e;
   color: #ffffff;
 `;
 
 // set overflowY to visible to show the search suggestions
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   paperFullWidth: {
     overflowY: 'visible',
   },
@@ -387,9 +364,45 @@ const useStyles = makeStyles({
   dialogContentRoot: {
     overflowY: 'visible',
   },
-});
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+    outline: 'none',
+  },
+}));
+
+const formatSearchBarSneaker = (s: GetListedSneaker): SearchBarSneaker => {
+  const { name, colorway, brand, mainDisplayImage } = s;
+
+  return { name, colorway, brand, mainDisplayImage };
+};
 
 const Portfolio = () => {
+  const { currentUser } = useAuth();
+
+  const [goFetchPortfolioSneakers, setGoFetchPortfolioSneakers] = useState(true);
+  const [portfolioSneakers, setPortfolioSneakers] = useState<PortfolioSneakerWithMarketValue[]>();
+  const [searchBarSneakers, setSearchBarSneakers] = useState<SearchBarSneaker[]>();
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetch = async () => {
+      const portSneakers = await PortfolioControllerInstance.getAllWithMarketValueByUserId(currentUser.id);
+      const listedSneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
+
+      setPortfolioSneakers(portSneakers);
+      setSearchBarSneakers(listedSneakers.map(formatSearchBarSneaker));
+    };
+
+    if (goFetchPortfolioSneakers) {
+      fetch();
+      setGoFetchPortfolioSneakers(false);
+    }
+  }, [currentUser, goFetchPortfolioSneakers]);
+
   const { open, onOpen, onClose } = useOpenCloseComp();
 
   const classes = useStyles();
@@ -400,9 +413,13 @@ const Portfolio = () => {
   const prevStep = () => setStep(step - 1);
   const nextStep = () => setStep(step + 1);
 
+  // resets
+  const resetStep = () => setStep(0);
+  const resetSelectedSneaker = () => setSelectdSneaker(undefined);
+
   const onCancelChosenSneaker = () => {
-    setSelectdSneaker(undefined);
     prevStep();
+    resetSelectedSneaker();
   };
 
   const onConfirmSearchSneaker = (sneaker: SearchBarSneaker) => {
@@ -410,15 +427,38 @@ const Portfolio = () => {
     nextStep();
   };
 
+  const formatPortfolioSneakerPayload = (
+    values: PortfolioFormValues,
+    userId: number,
+    selectedSneaker: SearchBarSneaker
+  ): Omit<PortfolioSneaker, 'id'> => ({
+    ...values,
+    ...selectedSneaker,
+    userId,
+    size: Number(values.size),
+    purchasePrice: Number(values.purchasePrice),
+    purchaseMonth: months[values.purchaseMonth as MonthKey],
+    purchaseYear: Number(values.purchaseYear),
+  });
+
   // add the data to the view and the database
-  const onSubmitForm = (formValues: PortfolioFormValues) => {
+  const onSubmitForm = async (formValues: PortfolioFormValues) => {
+    if (!currentUser || !selectedSneaker) return;
+
+    await PortfolioControllerInstance.add(formatPortfolioSneakerPayload(formValues, currentUser.id, selectedSneaker));
+
+    setGoFetchPortfolioSneakers(true);
     onClose();
+
+    // clean up
+    resetStep();
+    resetSelectedSneaker();
   };
 
   const renderComp = () => {
     switch (step) {
       case 0:
-        return <SneakerSearchBar sneakers={mockPortfolioSneakers} onChooseSneaker={onConfirmSearchSneaker} />;
+        return <SneakerSearchBar sneakers={searchBarSneakers || []} onChooseSneaker={onConfirmSearchSneaker} />;
       case 1:
         if (!selectedSneaker) return null;
         const { brand, name, colorway } = selectedSneaker;
@@ -427,7 +467,7 @@ const Portfolio = () => {
         return (
           <PortfolioForm
             onSubmit={onSubmitForm}
-            SearchResultChildren={() => (
+            SearchResultChild={() => (
               <SearchResultItem
                 onClose={onCancelChosenSneaker}
                 imgSrc={selectedSneaker.mainDisplayImage}
@@ -441,6 +481,11 @@ const Portfolio = () => {
     }
   };
 
+  const removePortfolioTableRow = async (portfolioSneakerId: number) => {
+    await PortfolioControllerInstance.delete(portfolioSneakerId);
+    setGoFetchPortfolioSneakers(true);
+  };
+
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
@@ -451,7 +496,14 @@ const Portfolio = () => {
           </Button>
         </div>
         <Card>
-          <PortfolioTable sneakers={mockPortfolioSneakers} />
+          {!portfolioSneakers || goFetchPortfolioSneakers ? (
+            <CenterSpinner />
+          ) : (
+            <PortfolioTable
+              sneakers={portfolioSneakers.map(formatTablePortfolioSneaker)}
+              onDeleteRow={removePortfolioTableRow}
+            />
+          )}
         </Card>
         <Dialog
           classes={{
@@ -464,7 +516,12 @@ const Portfolio = () => {
           onClose={onClose}
         >
           <DialogHeader>
-            <DialogTitle>Add Item To Porfolio</DialogTitle>
+            <DialogTitle>
+              Add Item To Porfolio
+              <IconButton className={classes.closeButton} onClick={onClose}>
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
           </DialogHeader>
           <DialogContent
             classes={{

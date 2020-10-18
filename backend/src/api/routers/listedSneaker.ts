@@ -7,7 +7,7 @@ const listedSneakerRoute = Router();
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
   app.use('/listedSneaker', listedSneakerRoute);
 
-  listedSneakerRoute.get('/', async (req, res, next) => {
+  listedSneakerRoute.get('/', async (_req, res, next) => {
     ListedSneakerServiceInstance.getAllListedSneakers()
       .then((r) => res.json(r))
       .catch((err) => next(err));

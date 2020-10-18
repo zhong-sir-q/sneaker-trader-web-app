@@ -49,10 +49,15 @@ export type ListedProduct = {
 
 export type PortfolioSneaker = {
   id: number;
+  name: string;
+  mainDisplayImage: string;
   userId: number;
-  listedProductId: number;
-  sneakerCondition: number;
-  purchaseDate: string;
+  brand: string;
+  size: number;
+  colorway: string;
+  sneakerCondition: SneakerCondition;
+  purchaseYear: number;
+  purchaseMonth: number;
   purchasePrice: number;
 };
 

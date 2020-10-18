@@ -3,7 +3,6 @@ import SneakerService from '../../services/SneakerService';
 
 const sneakerRoute = Router();
 
-// NOTE: are there too much going on in this funtion? If so, how can I refactor it?
 export default (app: Router, SneakerServiceInstance: SneakerService) => {
   app.use('/sneaker', sneakerRoute);
 

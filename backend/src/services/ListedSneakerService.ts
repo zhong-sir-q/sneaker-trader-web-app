@@ -5,9 +5,9 @@ import {
   SizeMinPriceGroupType,
   SneakerAsk,
   GallerySneaker,
-  AppSneaker,
   SellerListedSneaker,
   CreateListedSneakerPayload,
+  GetListedSneaker
 } from '../../../shared';
 
 import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
@@ -56,7 +56,7 @@ class ListedSneakerService implements ListedSneakerEntity {
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
-      SELECT L.id, L.sizeSystem, L.imageUrls, name, brand, colorway, size, prodStatus, ${buyerIfPendingOrSoldProduct},
+      SELECT L.*, name, brand, colorway, size, ${buyerIfPendingOrSoldProduct},
         askingPrice as price, quantity FROM ListedProducts L, Products P
           WHERE L.userId = ${sellerId} AND L.productId = P.id
             ORDER BY JSON_EXTRACT(stringifiedBuyer, '$.transactionDatetime') DESC
@@ -106,7 +106,10 @@ class ListedSneakerService implements ListedSneakerEntity {
   /**
    * @param nameColorway space separated name, e.g. Kobe 4 Black
    */
-  getSizeMinPriceGroupByNameColorway = async (nameColorway: string, sellerId: number): Promise<SizeMinPriceGroupType> => {
+  getSizeMinPriceGroupByNameColorway = async (
+    nameColorway: string,
+    sellerId: number
+  ): Promise<SizeMinPriceGroupType> => {
     const poolConn = await mysqlPoolConnection();
 
     /**
@@ -127,12 +130,13 @@ class ListedSneakerService implements ListedSneakerEntity {
     return poolConn.query(query);
   };
 
-  async getAllListedSneakers(): Promise<AppSneaker[]> {
+  async getAllListedSneakers(): Promise<GetListedSneaker[]> {
     const poolConn = await mysqlPoolConnection();
 
     const allListedProductsQuery = `
-      SELECT DISTINCT name, brand, colorway, size FROM ${PRODUCTS} P, 
-        ${LISTED_PRODUCTS} L WHERE P.id = L.productId AND L.prodStatus = "listed"`;
+      SELECT L.*, name, brand, colorway, size FROM ${PRODUCTS} P, 
+        ${LISTED_PRODUCTS} L WHERE P.id = L.productId
+          GROUP BY name, colorway`;
 
     return poolConn.query(allListedProductsQuery);
   }
@@ -140,7 +144,7 @@ class ListedSneakerService implements ListedSneakerEntity {
   async create(listedSneaker: CreateListedSneakerPayload) {
     const poolConn = await mysqlPoolConnection();
     const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedSneaker);
-    const res = await poolConn.query(createListedProductQuery)
+    const res = await poolConn.query(createListedProductQuery);
 
     return res.insertId;
   }

@@ -5,6 +5,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { ListGroup, ListGroupItem, ListGroupItemText, InputGroup } from 'reactstrap';
 
 import OutsideClickHandler from './OutsideClickHandler';
+import { SearchBarSneaker } from '../../../shared';
 
 const ListItemImg = styled.img`
   width: 100px;
@@ -54,8 +55,6 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
     font-size: 0.9em;
   }
 `;
-
-export type SearchBarSneaker = { brand: string; name: string; colorway: string; mainDisplayImage: string };
 
 type SneakerSearchBarProps = {
   sneakers: SearchBarSneaker[];
@@ -117,7 +116,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
-        <StyledInput placeholder='Search...' value={searchVal} onChange={onChange} onKeyDown={onKeyDown} />
+        <StyledInput autoFocus placeholder='Search...' value={searchVal} onChange={onChange} onKeyDown={onKeyDown} />
       </InputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>

@@ -72,6 +72,7 @@ const DashboardProviders = (props: { children: React.ReactNode }) => (
 const App = () => {
   return (
     <Router>
+      {/* AuthProvider should be on the top-level as most app components consume the context  */}
       <AuthProvider>
         {/* Switch must be a direct parent of the Route components, otherwise it does not work */}
         <Switch>

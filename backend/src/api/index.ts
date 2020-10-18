@@ -33,6 +33,8 @@ import StripeService from '../services/external/StripeService';
 
 import AddressService from '../services/AddressService';
 import AddressVerificationCodeService from '../services/AddressVerificationCodeService';
+import portfolio from './routers/portfolio';
+import PortfolioSneakerService from '../services/PortfolioSneakerService';
 
 export default () => {
   const app = Router();
@@ -50,6 +52,7 @@ export default () => {
 
   sneaker(app, new SneakerService());
   listedSneaker(app, new ListedSneakerService());
+  portfolio(app, new PortfolioSneakerService());
 
   helperInfo(app, new HelperInfoService());
 

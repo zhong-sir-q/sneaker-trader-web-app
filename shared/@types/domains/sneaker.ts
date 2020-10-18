@@ -1,6 +1,6 @@
 import { Sneaker, ListedProduct } from '../..';
 import { Buyer, Seller } from './user';
-import { Transaction } from '../models';
+import { Transaction, PortfolioSneaker } from '../models';
 
 export type SneakerAsk = {
   size: number;
@@ -27,6 +27,12 @@ export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 export type SellerListedSneaker = CustomerSneaker & { buyer: Buyer };
 
 export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transactionDatetime'> & { seller: Seller };
+
+export type SearchBarSneaker = { brand: string; name: string; colorway: string; mainDisplayImage: string };
+
+export type PortfolioSneakerWithMarketValue = PortfolioSneaker & { marketValue: number, latestTransactionDate: string };
+
+export type GetListedSneaker = ListedProduct & AppSneaker
 
 export type CreateListedSneakerPayload = Omit<ListedProduct, 'id' | 'prodStatus'>;
 

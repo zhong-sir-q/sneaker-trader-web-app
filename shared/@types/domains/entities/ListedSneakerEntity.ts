@@ -1,6 +1,6 @@
-import { SneakerAsk, GallerySneaker, SizeMinPriceGroupType, AppSneaker } from '..';
+import { SneakerAsk, GallerySneaker, SizeMinPriceGroupType } from '..';
 import { ListedProduct } from '../../models';
-import { SellerListedSneaker, CreateListedSneakerPayload } from '../sneaker';
+import { SellerListedSneaker, CreateListedSneakerPayload, GetListedSneaker } from '../sneaker';
 
 interface ListedSneakerEntity {
   getGallerySneakersBySize(sellerId: number, size: number): Promise<GallerySneaker[]>;
@@ -8,7 +8,7 @@ interface ListedSneakerEntity {
   getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]>;
   getGallerySneakers(sellerId: number): Promise<GallerySneaker[]>;
   getSizeMinPriceGroupByNameColorway(name: string, sellerId: number): Promise<SizeMinPriceGroupType>;
-  getAllListedSneakers(): Promise<AppSneaker[]>;
+  getAllListedSneakers(): Promise<GetListedSneaker[]>;
 
   create(p: CreateListedSneakerPayload): Promise<number>;
   handlePurchase(listedSneakerId: number, sellerId: number): Promise<any>;
