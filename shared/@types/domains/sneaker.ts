@@ -30,9 +30,14 @@ export type BuyerPurchasedSneaker = CustomerSneaker & Pick<Transaction, 'transac
 
 export type SearchBarSneaker = { brand: string; name: string; colorway: string; mainDisplayImage: string };
 
-export type PortfolioSneakerWithMarketValue = PortfolioSneaker & { marketValue: number, latestTransactionDate: string };
+export type PortfolioSneakerWithMarketValue = PortfolioSneaker & {
+  marketValue: number;
+  latestTransactionDate: string;
+  gain: number;
+  gainPercentage: number;
+};
 
-export type GetListedSneaker = ListedProduct & AppSneaker
+export type GetListedSneaker = ListedProduct & AppSneaker;
 
 export type CreateListedSneakerPayload = Omit<ListedProduct, 'id' | 'prodStatus'>;
 

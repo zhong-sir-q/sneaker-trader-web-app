@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 // reactstrap components
 import { Collapse, Container, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem } from 'reactstrap';
 
-import { DASHBOARD, ADMIN, HOME } from 'routes';
+import { HOME } from 'routes';
 
 import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';
 
@@ -91,12 +91,12 @@ const AdminNavbar = (props: AdminNavbarProps) => {
           <span className='navbar-toggler-bar navbar-kebab' />
           <span className='navbar-toggler-bar navbar-kebab' />
         </NavbarToggler>
-        <Collapse className="justify-content-end" isOpen={isOpenCollapse} navbar>
+        <Collapse className='justify-content-end' isOpen={isOpenCollapse} navbar>
           <Nav navbar>
             <NavItem>
-              <Link className='nav-link' onClick={onOpenUserLeaderBoard} to={ADMIN + DASHBOARD}>
+              <div className='nav-link' onClick={onOpenUserLeaderBoard}>
                 Leaderboard
-              </Link>
+              </div>
             </NavItem>
             <NavItem>
               <Link className='nav-link' to={HOME} onClick={() => signOut()}>

@@ -29,9 +29,11 @@ class PortfolioSneakerService implements PortfolioSneakerEntity {
     `
 
     const getPortfolioWithMarketValueQuery = `
-      SELECT marketValue, latestTransactionDate, t2.* FROM (
-        ${getGroupedLatestTransactions}        
-          ) AS t1 RIGHT JOIN ${PORTFOLIO_SNEAKER} AS t2
+      SELECT marketValue, latestTransactionDate, t2.*, (marketValue - t2.purchasePrice) AS gain,
+          ROUND((marketValue - t2.purchasePrice) / t2.purchasePrice, 2) * 100 AS gainPercentage
+            FROM (
+              ${getGroupedLatestTransactions}        
+            ) AS t1 RIGHT JOIN ${PORTFOLIO_SNEAKER} AS t2
               ON t1.name = t2.name AND t1.colorway = t2.colorway AND t1.size = t2.size
                 WHERE userId = ${userId}
     `;
