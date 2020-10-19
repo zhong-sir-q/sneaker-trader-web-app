@@ -28,6 +28,8 @@ import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerContro
 import { PortfolioSneaker, SearchBarSneaker, PortfolioSneakerWithMarketValue, GetListedSneaker } from '../../../shared';
 
 import { months, MonthKey } from 'data/date';
+import onSubmitPortfolioForm from 'usecases/portfolio/onSubmitPortfolioForm';
+import onRemovePortfolioTableRow from 'usecases/portfolio/onRemovePortfolioTableRow';
 
 const formatTablePortfolioSneaker = (sneaker: PortfolioSneakerWithMarketValue) => ({
   ...sneaker,
@@ -68,9 +70,12 @@ const formatSearchBarSneaker = (s: GetListedSneaker): SearchBarSneaker => {
 const Portfolio = () => {
   const { currentUser } = useAuth();
 
-  const [goFetchPortfolioSneakers, setGoFetchPortfolioSneakers] = useState(true);
+  const [fetchPortfolioSneakers, setFetchPortfolioSneakers] = useState(true);
   const [portfolioSneakers, setPortfolioSneakers] = useState<PortfolioSneakerWithMarketValue[]>();
   const [searchBarSneakers, setSearchBarSneakers] = useState<SearchBarSneaker[]>();
+
+  const endFetchingPortfolioSneaker = () => setFetchPortfolioSneakers(false);
+  const goFetchPortfolioSneaker = () => setFetchPortfolioSneakers(true);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -83,11 +88,11 @@ const Portfolio = () => {
       setSearchBarSneakers(listedSneakers.map(formatSearchBarSneaker));
     };
 
-    if (goFetchPortfolioSneakers) {
+    if (fetchPortfolioSneakers) {
       fetch();
-      setGoFetchPortfolioSneakers(false);
+      endFetchingPortfolioSneaker();
     }
-  }, [currentUser, goFetchPortfolioSneakers]);
+  }, [currentUser, fetchPortfolioSneakers]);
 
   const { open, onOpen, onClose } = useOpenCloseComp();
 
@@ -127,18 +132,25 @@ const Portfolio = () => {
     purchaseYear: Number(values.purchaseYear),
   });
 
-  // add the data to the view and the database
-  const onSubmitForm = async (formValues: PortfolioFormValues) => {
-    if (!currentUser || !selectedSneaker) return;
-
-    await PortfolioControllerInstance.add(formatPortfolioSneakerPayload(formValues, currentUser.id, selectedSneaker));
-
-    setGoFetchPortfolioSneakers(true);
+  const afterSubmitPortfolioForm = () => {
+    goFetchPortfolioSneaker()
     onClose();
 
     // clean up
     resetStep();
     resetSelectedSneaker();
+  };
+
+  // add the data to the view and the database
+  const onSubmitForm = async (formValues: PortfolioFormValues) => {
+    if (!currentUser || !selectedSneaker) return;
+
+    const portfolioSneakerPayload = formatPortfolioSneakerPayload(formValues, currentUser.id, selectedSneaker);
+    onSubmitPortfolioForm(PortfolioControllerInstance)(portfolioSneakerPayload, afterSubmitPortfolioForm);
+  };
+
+  const removePortfolioTableRow = (portfolioSneakerId: number) => {
+    onRemovePortfolioTableRow(PortfolioControllerInstance)(portfolioSneakerId, goFetchPortfolioSneaker);
   };
 
   const renderComp = () => {
@@ -167,11 +179,6 @@ const Portfolio = () => {
     }
   };
 
-  const removePortfolioTableRow = async (portfolioSneakerId: number) => {
-    await PortfolioControllerInstance.delete(portfolioSneakerId);
-    setGoFetchPortfolioSneakers(true);
-  };
-
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
@@ -182,7 +189,7 @@ const Portfolio = () => {
           </Button>
         </div>
         <Card>
-          {!portfolioSneakers || goFetchPortfolioSneakers ? (
+          {!portfolioSneakers || fetchPortfolioSneakers ? (
             <CenterSpinner />
           ) : (
             <PortfolioTable

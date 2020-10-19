@@ -26,13 +26,13 @@ import FormikDatetime from 'components/formik/FormikDatetime';
 
 import {
   maxCharacters,
-  required,
   validEmail,
   minCharacters,
   matchingPassword,
   validDate,
   validPhoneNo,
   checkDuplicateUsername,
+  customRequired,
 } from 'utils/yup';
 
 import { SIGNIN, AUTH, PRIVACY_POLICY } from 'routes';
@@ -83,7 +83,8 @@ const SideContent = () => (
 type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: boolean };
 
 // Typescript does not throw an error when using SignupFormStateType instead of User
-// so I have to manually transform the form values to a User object
+// so I have to manually transform the form values to a User object, because I do not
+// want the policyAgreed, password and confirmPasswordField
 const convertFormValuesToUser = (formValues: SignupFormStateType): CreateUserPayload => {
   const { firstName, lastName, username, gender, dob, email, phoneNo } = formValues;
 
@@ -108,7 +109,7 @@ const validationSchema = Yup.object({
   firstName: maxCharacters(20),
   lastName: maxCharacters(20),
   username: checkDuplicateUsername(),
-  gender: required(),
+  gender: customRequired('Please select a gender'),
   email: validEmail(),
   phoneNo: validPhoneNo(),
   password: minCharacters(8),
@@ -125,7 +126,7 @@ const SignUpSuccess = () => (
         <Container>
           <Col xs={12} md={8} lg={4} className='ml-auto mr-auto'>
             <Card className='card-lock text-center'>
-              <CardHeader>
+              <CardHeader data-testid='signup-success-card-header'>
                 <CardTitle tag='h5'>Thank you for signing up with SneakerTrader</CardTitle>
               </CardHeader>
               <CardBody>
@@ -180,12 +181,10 @@ const SignupForm = () => {
                 <Formik
                   initialValues={INIT_FORM_VALUES}
                   validationSchema={validationSchema}
-                  onSubmit={(formStates, { setSubmitting, resetForm }) => {
-                    setTimeout(async () => {
-                      handleSubmit(formStates);
-                      resetForm(INIT_FORM_VALUES as Partial<FormikState<SignupFormStateType>>);
-                      setSubmitting(false);
-                    }, 400);
+                  onSubmit={async (formStates, { setSubmitting, resetForm }) => {
+                    await handleSubmit(formStates);
+                    resetForm(INIT_FORM_VALUES as Partial<FormikState<SignupFormStateType>>);
+                    setSubmitting(false);
                   }}
                 >
                   <Card className='card-signup'>
@@ -281,7 +280,13 @@ const SignupForm = () => {
                       </CardBody>
 
                       <CardFooter className='text-center'>
-                        <Button type='submit' color='primary' size='lg' className='btn-round'>
+                        <Button
+                          data-testid='signup-submit'
+                          type='submit'
+                          color='primary'
+                          size='lg'
+                          className='btn-round'
+                        >
                           Get Started
                         </Button>
                       </CardFooter>
