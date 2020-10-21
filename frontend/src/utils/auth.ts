@@ -2,10 +2,8 @@ import { Auth } from 'aws-amplify';
 import { User } from '../../../shared';
 import UserControllerInstance from 'api/controllers/UserController';
 
-export const fetchCognitoUser = () => Auth.currentAuthenticatedUser();
-
 export const getCurrentUser = async (cognitoData?: any): Promise<User | null> => {
-  const cognitoUser = cognitoData || (await fetchCognitoUser());
+  const cognitoUser = cognitoData || (await Auth.currentAuthenticatedUser());
   const email = cognitoUser.email || cognitoUser.attributes.email;
 
   return UserControllerInstance.getByEmail(email);

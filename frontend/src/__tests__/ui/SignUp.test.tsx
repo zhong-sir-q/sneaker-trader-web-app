@@ -18,16 +18,16 @@ it('Trigger onSignup function when submitting the form', async () => {
     </BrowserRouter>
   );
 
-  // const submitButton = signupForm.container.querySelector('button[type="submit"]');
   const submitButton = signupForm.getByTestId('signup-submit')
 
   await wait(() => {
     fireEvent.click(submitButton);
   });
 
+  // nothing has been input yet, so expect the error message
+
+  // TODO: search for what the best way to input a multi-field form
+  // in a test
   expect(screen.getByText('Please select a gender')).not.toBeNull()
   expect(onSignup).toBeCalledTimes(0);
-  // expect(screen.getByTestId('signup-success-card-header')).toHaveTextContent(
-  //   'Thank you for signing up with SneakerTrader'
-  // );
 });

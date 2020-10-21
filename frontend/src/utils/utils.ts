@@ -1,4 +1,5 @@
-export const formatSneakerPathName = (name: string, color: string) => `${name} ${color}`.split(' ').join('-');
+export const formatSneakerPathName = (name: string, color: string) =>
+  formatSneakerNameColorway(name, color).split(' ').join('-');
 
 export const formatSneakerNameColorway = (name: string, colorway: string) => `${name} ${colorway}`;
 
@@ -19,6 +20,10 @@ export const mapUpperCaseFirstLetter = (s: string, separator: string): string =>
 
 export const range = (start: number, end: number, step: number): number[] => {
   let result: number[] = [];
+
+  if (step === 0) return [start];
+
+  if (start > end && step > 0) return [];
 
   for (let num = start; num !== end; num += step) result.push(num);
 

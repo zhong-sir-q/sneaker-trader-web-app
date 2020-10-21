@@ -1,4 +1,3 @@
-import SignUp from 'pages/SignUp';
 import SignIn from 'pages/SignIn';
 import ForgotPassword from 'pages/ForgotPassword';
 import UserProfile from 'pages/UserProfile';
@@ -9,6 +8,7 @@ import MarketPlace from 'pages/MarketPlace';
 import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
 import PrivacyPolicy from 'pages/PrivacyPolicy';
 import Portfolio from 'pages/Portfolio';
+import SignupForm from 'pages/SignUp';
 
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
@@ -122,7 +122,7 @@ const routes: SneakerTraderRoute[] = [
   {
     path: SIGNUP,
     name: 'Signup',
-    component: SignUp,
+    component: SignupForm,
     layout: AUTH,
   },
   {

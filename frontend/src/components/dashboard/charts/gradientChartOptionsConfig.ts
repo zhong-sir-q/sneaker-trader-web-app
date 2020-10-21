@@ -45,7 +45,7 @@ const gradientChartOptionsConfig = {
     ],
   },
   layout: {
-    padding: { left: 0, right: 0, top: 15, bottom: 15 },
+    padding: { left: 15, right: 15, top: 15, bottom: 15 },
   },
 };
 
