@@ -16,6 +16,7 @@ import CenterSpinner from './CenterSpinner';
 
 import WalletBalance from './dashboard/WalletBalance';
 import { useUserStatsCtx } from 'providers/marketplace/UserStatsProvider';
+import TransactionTableProvider from 'providers/TransactionTableProvider';
 
 /**
  * TODO:
@@ -69,7 +70,9 @@ const Dashboard = () => {
         </Row>
         <Row>
           <Col xs={12} md={12}>
-            <TransactionDualHistoryTable />
+            <TransactionTableProvider>
+              <TransactionDualHistoryTable />
+            </TransactionTableProvider>
           </Col>
           <Col xs={12} md={12}>
             <SaleHistoryTable />

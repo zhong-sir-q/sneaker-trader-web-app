@@ -9,8 +9,6 @@ export default (app: Router, StripeServiceInstance: StripeService) => {
   stripeRoute.get('/secret/:amount', async (req, res, next) => {
     const { amount } = req.params;
 
-    console.log(Number(amount))
-
     try {
       const intent = await StripeServiceInstance.createPaymentIntent(Number(amount));
       res.json(intent.client_secret);

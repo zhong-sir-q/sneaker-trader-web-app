@@ -27,7 +27,6 @@ import awsconfig from 'aws-exports';
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
 import MarketPlaceProvider from 'providers/marketplace/MarketPlaceProvider';
 import WalletProvider from 'providers/WalletProvider';
-import TransactionTableProvider from 'providers/TransactionTableProvider';
 import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
 import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
 import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
@@ -58,7 +57,6 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
 };
 
 const DashboardProviders = (props: { children: React.ReactNode }) => (
-  <TransactionTableProvider>
     <WalletProvider>
       <UserStatsProvider>
         <SneakerListingFormProvider>
@@ -66,7 +64,6 @@ const DashboardProviders = (props: { children: React.ReactNode }) => (
         </SneakerListingFormProvider>
       </UserStatsProvider>
     </WalletProvider>
-  </TransactionTableProvider>
 );
 
 const App = () => {
