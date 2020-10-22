@@ -69,7 +69,7 @@ const StripePaymentCheckout = (props: StripePaymentCheckoutProps) => {
     setIsConfirming(false);
   };
 
-  const disableConfirm = () => !stripe || isConfirming || props.dollarAmountToCharge < .5;
+  const disableConfirm = () => !stripe || isConfirming || props.dollarAmountToCharge < 0.5;
 
   return (
     <form className='text-center w-100' onSubmit={handleSubmit}>
@@ -80,7 +80,7 @@ const StripePaymentCheckout = (props: StripePaymentCheckoutProps) => {
         Confirm
       </Button>
     </form>
-  );  
+  );
 };
 
 export default StripePaymentCheckout;

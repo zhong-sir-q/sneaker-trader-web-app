@@ -57,45 +57,45 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
 };
 
 const DashboardProviders = (props: { children: React.ReactNode }) => (
-    <WalletProvider>
-      <UserStatsProvider>
-        <SneakerListingFormProvider>
-          <PreviewImgDropzoneProvider>{props.children}</PreviewImgDropzoneProvider>
-        </SneakerListingFormProvider>
-      </UserStatsProvider>
-    </WalletProvider>
+  <WalletProvider>
+    <UserStatsProvider>
+      <SneakerListingFormProvider>
+        <PreviewImgDropzoneProvider>{props.children}</PreviewImgDropzoneProvider>
+      </SneakerListingFormProvider>
+    </UserStatsProvider>
+  </WalletProvider>
 );
 
 const App = () => {
   return (
     <Router>
-      {/* AuthProvider should be on the top-level as most app components consume the context  */}
-      <AuthProvider>
-        {/* Switch must be a direct parent of the Route components, otherwise it does not work */}
-        <Switch>
-          <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
+      <Elements stripe={stripePromise}>
+        {/* AuthProvider should be on the top-level as most app components consume the context  */}
+        <AuthProvider>
+          {/* Switch must be a direct parent of the Route components, otherwise it does not work */}
+          <Switch>
+            <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
-          <Route path={ADMIN}>
-            <DashboardProviders>
-              <Elements stripe={stripePromise}>
+            <Route path={ADMIN}>
+              <DashboardProviders>
                 <ProtectedAdmin />
-              </Elements>
-            </DashboardProviders>
-          </Route>
+              </DashboardProviders>
+            </Route>
 
-          <Route path={HOME}>
-            <ListedSneakerRoutesProvider>
-              <MarketPlaceProvider>
-                <HomeLayout />
-              </MarketPlaceProvider>
-            </ListedSneakerRoutesProvider>
-          </Route>
+            <Route path={HOME}>
+              <ListedSneakerRoutesProvider>
+                <MarketPlaceProvider>
+                  <HomeLayout />
+                </MarketPlaceProvider>
+              </ListedSneakerRoutesProvider>
+            </Route>
 
-          {/* this currently does not work, ideally we want to show the 404 page
+            {/* this currently does not work, ideally we want to show the 404 page
           when a random route is entered */}
-          <Route component={NotFound} />
-        </Switch>
-      </AuthProvider>
+            <Route component={NotFound} />
+          </Switch>
+        </AuthProvider>
+      </Elements>
     </Router>
   );
 };

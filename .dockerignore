@@ -1,4 +1,6 @@
 node_modules
 npm-debug.log
 frontend
-uploads
+backend/uploads
+backend/scripts
+.git

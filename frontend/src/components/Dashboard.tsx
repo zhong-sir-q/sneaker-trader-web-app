@@ -11,7 +11,6 @@ import ListedSneakerCounts from './dashboard/ListedSneakerCounts';
 import UserRankingPoints from './dashboard/UserRankingPoints';
 import SoldSneakerCounts from './dashboard/SoldSneakerCounts';
 import MonthlyProfit from './dashboard/charts/MonthlyProfit';
-import MonthSneakerValue from './dashboard/charts/MonthSneakerValue';
 import CenterSpinner from './CenterSpinner';
 
 import WalletBalance from './dashboard/WalletBalance';
@@ -61,22 +60,19 @@ const Dashboard = () => {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={6}>
+          <Col>
             <MonthlyProfit monthlyCumProfit={monthlyCumProfit} />
-          </Col>
-          <Col xs={12} md={6}>
-            <MonthSneakerValue />
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={12}>
-            <TransactionTableProvider>
+          <TransactionTableProvider>
+            <Col xs={12} md={12}>
               <TransactionDualHistoryTable />
-            </TransactionTableProvider>
-          </Col>
-          <Col xs={12} md={12}>
-            <SaleHistoryTable />
-          </Col>
+            </Col>
+            <Col xs={12} md={12}>
+              <SaleHistoryTable />
+            </Col>
+          </TransactionTableProvider>
         </Row>
       </div>
     </React.Fragment>

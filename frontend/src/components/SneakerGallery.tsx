@@ -13,11 +13,11 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
   const render = () => {
     return (
       <Container>
-        <Row xs='2' sm='2' md='4'>
+        <Row xs='2' sm='2' md='3' lg='3'>
           {props.sneakers.map((s, idx) => {
             return (
               <SneakerCard
-                className='mr-4'
+                className='p-1'
                 mainDisplayImage={getMainDisplayImgUrl(s.imageUrls)}
                 isListed
                 sneaker={s}

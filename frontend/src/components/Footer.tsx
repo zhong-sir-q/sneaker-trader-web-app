@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { PRIVACY_POLICY } from 'routes';
+import { PRIVACY_POLICY, TERMS } from 'routes';
 
 type FooterProps = {
   default: boolean;
@@ -25,6 +25,9 @@ const Footer = (props: FooterProps) => (
           </li>
           <li>
             <Link to={PRIVACY_POLICY}>Privacy Policy</Link>
+          </li>
+          <li>
+            <Link to={TERMS}>Terms and Conditions</Link>
           </li>
         </ul>
       </nav>

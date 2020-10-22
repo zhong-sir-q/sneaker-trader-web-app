@@ -182,7 +182,7 @@ const MarketPlace = () => {
   return !brands || !filterSneakers ? (
     <CenterSpinner />
   ) : (
-    <Container fluid='sm' style={{ minHeight: 'calc(100vh - 150px)' }}>
+    <Container fluid='md' style={{ minHeight: 'calc(100vh - 150px)' }}>
       <FiltersDrawer
         onSelectFilter={onSelectFilter}
         filterSelected={filterSelected}
