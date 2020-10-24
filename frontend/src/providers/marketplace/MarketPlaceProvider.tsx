@@ -7,14 +7,14 @@ import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 import { GallerySneaker } from '../../../../shared';
 
-type HomePageCtxType = {
+type MarketPlaceCtxType = {
   defaultSneakers: GallerySneaker[] | undefined;
   filterSneakers: GallerySneaker[] | undefined;
   brands: string[] | undefined;
   updateFilterSneakers: (sneakersToShow: GallerySneaker[]) => void;
 };
 
-const INIT_CTX: HomePageCtxType = {
+const INIT_CTX: MarketPlaceCtxType = {
   defaultSneakers: undefined,
   filterSneakers: undefined,
   brands: undefined,
@@ -23,9 +23,9 @@ const INIT_CTX: HomePageCtxType = {
   },
 };
 
-const HomePageCtx = createContext(INIT_CTX);
+export const MarketPlaceCtx = createContext(INIT_CTX);
 
-export const useMarketPlaceCtx = () => useContext(HomePageCtx);
+export const useMarketPlaceCtx = () => useContext(MarketPlaceCtx);
 
 const MarketPlaceProvider = (props: { children: ReactNode }) => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>();
@@ -53,9 +53,9 @@ const MarketPlaceProvider = (props: { children: ReactNode }) => {
   }, [signedIn, currentUser]);
 
   return (
-    <HomePageCtx.Provider value={{ defaultSneakers, filterSneakers, brands, updateFilterSneakers }}>
+    <MarketPlaceCtx.Provider value={{ defaultSneakers, filterSneakers, brands, updateFilterSneakers }}>
       {props.children}
-    </HomePageCtx.Provider>
+    </MarketPlaceCtx.Provider>
   );
 };
 

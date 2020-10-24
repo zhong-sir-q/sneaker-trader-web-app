@@ -9,7 +9,7 @@ import onSignup from 'usecases/onSignup';
 
 import { BrowserRouter } from 'react-router-dom';
 
-jest.mock('usecases/onSignup');
+jest.mock('usecases/onSignup', () => jest.fn(() => () => {}));
 
 it('Trigger onSignup function when submitting the form', async () => {
   const signupForm = render(
@@ -18,7 +18,7 @@ it('Trigger onSignup function when submitting the form', async () => {
     </BrowserRouter>
   );
 
-  const submitButton = signupForm.getByTestId('signup-submit')
+  const submitButton = signupForm.getByTestId('signup-submit');
 
   await wait(() => {
     fireEvent.click(submitButton);
@@ -28,6 +28,6 @@ it('Trigger onSignup function when submitting the form', async () => {
 
   // TODO: search for what the best way to input a multi-field form
   // in a test
-  expect(screen.getByText('Please select a gender')).not.toBeNull()
+  expect(screen.getByText('Please select a gender')).not.toBeNull();
   expect(onSignup).toBeCalledTimes(0);
 });

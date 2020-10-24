@@ -22,10 +22,13 @@ import { CreateTransactionPayload, ListedSneakerSeller, Sneaker } from '../../..
 
 import sneakerInfoFromPath from 'utils/sneakerInfoFromPath';
 
+class NoSuchSneakerInDbError extends Error {}
+
 const ViewSellersListContainer = () => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
+  // use this state so ViewSellerList will do load animation if it is true
   const [processingPurchase, setProcessingPurchase] = useState(false);
 
   const history = useHistory();
@@ -48,7 +51,9 @@ const ViewSellersListContainer = () => {
         sneakerInfo.size
       );
 
-      if (sneakerToBuy) setDisplaySneaker(sneakerToBuy);
+      if (!sneakerToBuy) throw new NoSuchSneakerInDbError();
+
+      setDisplaySneaker(sneakerToBuy);
 
       const sellersBySneakerNameSize = await SellerControllerInstance.getSellersBySneakerNameSize(
         currentUser.id,
@@ -64,54 +69,6 @@ const ViewSellersListContainer = () => {
     // all listed sneakers are from the current user, hence redirect the user back home
     if (sellers && sellers.length === 0) history.push(HOME);
   }, [sellers, history]);
-
-  // handleConfirmPurchase
-  useEffect(() => {
-    if (processingPurchase) {
-      (async () => {
-        if (!sellers) return;
-
-        const sneakerInfo = sneakerInfoFromPath(history.location.pathname);
-
-        const sellerId = sellers[selectedSellerIdx].id;
-        const { askingPrice, listedProductId, email, username } = sellers[selectedSellerIdx];
-
-        const processingFee = getTransactionFees(askingPrice);
-
-        const transaction: CreateTransactionPayload = {
-          buyerId: currentUser!.id!,
-          sellerId,
-          amount: askingPrice,
-          processingFee,
-          listedProductId,
-        };
-
-        const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
-
-        const mailPayload = {
-          sellerEmail: email,
-          sellerUserName: username,
-          buyerUserName: currentUser!.username,
-          buyerEmail: currentUser!.email,
-          productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
-        };
-
-        await onConfirmPurchaseSneaker(
-          ListedSneakerControllerInstance,
-          TransactionControllerInstance,
-          WalletControllerInstance,
-          MailControllerInstance
-        )(mailPayload, transaction, decreaseWalletBalPayload);
-
-        // after success purchase
-        alert('The seller will be in touch with you shortly');
-        history.push(HOME);
-        window.location.reload();
-
-        setProcessingPurchase(false);
-      })();
-    }
-  }, [processingPurchase, history, currentUser, sellers, selectedSellerIdx]);
 
   const sortSellersByAskingPriceAscending = () => {
     if (!sellers) return;
@@ -145,9 +102,54 @@ const ViewSellersListContainer = () => {
     setSellers(descSellers);
   };
 
+  const handleConfirmPurchase = async () => {
+    if (!sellers) return;
+
+    const sneakerInfo = sneakerInfoFromPath(history.location.pathname);
+
+    const sellerId = sellers[selectedSellerIdx].id;
+    const { askingPrice, listedProductId, email, username } = sellers[selectedSellerIdx];
+
+    const processingFee = getTransactionFees(askingPrice);
+
+    const transaction: CreateTransactionPayload = {
+      buyerId: currentUser!.id!,
+      sellerId,
+      amount: askingPrice,
+      processingFee,
+      listedProductId,
+    };
+
+    const decreaseWalletBalPayload = { userId: sellerId, amount: processingFee };
+
+    const mailPayload = {
+      sellerEmail: email,
+      sellerUserName: username,
+      buyerUserName: currentUser!.username,
+      buyerEmail: currentUser!.email,
+      productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
+    };
+
+    await onConfirmPurchaseSneaker(
+      ListedSneakerControllerInstance,
+      TransactionControllerInstance,
+      WalletControllerInstance,
+      MailControllerInstance
+    )(mailPayload, transaction, decreaseWalletBalPayload);
+
+    // after success purchase
+    alert('The seller will be in touch with you shortly');
+    history.push(HOME);
+    window.location.reload();
+  };
+
   const onCancel = () => history.goBack();
 
-  const onConfirm = () => setProcessingPurchase(true);
+  const onConfirm = async () => {
+    setProcessingPurchase(true);
+    await handleConfirmPurchase();
+    setProcessingPurchase(false);
+  };
 
   const onSelectSeller = (idx: number) => setSelectedSellerIdx(idx);
 

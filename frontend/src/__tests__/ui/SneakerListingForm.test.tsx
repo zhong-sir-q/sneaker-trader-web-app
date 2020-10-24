@@ -74,6 +74,8 @@ const MockAuthProvider = (props: { children: React.ReactNode }) => {
   return <AuthContext.Provider value={MOCK_INIT_AUTH_VALUES}>{props.children}</AuthContext.Provider>;
 };
 
+// TODO: I need to brainstorm some unit tests to ensure the individual components are working
+// and refactor the proivders to __mocks__
 describe('Sneaker listing form', () => {
   it('Reset state values after successfully list a sneaker', async () => {
     render(
@@ -88,6 +90,7 @@ describe('Sneaker listing form', () => {
           </Route>
 
           <Route path={ADMIN + DASHBOARD}>
+            {/* stimulating the sidebar */}
             <Link to={ADMIN + PRODUCT_LISTING} data-testid='sneaker-listing-link'>
               List a sneaker
             </Link>

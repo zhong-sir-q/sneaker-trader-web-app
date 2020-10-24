@@ -10,6 +10,7 @@ import BuySneakerPageContainer from 'containers/BuySneakerPageContainer';
 import ViewSellersListContainer from 'containers/ViewSellersListContainer';
 
 import { formatSneakerPathName } from 'utils/utils';
+import { GetListedSneaker } from '../../../shared';
 
 type ListedSneakerRoutesType = {
   listedSneakerRoutes: JSX.Element[];
@@ -19,44 +20,48 @@ const INIT_CTX: ListedSneakerRoutesType = {
   listedSneakerRoutes: [],
 };
 
-const ListedSneakerRoutes = createContext(INIT_CTX);
+export const ListedSneakerRoutesCtx = createContext(INIT_CTX);
 
-export const useListedSneakerRoutes = () => useContext(ListedSneakerRoutes);
+export const useListedSneakerRoutes = () => useContext(ListedSneakerRoutesCtx);
+
+export const renderListedSneakerRoutes = async (listedSneakers: GetListedSneaker[]) => {
+  // prevent duplicate routes from rendering because there can
+  // be multiple sneakers with the same name, but each of them
+  // can have a different size and we only want
+  // to render those sneakers using the name and colorway
+  const seenPaths: Set<string> = new Set();
+
+  return listedSneakers.map(({ name, colorway, size }, idx) => {
+    const path = formatSneakerPathName(name, colorway);
+
+    const routes = (
+      <React.Fragment key={idx}>
+        <Route path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
+        {!seenPaths.has(path) ? (
+          <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} />
+        ) : null}
+      </React.Fragment>
+    );
+
+    seenPaths.add(path);
+
+    return routes;
+  });
+};
 
 const ListedSneakerRoutesProvider = (props: { children: ReactNode }) => {
   const [listedSneakerRoutes, setListedSneakerRoutes] = useState<JSX.Element[]>([]);
 
-  const renderListedSneakerRoutes = async () => {
-    const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
-
-    // prevent duplicate routes from rendering
-    // because there can be multiple sneakers with the same
-    // name, but each of them can have a different size
-    const seenPaths: Set<string> = new Set();
-
-    return sneakers.map(({ name, colorway, size }, idx) => {
-      const path = formatSneakerPathName(name, colorway);
-
-      const routes = (
-        <React.Fragment key={idx}>
-          <Route path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
-          {!seenPaths.has(path) ? (
-            <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} />
-          ) : null}
-        </React.Fragment>
-      );
-
-      seenPaths.add(path);
-
-      return routes;
-    });
-  };
-
   useEffect(() => {
-    (async () => setListedSneakerRoutes(await renderListedSneakerRoutes()))();
+    (async () => {
+      const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
+      setListedSneakerRoutes(await renderListedSneakerRoutes(sneakers));
+    })();
   }, []);
 
-  return <ListedSneakerRoutes.Provider value={{ listedSneakerRoutes }}>{props.children}</ListedSneakerRoutes.Provider>;
+  return (
+    <ListedSneakerRoutesCtx.Provider value={{ listedSneakerRoutes }}>{props.children}</ListedSneakerRoutesCtx.Provider>
+  );
 };
 
 export default ListedSneakerRoutesProvider;
