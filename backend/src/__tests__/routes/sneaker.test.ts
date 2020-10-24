@@ -4,9 +4,9 @@ import faker from 'faker';
 import app from '../../app';
 
 import { PRODUCTS } from '../../config/tables';
-import clearTable from '../../mocks/teardown/clearTable';
+import clearTable from '../../__mocks__/teardown/clearTable';
 
-import fakeSneaker from '../../mocks/fakeSneaker';
+import fakeSneaker from '../../__mocks__/fakeSneaker';
 
 afterAll(() => clearTable(PRODUCTS));
 

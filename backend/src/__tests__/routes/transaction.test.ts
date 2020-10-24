@@ -2,11 +2,11 @@ import request from 'supertest';
 
 import app from '../../app';
 
-import fakeUser from '../../mocks/fakeUser';
-import clearTable from '../../mocks/teardown/clearTable';
+import fakeUser from '../../__mocks__/fakeUser';
+import clearTable from '../../__mocks__/teardown/clearTable';
 import { USERS, TRANSACTION, PRODUCTS, LISTED_PRODUCTS } from '../../config/tables';
-import fakeSneaker from '../../mocks/fakeSneaker';
-import fakeListedSneaker from '../../mocks/fakeListedSneaker';
+import fakeSneaker from '../../__mocks__/fakeSneaker';
+import fakeListedSneaker from '../../__mocks__/fakeListedSneaker';
 import { endPool } from '../../config/mysql';
 
 afterAll(async () => {

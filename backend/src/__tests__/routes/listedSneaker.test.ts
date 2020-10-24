@@ -2,15 +2,18 @@ import request from 'supertest';
 
 import app from '../../app';
 
-import fakeUser from '../../mocks/fakeUser';
-import clearTable from '../../mocks/teardown/clearTable';
+import fakeUser from '../../__mocks__/fakeUser';
+import clearTable from '../../__mocks__/teardown/clearTable';
 
-import fakeSneaker from '../../mocks/fakeSneaker';
+import fakeSneaker from '../../__mocks__/fakeSneaker';
 
 import { PRODUCTS, LISTED_PRODUCTS, USERS } from '../../config/tables';
-import initListedSneakerTable from '../../mocks/setup/initListedSneakerTable';
-import fakeListedSneaker from '../../mocks/fakeListedSneaker';
+import initListedSneakerTable from '../../__mocks__/setup/initListedSneakerTable';
+import fakeListedSneaker from '../../__mocks__/fakeListedSneaker';
 import mysqlPoolConnection from '../../config/mysql';
+import { formateGetColumnsQuery, formatUpdateColumnsQuery } from '../../utils/formatDbQuery';
+
+import faker from 'faker'
 
 beforeAll(async () => {
   const poolConn = await mysqlPoolConnection();
@@ -84,4 +87,33 @@ describe('Listed product routes', () => {
 
     done();
   });
+
+  test('All sneakers should have the "listed" status', async (done) => {
+    // randomly update the statuses of half the sneakers to either pending or sold
+    const getQuery = formateGetColumnsQuery(LISTED_PRODUCTS)
+    const poolConnOne = await mysqlPoolConnection()
+    const initListedSneakers = await poolConnOne.query(getQuery)
+
+    const half = Math.floor(initListedSneakers.length * 0.5)
+
+    for (let i = 0; i < half; i++) {
+      const idx = faker.random.number(initListedSneakers.length - 1)
+      const sneakerToUpdate = initListedSneakers[idx]
+
+      const id = sneakerToUpdate.id
+      const randStatus = ['pending', 'sold'][faker.random.number(1)]
+
+      const poolConn = await mysqlPoolConnection()
+
+      const updateQuery = formatUpdateColumnsQuery(LISTED_PRODUCTS, { prodStatus: randStatus }, `id = ${id}`)
+      await poolConn.query(updateQuery)
+    }
+
+    // then by getAllListedSneakers should return only sneakers with prodStatus = 'listed'
+    const allListedSneakers = await request(app).get('/api/listedSneaker').then(r => r.body)
+
+    for (const listed of allListedSneakers) expect(listed.prodStatus).toBe('listed')
+
+    done()
+  })
 });

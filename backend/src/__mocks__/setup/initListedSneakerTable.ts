@@ -1,7 +1,3 @@
-// 1. generate 3 users
-// 2. create 10 different sneakers
-// 3. each user list 1 ~ 5 sneakers
-
 import UserService from '../../services/UserService';
 import SneakerService from '../../services/SneakerService';
 import ListedSneakerService from '../../services/ListedSneakerService';
@@ -20,14 +16,18 @@ const initListedSneakerTable = async () => {
   const userIds: number[] = [];
   const sneakerIds: number[] = [];
 
+  // create 3 users
   for (let i = 0; i < 3; i++) userIds.push(await UserServiceInstance.create(fakeUser()));
+
+  // create 10 sneakers
   for (let j = 0; j < 10; j++) {
     const sneakerId = await SneakerServiceInstance.create(fakeSneaker());
     sneakerIds.push(sneakerId);
   }
 
+  // each user will list 5 sneakers
   for (const userId of userIds) {
-    for (let k = 0; k < 3; k++) {
+    for (let k = 0; k < 5; k++) {
       const num = getRand(0, sneakerIds.length - 1);
 
       const productId = sneakerIds[num];

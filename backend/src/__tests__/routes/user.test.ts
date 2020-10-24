@@ -2,9 +2,9 @@ import request from 'supertest';
 import app from '../../app';
 
 import faker from 'faker';
-import fakeUser from '../../mocks/fakeUser';
+import fakeUser from '../../__mocks__/fakeUser';
 
-import clearTable from '../../mocks/teardown/clearTable';
+import clearTable from '../../__mocks__/teardown/clearTable';
 import { USERS } from '../../config/tables';
 
 afterAll(() => clearTable(USERS));
