@@ -16,6 +16,7 @@ import CenterSpinner from './CenterSpinner';
 import WalletBalance from './dashboard/WalletBalance';
 import { useUserStatsCtx } from 'providers/marketplace/UserStatsProvider';
 import TransactionTableProvider from 'providers/TransactionTableProvider';
+import { useWalletCtx } from 'providers/WalletProvider';
 
 /**
  * TODO:
@@ -27,10 +28,13 @@ import TransactionTableProvider from 'providers/TransactionTableProvider';
 const Dashboard = () => {
   const { rankingPoints, listedSneakerCounts, completedSaleCounts, monthlyCumProfit } = useUserStatsCtx();
 
+  const { walletBalance } = useWalletCtx();
+
   // check against undefined, because if if any of the value is 0, then it will render the spinner forever
   return rankingPoints === undefined ||
     listedSneakerCounts === undefined ||
     completedSaleCounts === undefined ||
+    walletBalance === null ||
     !monthlyCumProfit ? (
     <CenterSpinner />
   ) : (
@@ -49,7 +53,7 @@ const Dashboard = () => {
                     <ListedSneakerCounts counts={listedSneakerCounts} />
                   </Col>
                   <Col md='3'>
-                    <WalletBalance />
+                    <WalletBalance balance={walletBalance} />
                   </Col>
                   <Col md='3'>
                     <SoldSneakerCounts counts={completedSaleCounts} />

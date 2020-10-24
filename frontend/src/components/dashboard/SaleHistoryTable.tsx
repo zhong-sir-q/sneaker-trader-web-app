@@ -4,9 +4,10 @@ import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 import ListedSneakerTable from './ListedSneakerTable';
 
 import { useTransactionTableContext } from 'providers/TransactionTableProvider';
+import CenterSpinner from 'components/CenterSpinner';
 
 const SaleHistoryTable = () => {
-  const { sellerSoldSneakers, isFetchingTransactions } = useTransactionTableContext();
+  const { sellerSoldSneakers } = useTransactionTableContext();
 
   return (
     <Card>
@@ -14,7 +15,7 @@ const SaleHistoryTable = () => {
         <CardTitle tag='h4'>Sales History</CardTitle>
       </CardHeader>
       <CardBody>
-        <ListedSneakerTable sneakers={sellerSoldSneakers} isFetchingData={isFetchingTransactions} />
+        {!sellerSoldSneakers ? <CenterSpinner /> : <ListedSneakerTable sneakers={sellerSoldSneakers} />}
       </CardBody>
     </Card>
   );

@@ -14,7 +14,7 @@ type PreviewImgDropzoneCtxType = {
   destroyFiles: () => void;
 };
 
-const INIT_CTX: PreviewImgDropzoneCtxType = {
+const INIT_PREVIEW_DROPZONE_CTX: PreviewImgDropzoneCtxType = {
   files: [],
   mainFileId: undefined,
   formDataFromFiles: () => new FormData(),
@@ -33,7 +33,7 @@ const INIT_CTX: PreviewImgDropzoneCtxType = {
   },
 };
 
-const PreviewImgDropzoneCtx = createContext(INIT_CTX);
+export const PreviewImgDropzoneCtx = createContext(INIT_PREVIEW_DROPZONE_CTX);
 
 export const usePreviewImgDropzoneCtx = () => useContext(PreviewImgDropzoneCtx);
 
@@ -78,8 +78,12 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
   const formDataFromFiles = () => {
     const formData = new FormData();
 
+    // swap the main file with the first image
+    // because the preview sneaker card will use
+    // the first file as the main display image
     const mainFileIdx = getMainFileIdx();
     const tmp = files[0];
+  
     files[0] = files[mainFileIdx];
     files[mainFileIdx] = tmp;
 

@@ -209,7 +209,10 @@ const UserProfile = () => {
           )}
         </Formik>
 
-        <AddressVerificationForm address={userAddr || DEFAULT_ADDRESS} goLoadAddress={goLoadAddress} />
+        <AddressVerificationForm
+          address={userAddr || { ...DEFAULT_ADDRESS, zipcode: Number(DEFAULT_ADDRESS.zipcode) }}
+          goLoadAddress={goLoadAddress}
+        />
       </div>
     </React.Fragment>
   );

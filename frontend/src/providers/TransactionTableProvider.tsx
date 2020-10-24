@@ -8,27 +8,31 @@ import TransactionControllerInstance from 'api/controllers/TransactionController
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 type TransactionTableContextType = {
-  isFetchingTransactions: boolean;
   showListed: boolean;
   isOpenSaleSuccessPopup: boolean;
-  unsoldListedSneakers: SellerListedSneaker[];
-  purchasedSneakers: BuyerPurchasedSneaker[];
-  sellerSoldSneakers: SellerListedSneaker[];
+  unsoldListedSneakers: SellerListedSneaker[] | undefined;
+  purchasedSneakers: BuyerPurchasedSneaker[] | undefined;
+  sellerSoldSneakers: SellerListedSneaker[] | undefined;
   handleOpenPopup: () => void;
   handleClosePopup: () => void;
   toggleShowListed: () => void;
 };
 
 const INIT_TRANSACTION_CONTEXT: TransactionTableContextType = {
-  isFetchingTransactions: true,
   isOpenSaleSuccessPopup: false,
   showListed: true,
-  unsoldListedSneakers: [],
-  purchasedSneakers: [],
-  sellerSoldSneakers: [],
-  handleOpenPopup: () => {},
-  handleClosePopup: () => {},
-  toggleShowListed: () => {},
+  unsoldListedSneakers: undefined,
+  purchasedSneakers: undefined,
+  sellerSoldSneakers: undefined,
+  handleOpenPopup: () => {
+    throw new Error('Must override!');
+  },
+  handleClosePopup: () => {
+    throw new Error('Must override!');
+  },
+  toggleShowListed: () => {
+    throw new Error('Must override!');
+  },
 };
 
 const TransactionTableContext = createContext(INIT_TRANSACTION_CONTEXT);
@@ -36,19 +40,18 @@ const TransactionTableContext = createContext(INIT_TRANSACTION_CONTEXT);
 export const useTransactionTableContext = () => useContext(TransactionTableContext);
 
 const TransactionTableProvider = (props: { children: ReactNode }) => {
-  const openCloseSaleSuccessHook = useOpenCloseComp()
+  const openCloseSaleSuccessHook = useOpenCloseComp();
 
-  const isOpenSaleSuccessPopup = openCloseSaleSuccessHook.open
-  const handleClosePopup = openCloseSaleSuccessHook.onClose
-  const handleOpenPopup = openCloseSaleSuccessHook.onOpen
+  const isOpenSaleSuccessPopup = openCloseSaleSuccessHook.open;
+  const handleClosePopup = openCloseSaleSuccessHook.onClose;
+  const handleOpenPopup = openCloseSaleSuccessHook.onOpen;
 
   const [showListed, setShowListed] = useState(true);
-  const [isFetchingTransactions, setisFetchingTransactions] = useState(true);
 
-  const [unsoldListedSneakers, setUnsoldListedSneakers] = useState<SellerListedSneaker[]>([]);
-  const [purchasedSneakers, setPurchasedSneakers] = useState<BuyerPurchasedSneaker[]>([]);
+  const [unsoldListedSneakers, setUnsoldListedSneakers] = useState<SellerListedSneaker[]>();
+  const [purchasedSneakers, setPurchasedSneakers] = useState<BuyerPurchasedSneaker[]>();
 
-  const [sellerSoldSneakers, setSellerSoldSneakers] = useState<SellerListedSneaker[]>([]);
+  const [sellerSoldSneakers, setSellerSoldSneakers] = useState<SellerListedSneaker[]>();
 
   const { currentUser } = useAuth();
 
@@ -66,7 +69,6 @@ const TransactionTableProvider = (props: { children: ReactNode }) => {
         setPurchasedSneakers(fetchedPurchasedProducts);
 
         setSellerSoldSneakers(sold);
-        setisFetchingTransactions(false);
       }
     })();
   }, [isOpenSaleSuccessPopup, currentUser]);
@@ -76,7 +78,6 @@ const TransactionTableProvider = (props: { children: ReactNode }) => {
   return (
     <TransactionTableContext.Provider
       value={{
-        isFetchingTransactions,
         isOpenSaleSuccessPopup,
         showListed,
         purchasedSneakers,

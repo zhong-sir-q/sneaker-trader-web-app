@@ -22,12 +22,12 @@ import { useAuth } from 'providers/AuthProvider';
 import onSubmitAddrVerificationForm from 'usecases/address_verification/onSubmitAddrVerificationForm';
 import completeVerifyAddress from 'usecases/address_verification/completeVerifyAddress';
 
-export const DEFAULT_ADDRESS: Address = {
+export const DEFAULT_ADDRESS: Omit<Address, 'zipcode'> & { zipcode: string } = {
   street: '',
   city: '',
   region: '',
   suburb: '',
-  zipcode: ('' as unknown) as number,
+  zipcode: '',
   country: 'New Zealand',
   verificationStatus: 'not_verified',
 };

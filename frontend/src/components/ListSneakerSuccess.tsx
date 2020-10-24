@@ -14,7 +14,7 @@ const ListedSneakerSuccess = () => (
     </CardBody>
     <CardFooter>
       <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
-        <Button color='primary'>Go back home</Button>
+        <Button color='primary'>Back to dashboard</Button>
       </Link>
     </CardFooter>
   </Card>

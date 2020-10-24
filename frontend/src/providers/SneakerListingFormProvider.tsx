@@ -8,51 +8,35 @@ import * as Yup from 'yup';
 import { ListedProduct, Sneaker, SneakerCondition } from '../../../shared';
 import { useAuth } from './AuthProvider';
 
-
-
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
-  | 'name'
-  | 'brand'
-  | 'colorway'
-  | 'description'
-  | 'sizeSystem'
-  | 'currencyCode'
-  | 'prodCondition'
-  | 'conditionRating'
-  | 'size'
-  | 'askingPrice'
-  | 'originalPurchasePrice'
->;
-
-type SneakerListingFormValidationSchemaType = Yup.ObjectSchema<
-  Omit<SneakerListingFormStateType, 'conditionRating' | 'description'> | undefined
->;
+  'name' | 'brand' | 'colorway' | 'description' | 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'conditionRating'
+> & { size: string; originalPurchasePrice: string; askingPrice: string };
 
 type SneakerListingFormCtxType = {
   brandOptions: string[];
   sneakerNamesOptions: string[];
   colorwayOptions: string[];
   listingSneakerFormState: SneakerListingFormStateType;
-  validationSchema: SneakerListingFormValidationSchemaType;
+  validationSchema: Yup.ObjectSchema;
   onSubmit: (newState: SneakerListingFormStateType) => void;
 };
 
-const INIT_FORM_STATE: SneakerListingFormStateType = {
+export const INIT_LISTING_FORM_STATE_VALUES: SneakerListingFormStateType = {
   name: '',
   brand: '',
-  size: ('' as unknown) as number,
+  size: '',
   colorway: '',
-  askingPrice: ('' as unknown) as number,
+  askingPrice: '',
   description: '',
-  originalPurchasePrice: ('' as unknown) as number,
+  originalPurchasePrice: '',
   sizeSystem: 'US',
   currencyCode: 'NZD',
   prodCondition: '' as SneakerCondition,
   conditionRating: 5,
 };
 
-const sneakerListingFormValidationSchema: SneakerListingFormValidationSchemaType = Yup.object({
+const sneakerListingFormValidationSchema = Yup.object({
   name: noSpecialChar(),
   brand: noSpecialChar(),
   colorway: noSpecialChar(),
@@ -64,23 +48,23 @@ const sneakerListingFormValidationSchema: SneakerListingFormValidationSchemaType
   originalPurchasePrice: minNumber(1, 'Minimum $1'),
 });
 
-const INIT_CTX: SneakerListingFormCtxType = {
+export const INIT_LISTING_FORM_CTX: SneakerListingFormCtxType = {
   brandOptions: [],
   sneakerNamesOptions: [],
   colorwayOptions: [],
-  listingSneakerFormState: INIT_FORM_STATE,
+  listingSneakerFormState: INIT_LISTING_FORM_STATE_VALUES,
   validationSchema: sneakerListingFormValidationSchema,
   onSubmit: () => {
     throw new Error('Must override onSubmit');
   },
 };
 
-const SneakerListingFormCtx = createContext(INIT_CTX);
+export const SneakerListingFormCtx = createContext(INIT_LISTING_FORM_CTX);
 
 export const useSneakerListingFormCtx = () => useContext(SneakerListingFormCtx);
 
 const SneakerListingFormProvider = (props: { children: React.ReactNode }) => {
-  const [listingSneakerFormState, setListingSneakerFormState] = useState(INIT_FORM_STATE);
+  const [listingSneakerFormState, setListingSneakerFormState] = useState(INIT_LISTING_FORM_STATE_VALUES);
 
   const [brandOptions, setBrandOptions] = useState<string[]>([]);
   const [sneakerNamesOptions, setSneakerNamesOptions] = useState<string[]>([]);

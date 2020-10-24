@@ -2,13 +2,14 @@ import React from 'react';
 
 import StatisticsDisplay from './StatisticsDisplay';
 
-import { useWalletCtx } from 'providers/WalletProvider';
 import TopupWalletDialog from 'components/TopupWalletDialog';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
-const WalletBalance = () => {
-  const { walletBalance } = useWalletCtx();
+type WalletBalanceProps = {
+  balance: number
+}
 
+const WalletBalance = (props: WalletBalanceProps) => {
   const { open, onOpen, onClose } = useOpenCloseComp()
 
   return (
@@ -17,7 +18,7 @@ const WalletBalance = () => {
         <StatisticsDisplay
           iconColor='icon-success'
           iconName='shopping_credit-card'
-          primaryText={`$${walletBalance}`}
+          primaryText={`$${props.balance}`}
           secondaryText='Wallet Balance'
         />
       </div>

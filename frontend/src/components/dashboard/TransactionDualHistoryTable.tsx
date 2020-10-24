@@ -6,6 +6,7 @@ import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 import { useTransactionTableContext } from 'providers/TransactionTableProvider';
 import ListedSneakerTable from './ListedSneakerTable';
 import PurchasedSneakerTable from './PurchasedSneakerTable';
+import CenterSpinner from 'components/CenterSpinner';
 
 const TransactionDualHistoryTable = () => {
   const {
@@ -13,7 +14,6 @@ const TransactionDualHistoryTable = () => {
     unsoldListedSneakers,
     purchasedSneakers,
     isOpenSaleSuccessPopup,
-    isFetchingTransactions,
     handleOpenPopup,
     handleClosePopup,
     toggleShowListed,
@@ -31,12 +31,10 @@ const TransactionDualHistoryTable = () => {
           </div>
         </CardHeader>
         <CardBody>
-          {showListed ? (
-            <ListedSneakerTable
-              isFetchingData={isFetchingTransactions}
-              sneakers={unsoldListedSneakers}
-              setShowCompleteSaleSuccess={handleOpenPopup}
-            />
+          {!unsoldListedSneakers || !purchasedSneakers ? (
+            <CenterSpinner />
+          ) : showListed ? (
+            <ListedSneakerTable sneakers={unsoldListedSneakers} setShowCompleteSaleSuccess={handleOpenPopup} />
           ) : (
             <PurchasedSneakerTable sneakers={purchasedSneakers} />
           )}

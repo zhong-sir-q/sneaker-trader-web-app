@@ -1,9 +1,10 @@
+import React from 'react';
+
+// pages
 import SignIn from 'pages/SignIn';
 import ForgotPassword from 'pages/ForgotPassword';
 import UserProfile from 'pages/UserProfile';
 import SneakerListingForm from 'pages/SneakerListingForm';
-
-import Dashboard from 'components/Dashboard';
 import MarketPlace from 'pages/MarketPlace';
 import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
 import PrivacyPolicy from 'pages/PrivacyPolicy';
@@ -11,6 +12,16 @@ import Portfolio from 'pages/Portfolio';
 import SignupForm from 'pages/SignUp';
 import Terms from 'pages/Terms';
 
+// components
+import Dashboard from 'components/Dashboard';
+
+// providers
+import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
+import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
+import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
+import WalletProvider from 'providers/WalletProvider';
+
+// routes
 export const AUTH = '/auth';
 export const ADMIN = '/admin';
 export const HOME = '/';
@@ -23,9 +34,9 @@ export const DASHBOARD = '/dashboard';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
 export const TOPUP_WALLET = '/topup';
-export const PORTFOLIO = '/portfolio'
+export const PORTFOLIO = '/portfolio';
 
-export const TERMS = '/terms'
+export const TERMS = '/terms';
 export const PRIVACY_POLICY = '/policy';
 
 type AppLayout = '/auth' | '/admin' | '/';
@@ -111,18 +122,18 @@ export const homeRoutes: HomeRoute[] = [
   {
     path: '/',
     component: MarketPlace,
-    layout: HOME
+    layout: HOME,
   },
   {
     path: PRIVACY_POLICY,
     component: PrivacyPolicy,
-    layout: HOME
+    layout: HOME,
   },
   {
     path: TERMS,
     component: Terms,
-    layout: HOME
-  }
+    layout: HOME,
+  },
 ];
 
 const routes: SneakerTraderRoute[] = [
@@ -148,7 +159,13 @@ const routes: SneakerTraderRoute[] = [
     path: DASHBOARD,
     name: 'Dashboard',
     icon: 'now-ui-icons design_app',
-    component: Dashboard,
+    component: () => (
+      <UserStatsProvider>
+        <WalletProvider>
+          <Dashboard />
+        </WalletProvider>
+      </UserStatsProvider>
+    ),
     layout: ADMIN,
   },
   {
@@ -160,20 +177,30 @@ const routes: SneakerTraderRoute[] = [
   {
     path: PRODUCT_LISTING,
     name: 'Product Listing',
-    component: SneakerListingForm,
+    component: () => (
+      <SneakerListingFormProvider>
+        <PreviewImgDropzoneProvider>
+          <SneakerListingForm />
+        </PreviewImgDropzoneProvider>
+      </SneakerListingFormProvider>
+    ),
     layout: ADMIN,
   },
   {
     path: TOPUP_WALLET,
     name: 'Topup Wallet',
-    component: TopupWalletPage,
+    component: () => (
+      <WalletProvider>
+        <TopupWalletPage />
+      </WalletProvider>
+    ),
     layout: ADMIN,
   },
   {
     path: PORTFOLIO,
     name: 'Porfolio',
     component: Portfolio,
-    layout: ADMIN
+    layout: ADMIN,
   },
 ];
 

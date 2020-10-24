@@ -26,10 +26,6 @@ import awsconfig from 'aws-exports';
 // providers
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
 import MarketPlaceProvider from 'providers/marketplace/MarketPlaceProvider';
-import WalletProvider from 'providers/WalletProvider';
-import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
-import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
-import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
 
 import NotFound from 'pages/NotFound';
 import ListedSneakerRoutesProvider from 'providers/ListedSneakerRoutesProvider';
@@ -56,16 +52,6 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   return !signedIn ? <AuthLayout /> : <Redirect to={state || HOME} />;
 };
 
-const DashboardProviders = (props: { children: React.ReactNode }) => (
-  <WalletProvider>
-    <UserStatsProvider>
-      <SneakerListingFormProvider>
-        <PreviewImgDropzoneProvider>{props.children}</PreviewImgDropzoneProvider>
-      </SneakerListingFormProvider>
-    </UserStatsProvider>
-  </WalletProvider>
-);
-
 const App = () => {
   return (
     <Router>
@@ -77,9 +63,7 @@ const App = () => {
             <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
 
             <Route path={ADMIN}>
-              <DashboardProviders>
-                <ProtectedAdmin />
-              </DashboardProviders>
+              <ProtectedAdmin />
             </Route>
 
             <Route path={HOME}>

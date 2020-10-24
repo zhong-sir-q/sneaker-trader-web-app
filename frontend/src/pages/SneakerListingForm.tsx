@@ -24,7 +24,7 @@ import { ADMIN, TOPUP_WALLET } from 'routes';
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 
-import { mapUpperCaseFirstLetter, getMainDisplayImgUrl } from 'utils/utils';
+import { mapUpperCaseFirstLetter } from 'utils/utils';
 
 import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
 
@@ -40,7 +40,7 @@ const formatListedSneakerPayload = (sneaker: SneakerListingFormStateType, quanti
   conditionRating: sneaker.conditionRating,
   description: sneaker.description,
   serialNumber: '',
-  originalPurchasePrice: sneaker.originalPurchasePrice,
+  originalPurchasePrice: Number(sneaker.originalPurchasePrice),
   mainDisplayImage: s3UploadedUrls[0],
 });
 
@@ -119,13 +119,14 @@ const SneakerListingForm = () => {
       case 2:
         const previewSneaker = {
           ...formatSneaker(listingSneakerFormState),
+          // although plural, but preview is always a single url
           imageUrls: getMainDisplayFile()!.preview,
         };
 
         return (
           <PreviewSneaker
             sneaker={previewSneaker}
-            mainDisplayImage={getMainDisplayImgUrl(previewSneaker.imageUrls)}
+            mainDisplayImage={previewSneaker.imageUrls}
             price={Number(listingSneakerFormState.askingPrice)}
             onPrevStep={goPrevStep}
             onSubmit={onFinishSubmit}

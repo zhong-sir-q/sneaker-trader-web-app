@@ -4,7 +4,6 @@ import { Table } from 'reactstrap';
 import clsx from 'clsx';
 import moment from 'moment';
 
-import CenterSpinner from 'components/CenterSpinner';
 import SneakerNameCell from 'components/SneakerNameCell';
 import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
@@ -22,13 +21,12 @@ type ListedSneakerTableRowProps = {
 };
 
 type ListedSneakerTableProps = {
-  isFetchingData: boolean;
   sneakers: SellerListedSneaker[];
   setShowCompleteSaleSuccess?: () => void;
 };
 
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
-  const { sneakers, isFetchingData, setShowCompleteSaleSuccess } = props;
+  const { sneakers, setShowCompleteSaleSuccess } = props;
 
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<SellerListedSneaker>(sneakers);
 
@@ -132,9 +130,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     );
   };
 
-  return isFetchingData ? (
-    <CenterSpinner />
-  ) : sortedItems && sortedItems.length > 0 ? (
+  return sortedItems && sortedItems.length > 0 ? (
     <React.Fragment>
       <Table responsive className='table-shopping'>
         <ListedSneakerTableHeader />
