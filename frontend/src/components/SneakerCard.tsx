@@ -36,6 +36,13 @@ const StyledImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+`;
+
+const StyledImageContainer = styled.div`
+  position: relative;
+  padding-bottom: 60.66%;
 `;
 
 const SneakerCard = (props: SneakerCardProps) => {
@@ -61,7 +68,9 @@ const SneakerCard = (props: SneakerCardProps) => {
         textAlign: 'left',
       }}
     >
-      <StyledImage src={mainDisplayImage} />
+      <StyledImageContainer>
+        <StyledImage src={mainDisplayImage} />
+      </StyledImageContainer>
       <InfoContainer>
         <div
           style={{
