@@ -18,7 +18,7 @@ const INIT_AUTH_CONTEXT: AuthContextType = {
   },
 };
 
-const AuthContext = createContext(INIT_AUTH_CONTEXT);
+export const AuthContext = createContext(INIT_AUTH_CONTEXT);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   // TODO: can use a better cache strategy, so I can safely store

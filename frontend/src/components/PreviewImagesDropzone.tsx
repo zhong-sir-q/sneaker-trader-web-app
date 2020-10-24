@@ -116,12 +116,17 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
           <span>Select Images</span>
         </DropZoneContainer>
 
-        <PreviewAside>{thumbs}</PreviewAside>
+        <PreviewAside data-testid='preview-img-container'>{thumbs}</PreviewAside>
       </CardBody>
 
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>
-        <Button disabled={files.length === 0} color='primary' onClick={onNextStep}>
+        <Button
+          disabled={files.length === 0}
+          color='primary'
+          onClick={onNextStep}
+          data-testid='dropzone-confirm-preview-btn'
+        >
           Preview
         </Button>
       </CardFooter>

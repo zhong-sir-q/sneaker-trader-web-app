@@ -13,7 +13,7 @@ const ListedSneakerSuccess = () => (
       <CardText>CUSTOM SUCCESS MESSAGE GOES HERE</CardText>
     </CardBody>
     <CardFooter>
-      <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
+      <Link data-testid='listing-success-to-dashboard-link' style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
         <Button color='primary'>Back to dashboard</Button>
       </Link>
     </CardFooter>

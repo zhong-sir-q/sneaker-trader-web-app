@@ -18,10 +18,10 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
 
   return (
     <Card className='text-center'>
-      <CardHeader>
+      <CardHeader data-testid='preview-sneaker-card-header'>
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
-      <CardBody>
+      <CardBody data-testid='preview-sneaker-card-body'>
         <SneakerCard sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>

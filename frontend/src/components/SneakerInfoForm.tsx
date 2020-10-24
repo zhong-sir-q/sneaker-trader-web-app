@@ -61,6 +61,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                       label='Name'
                       options={sneakerNamesOptions}
                       setfieldvalue={setFieldValue}
+                      data-testid='name-input'
                     />
                   </FormGroup>
                 </Col>
@@ -71,6 +72,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                       label='Brand'
                       options={brandOptions}
                       setfieldvalue={setFieldValue}
+                      data-testid='brand-input'
                     />
                   </FormGroup>
                 </Col>
@@ -82,6 +84,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                       label='Color Way'
                       options={colorwayOptions}
                       setfieldvalue={setFieldValue}
+                      data-testid='colorway-input'
                     />
                   </FormGroup>
                 </Col>
@@ -89,7 +92,12 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
               <Row>
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelSelect name='sizeSystem' label='Size System' id='sneaker-size-system'>
+                    <FormikLabelSelect
+                      name='sizeSystem'
+                      label='Size System'
+                      id='sneaker-size-system'
+                      data-testid='size-sys-select-input'
+                    >
                       {shoeSizeOptions.map((sOpt, idx) => (
                         <option value={sOpt} key={idx}>
                           {sOpt}
@@ -101,13 +109,24 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
 
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput name='size' placeholder='Size' type='number' label='Shoe Size' />
+                    <FormikLabelInput
+                      name='size'
+                      placeholder='Size'
+                      type='number'
+                      label='Shoe Size'
+                      data-testid='size-input'
+                    />
                   </FormGroup>
                 </Col>
 
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelSelect name='currencyCode' label='Price Currency Code' id='sneaker-price-currency'>
+                    <FormikLabelSelect
+                      name='currencyCode'
+                      label='Price Currency Code'
+                      id='sneaker-price-currency'
+                      data-testid='currency-input'
+                    >
                       {currencyCodeOptions.map((cOpt, idx) => (
                         <option key={idx} value={cOpt}>
                           {cOpt}
@@ -121,13 +140,25 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
               <Row>
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput name='originalPurchasePrice' placeholder='$$ ~ $$$$$' type='number' label='Purchase Price' />
+                    <FormikLabelInput
+                      name='originalPurchasePrice'
+                      placeholder='$$ ~ $$$$$'
+                      type='number'
+                      label='Purchase Price'
+                      data-testid='price-input'
+                    />
                   </FormGroup>
                 </Col>
 
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelInput name='askingPrice' placeholder='$$ ~ $$$$$' type='number' label='Asking Price' />
+                    <FormikLabelInput
+                      name='askingPrice'
+                      placeholder='$$ ~ $$$$$'
+                      type='number'
+                      label='Asking Price'
+                      data-testid='asking-price-input'
+                    />
                   </FormGroup>
                 </Col>
 
@@ -175,7 +206,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
               <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
                 <Button type='button'>Cancel</Button>
               </Link>
-              <Button type='submit' color='primary'>
+              <Button type='submit' color='primary' data-testid='sneaker-info-form-submit-btn'>
                 Next
               </Button>
             </CardFooter>
