@@ -21,6 +21,7 @@ import { Close as CloseIcon } from '@material-ui/icons';
 import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import { UserRankingRow } from '../../../shared';
+import useMuiCloseButtonStyle from 'hooks/useMuiCloseButtonStyle';
 
 type UserRankingLeaderBoardItemProps = UserRankingRow & { placing: number };
 
@@ -81,19 +82,9 @@ type UserRankingLeaderBoardDialogProps = {
   rankings: UserRankingRow[];
 };
 
-const useDialogStyles = makeStyles((theme) => ({
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-    outline: 'none',
-  },
-}));
-
 export const UserRankingLeaderBoardDialog = (props: UserRankingLeaderBoardDialogProps) => {
   const { isDialogOpen, closeDialog, rankings } = props;
-  const classes = useDialogStyles();
+  const classes = useMuiCloseButtonStyle()
 
   return (
     <Dialog fullWidth maxWidth='xs' open={isDialogOpen} onClose={closeDialog}>
