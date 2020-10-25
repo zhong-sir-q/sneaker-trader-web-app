@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Container, Button, Label, Collapse } from 'reactstrap';
-import { Drawer } from '@material-ui/core';
+import { Drawer, IconButton, makeStyles } from '@material-ui/core';
 
 import styled from 'styled-components';
 
@@ -17,6 +17,7 @@ import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import { ArrowDropUp, ArrowDropDown, Close } from '@material-ui/icons';
 
 type FilterBlockProps = { selected: boolean };
 
@@ -24,12 +25,14 @@ const FilterTitle = styled.div`
   font-family: proxima-nova, sans-serif;
   text-transform: uppercase;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 7px;
   letter-spacing: 1px;
+  position: relative;
+  cursor: pointer;
 `;
 
-const CollapseFilters = styled(Col)`
+const FilterGroup = styled(Col)`
   min-width: 200px;
 
   @media (max-width: 786px) {
@@ -96,7 +99,10 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
 
   return (
     <FilterWrapper>
-      <FilterTitle onClick={toggle}>{title}</FilterTitle>
+      <FilterTitle onClick={toggle}>
+        <span>{title}</span>
+        <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
+      </FilterTitle>
       <Collapse isOpen={open}>
         {filters.map((val, idx) => (
           <div key={idx}>
@@ -110,6 +116,13 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
   );
 };
 
+const ArrowDirectionWrapper = styled.div`
+  position: absolute;
+  top: 13px;
+  right: 2px;
+  transform: translateY(-50%);
+`;
+
 const ButtonFilters = (props: FiltersProps) => {
   const { filters, filterKey, title, onSelectFilter, filterSelected } = props;
 
@@ -117,7 +130,10 @@ const ButtonFilters = (props: FiltersProps) => {
 
   return (
     <FilterWrapper>
-      <FilterTitle onClick={toggle}>{title}</FilterTitle>
+      <FilterTitle onClick={toggle}>
+        <span>{title}</span>
+        <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
+      </FilterTitle>
       <Collapse isOpen={open}>
         <Row style={{ margin: 0 }}>
           {filters.map((val, idx) => (
@@ -141,20 +157,32 @@ type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] } & Pi
   'onSelectFilter' | 'filterSelected'
 >;
 
-const FiltersDrawer = (props: FiltersDrawerProps) => {
-  const [open, setOpen] = useState(false);
+const useDrawerStyles = makeStyles((theme) => ({
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+    outline: 'none',
+  },
+}));
 
+const FiltersDrawer = (props: FiltersDrawerProps) => {
   const { sizeFilters, brandFilters, onSelectFilter, filterSelected } = props;
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const { open, onOpen, onClose } = useOpenCloseComp();
+
+  const classes = useDrawerStyles()
 
   return (
     <React.Fragment>
       <CollapseButtonDiv>
-        <Button onClick={handleOpen}>Filter</Button>
+        <Button onClick={onOpen}>Filter</Button>
       </CollapseButtonDiv>
-      <Drawer anchor='bottom' open={open} onClose={handleClose}>
+      <Drawer anchor='bottom' open={open} onClose={onClose}>
+        <IconButton className={classes.closeButton} onClick={onClose}>
+          <Close />
+        </IconButton>
         <div style={{ padding: '50px' }}>
           <ButtonFilters
             onSelectFilter={onSelectFilter}
@@ -229,7 +257,7 @@ const MarketPlace = () => {
         sizeFilters={range(3, 14, 0.5).map((n) => String(n))}
       />
       <div className='flex'>
-        <CollapseFilters md={2} lg={2}>
+        <FilterGroup md={2} lg={2}>
           <ButtonFilters
             onSelectFilter={onSelectFilter}
             filterSelected={filterSelected}
@@ -239,7 +267,7 @@ const MarketPlace = () => {
           />
 
           <CheckboxFilters onSelectFilter={onSelectFilter} filterKey='brand' filters={brands} title='brands' />
-        </CollapseFilters>
+        </FilterGroup>
         <SneakerGallery sneakers={filterSneakers} />
       </div>
     </Container>
