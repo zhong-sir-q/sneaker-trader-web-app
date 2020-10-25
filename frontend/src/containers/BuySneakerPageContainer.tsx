@@ -23,7 +23,7 @@ const nameColorwayFromPath = () => {
 };
 
 const BuySneakerPageContainer = () => {
-  const [selectedSize, setSelectedSize] = useState<Size>();
+  const [selectedSize, setSelectedSize] = useState<Size>('all');
   const [displaySneaker, setDisplaySneaker] = useState<Sneaker>();
   const [sizeMinPriceGroup, setSizeMinPriceGroup] = useState<SizeMinPriceGroupType>();
 

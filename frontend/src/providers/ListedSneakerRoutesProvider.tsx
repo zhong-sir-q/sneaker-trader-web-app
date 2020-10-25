@@ -24,7 +24,7 @@ export const ListedSneakerRoutesCtx = createContext(INIT_CTX);
 
 export const useListedSneakerRoutes = () => useContext(ListedSneakerRoutesCtx);
 
-export const renderListedSneakerRoutes = async (listedSneakers: GetListedSneaker[]) => {
+export const renderListedSneakerRoutes = (listedSneakers: GetListedSneaker[]) => {
   // prevent duplicate routes from rendering because there can
   // be multiple sneakers with the same name, but each of them
   // can have a different size and we only want
@@ -55,7 +55,7 @@ const ListedSneakerRoutesProvider = (props: { children: ReactNode }) => {
   useEffect(() => {
     (async () => {
       const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
-      setListedSneakerRoutes(await renderListedSneakerRoutes(sneakers));
+      setListedSneakerRoutes(renderListedSneakerRoutes(sneakers));
     })();
   }, []);
 

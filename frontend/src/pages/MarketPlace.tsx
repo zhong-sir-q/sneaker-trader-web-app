@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Container, Button } from 'reactstrap';
+import { Row, Col, Container, Button, Label, Collapse } from 'reactstrap';
 import { Drawer } from '@material-ui/core';
 
 import styled from 'styled-components';
@@ -16,22 +16,9 @@ import { range } from 'utils/utils';
 import { GallerySneaker } from '../../../shared';
 import CenterSpinner from 'components/CenterSpinner';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
-
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 type FilterBlockProps = { selected: boolean };
-
-const FilterBlock = styled(Col)<FilterBlockProps>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-weight: 600;
-  font-family: BebasNeue;
-  background-color: #f5f5f5;
-  margin: 3px;
-  cursor: pointer;
-  color: ${(props) => (props.selected ? '#f96332' : '')};
-`;
 
 const FilterTitle = styled.div`
   font-family: proxima-nova, sans-serif;
@@ -43,6 +30,8 @@ const FilterTitle = styled.div`
 `;
 
 const CollapseFilters = styled(Col)`
+  min-width: 200px;
+
   @media (max-width: 786px) {
     display: none;
   }
@@ -57,6 +46,28 @@ const CollapseButtonDiv = styled.div`
   }
 `;
 
+const FilterButton = styled.button<FilterBlockProps>`
+  text-align: center;
+  border: 1px solid rgb(229, 229, 229);
+  border-radius: 5px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  flex: 0%;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  background: transparent;
+  color: ${(props) => (props.selected ? '#f96332' : '')};
+`;
+
+const FilterButtonText = styled.span`
+  padding: 0px 0.5em;
+  white-space: nowrap;
+  display: block;
+`;
+
 type FilterByKey = 'brand' | 'size';
 type SelectFilterHandler = (filterKey: FilterByKey, filter: string) => void;
 type FilterSelectedFunc = (filterVal: string) => boolean;
@@ -69,20 +80,54 @@ type FiltersProps = {
   filterSelected: FilterSelectedFunc;
 };
 
-const Filters = (props: FiltersProps) => {
-  const { filters, filterKey, title, onSelectFilter, filterSelected } = props;
+const CheckboxInput = styled.input`
+  vertical-align: middle;
+  cursor: pointer;
+`;
+
+const FilterWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
+  const { filters, filterKey, title, onSelectFilter } = props;
+
+  const { open, toggle } = useOpenCloseComp(true);
 
   return (
-    <div style={{ marginBottom: '25px' }}>
-      <FilterTitle>{title}</FilterTitle>
-      <Row>
+    <FilterWrapper>
+      <FilterTitle onClick={toggle}>{title}</FilterTitle>
+      <Collapse isOpen={open}>
         {filters.map((val, idx) => (
-          <FilterBlock onClick={() => onSelectFilter(filterKey, val)} selected={filterSelected(String(val))} key={idx}>
-            {val}
-          </FilterBlock>
+          <div key={idx}>
+            <Label>
+              <CheckboxInput type='checkbox' onClick={() => onSelectFilter(filterKey, val)} /> {val}
+            </Label>
+          </div>
         ))}
-      </Row>
-    </div>
+      </Collapse>
+    </FilterWrapper>
+  );
+};
+
+const ButtonFilters = (props: FiltersProps) => {
+  const { filters, filterKey, title, onSelectFilter, filterSelected } = props;
+
+  const { open, toggle } = useOpenCloseComp(true);
+
+  return (
+    <FilterWrapper>
+      <FilterTitle onClick={toggle}>{title}</FilterTitle>
+      <Collapse isOpen={open}>
+        <Row style={{ margin: 0 }}>
+          {filters.map((val, idx) => (
+            <FilterButton onClick={() => onSelectFilter(filterKey, val)} selected={filterSelected(val)} key={idx}>
+              <FilterButtonText>{val}</FilterButtonText>
+            </FilterButton>
+          ))}
+        </Row>
+      </Collapse>
+    </FilterWrapper>
   );
 };
 
@@ -111,20 +156,14 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
       </CollapseButtonDiv>
       <Drawer anchor='bottom' open={open} onClose={handleClose}>
         <div style={{ padding: '50px' }}>
-          <Filters
+          <ButtonFilters
             onSelectFilter={onSelectFilter}
             filterSelected={filterSelected}
             filterKey='size'
             filters={sizeFilters}
             title='us sizes'
           />
-          <Filters
-            onSelectFilter={onSelectFilter}
-            filterSelected={filterSelected}
-            filterKey='brand'
-            filters={brandFilters}
-            title='brands'
-          />
+          <CheckboxFilters onSelectFilter={onSelectFilter} filterKey='brand' filters={brandFilters} title='brands' />
         </div>
       </Drawer>
     </React.Fragment>
@@ -189,27 +228,20 @@ const MarketPlace = () => {
         brandFilters={brands}
         sizeFilters={range(3, 14, 0.5).map((n) => String(n))}
       />
-      <Row>
+      <div className='flex'>
         <CollapseFilters md={2} lg={2}>
-          <Filters
+          <ButtonFilters
             onSelectFilter={onSelectFilter}
             filterSelected={filterSelected}
-            filters={range(3, 14, 0.5).map((n) => String(n))}
             filterKey='size'
+            filters={range(3.5, 15.5, 0.5).map((size) => String(size))}
             title='us sizes'
           />
-          <Filters
-            onSelectFilter={onSelectFilter}
-            filterSelected={filterSelected}
-            filters={brands}
-            filterKey='brand'
-            title='brands'
-          />
+
+          <CheckboxFilters onSelectFilter={onSelectFilter} filterKey='brand' filters={brands} title='brands' />
         </CollapseFilters>
-        <Col sm={12} md={10} lg={10}>
-          <SneakerGallery sneakers={filterSneakers} />
-        </Col>
-      </Row>
+        <SneakerGallery sneakers={filterSneakers} />
+      </div>
     </Container>
   );
 };

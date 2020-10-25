@@ -1,9 +1,12 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
-import CenterSpinner from 'components/CenterSpinner';
-import SneakerCard from 'components/SneakerCard';
 import React from 'react';
 import { Button, Col, Container, Row, Table } from 'reactstrap';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
+
 import styled from 'styled-components';
+
+import CenterSpinner from 'components/CenterSpinner';
+import SneakerCard from 'components/SneakerCard';
+
 import { Size, SizeMinPriceGroupType, Sneaker, SneakerAsk } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
 
@@ -142,6 +145,7 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
                 color='primary'
                 onClick={onBuy}
                 disabled={selectedSize === undefined}
+                data-testid='buy-sneaker-btn'
               >
                 Buy
               </Button>

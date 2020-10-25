@@ -55,6 +55,8 @@ const SneakerCard = (props: SneakerCardProps) => {
     if (isListed && name && colorway) redirectBuySneakerPage(history, name, colorway);
   };
 
+  const displayName = `${name} ${colorway}`
+
   return (
     <Card
       className={props.className}
@@ -67,6 +69,7 @@ const SneakerCard = (props: SneakerCardProps) => {
         display: 'flex',
         textAlign: 'left',
       }}
+      data-testid={displayName}
     >
       <StyledImageContainer>
         <StyledImage src={mainDisplayImage} />
@@ -81,7 +84,7 @@ const SneakerCard = (props: SneakerCardProps) => {
             fontSize: isListed ? '16px' : '1.55em',
           }}
         >
-          {`${name} ${colorway}`}
+          {displayName}
         </div>
         <div>
           {price !== undefined && (

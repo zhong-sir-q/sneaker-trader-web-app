@@ -4,19 +4,21 @@ import { Container } from 'reactstrap';
 const Terms = () => {
   return (
     <Container fluid='sm'>
-      <h2>Terms and Conditions</h2>
+      <p>
+        <b>Terms and Conditions</b>
+      </p>
 
-      <p>Welcome to [COMPANY NAME].</p>
+      <p>Welcome to Sneaker Trader Limited.</p>
 
       <p>
-        Thanks for using our products and services (“Services”). The Services are provided by [COMPANY NAME] (“COMPANY
-        NAME”), located at [ADRESSE, CITY, STATE, COUNTRY]
+        Thanks for using our products and services (“Services”). The Services are provided by Sneaker Trader Limited
+        (“COMPANY NAME”), located at 18 Centre St, Auckland CBD, Auckland, New Zealand 1010.
       </p>
 
       <p>
         By using our Services, you are agreeing to these terms. Please read these Terms and Conditions ("Terms", "Terms
-        and Conditions") carefully before using the http://www.[YOURWEBSITE].com website and the mobile application (the
-        "Service") operated by [COMPANY NAME] ("us", "we", or "our").{' '}
+        and Conditions") carefully before using the https://www.sneakertrader.com website and the mobile application (the
+        "Service") operated by Sneaker Trader Limited ("us", "we", or "our").{' '}
       </p>
 
       <p>
@@ -26,7 +28,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Terminology</strong>
+        <b>Terminology</b>
       </p>
 
       <p>
@@ -43,7 +45,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Using our Services</strong>
+        <b>Using our Services</b>
       </p>
 
       <p>
@@ -71,13 +73,13 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Privacy Statement </strong>
+        <b>Privacy Statement </b>
       </p>
 
       <p>
-        We are committed to protecting your privacy. [COMPANY NAME]’s privacy policies explain how we treat your
-        personal data and protect your privacy when you use our Services. By using our Services, you agree that [COMPANY
-        NAME] can use such data in accordance with our privacy policies.
+        We are committed to protecting your privacy. Sneaker Trader Limited’s privacy policies explain how we treat your
+        personal data and protect your privacy when you use our Services. By using our Services, you agree that Sneaker
+        Trader Limited can use such data in accordance with our privacy policies.
       </p>
 
       <p>
@@ -93,25 +95,16 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Purchases </strong>
+        <b>Purchases </b>
       </p>
 
       <p>
         If you wish to purchase any product or service made available through the Service ("Purchase"), you may be asked
-        to supply certain information relevant to your Purchase including, without limitation, your [SPECIFY].
+        to supply certain information relevant to your Purchase including, without limitation].
       </p>
 
       <p>
-        <strong>Subscriptions </strong>
-      </p>
-
-      <p>
-        Some parts of the Service are billed on a subscription basis ("Subscription(s)"). You will be billed in advance
-        on a recurring [SPECIFY].
-      </p>
-
-      <p>
-        <strong>Software in our Services</strong>
+        <b>Software in our Services</b>
       </p>
 
       <p>
@@ -120,20 +113,20 @@ const Terms = () => {
       </p>
 
       <p>
-        [COMPANY NAME] gives you a personal, worldwide, royalty-free, non-assignable and non-exclusive license to use
-        the software provided to you by [COMPANY NAME] as part of the Services. This license is for the sole purpose of
-        enabling you to use and enjoy the benefit of the Services as provided by [COMPANY NAME], in the manner permitted
-        by these terms. You may not copy, modify, distribute, sell, or lease any part of our Services or included
-        software, nor may you reverse engineer or attempt to extract the source code of that software, unless laws
-        prohibit those restrictions or you have our written permission.
+        Sneaker Trader Limited gives you a personal, worldwide, royalty-free, non-assignable and non-exclusive license
+        to use the software provided to you by Sneaker Trader Limited as part of the Services. This license is for the
+        sole purpose of enabling you to use and enjoy the benefit of the Services as provided by Sneaker Trader Limited,
+        in the manner permitted by these terms. You may not copy, modify, distribute, sell, or lease any part of our
+        Services or included software, nor may you reverse engineer or attempt to extract the source code of that
+        software, unless laws prohibit those restrictions or you have our written permission.
       </p>
 
       <p>
-        <strong>Disclaimer </strong>
+        <b>Disclaimer </b>
       </p>
 
       <p>
-        <strong>Exclusions and Limitations </strong>
+        <b>Exclusions and Limitations </b>
       </p>
 
       <p>
@@ -147,51 +140,50 @@ const Terms = () => {
           provided by affiliates or any other third party, including with respect to any inaccuracy or omission in this
           website and/or the Company's documentation; and{' '}
         </li>
-
         <li>
-          excludes any liability for damages arising out of or in connection with your use of this website. [COMPANY
-          NAME], and [COMPANY NAME]’s suppliers and distributors, will not be responsible for lost profits, revenues, or
-          data, financial losses or indirect, special, consequential, exemplary, punitive damages or damage caused to
-          your computer, computer software, systems and programs and data relating thereto or any other direct or
-          indirect, consequential or incidental damages.{' '}
+          excludes any liability for damages arising out of or in connection with your use of this website. Sneaker
+          Trader Limited, and Sneaker Trader Limited’s suppliers and distributors, will not be responsible for lost
+          profits, revenues, or data, financial losses or indirect, special, consequential, exemplary, punitive damages
+          or damage caused to your computer, computer software, systems and programs and data relating thereto or any
+          other direct or indirect, consequential or incidental damages.{' '}
         </li>
       </ul>
 
       <p>
-        <strong>Liability for our Services</strong>
+        <b>Liability for our Services</b>
       </p>
 
       <p>
-        To the extent permitted by law, the total liability of [COMPANY NAME], and its suppliers and distributors, for
-        any claims under these terms, including for any implied warranties, is limited to the amount you paid us to use
-        the Services.
+        To the extent permitted by law, the total liability of Sneaker Trader Limited, and its suppliers and
+        distributors, for any claims under these terms, including for any implied warranties, is limited to the amount
+        you paid us to use the Services.
       </p>
 
       <p>
-        In all cases, [COMPANY NAME], and its suppliers and distributors, will not be liable for any loss or damage that
-        is not reasonably foreseeable.
+        In all cases, Sneaker Trader Limited, and its suppliers and distributors, will not be liable for any loss or
+        damage that is not reasonably foreseeable.
       </p>
 
       <p>
         However, this company does not exclude liability for death or personal injury caused by its negligence. The
         above exclusions and limitations apply only to the extent permitted by law. We recognize that in some countries,
-        you might have legal rights as a consumer. None of your legal rights as a consumer are affected
-        <strong> </strong>waived by contract.
+        you might have legal rights as a consumer. None of your legal rights as a consumer are affected<b> </b>waived by
+        contract.
       </p>
 
       <p>
-        <strong>Business uses of our Services</strong>
+        <b>Business uses of our Services</b>
       </p>
 
       <p>
         If you are using our Services on behalf of a business, that business accepts these terms. It will hold harmless
-        and indemnify [COMPANY NAME] and its affiliates, officers, agents, and employees from any claim, suit or action
-        arising from or related to the use of the Services or violation of these terms, including any liability or
-        expense arising from claims, losses, damages, suits, judgments, litigation costs and attorneys’ fees.
+        and indemnify Sneaker Trader Limited and its affiliates, officers, agents, and employees from any claim, suit or
+        action arising from or related to the use of the Services or violation of these terms, including any liability
+        or expense arising from claims, losses, damages, suits, judgments, litigation costs and attorneys’ fees.
       </p>
 
       <p>
-        <strong>Cancellation Policy</strong>
+        <b>Cancellation Policy</b>
       </p>
 
       <p>
@@ -201,7 +193,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Modifying and Terminating our Services </strong>
+        <b>Modifying and Terminating our Services </b>
       </p>
 
       <p>
@@ -210,13 +202,13 @@ const Terms = () => {
       </p>
 
       <p>
-        The Customer and [COMPANY NAME] have the right to terminate any Service Agreement for any reason whatsoever,
-        including the termination of services already in progress. [COMPANY NAME] may also stop providing Services to
-        you or add or create new limits to our Services at any time.
+        The Customer and Sneaker Trader Limited have the right to terminate any Service Agreement for any reason
+        whatsoever, including the termination of services already in progress. Sneaker Trader Limited may also stop
+        providing Services to you or add or create new limits to our Services at any time.
       </p>
 
       <p>
-        <strong>Refunds Policy</strong>
+        <b>Refunds Policy</b>
       </p>
 
       <p>
@@ -225,7 +217,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Log Files</strong>
+        <b>Log Files</b>
       </p>
 
       <p>
@@ -239,7 +231,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Cookies</strong>
+        <b>Cookies</b>
       </p>
 
       <p>
@@ -249,17 +241,17 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Links others website </strong>
+        <b>Links others website </b>
       </p>
 
       <p>
-        Our Service may contain links to third-party web sites or services that are not owned or controlled by [COMPANY
-        NAME].{' '}
+        Our Service may contain links to third-party web sites or services that are not owned or controlled by Sneaker
+        Trader Limited.{' '}
       </p>
 
       <p>
-        [COMPANY NAME].) has no control over, and assumes no responsibility for, the content, privacy policies, or
-        practices of any third-party web sites or services. The opinions expressed or material appearing on these
+        Sneaker Trader Limited.) has no control over, and assumes no responsibility for, the content, privacy policies,
+        or practices of any third-party web sites or services. The opinions expressed or material appearing on these
         websites are not necessarily shared or endorsed by us and should not be considered as the publisher of such
         opinions or material. Please note that we are not responsible for the privacy practices or content of these
         sites. We encourage our users to be aware when they leave our site and to read the privacy statements of these
@@ -274,13 +266,13 @@ const Terms = () => {
       </p>
 
       <p>
-        You further acknowledge and agree that [COMPANY NAME]. shall not be responsible or liable, directly or
+        You further acknowledge and agree that Sneaker Trader Limited. shall not be responsible or liable, directly or
         indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on
         any such content, goods or services available on or through any such web sites or services.{' '}
       </p>
 
       <p>
-        <strong>Links to this website </strong>
+        <b>Links to this website </b>
       </p>
 
       <p>
@@ -290,7 +282,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Copyright Notice </strong>
+        <b>Copyright Notice </b>
       </p>
 
       <p>
@@ -301,7 +293,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Force Majeure</strong>
+        <b>Force Majeure</b>
       </p>
 
       <p>
@@ -315,7 +307,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>Waiver </strong>
+        <b>Waiver </b>
       </p>
 
       <p>
@@ -327,7 +319,7 @@ const Terms = () => {
       </p>
 
       <p>
-        <strong>About these Terms</strong>
+        <b>About these Terms</b>
       </p>
 
       <p>
@@ -339,10 +331,10 @@ const Terms = () => {
 
       <p>
         We’ll post notice of modifications to these terms on this page. We’ll post notice of modified additional terms
-        in the applicable Service. Changes will not apply retroactively and will become effective no sooner than
-        [SPECIFY] days after they are posted. However, changes addressing new functions for a Service or changes made
-        for legal reasons will be effective immediately. If you do not agree to the modified terms for a Service, you
-        should discontinue your use of that Service.
+        in the applicable Service. Changes will not apply retroactively and will become effective no sooner than 30 days
+        after they are posted. However, changes addressing new functions for a Service or changes made for legal reasons
+        will be effective immediately. If you do not agree to the modified terms for a Service, you should discontinue
+        your use of that Service.
       </p>
 
       <p>
@@ -351,7 +343,7 @@ const Terms = () => {
       </p>
 
       <p>
-        These terms control the relationship between [COMPANY NAME] and you. They do not create any third-party
+        These terms control the relationship between Sneaker Trader Limited and you. They do not create any third-party
         beneficiary rights.
       </p>
 
@@ -362,16 +354,16 @@ const Terms = () => {
 
       <p>If it turns out that a particular term is not enforceable, this will not affect any other terms.</p>
       <p>
-        The courts in some countries will not apply [STATE] law to some types of disputes. If you reside in one of those
-        countries, then where [STATE] law is excluded from applying, your country’s laws will apply to such disputes
-        related to these terms.{' '}
+        The courts in some countries will not apply New Zealand law to some types of disputes. If you reside in one of
+        those countries, then where New Zealand law is excluded from applying, your country’s laws will apply to such
+        disputes related to these terms.{' '}
       </p>
 
       <p>
-        <strong>Contact Us </strong>
+        <b>Contact Us </b>
       </p>
 
-      <p>If you have any questions about these Terms, please contact us at [EMAIL].</p>
+      <p>If you have any questions about these Terms, please contact us at hello@sneakertrader.coms.</p>
     </Container>
   );
 };
