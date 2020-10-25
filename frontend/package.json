@@ -48,9 +48,12 @@
     "map-sass": "node-sass src/assets/scss/now-ui-dashboard.scss src/assets/css/now-ui-dashboard.css --source-map true",
     "deploy": "aws s3 sync build/ s3://sneaker-trader-app --acl public-read --cache-control max-age=0",
     "switchDev": "git checkout dev && amplify env checkout dev",
-    "switchProd": "git checkout prod && amplify env checkout prod"
+    "switchProd": "git checkout prod && amplify env checkout prod",
+    "cypress:run": "./node_modules/.bin/cypress run",
+    "cypress:open": "./node_modules/.bin/cypress open"
   },
   "devDependencies": {
+    "@cypress/webpack-preprocessor": "^5.4.8",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -71,8 +74,11 @@
     "@types/styled-components": "^5.1.2",
     "@types/uuid": "^8.3.0",
     "@types/yup": "^0.29.6",
+    "cypress": "^5.4.0",
+    "cypress-react-unit-test": "^4.16.5",
     "dotenv": "^8.2.0",
     "faker": "^5.1.0",
+    "find-webpack": "^2.2.0",
     "jest": "^26.5.2",
     "prettier": "2.0.5",
     "ts-jest": "^26.4.1"

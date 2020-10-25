@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -16,6 +18,7 @@ import { MarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import { ListedSneakerRoutesCtx, renderListedSneakerRoutes } from 'providers/ListedSneakerRoutesProvider';
 
 import BuySneakerPageContainer from 'containers/BuySneakerPageContainer';
+import mount from 'cypress-react-unit-test/lib';
 
 // CONFUSION: how exactly does React know which BuySneakerPgaeContainer to render?
 const MockBuySneakerPageContainer = () => {};
@@ -70,7 +73,7 @@ const MockAuthProvider = (props: { children: React.ReactNode }) => {
 
 describe('Buying a pair of sneakers at Sneaker Trader', () => {
   it('Successfully purchase a pair of sneakers', () => {
-    render(
+    mount(
       <BrowserRouter>
         <MockAuthProvider>
           <MockListedSneakerRoutesProvider>
@@ -81,32 +84,13 @@ describe('Buying a pair of sneakers at Sneaker Trader', () => {
         </MockAuthProvider>
       </BrowserRouter>
     );
-
-    // view the sneaker at the gallery in the marketplace
-    const randIdx = faker.random.number(NUM_MARKET_PLACE_SNEAKERS - 1);
-    const sneakerName = mockGallerySneakers[randIdx].name;
-    const sneakerColorway = mockGallerySneakers[randIdx].colorway;
-
-    const sneakerCardElement = screen.getByTestId(`${sneakerName} ${sneakerColorway}`);
-    expect(sneakerCardElement.childElementCount).toBe(2);
-
-    // click the card to go to the BuySneaker page
-    fireEvent.click(sneakerCardElement);
-
-    // choose the size at buy sneaker page, go to view sellers page
-    // 'all' should be the default version for the size
-    const buySneakerButton = screen.getByTestId('buy-sneaker-btn') as HTMLButtonElement;
-    expect(buySneakerButton.disabled).toBeFalsy();
-
-    // clicking Buy when 'all' is selected will make the US All option go away
-
-    // If not logged in, then buying should redirect the user to the login page
-    // but here since we have provided a mock user, we just need to make sure we have
-    // checked whether the user is logged
-
-    // select a seller and confirm purchase
-
-    // PLACE HOLDER
-    expect(true).toBe(true);
   });
+
+  const randIdx = faker.random.number(NUM_MARKET_PLACE_SNEAKERS - 1);
+  const sneakerName = mockGallerySneakers[randIdx].name;
+  const sneakerColorway = mockGallerySneakers[randIdx].colorway;
+
+  const sneakerCardElement = cy.get(`[data-testid="${sneakerName} ${sneakerColorway}"]`);
+  sneakerCardElement.should('have.length', 2);
+  sneakerCardElement.click();
 });
