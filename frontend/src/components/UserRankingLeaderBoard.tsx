@@ -12,16 +12,14 @@ import {
   createStyles,
   Dialog,
   DialogContent,
-  IconButton,
   DialogTitle,
 } from '@material-ui/core';
 
-import { Close as CloseIcon } from '@material-ui/icons';
 
 import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import { UserRankingRow } from '../../../shared';
-import useMuiCloseButtonStyle from 'hooks/useMuiCloseButtonStyle';
+import MuiCloseButton from './buttons/MuiCloseButton';
 
 type UserRankingLeaderBoardItemProps = UserRankingRow & { placing: number };
 
@@ -84,14 +82,11 @@ type UserRankingLeaderBoardDialogProps = {
 
 export const UserRankingLeaderBoardDialog = (props: UserRankingLeaderBoardDialogProps) => {
   const { isDialogOpen, closeDialog, rankings } = props;
-  const classes = useMuiCloseButtonStyle()
 
   return (
     <Dialog fullWidth maxWidth='xs' open={isDialogOpen} onClose={closeDialog}>
       <DialogTitle>
-        <IconButton className={classes.closeButton} onClick={closeDialog}>
-          <CloseIcon />
-        </IconButton>
+        <MuiCloseButton onClick={closeDialog} />
       </DialogTitle>
       <DialogContent>
         <UserRankingLeaderBoard items={rankings} />

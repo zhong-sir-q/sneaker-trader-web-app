@@ -1,17 +1,15 @@
-import useMuiCloseButtonStyle from 'hooks/useMuiCloseButtonStyle';
-import { FiltersProps } from './filter';
 import React from 'react';
 
 import { Button } from 'reactstrap';
-import { Close } from '@material-ui/icons';
-import { Drawer, IconButton } from '@material-ui/core';
+import { Drawer } from '@material-ui/core';
 
 import styled from 'styled-components';
 
-import ButtonFilters from './ButtonFilters';
+import ButtonFilters from './FilterButtons';
 import CheckboxFilters from './CheckboxFilters';
 
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import MuiCloseButton from 'components/buttons/MuiCloseButton';
 
 const CollapseButtonDiv = styled.div`
   text-align: end;
@@ -22,17 +20,12 @@ const CollapseButtonDiv = styled.div`
   }
 `;
 
-type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] } & Pick<
-  FiltersProps,
-  'onSelectFilter' | 'filterSelected'
->;
+type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] };
 
 const FiltersDrawer = (props: FiltersDrawerProps) => {
-  const { sizeFilters, brandFilters, onSelectFilter, filterSelected } = props;
+  const { sizeFilters, brandFilters } = props;
 
   const { open, onOpen, onClose } = useOpenCloseComp();
-
-  const classes = useMuiCloseButtonStyle();
 
   return (
     <React.Fragment>
@@ -40,18 +33,10 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
         <Button onClick={onOpen}>Filter</Button>
       </CollapseButtonDiv>
       <Drawer anchor='bottom' open={open} onClose={onClose}>
-        <IconButton className={classes.closeButton} onClick={onClose}>
-          <Close />
-        </IconButton>
+        <MuiCloseButton onClick={onClose} />
         <div style={{ padding: '50px' }}>
-          <ButtonFilters
-            onSelectFilter={onSelectFilter}
-            filterSelected={filterSelected}
-            filterKey='size'
-            filters={sizeFilters}
-            title='us sizes'
-          />
-          <CheckboxFilters onSelectFilter={onSelectFilter} filterKey='brand' filters={brandFilters} title='brands' />
+          <ButtonFilters filterKey='size' filters={sizeFilters} title='us sizes' />
+          <CheckboxFilters filterKey='brand' filters={brandFilters} title='brands' />
         </div>
       </Drawer>
     </React.Fragment>

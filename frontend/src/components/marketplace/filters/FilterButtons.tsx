@@ -2,12 +2,13 @@ import React from 'react';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 import { Collapse, Row } from 'reactstrap';
 
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import { FilterWrapper, FilterTitle, ArrowDirectionWrapper } from './FilterHelpers';
 
 import { FiltersProps, FilterButtonProps } from './filter';
+import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
 const FilterButton = styled.button<FilterButtonProps>`
   text-align: center;
@@ -17,12 +18,14 @@ const FilterButton = styled.button<FilterButtonProps>`
   margin-bottom: 6px;
   flex: 0%;
   display: flex;
-  -webkit-box-pack: center;
   justify-content: center;
-  -webkit-box-align: center;
   align-items: center;
   background: transparent;
   color: ${(props) => (props.selected ? '#f96332' : '')};
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const FilterButtonText = styled.span`
@@ -31,8 +34,10 @@ const FilterButtonText = styled.span`
   display: block;
 `;
 
-const ButtonFilters = (props: FiltersProps) => {
-  const { filters, filterKey, title, onSelectFilter, filterSelected } = props;
+const FilterButtons = (props: FiltersProps) => {
+  const { filters, filterKey, title } = props;
+
+  const { onSelectFilter, isFilterSelected } = useMarketPlaceCtx();
 
   const { open, toggle } = useOpenCloseComp(true);
 
@@ -45,7 +50,7 @@ const ButtonFilters = (props: FiltersProps) => {
       <Collapse isOpen={open}>
         <Row style={{ margin: 0 }}>
           {filters.map((val, idx) => (
-            <FilterButton onClick={() => onSelectFilter(filterKey, val)} selected={filterSelected(val)} key={idx}>
+            <FilterButton onClick={() => onSelectFilter(filterKey, val)} selected={isFilterSelected(val)} key={idx}>
               <FilterButtonText>{val}</FilterButtonText>
             </FilterButton>
           ))}
@@ -55,4 +60,4 @@ const ButtonFilters = (props: FiltersProps) => {
   );
 };
 
-export default ButtonFilters;
+export default FilterButtons;
