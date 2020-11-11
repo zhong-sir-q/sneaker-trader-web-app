@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
@@ -17,6 +17,13 @@ type PreviewSneakerProps = {
 const PreviewSneaker = (props: PreviewSneakerProps) => {
   const { aspectRatio, sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
 
+  const [isSubmitDisabled, setSubmitDisabled] = useState(false)
+
+  const handleSubmit = () => {
+    setSubmitDisabled(!isSubmitDisabled)
+    onSubmit()
+  }
+
   return (
     <Card className='text-center'>
       <CardHeader data-testid='preview-sneaker-card-header'>
@@ -27,7 +34,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>
-        <Button type='button' color='primary' onClick={onSubmit}>
+        <Button type='button' color='primary' onClick={handleSubmit} disabled={isSubmitDisabled}>
           Confirm
         </Button>
       </CardFooter>
