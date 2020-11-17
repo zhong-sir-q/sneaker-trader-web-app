@@ -7,6 +7,7 @@ import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import AwsControllerInstance from 'api/controllers/AwsController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import AddressControllerInstance from 'api/controllers/AddressController';
+import UserRegistrationControllerInstance from 'api/controllers/UserRegistrationController';
 
 jest.mock('api/controllers/MailController');
 jest.mock('api/controllers/ListedSneakerController');
@@ -17,6 +18,7 @@ jest.mock('api/controllers/HelperInfoController');
 jest.mock('api/controllers/AwsController');
 jest.mock('api/controllers/SneakerController');
 jest.mock('api/controllers/AddressController');
+jest.mock('');
 
 export const MockAwsControllerInstance = AwsControllerInstance;
 export const MockMailControllerInstance = MailControllerInstance;
@@ -24,6 +26,7 @@ export const MockListedSneakerControllerInstance = ListedSneakerControllerInstan
 export const MockTransactionControllerInstance = TransactionControllerInstance;
 export const MockWalletControllerInstance = WalletControllerInstance;
 export const MockUserControllerInstance = UserControllerInstance;
+export const MockRegistrationControllerInstance = UserRegistrationControllerInstance;
 export const MockHelperInfoControllerInstance = HelperInfoControllerInstance;
 export const MockSneakerControllerInstance = SneakerControllerInstance;
 export const MockAddressControllerInstance = AddressControllerInstance;

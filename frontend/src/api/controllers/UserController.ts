@@ -31,6 +31,6 @@ export class UserController implements UserEntity {
     );
 }
 
-const UserControllerInstance = new UserController();
+const   UserControllerInstance = new UserController();
 
 export default UserControllerInstance;

@@ -1,5 +1,5 @@
 import fakeUser from '__mocks__/data/fakeUser';
-import { MockUserControllerInstance } from '__mocks__/controllers';
+import { MockUserControllerInstance, MockRegistrationControllerInstance } from '__mocks__/controllers';
 
 import onFederatedSignin from 'usecases/onFederatedSignin';
 
@@ -14,7 +14,7 @@ jest.mock('aws-amplify', () => ({
 
 afterEach(() => jest.clearAllMocks());
 
-describe('Check user when signing in with social provider', () => {
+describe('User is signing in with a social provider', () => {
   const mockUser = fakeUser();
 
   test('Reject user if uses the same email address but different social provider', async (done) => {
@@ -24,10 +24,15 @@ describe('Check user when signing in with social provider', () => {
 
     try {
       expect(
-        await onFederatedSignin(MockUserControllerInstance)('facebook', faker.lorem.word(), faker.random.number(), {
-          email: mockUser.email,
-          name: mockUser.username,
-        })
+        await onFederatedSignin(MockUserControllerInstance, MockRegistrationControllerInstance)(
+          'facebook',
+          faker.lorem.word(),
+          faker.random.number(),
+          {
+            email: mockUser.email,
+            name: mockUser.username,
+          }
+        )
       ).toThrowError();
     } catch {}
 
@@ -41,31 +46,41 @@ describe('Check user when signing in with social provider', () => {
 
     const spyOnGetByEmail = jest.spyOn(MockUserControllerInstance, 'getByEmail').mockResolvedValue(null);
 
-    const spyCreateUser = jest.spyOn(MockUserControllerInstance, 'create');
+    const spyOnRegisterUser = jest.spyOn(MockRegistrationControllerInstance, 'register');
 
-    await onFederatedSignin(MockUserControllerInstance)('facebook', faker.lorem.word(), faker.random.number(), {
-      email: mockUser.email,
-      name: mockUser.username,
-    });
+    await onFederatedSignin(MockUserControllerInstance, MockRegistrationControllerInstance)(
+      'facebook',
+      faker.lorem.word(),
+      faker.random.number(),
+      {
+        email: mockUser.email,
+        name: mockUser.username,
+      }
+    );
 
     expect(spyOnGetByEmail).toBeCalledTimes(1);
-    expect(spyCreateUser).toBeCalledTimes(1);
+    expect(spyOnRegisterUser).toBeCalledTimes(1);
     expect(Amplify.Auth.federatedSignIn).toBeCalledTimes(1);
 
     done();
   });
 
-  test('Use social media account name as default username for db', async (done) => {
+  test('Use social account name as db username, using the register method ', async (done) => {
     const userTwo = fakeUser();
     const userPayload = { email: userTwo.email, name: userTwo.username };
     const provider = 'facebook';
 
-    const spyOnCreate = jest.spyOn(MockUserControllerInstance, 'create');
+    const spyOnRegister = jest.spyOn(MockRegistrationControllerInstance, 'register');
 
-    await onFederatedSignin(MockUserControllerInstance)(provider, '', -1, userPayload);
+    await onFederatedSignin(MockUserControllerInstance, MockRegistrationControllerInstance)(
+      provider,
+      '',
+      -1,
+      userPayload
+    );
 
-    expect(spyOnCreate).toBeCalledWith({ email: userTwo.email, username: userTwo.username, signinMethod: provider });
+    expect(spyOnRegister).toBeCalledWith({ email: userTwo.email, username: userTwo.username, signinMethod: provider });
 
-    done()
+    done();
   });
 });
