@@ -1,62 +1,98 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import UserService from '../../services/UserService';
 
-const userRoute = Router();
-
-export default (app: Router, UserServiceInstance: UserService) => {
-  app.use('/user', userRoute);
-
-  userRoute.put('/', (req, res, next) => {
+function createHandlers (userService: UserService) {
+  function updateUser (req: Request, res: Response, next: NextFunction) {
     const user = req.body;
 
-    UserServiceInstance.update(user)
+    userService.update(user)
       .then(() => res.json('User is updated'))
       .catch(next);
-  });
+  }
 
-  userRoute.get('/name/:username', (req, res, next) => {
-    const { username } = req.params;
-
-    UserServiceInstance.getByUsername(username)
-      .then((user) => res.json(user))
-      .catch(next);
-  });
-
-  userRoute.get('/:email', (req, res, next) => {
-    const { email } = req.params;
-
-    UserServiceInstance.getByEmail(email)
-      .then((user) => res.json(user))
-      .catch(next);
-  });
-
-  userRoute.get('/all/rankingPoints', (_req, res, next) =>
-    UserServiceInstance.getAllUserRankingPoints()
-      .then((result) => res.json(result))
-      .catch(next)
-  );
-
-  userRoute.get('/rankingPoints/:userId', (req, res, next) => {
-    const { userId } = req.params;
-
-    UserServiceInstance.getRankingPointsByUserId(Number(userId))
-      .then((rankingPoints) => res.json(rankingPoints))
-      .catch(next);
-  });
-
-  userRoute.post('/', (req, res, next) => {
+  function createUser (req: Request, res: Response, next: NextFunction) {
     const user = req.body;
 
-    UserServiceInstance.create(user)
+    userService.create(user)
       .then((userId) => res.json(userId))
       .catch(next);
-  });
+  }
 
-  userRoute.delete('/name/:username', (req, res, next) => {
+  function getUserByUsername (req: Request, res: Response, next: NextFunction) {
     const { username } = req.params;
 
-    UserServiceInstance.deleteByUsername(username)
+    userService.getByUsername(username)
+      .then((user) => res.json(user))
+      .catch(next);
+  }
+
+  function deleteUser (req: Request, res: Response, next: NextFunction) {
+    const { username } = req.params;
+
+    userService.deleteByUsername(username)
       .then(() => res.json('User deleted'))
       .catch(next);
-  });
+  }
+
+  function getUserByEmail (req: Request, res: Response, next: NextFunction) {
+    const { email } = req.params;
+
+    userService.getByEmail(email)
+      .then((user) => res.json(user))
+      .catch(next);
+  }
+
+  function getAllUsersByRankingPoints (_req: Request, res: Response, next: NextFunction) {
+    userService.getAllUserRankingPoints()
+      .then((result) => res.json(result))
+      .catch(next)
+  }
+
+  function getRankingPointsByUser (req: Request, res: Response, next: NextFunction) {
+    const { userId } = req.params;
+
+    userService.getRankingPointsByUserId(Number(userId))
+      .then((rankingPoints) => res.json(rankingPoints))
+      .catch(next);
+  }
+
+  return {
+    updateUser,
+    createUser,
+    getUserByUsername,
+    deleteUser,
+    getUserByEmail,
+    getAllUsersByRankingPoints,
+    getRankingPointsByUser
+  }
+}
+
+export default function createUserRouter(userService: UserService) {
+  const router = Router();
+
+  const handlers = createHandlers(userService)
+
+  router
+    .route('/')
+    .put(handlers.updateUser)
+    .post(handlers.createUser);
+
+  router
+    .route('/name/:username')
+    .get(handlers.getUserByUsername)
+    .delete(handlers.deleteUser)
+
+  router
+    .route('/:email')
+    .get(handlers.getUserByEmail);
+
+  router
+    .route('/all/rankingPoints')
+    .get(handlers.getAllUsersByRankingPoints);
+
+  router
+    .route('/rankingPoints/:userId')
+    .get(handlers.getRankingPointsByUser);
+
+  return { router, handlers }
 };

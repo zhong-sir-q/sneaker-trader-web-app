@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
-import user from './routers/user';
+import createUserRouters from './routers/user';
+import createUserRegistrationRoutes from './routers/userRegistration'
 import seller from './routers/seller';
 import address from './routers/address';
 
@@ -50,7 +51,15 @@ export default () => {
   const authRoutes = createAuthRoutes()
   app.use('/auth', authRoutes)
 
-  user(app, new UserService());
+  const userService = new UserService()
+  const walletService = new WalletService()
+
+  const userRoutes = createUserRouters(userService)
+  const userRegistrationRoutes = createUserRegistrationRoutes(userService, walletService)
+
+  app.use('/user', userRoutes.router);
+  app.use('/user-registration', userRegistrationRoutes.router);
+
   seller(app, new SellerService());
   address(app, new AddressService(new AddressVerificationCodeService()));
 
@@ -60,7 +69,7 @@ export default () => {
 
   helperInfo(app, new HelperInfoService());
 
-  wallet(app, new WalletService());
+  wallet(app, walletService);
   transaction(app, new TransactionService());
 
   return app;
