@@ -1,7 +1,11 @@
 import { Router } from 'express';
 
 import createUserRouters from './routers/user';
+<<<<<<< HEAD
 import createUserRegistrationRoutes from './routers/userRegistration';
+=======
+import createUserRegistrationRoutes from './routers/userRegistration'
+>>>>>>> refactor user routes and add user registration routes
 import seller from './routers/seller';
 import address from './routers/address';
 
