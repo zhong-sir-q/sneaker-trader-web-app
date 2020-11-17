@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import onFederatedSignin from 'usecases/onFederatedSignin';
 import UserControllerInstance from 'api/controllers/UserController';
+import UserRegistrationControllerInstance from 'api/controllers/UserRegistrationController';
 
 type SignInWithGoogleProps = {
   handleSignin: (errMessage: string) => void;
@@ -44,7 +45,7 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
     };
 
     try {
-      await onFederatedSignin(UserControllerInstance)('google', id_token, expires_at, user);
+      await onFederatedSignin(UserControllerInstance, UserRegistrationControllerInstance)('google', id_token, expires_at, user)
     } catch (err) {
       this.props.handleSignin(err.message);
     }

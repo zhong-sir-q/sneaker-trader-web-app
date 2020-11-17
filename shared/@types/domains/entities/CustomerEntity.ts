@@ -27,3 +27,7 @@ export interface SellerEntity {
     size: number
   ): Promise<ListedSneakerSeller[]>;
 }
+
+export interface UserRegistrationEntity {
+  register(user: Partial<User>): Promise<number>;
+}

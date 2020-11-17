@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import onFederatedSignin from 'usecases/onFederatedSignin';
 import UserControllerInstance from 'api/controllers/UserController';
+import UserRegistrationControllerInstance from 'api/controllers/UserRegistrationController';
 
 type SignInWithFacebookProps = {
   handleSignin: (errMessage: string) => void;
@@ -51,7 +52,8 @@ class SignInWithFacebook extends Component<SignInWithFacebookProps> {
         email: response.email,
       };
 
-      onFederatedSignin(UserControllerInstance)('facebook', accessToken, expires_at, user).catch((err) => this.props.handleSignin(err.message));
+      onFederatedSignin(UserControllerInstance, UserRegistrationControllerInstance)('facebook', accessToken, expires_at, user)
+        .catch((err) => this.props.handleSignin(err.message));
     });
   }
 

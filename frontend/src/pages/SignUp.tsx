@@ -40,8 +40,7 @@ import { CreateUserPayload } from '../../../shared';
 
 import bgImage from 'assets/img/bg16.jpg';
 import onSignup from 'usecases/onSignup';
-import UserControllerInstance from 'api/controllers/UserController';
-import WalletControllerInstance from 'api/controllers/WalletController';
+import UserRegistrationControllerInstance from 'api/controllers/UserRegistrationController';
 
 type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: boolean };
 
@@ -121,7 +120,7 @@ const SignupForm = () => {
 
   const handleSubmit = async (formStates: SignupFormStateType) => {
     try {
-      await onSignup(UserControllerInstance, WalletControllerInstance)(
+        await onSignup(UserRegistrationControllerInstance)(
         convertFormValuesToUser(formStates),
         formStates.password
       );

@@ -1,14 +1,12 @@
 import { AppUser } from '../../../shared';
 import { Auth } from 'aws-amplify';
-import { UserController } from 'api/controllers/UserController';
-import { WalletController } from 'api/controllers/WalletController';
+import { UserRegistrationController } from 'api/controllers/UserRegistrationController';
 
-const onSignup = (UserControllerInstance: UserController, WalletControllerInstance: WalletController) => async (
+const onSignup = (UserRegistrationControllerInstance: UserRegistrationController) => async (
   user: Omit<AppUser, 'profilePicUrl'>,
   password: string
 ) => {
-  const userId = await UserControllerInstance.create(user);
-  await WalletControllerInstance.create(userId);
+  await UserRegistrationControllerInstance.register(user)
   await Auth.signUp({ username: user.email, password }).then((r) => r.user);
 };
 
