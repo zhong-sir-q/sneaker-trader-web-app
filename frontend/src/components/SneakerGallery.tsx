@@ -9,23 +9,6 @@ type SneakerGalleryProps = {
   sneakers: GallerySneaker[];
 };
 
-// {Array(5)
-//   .fill(0)
-//   .map((_, idx) =>
-//     props.sneakers.map((s) => {
-//       return (
-//         <SneakerCard
-//           className='p-1'
-//           mainDisplayImage={getMainDisplayImgUrl(s.imageUrls)}
-//           isListed
-//           sneaker={s}
-//           key={idx}
-//           price={s.minPrice}
-//         />
-//       );
-//     })
-//   )}
-
 const SneakerGallery = (props: SneakerGalleryProps) => {
   const render = () => {
     return (

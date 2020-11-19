@@ -8,11 +8,13 @@ import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 
 const ListItemImg = styled.img`
-  width: 100px;
+  height: 125px;
+  width: 125px;
   margin-right: 10px;
 
   @media (min-width: 768px) {
-    width: 125px;
+    height: 130px;
+    width: 150px;
     margin-right: 20px;
   }
 `;

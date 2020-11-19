@@ -44,8 +44,8 @@ const Thumb = styled.div<ThumbProps>`
   align-items: center;
   border: 2.5px solid;
   margin-top: 10px;
-  max-width: 250px;
-  padding-bottom: 20.5%;
+  max-width: 265px;
+  padding-bottom: 23.5%;
   margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
   border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;

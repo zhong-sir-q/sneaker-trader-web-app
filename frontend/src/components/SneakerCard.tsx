@@ -59,7 +59,7 @@ const SneakerCard = (props: SneakerCardProps) => {
       }}
       data-testid={displayName}
     >
-      <FixedAspectRatioImg aspectRatio='60.66%' imgSrc={mainDisplayImage} />
+      <FixedAspectRatioImg aspectRatio='107.5%' imgSrc={mainDisplayImage} />
       <InfoContainer>
         <div
           style={{

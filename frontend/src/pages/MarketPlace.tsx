@@ -28,7 +28,7 @@ const MarketPlace = () => {
   return !brands || !filterSneakers ? (
     <CenterSpinner />
   ) : (
-    <Container fluid='md' style={{ minHeight: 'calc(100vh - 150px)' }}>
+    <Container style={{ minHeight: 'calc(100vh - 150px)' }}>
       <FiltersDrawer
         brandFilters={brands}
         sizeFilters={range(3, 14, 0.5).map((n) => String(n))}
