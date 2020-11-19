@@ -1,5 +1,5 @@
 import fakeUser from '__mocks__/data/fakeUser';
-import { MockUserControllerInstance } from '__mocks__/controllers'
+import { MockUserControllerInstance } from '__mocks__/controllers';
 
 import onFederatedSignin from 'usecases/onFederatedSignin';
 
@@ -53,5 +53,19 @@ describe('Check user when signing in with social provider', () => {
     expect(Amplify.Auth.federatedSignIn).toBeCalledTimes(1);
 
     done();
+  });
+
+  test('Use social media account name as default username for db', async (done) => {
+    const userTwo = fakeUser();
+    const userPayload = { email: userTwo.email, name: userTwo.username };
+    const provider = 'facebook';
+
+    const spyOnCreate = jest.spyOn(MockUserControllerInstance, 'create');
+
+    await onFederatedSignin(MockUserControllerInstance)(provider, '', -1, userPayload);
+
+    expect(spyOnCreate).toBeCalledWith({ email: userTwo.email, username: userTwo.username, signinMethod: provider });
+
+    done()
   });
 });

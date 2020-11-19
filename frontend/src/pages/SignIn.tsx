@@ -38,12 +38,14 @@ const validationSchema = Yup.object({
 const SignIn = () => {
   const [loginError, setLoginError] = useState<string>();
 
+  // TODO: handle same username error after social signin
   const updateLoginErr = (message: string) => setLoginError(message);
 
   const onSignin = async (email: string, pw: string) => {
     try {
       await signIn(email, pw);
     } catch (err) {
+      // handling error from aws cognito
       if (err.code === 'NotAuthorizedException') setLoginError('Incorrect email or password');
       else updateLoginErr(err.message);
     }

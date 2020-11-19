@@ -16,6 +16,7 @@ const onFederatedSignin = (UserControllerInstance: UserController) => async (
   if (currUser && currUser.signinMethod !== provider) throw new Error('Email already exists');
   // otherwise create the user if it does not exist
   if (!currUser)
+  // TODO: handle duplicate username
     await UserControllerInstance.create({ email: user.email, username: user.name, signinMethod: provider });
 
   await Auth.federatedSignIn(provider as any, { token, expires_at }, user);
