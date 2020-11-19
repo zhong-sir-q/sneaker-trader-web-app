@@ -15,6 +15,7 @@ const onFederatedSignin = (
   if (currUser && currUser.signinMethod !== provider) throw new Error('Email already exists');
   // otherwise create the user if it does not exist
   if (!currUser)
+    // TODO: prompt user to re enter a username if the social name conflicts with the existing one
     await UserRegistrationInstance.register({ email: user.email, username: user.name, signinMethod: provider });
 
   await Auth.federatedSignIn(provider as string, { token, expires_at }, user);
