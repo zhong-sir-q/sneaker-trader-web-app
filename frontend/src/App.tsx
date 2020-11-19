@@ -49,7 +49,7 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
   const { state } = props.location;
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={state || HOME} />;
+  return !signedIn ? <AuthLayout /> : <Redirect to={state as any || HOME} />;
 };
 
 const App = () => {
