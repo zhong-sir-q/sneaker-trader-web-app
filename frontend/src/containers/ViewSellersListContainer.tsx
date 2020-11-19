@@ -24,8 +24,6 @@ import sneakerInfoFromPath from 'utils/sneakerInfoFromPath';
 
 class NoSuchSneakerInDbError extends Error {}
 
-class InvalidUserValue extends Error {}
-
 const ViewSellersListContainer = () => {
   const [sellers, setSellers] = useState<ListedSneakerSeller[]>();
   const [selectedSellerIdx, setSelectedSellerIdx] = useState<number>(-1);
@@ -44,8 +42,8 @@ const ViewSellersListContainer = () => {
         return;
       }
 
-      // signed in, expect currentUser to be defined
-      if (!currentUser) throw new InvalidUserValue()
+      // signed in, but allow some time to fetch the user object
+      if (!currentUser) return
 
       const sneakerInfo = sneakerInfoFromPath(history.location.pathname);
 

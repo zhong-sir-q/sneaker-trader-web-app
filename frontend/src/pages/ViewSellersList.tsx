@@ -134,7 +134,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
             <Button style={{ marginRight: '25px' }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button disabled={selectedSellerIdx === -1} color='primary' onClick={onConfirm}>
+            <Button disabled={selectedSellerIdx === -1 || processingPurchase} color='primary' onClick={onConfirm}>
               Confirm
             </Button>
           </div>
