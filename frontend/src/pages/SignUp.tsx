@@ -43,43 +43,6 @@ import onSignup from 'usecases/onSignup';
 import UserControllerInstance from 'api/controllers/UserController';
 import WalletControllerInstance from 'api/controllers/WalletController';
 
-// TODO: This component can be refactored
-const SideContent = () => (
-  <Col lg={5} md={8} xs={12}>
-    <div className='info-area info-horizontal mt-5'>
-      <div className='icon icon-primary'>
-        <i className='now-ui-icons media-2_sound-wave' />
-      </div>
-      <div className='description'>
-        <h5 className='info-title'>Marketing</h5>
-        <p className='description'>
-          We've created the marketing campaign of the website. It was a very interesting collaboration.
-        </p>
-      </div>
-    </div>
-    <div className='info-area info-horizontal'>
-      <div className='icon icon-primary'>
-        <i className='now-ui-icons media-1_button-pause' />
-      </div>
-      <div className='description'>
-        <h5 className='info-title'>Fully Coded in React 16</h5>
-        <p className='description'>
-          We've developed the website with React 16, HTML5 and CSS3. The client has access to the code using GitHub.
-        </p>
-      </div>
-    </div>
-    <div className='info-area info-horizontal'>
-      <div className='icon icon-info'>
-        <i className='now-ui-icons users_single-02' />
-      </div>
-      <div className='description'>
-        <h5 className='info-title'>Built Audience</h5>
-        <p className='description'>There is also a Fully Customizable CMS Admin Dashboard for this product.</p>
-      </div>
-    </div>
-  </Col>
-);
-
 type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: boolean };
 
 // Typescript does not throw an error when using SignupFormStateType instead of User
@@ -176,7 +139,6 @@ const SignupForm = () => {
         <div className='register-page'>
           <Container>
             <Row className='justify-content-center'>
-              <SideContent />
               <Col lg={4} md={8} xs={12}>
                 <Formik
                   initialValues={INIT_FORM_VALUES}

@@ -61,7 +61,7 @@ const RateCustomer = (props: RateCustomerProps) => {
             onChange={onInputChange}
             style={{ fontSize: '1.35em' }}
             type='textarea'
-            placeholder='Any feedback? (Optional)'
+            placeholder='Feedback...'
           />
         </DialogContent>
         <DialogActions>
