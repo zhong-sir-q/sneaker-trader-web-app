@@ -4,6 +4,7 @@ import { Card } from 'reactstrap';
 import styled from 'styled-components';
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 import { AppSneaker } from '../../../shared';
+import FixedAspectRatioImg from './FixedAspectRatioImg';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -32,19 +33,6 @@ type SneakerCardProps = {
   className?: string;
 };
 
-const StyledImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-`;
-
-const StyledImageContainer = styled.div`
-  position: relative;
-  padding-bottom: 60.66%;
-`;
-
 const SneakerCard = (props: SneakerCardProps) => {
   const history = useHistory();
 
@@ -71,9 +59,7 @@ const SneakerCard = (props: SneakerCardProps) => {
       }}
       data-testid={displayName}
     >
-      <StyledImageContainer>
-        <StyledImage src={mainDisplayImage} />
-      </StyledImageContainer>
+      <FixedAspectRatioImg aspectRatio='60.66%' imgSrc={mainDisplayImage} />
       <InfoContainer>
         <div
           style={{

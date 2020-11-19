@@ -44,8 +44,8 @@ const TopupWalletDialog = (props: TopupWalletDialogProps) => {
           />
         </div>
         <StripePaymentCheckout
-          dollarAmountToCharge={topupAmount || 0}
-          title={`Topup Amount: $${topupAmount || 0}`}
+          dollarAmountToCharge={Number(topupAmount) || 0}
+          title={`Topup Amount: $${Number(topupAmount) || 0}`}
           onConfirmPayment={onTopup}
         />
       </DialogContent>

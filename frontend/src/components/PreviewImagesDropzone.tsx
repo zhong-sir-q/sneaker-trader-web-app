@@ -38,12 +38,14 @@ type ThumbProps = {
 
 const Thumb = styled.div<ThumbProps>`
   display: flex;
+  position: relative;
   flex: 1 1 0;
   flex-direction: column;
   align-items: center;
   border: 2.5px solid;
   margin-top: 10px;
   max-width: 250px;
+  padding-bottom: 20.5%;
   margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
   border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;
@@ -51,6 +53,8 @@ const Thumb = styled.div<ThumbProps>`
 const PreviewImage = styled.img`
   width: 100%;
   height: 100%;
+  position: absolute;
+  top: 0;
   margin-bottom: 5px;
 `;
 
