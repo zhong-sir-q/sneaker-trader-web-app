@@ -3,7 +3,6 @@ import ListedSneakerService from '../../services/ListedSneakerService';
 
 const listedSneakerRoute = Router();
 
-// TODO: refactor the try catch block into 1 wrapper
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
   app.use('/listedSneaker', listedSneakerRoute);
 
