@@ -113,7 +113,8 @@ const SneakerListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm goNextStep={goNextstep} />;
+        return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
+        // return <SneakerInfoForm goNextStep={goNextstep} />;
       case 1:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:

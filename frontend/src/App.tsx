@@ -49,7 +49,9 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
   const { state } = props.location;
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={state as any || HOME} />;
+  console.log(state);
+
+  return !signedIn ? <AuthLayout /> : <Redirect to={(state as any) || HOME} />;
 };
 
 const App = () => {
@@ -60,11 +62,9 @@ const App = () => {
         <AuthProvider>
           {/* Switch must be a direct parent of the Route components, otherwise it does not work */}
           <Switch>
-            <Route path={AUTH} render={(routeProps) => <RelaxedAuth {...routeProps} />} />
+            <Route path={AUTH} component={RelaxedAuth} />
 
-            <Route path={ADMIN}>
-              <ProtectedAdmin />
-            </Route>
+            <Route path={ADMIN} component={ProtectedAdmin} />
 
             <Route path={HOME}>
               <ListedSneakerRoutesProvider>

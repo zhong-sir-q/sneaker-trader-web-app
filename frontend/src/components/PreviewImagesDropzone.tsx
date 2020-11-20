@@ -116,7 +116,7 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
 
       <CardBody>
         <DropZoneContainer {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
-          <input {...getInputProps()} name='files' />
+          <input {...getInputProps()} name='files' data-testid='preview-img-dropzone' />
           <span>Select Images</span>
         </DropZoneContainer>
 

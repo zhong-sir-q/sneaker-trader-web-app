@@ -95,7 +95,7 @@ const HomeNavbar = () => {
           </NavItem>
 
           {signedIn && (
-            <NavItem>
+            <NavItem data-testid='homebar-dashboard-link'>
               <Link style={{ color: 'black' }} to={ADMIN + DASHBOARD} className='nav-link'>
                 Dashboard
               </Link>

@@ -82,6 +82,7 @@ const SignIn = () => {
                         name='email'
                         iconname='users_circle-08'
                         inputgroupclassname='no-border form-control-lg'
+                        data-testid='email-input'
                       />
                       <FormikInput
                         placeholder='Password...'
@@ -89,10 +90,11 @@ const SignIn = () => {
                         name='password'
                         iconname='text_caps-small'
                         inputgroupclassname='no-border form-control-lg'
+                        data-testid='password-input'
                       />
                     </CardBody>
                     <CardFooter>
-                      <Button block type='submit' color='primary' size='lg' className='mb-3 btn-round'>
+                      <Button block type='submit' color='primary' size='lg' className='mb-3 btn-round' data-testid='signin-btn'>
                         Login
                       </Button>
                       <div className='pull-left'>
