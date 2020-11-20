@@ -124,7 +124,7 @@ class ListedSneakerService implements ListedSneakerEntity {
       SELECT P.size, MIN(L.askingPrice) as minPrice FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L
         WHERE P.id = L.productId AND L.prodStatus = "listed" AND NOT L.userId = ${sellerId} AND
           CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)}
-            GROUP BY P.id
+            GROUP BY CONCAT(P.name, P.colorway, P.size)
     `;
 
     return poolConn.query(query);
