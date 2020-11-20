@@ -2,9 +2,12 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
-import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
-import { AppSneaker } from '../../../shared';
+
 import FixedAspectRatioImg from './FixedAspectRatioImg';
+
+import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+
+import { AppSneaker } from '../../../shared';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -31,19 +34,20 @@ type SneakerCardProps = {
   isListed?: boolean;
   styles?: React.CSSProperties;
   className?: string;
+  aspectRatio?: string;
 };
 
 const SneakerCard = (props: SneakerCardProps) => {
   const history = useHistory();
 
-  const { sneaker, isListed, price, maxWidth, mainDisplayImage } = props;
+  const { aspectRatio, sneaker, isListed, price, maxWidth, mainDisplayImage } = props;
   const { name, size, colorway } = sneaker;
 
   const onClick = () => {
     if (isListed && name && colorway) redirectBuySneakerPage(history, name, colorway);
   };
 
-  const displayName = `${name} ${colorway}`
+  const displayName = `${name} ${colorway}`;
 
   return (
     <Card
@@ -59,14 +63,12 @@ const SneakerCard = (props: SneakerCardProps) => {
       }}
       data-testid={displayName}
     >
-      <FixedAspectRatioImg aspectRatio='107.5%' imgSrc={mainDisplayImage} />
+      <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
       <InfoContainer>
         <div
           style={{
             marginBottom: '4px',
-            height: '38px',
             lineHeight: '1.3',
-            overflow: 'hidden',
             fontSize: isListed ? '16px' : '1.55em',
           }}
         >

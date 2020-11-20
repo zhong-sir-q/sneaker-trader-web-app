@@ -5,7 +5,7 @@ const testAccount = { 'email-input': 'alex.zhong@sneakertrader.com', 'password-i
 
 // use default size system "US", currency code "NZD"
 const listingSneakerInfo = {
-  'name-input': 'Klay Thompson 4',
+  'name-input': 'KD Elite 9',
   'brand-input': 'Anta',
   'colorway-input': 'White and gold',
   'size-input': '12',
@@ -27,11 +27,8 @@ const login = () => {
 
 const fillSneakerListingForm = () => {
   typeInputFields(listingSneakerInfo);
-  cy.get(customAttribute('sneaker-prodCondition', 'id')).select('New');
+  cy.get(customAttribute('sneaker-prodCondition', 'id')).select('New')
 };
-
-const uploadDropzoneFiles = (files: string[]) =>
-  files.forEach((file) => cy.get(customAttribute('preview-img-dropzone')).attachFile(file));
 
 describe('Whole app mono test', () => {
   it('validates listing a pair of sneakers', () => {
@@ -42,10 +39,17 @@ describe('Whole app mono test', () => {
     cy.get(customAttribute('homebar-dashboard-link')).click();
     cy.contains('Product Listing').click();
 
-    uploadDropzoneFiles(['kawahi.jpeg']);
+    fillSneakerListingForm()
+    cy.contains('Next').click()
 
-    // fillSneakerListingForm()
-    // cy.contains('Next').click()
+    // NOTE: can only upload one image for for now, multiple files will result in duplicate file uploads
+    // the old file gets uploaded too even after removing it using the ui
+    cy.get(customAttribute('preview-img-dropzone')).attachFile('harden-vol-3.jpeg')
+    cy.contains('Preview').click()
+
+    // cy.contains('Confirm').click()
+
+    // confirm button should be disabled and the screen is in loading animation
   });
 
   it('tests the buying experience', () => {

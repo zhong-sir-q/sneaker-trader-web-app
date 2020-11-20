@@ -28,7 +28,7 @@ const DropZoneContainer = styled.div`
 
 const PreviewAside = styled.aside`
   display: flex;
-  max-height: 300px;
+  max-height: 350px;
 `;
 
 type ThumbProps = {
@@ -86,9 +86,10 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
     <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.id}>
       <PreviewImage onClick={() => updateFileId(file.id)} src={file.preview} alt={file.name} />
       <i
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', position: 'absolute', bottom: '-22px' }}
         onClick={() => onRemoveFile(file.id)}
         className='now-ui-icons ui-1_simple-remove'
+        data-testid={`del-preview-${idx}`}
       />
     </Thumb>
   ));

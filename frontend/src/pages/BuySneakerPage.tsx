@@ -90,6 +90,8 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
   const renderTiles = () => {
     if (!sizeMinPriceGroup) return [];
 
+    console.log(sizeMinPriceGroup)
+
     const allSizeMinPrice = Math.min(...sizeMinPriceGroup.map((item) => item.minPrice));
 
     const allSize = [

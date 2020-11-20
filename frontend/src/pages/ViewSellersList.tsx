@@ -14,8 +14,6 @@ import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
 import SneakerCarousel from 'components/SneakerCarousel';
 
-import getTransactionFees from 'usecases/getTransactionFee';
-
 import { ListedSneakerSeller, Sneaker } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
 
@@ -115,12 +113,6 @@ const ViewSellersList = (props: ViewSellersListProps) => {
       <footer>
         {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (
           <ListGroup style={{ marginTop: '15px' }}>
-            <ListGroupItem>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Transaction fees:</span>
-                <span>${getTransactionFees(sellers[selectedSellerIdx].askingPrice)}</span>
-              </div>
-            </ListGroupItem>
             <ListGroupItem>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Total:</span>

@@ -113,8 +113,7 @@ const SneakerListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
-        // return <SneakerInfoForm goNextStep={goNextstep} />;
+        return <SneakerInfoForm goNextStep={goNextstep} />;
       case 1:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:
@@ -126,6 +125,7 @@ const SneakerListingForm = () => {
 
         return (
           <PreviewSneaker
+            aspectRatio='58.5%'
             sneaker={previewSneaker}
             mainDisplayImage={previewSneaker.imageUrls}
             price={Number(listingSneakerFormState.askingPrice)}

@@ -11,6 +11,7 @@ import { useAuth } from 'providers/AuthProvider';
 
 import logo from 'assets/img/logo_transparent_background.png';
 import defaultAvatar from 'assets/img/placeholder.jpg';
+import { signOut } from 'utils/auth';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -214,7 +215,17 @@ const Sidebar = (props: SideBarProps) => {
               </Collapse>
             </div>
           </div>
-          <Nav>{createLinks(props.routes)}</Nav>
+          <Nav>
+            {createLinks(props.routes)}
+            <li>
+              <NavLink to={HOME} onClick={() => signOut()}>
+                <React.Fragment>
+                  <i className='now-ui-icons arrows-1_minimal-right' />
+                  <p>Logout</p>
+                </React.Fragment>
+              </NavLink>
+            </li>
+          </Nav>
         </div>
       </div>
     </React.Fragment>

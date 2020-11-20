@@ -11,10 +11,11 @@ type PreviewSneakerProps = {
   mainDisplayImage: string | undefined;
   onPrevStep: () => void;
   onSubmit: () => void;
+  aspectRatio?: string;
 };
 
 const PreviewSneaker = (props: PreviewSneakerProps) => {
-  const { sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
+  const { aspectRatio, sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
 
   return (
     <Card className='text-center'>
@@ -22,7 +23,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
       <CardBody data-testid='preview-sneaker-card-body'>
-        <SneakerCard sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
+        <SneakerCard aspectRatio={aspectRatio} sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>
