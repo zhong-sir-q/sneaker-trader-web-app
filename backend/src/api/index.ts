@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import createUserRouters from './routers/user';
-import createUserRegistrationRoutes from './routers/userRegistration'
+import createUserRegistrationRoutes from './routers/userRegistration';
 import seller from './routers/seller';
 import address from './routers/address';
 
@@ -48,17 +48,17 @@ export default () => {
   stripe(app, new StripeService());
   poli(app);
 
-  const authRoutes = createAuthRoutes()
-  app.use('/auth', authRoutes)
-
   const userService = new UserService()
   const walletService = new WalletService()
 
-  const userRoutes = createUserRouters(userService)
-  const userRegistrationRoutes = createUserRegistrationRoutes(userService, walletService)
+  const userRoutes = createUserRouters(userService);
+  const userRegistrationRoutes = createUserRegistrationRoutes(userService, walletService);
 
   app.use('/user', userRoutes.router);
   app.use('/user-registration', userRegistrationRoutes.router);
+
+  const authRoutes = createAuthRoutes();
+  app.use('/auth', authRoutes);
 
   seller(app, new SellerService());
   address(app, new AddressService(new AddressVerificationCodeService()));
