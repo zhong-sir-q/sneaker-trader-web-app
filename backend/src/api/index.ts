@@ -35,6 +35,7 @@ import AddressService from '../services/AddressService';
 import AddressVerificationCodeService from '../services/AddressVerificationCodeService';
 import portfolio from './routers/portfolio';
 import PortfolioSneakerService from '../services/PortfolioSneakerService';
+import createAuthRoutes from './routers/auth';
 
 export default () => {
   const app = Router();
@@ -45,6 +46,9 @@ export default () => {
   aws(app, new CustomAwsService());
   stripe(app, new StripeService());
   poli(app);
+
+  const authRoutes = createAuthRoutes()
+  app.use('/auth', authRoutes)
 
   user(app, new UserService());
   seller(app, new SellerService());
