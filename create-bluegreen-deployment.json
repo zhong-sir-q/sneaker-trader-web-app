@@ -1,0 +1,12 @@
+{
+    "applicationName": "AppECS-sneaker-trader-cluster-st-blue-green-service",
+    "deploymentGroupName": "DgpECS-sneaker-trader-cluster-st-blue-green-service",
+    "revision": {
+        "revisionType": "S3",
+        "s3Location": {
+            "bucket": "code-deployment-revision",
+            "key": "appspec.yml",
+            "bundleType": "YAML"
+        }
+    }
+}

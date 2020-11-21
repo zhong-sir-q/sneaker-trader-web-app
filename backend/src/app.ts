@@ -11,6 +11,6 @@ app.use(cors()); // enable cors
 app.use(express.json()); // parsing application/json
 app.use('/api', apiRoutes());
 
-app.get('/', (_req, res) => res.send('SneakerTrader Limited'));
+app.get('/', (_req, res) => res.send('Welcome to SneakerTrader Limited!!!'));
 
 export default app;
