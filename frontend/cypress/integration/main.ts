@@ -24,6 +24,7 @@ const typeInputFields = (payload: { [attrKey: string]: string }) => {
 };
 
 const login = () => {
+    
   typeInputFields(testAccount);
   cy.get(customAttribute('signin-btn')).click();
 };

@@ -37,9 +37,10 @@ const onListingSneaker = (
     imageUrls: uploadedUrls.join(','),
   });
 
-  if (brand) await HelperInfoControllerInstance.createBrand({ brand });
-  if (colorway) await HelperInfoControllerInstance.createColorway({ colorway });
-  if (name) await HelperInfoControllerInstance.createSneakerName({ name });
+  // not need to await because the user does not need to wait for the response of the calls
+  if (brand) HelperInfoControllerInstance.createBrand({ brand });
+  if (colorway) HelperInfoControllerInstance.createColorway({ colorway });
+  if (name) HelperInfoControllerInstance.createSneakerName({ name });
 };
 
 export default onListingSneaker;

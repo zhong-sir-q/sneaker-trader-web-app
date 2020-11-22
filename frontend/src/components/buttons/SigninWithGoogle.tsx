@@ -73,6 +73,8 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
         client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
         // authorized scopes
         scope: 'profile email openid',
+        ux_mode: 'redirect',
+        redirect_uri: 'https://localhost:3000'
       });
     });
   }

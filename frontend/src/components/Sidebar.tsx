@@ -78,10 +78,6 @@ const Sidebar = (props: SideBarProps) => {
   // TODO: type this
   const sidebar = useRef<any>(null);
 
-  // const [user, setUser] = useState<User>()
-  const computeUserName = (firstName: string, lastName: string) =>
-    firstName && lastName ? `${firstName} ${lastName}` : 'Anoynomous';
-
   useEffect(() => {
     setReRender((val) => !val);
   }, [location]);
@@ -193,7 +189,7 @@ const Sidebar = (props: SideBarProps) => {
                 onClick={() => setCollapseStates({ ...collapseStates, openAvatar: !collapseStates.openAvatar })}
               >
                 <span>
-                  {currentUser && computeUserName(currentUser.firstName, currentUser.lastName)}
+                  {currentUser?.username || 'DEFAULT_USERNAME'}
                   <b className='caret' />
                 </span>
               </a>
