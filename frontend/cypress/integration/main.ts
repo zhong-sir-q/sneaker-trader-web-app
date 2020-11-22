@@ -13,12 +13,15 @@ const listingSneakerInfo = {
   'asking-price-input': '550',
 };
 
-// currently it can only use the data-testid as the attribute key
-const typeInputFields = (payload: { [attrKey: string]: string }) =>
-  Object.keys(payload).forEach((attrKey) => cy.get(customAttribute(attrKey)).type(payload[attrKey]));
-
 // add type to k overtime, default to data-testid
 const customAttribute = (v: string, k: 'data-testid' | 'id' = 'data-testid') => `[${k}="${v}"]`;
+
+// currently it can only use the data-testid as the attribute key
+const typeInputFields = (payload: { [attrKey: string]: string }) => {
+  Object.keys(payload).forEach((attrKey) => {
+    cy.get(customAttribute(attrKey)).type(payload[attrKey]);
+  });
+};
 
 const login = () => {
   typeInputFields(testAccount);
@@ -27,10 +30,15 @@ const login = () => {
 
 const fillSneakerListingForm = () => {
   typeInputFields(listingSneakerInfo);
-  cy.get(customAttribute('sneaker-prodCondition', 'id')).select('New')
+  cy.get(customAttribute('sneaker-prodCondition', 'id')).select('New');
 };
 
+const continueWithUncaughtExceptions = () => Cypress.on('uncaught:exception', (_err, _runnable) => false);
+
 describe('Whole app mono test', () => {
+  // need this because of the idpiframe_initialization_failed error when loading gapi
+  continueWithUncaughtExceptions()
+
   it('validates listing a pair of sneakers', () => {
     cy.visit('/admin/signin');
 
@@ -39,29 +47,35 @@ describe('Whole app mono test', () => {
     cy.get(customAttribute('homebar-dashboard-link')).click();
     cy.contains('Product Listing').click();
 
-    fillSneakerListingForm()
-    cy.contains('Next').click()
+    fillSneakerListingForm();
+    cy.contains('Next').click();
 
     // NOTE: can only upload one image for for now, multiple files will result in duplicate file uploads
     // the old file gets uploaded too even after removing it using the ui
-    cy.get(customAttribute('preview-img-dropzone')).attachFile('harden-vol-3.jpeg')
-    cy.contains('Preview').click()
+    cy.get(customAttribute('preview-img-dropzone')).attachFile('harden-vol-3.jpeg');
+    cy.contains('Preview').click();
 
-    // cy.contains('Confirm').click()
+    cy.contains('Confirm').click()
+    // going to loading motion
+    cy.contains('Confirm').should('not.exist')
 
-    // confirm button should be disabled and the screen is in loading animation
+    cy.contains('Back to dashboard').click()
+    cy.get(customAttribute('admin-navbar-logout')).click()
   });
 
   it('tests the buying experience', () => {
-    // cy.visit('/')
-    // // go to buy sneaker page
-    // const sneakerCardName = 'Jordan 4 Columbia White';
-    // cy.contains(sneakerCardName).click();
-    // const sneakerSize = 'US 9';
-    // cy.contains(sneakerSize).click();
-    // cy.contains('Buy').click();
-    // // redirect to sign in because I am unauthenticated
-    // login();
+    cy.visit('/')
+
+    // go to buy sneaker page
+    const sneakerCardName = 'Jordan 4 Columbia White';
+    cy.contains(sneakerCardName).click();
+    const sneakerSize = 'US 9';
+    cy.contains(sneakerSize).click();
+    cy.contains('Buy').click();
+
+    // redirect to sign in because I am unauthenticated
+    login();
+
     // redirect to the view seller list page
   });
 });

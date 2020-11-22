@@ -45,7 +45,12 @@ class SignInWithGoogle extends Component<SignInWithGoogleProps> {
     };
 
     try {
-      await onFederatedSignin(UserControllerInstance, UserRegistrationControllerInstance)('google', id_token, expires_at, user)
+      await onFederatedSignin(UserControllerInstance, UserRegistrationControllerInstance)(
+        'google',
+        id_token,
+        expires_at,
+        user
+      );
     } catch (err) {
       this.props.handleSignin(err.message);
     }

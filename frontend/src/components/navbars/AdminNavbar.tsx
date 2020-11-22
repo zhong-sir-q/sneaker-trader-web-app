@@ -99,7 +99,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
               </div>
             </NavItem>
             <NavItem>
-              <Link className='nav-link' to={HOME} onClick={() => signOut()}>
+              <Link className='nav-link' to={HOME} onClick={() => signOut()} data-testid='admin-navbar-logout'>
                 Log out
               </Link>
             </NavItem>

@@ -4,6 +4,7 @@ import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 import SneakerCard from './SneakerCard';
 
 import { AppSneaker } from '../../../shared';
+import CenterSpinner from './CenterSpinner';
 
 type PreviewSneakerProps = {
   sneaker: AppSneaker;
@@ -17,14 +18,16 @@ type PreviewSneakerProps = {
 const PreviewSneaker = (props: PreviewSneakerProps) => {
   const { aspectRatio, sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
 
-  const [isSubmitDisabled, setSubmitDisabled] = useState(false)
+  const [isSubmitDisabled, setSubmitDisabled] = useState(false);
 
   const handleSubmit = () => {
-    setSubmitDisabled(!isSubmitDisabled)
-    onSubmit()
-  }
+    setSubmitDisabled(!isSubmitDisabled);
+    onSubmit();
+  };
 
-  return (
+  return isSubmitDisabled ? (
+    <CenterSpinner />
+  ) : (
     <Card className='text-center'>
       <CardHeader data-testid='preview-sneaker-card-header'>
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
