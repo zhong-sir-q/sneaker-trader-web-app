@@ -37,6 +37,7 @@ import AddressVerificationCodeService from '../services/AddressVerificationCodeS
 import portfolio from './routers/portfolio';
 import PortfolioSneakerService from '../services/PortfolioSneakerService';
 import createAuthRoutes from './routers/auth';
+import GoogleOauthService from '../services/external/GoogleOauthService';
 
 export default () => {
   const app = Router();
@@ -48,17 +49,19 @@ export default () => {
   stripe(app, new StripeService());
   poli(app);
 
-  const userService = new UserService()
-  const walletService = new WalletService()
+  const googleOauthService = new GoogleOauthService();
+
+  const authRoutes = createAuthRoutes(googleOauthService);
+  app.use('/auth', authRoutes);
+
+  const userService = new UserService();
+  const walletService = new WalletService();
 
   const userRoutes = createUserRouters(userService);
   const userRegistrationRoutes = createUserRegistrationRoutes(userService, walletService);
 
   app.use('/user', userRoutes.router);
   app.use('/user-registration', userRegistrationRoutes.router);
-
-  const authRoutes = createAuthRoutes();
-  app.use('/auth', authRoutes);
 
   seller(app, new SellerService());
   address(app, new AddressService(new AddressVerificationCodeService()));

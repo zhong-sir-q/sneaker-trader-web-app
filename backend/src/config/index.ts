@@ -16,6 +16,11 @@ const config = {
   sendgridApiKey: process.env.SENDGRID_API_KEY as string,
   poliAuthKey: Buffer.from(`${process.env.POLI_MERCH_CODE}:${process.env.POLI_AUTH_CODE}`).toString('base64'),
   stripeSecretKey: process.env.STRIPE_SECRET_KEY as string,
+  googleOauth2: {
+    client_id: process.env.GOOGLE_CLIENT_ID as string,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
+    redirect_uri: process.env.GOOGLE_REDIRECT_URI as string,
+  }
 };
 
 export const StripeObj = new Stripe(config.stripeSecretKey, { apiVersion: '2020-08-27' });
