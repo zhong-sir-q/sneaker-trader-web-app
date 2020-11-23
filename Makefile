@@ -25,3 +25,10 @@ update-ecs-service:
 run-bluegreen-deploy: push-ecr-img create-bluegreen-deploy
 
 run-rolling-update: push-ecr-img update-ecs-service
+
+build-deploy-frontend:
+	npm --prefix frontend run build && npm --prefix frontend run deploy
+
+bluegreen-deploy-all: run-bluegreen-deploy build-deploy-frontend
+
+rolling-deploy-all: run-rolling-update build-deploy-frontend

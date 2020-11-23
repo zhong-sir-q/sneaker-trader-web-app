@@ -48,6 +48,13 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
         <th
           style={{ minWidth: '105px', cursor: 'pointer' }}
           className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'))}
+          onClick={() => requestSort('listedDatetime')}
+        >
+          list date
+        </th>
+        <th
+          style={{ minWidth: '105px', cursor: 'pointer' }}
+          className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'))}
           onClick={() => requestSort('buyer.transactionDatetime')}
         >
           sold date
@@ -98,6 +105,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       prodStatus,
       buyer,
       sizeSystem,
+      listedDatetime,
     } = props.sneaker;
 
     const onCompleteSale = async () => {
@@ -111,6 +119,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     return (
       <tr>
         <SneakerNameCell imgSrc={mainDisplayImage} name={displayName} displaySize={displaySize} colorway={colorway} />
+        <td>{moment(listedDatetime).format('YYYY-MM-DD')}</td>
         <td>{buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</td>
         <td>{upperCaseFirstLetter(prodStatus)}</td>
         <td>

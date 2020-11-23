@@ -56,7 +56,7 @@ class ListedSneakerService implements ListedSneakerEntity {
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
-      SELECT L.*, name, brand, colorway, size, ${buyerIfPendingOrSoldProduct},
+      SELECT L.*, name, brand, colorway, size, listedDatetime, ${buyerIfPendingOrSoldProduct},
         askingPrice as price, quantity FROM ListedProducts L, Products P
           WHERE L.userId = ${sellerId} AND L.productId = P.id
             ORDER BY JSON_EXTRACT(stringifiedBuyer, '$.transactionDatetime') DESC

@@ -45,6 +45,7 @@ export type ListedProduct = {
   serialNumber: string;
   originalPurchasePrice: number;
   mainDisplayImage: string;
+  listedDatetime: string;
 };
 
 export type PortfolioSneaker = {

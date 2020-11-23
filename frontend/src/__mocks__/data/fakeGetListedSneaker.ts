@@ -23,7 +23,8 @@ const fakeGetListedSneaker = (userId: number, productId: number): GetListedSneak
   size: faker.random.number(),
   brand: faker.commerce.product(),
   name: faker.commerce.productName(),
-  colorway: faker.internet.color()
+  colorway: faker.internet.color(),
+  listedDatetime: faker.date.past().toString(),
 });
 
 export default fakeGetListedSneaker;
