@@ -76,7 +76,7 @@ const validationSchema = Yup.object({
   phoneNo: validPhoneNo(),
   password: minCharacters(8),
   confirmPassword: matchingPassword('password'),
-  dob: validDate(),
+  dob: validDate('MM/DD/YYYY'),
   // FIXME: this does not work
   policyAgreed: Yup.boolean().oneOf([true], 'Please read and accept the privacy policy and terms and conditions'),
 });

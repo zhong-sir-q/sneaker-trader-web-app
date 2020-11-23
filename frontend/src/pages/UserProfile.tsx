@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form as FormikForm, Formik } from 'formik';
+import { Form as FormikForm, Formik, Field } from 'formik';
 
 // reactstrap components
-import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert, Label } from 'reactstrap';
 
 import * as Yup from 'yup';
 
@@ -26,6 +26,7 @@ import AwsControllerInstance from 'api/controllers/AwsController';
 import AddressVerificationForm, { DEFAULT_ADDRESS } from 'components/AddressVerificationForm';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import AddressControllerInstance from 'api/controllers/AddressController';
+import FormikDatetime from 'components/formik/FormikDatetime';
 
 // user may have empty firstname or empty lastname or both
 const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
@@ -38,7 +39,7 @@ const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)
 const validationSchema = (userId: number) =>
   Yup.object({
     username: checkDuplicateUsername(userId),
-    dob: validDate(),
+    dob: validDate('MM/DD/YYYY'),
   });
 
 const UserProfile = () => {
@@ -170,7 +171,13 @@ const UserProfile = () => {
                         </Col>
                         <Col className='px-1' md='3'>
                           <FormGroup>
-                            <FormikLabelInput name='dob' placeholder='dd/mm/yyyy' type='text' label='Date of Birth' />
+                            <Label>Date of Birth</Label>
+                            <Field
+                              name='dob'
+                              timeFormat={false}
+                              placeholder='Date Of Birth...'
+                              component={FormikDatetime}
+                            />
                           </FormGroup>
                         </Col>
                       </Row>

@@ -214,19 +214,19 @@ const Sidebar = (props: SideBarProps) => {
           <Nav>
             {createLinks(props.routes)}
             <li>
-              <NavLink to={HOME} onClick={() => signOut()}>
+              {/* location is unchanged */}
+              <NavLink to={location.pathname} onClick={onOpenLeaderBoard}>
                 <React.Fragment>
-                  <i className='now-ui-icons arrows-1_minimal-right' />
-                  <p>Logout</p>
+                  <i className='now-ui-icons design_scissors' />
+                  <p>Leaderboard</p>
                 </React.Fragment>
               </NavLink>
             </li>
             <li>
-              {/* location is unchanged */}
-              <NavLink to={ADMIN + DASHBOARD} onClick={onOpenLeaderBoard}>
+              <NavLink to={HOME} onClick={() => signOut()}>
                 <React.Fragment>
-                  <i className='now-ui-icons design_scissors' />
-                  <p>Leaderboard</p>
+                  <i className='now-ui-icons arrows-1_minimal-right' />
+                  <p>Logout</p>
                 </React.Fragment>
               </NavLink>
             </li>
