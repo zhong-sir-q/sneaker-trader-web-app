@@ -1,5 +1,5 @@
 import { AddressEntity, Address, AddrVerificationStatus } from '../../../shared';
-import { formatGetRowsQuery, formatUpdateColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
+import { formatGetRowsQuery, formatUpdateRowsQuery, formatInsertRowsQuery } from '../utils/formatDbQuery';
 
 import { ADDRESS } from '../config/tables';
 import mysqlPoolConnection from '../config/mysql';
@@ -15,7 +15,7 @@ class AddressService implements AddressEntity {
   async addUserAddress(userId: number, addr: Address): Promise<void> {
     const poolConn = await mysqlPoolConnection();
 
-    const addUserAddrQuery = formatInsertColumnsQuery(ADDRESS, { ...addr, userId });
+    const addUserAddrQuery = formatInsertRowsQuery(ADDRESS, { ...addr, userId });
     await poolConn.query(addUserAddrQuery);
   }
 
@@ -48,7 +48,7 @@ class AddressService implements AddressEntity {
 
   async updateAddressByUserId(userId: number, addr: Address): Promise<void> {
     const poolConn = await mysqlPoolConnection();
-    const updateQuery = formatUpdateColumnsQuery(ADDRESS, addr, `userId = ${userId}`);
+    const updateQuery = formatUpdateRowsQuery(ADDRESS, addr, `userId = ${userId}`);
 
     await poolConn.query(updateQuery);
   }
@@ -56,7 +56,7 @@ class AddressService implements AddressEntity {
   private async updateVerificationStatus(userId: number, status: AddrVerificationStatus) {
     const poolConn = await mysqlPoolConnection();
 
-    const updateStatusQuery = formatUpdateColumnsQuery(ADDRESS, { verificationStatus: status }, `userId = ${userId}`);
+    const updateStatusQuery = formatUpdateRowsQuery(ADDRESS, { verificationStatus: status }, `userId = ${userId}`);
     poolConn.query(updateStatusQuery);
   }
 }

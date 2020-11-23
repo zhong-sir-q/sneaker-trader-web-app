@@ -1,4 +1,4 @@
-import { formatInsertColumnsQuery, doubleQuotedValue, formatUpdateColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertRowsQuery, doubleQuotedValue, formatUpdateRowsQuery } from '../utils/formatDbQuery';
 
 import {
   ListedProduct,
@@ -146,7 +146,7 @@ class ListedSneakerService implements ListedSneakerEntity {
 
   async create(listedSneaker: CreateListedSneakerPayload) {
     const poolConn = await mysqlPoolConnection();
-    const createListedProductQuery = formatInsertColumnsQuery(LISTED_PRODUCTS, listedSneaker);
+    const createListedProductQuery = formatInsertRowsQuery(LISTED_PRODUCTS, listedSneaker);
     const res = await poolConn.query(createListedProductQuery);
 
     return res.insertId;
@@ -156,7 +156,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     const condition = `userId = ${sellerId} AND id = ${listedSneakerId}`;
-    const query = formatUpdateColumnsQuery(LISTED_PRODUCTS, { prodStatus: 'pending' }, condition);
+    const query = formatUpdateRowsQuery(LISTED_PRODUCTS, { prodStatus: 'pending' }, condition);
 
     return poolConn.query(query);
   }
@@ -164,7 +164,7 @@ class ListedSneakerService implements ListedSneakerEntity {
   async updateListedSneakerStatus(listedSneakerId: number, listedSneakerStatus: Pick<ListedProduct, 'prodStatus'>) {
     const poolConn = await mysqlPoolConnection();
 
-    return poolConn.query(formatUpdateColumnsQuery(LISTED_PRODUCTS, listedSneakerStatus, `id = ${listedSneakerId}`));
+    return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneakerStatus, `id = ${listedSneakerId}`));
   }
 }
 

@@ -17,7 +17,7 @@ export const doubleQuotedValues = (obj: QueryObject) => {
   return doubleQuoteVals;
 };
 
-export const formatInsertColumnsQuery = (tableName: string, obj: QueryObject) =>
+export const formatInsertRowsQuery = (tableName: string, obj: QueryObject) =>
   `INSERT INTO ${tableName} (${formatColumns(obj)}) VALUES (${doubleQuotedValues(obj).join(', ')})`;
 
 // output look likes, key_one = val_one, key_two = val_two ...,
@@ -37,7 +37,7 @@ export const formatSetQuery = (obj: QueryObject) => {
 };
 
 // condition is the WHERE statement
-export const formatUpdateColumnsQuery = (tableName: string, obj: QueryObject, condition: string) =>
+export const formatUpdateRowsQuery = (tableName: string, obj: QueryObject, condition: string) =>
   `UPDATE ${tableName} SET ${formatSetQuery(obj)} WHERE ${condition}`;
 
 export const formatGetRowsQuery = (tableName: string, condition?: string) =>

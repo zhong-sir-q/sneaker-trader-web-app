@@ -1,6 +1,6 @@
 import { PortfolioSneakerEntity, PortfolioSneaker, PortfolioSneakerWithMarketValue } from '../../../shared';
 
-import { formatInsertColumnsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
+import { formatInsertRowsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
 
 import mysqlPoolConnection from '../config/mysql';
 import { PORTFOLIO_SNEAKER, LISTED_PRODUCTS, PRODUCTS, TRANSACTION } from '../config/tables';
@@ -44,7 +44,7 @@ class PortfolioSneakerService implements PortfolioSneakerEntity {
   async add(sneaker: Partial<PortfolioSneaker>): Promise<number> {
     const poolConn = await mysqlPoolConnection();
 
-    const addQuery = formatInsertColumnsQuery(PORTFOLIO_SNEAKER, sneaker);
+    const addQuery = formatInsertRowsQuery(PORTFOLIO_SNEAKER, sneaker);
 
     const res = await poolConn.query(addQuery);
 

@@ -1,5 +1,5 @@
 import mysqlPoolConnection from '../config/mysql';
-import { formatGetRowsQuery, formatUpdateColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
+import { formatGetRowsQuery, formatInsertRowsQuery } from '../utils/formatDbQuery';
 import { ADDRESS_VERIFICATION_CODE } from '../config/tables';
 
 class AddressVerificationCodeService {
@@ -18,7 +18,7 @@ class AddressVerificationCodeService {
 
     const randSixDigitCode = Math.floor(100000 + Math.random() * 900000);
 
-    const insertQuery = formatInsertColumnsQuery(ADDRESS_VERIFICATION_CODE, {
+    const insertQuery = formatInsertRowsQuery(ADDRESS_VERIFICATION_CODE, {
       userId,
       verificationCode: randSixDigitCode,
     });

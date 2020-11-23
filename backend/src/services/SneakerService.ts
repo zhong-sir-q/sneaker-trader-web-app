@@ -1,4 +1,4 @@
-import { formatInsertColumnsQuery, formatGetRowsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
+import { formatInsertRowsQuery, formatGetRowsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
 
 import mysqlPoolConnection from '../config/mysql';
 
@@ -38,7 +38,7 @@ class SneakerService implements SneakerEntity {
 
     if (dbSneaker) throw Error('Sneaker already exists');
 
-    const createSneakerQuery = formatInsertColumnsQuery(PRODUCTS, sneaker);
+    const createSneakerQuery = formatInsertRowsQuery(PRODUCTS, sneaker);
 
     return poolConn.query(createSneakerQuery).then((res) => res.insertId);
   }

@@ -1,5 +1,5 @@
 import mysqlPoolConnection from '../config/mysql';
-import { formatInsertColumnsQuery, formatGetRowsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
+import { formatInsertRowsQuery, formatGetRowsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
 import { WALLET } from '../config/tables';
 
 import WalletEntity from '../../../shared/@types/domains/entities/WalletEntity';
@@ -17,7 +17,7 @@ class WalletService implements WalletEntity {
   async create(userId: number) {
     const poolConn = await mysqlPoolConnection();
 
-    return poolConn.query(formatInsertColumnsQuery(WALLET, { userId }));
+    return poolConn.query(formatInsertRowsQuery(WALLET, { userId }));
   }
 
   async delete(userId: number) {

@@ -1,8 +1,8 @@
 import {
-  formatInsertColumnsQuery,
+  formatInsertRowsQuery,
   formatGetRowsQuery,
   doubleQuotedValue,
-  formatUpdateColumnsQuery,
+  formatUpdateRowsQuery,
   formatDeleteQuery,
 } from '../utils/formatDbQuery';
 
@@ -14,7 +14,7 @@ class UserService implements UserServiceEntity {
   async update(email: string, user: Partial<User>) {
     const poolConn = await mysqlPoolConnection();
     const condition = 'email = ' + doubleQuotedValue(email);
-    const updateUserQuery = formatUpdateColumnsQuery(USERS, user, condition);
+    const updateUserQuery = formatUpdateRowsQuery(USERS, user, condition);
 
     return poolConn.query(updateUserQuery);
   }
@@ -29,7 +29,7 @@ class UserService implements UserServiceEntity {
 
     if (user.username) await this.checkDuplicateUsername(user.username);
 
-    const createUserQuery = formatInsertColumnsQuery(USERS, user);
+    const createUserQuery = formatInsertRowsQuery(USERS, user);
     const userId = await poolConn.query(createUserQuery).then((result) => result.insertId);
 
     return userId;

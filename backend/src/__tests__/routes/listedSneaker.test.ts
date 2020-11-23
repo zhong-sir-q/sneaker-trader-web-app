@@ -11,7 +11,7 @@ import { PRODUCTS, LISTED_PRODUCTS, USERS } from '../../config/tables';
 import initListedSneakerTable from '../../__mocks__/setup/initListedSneakerTable';
 import fakeListedSneaker from '../../__mocks__/fakeListedSneaker';
 import mysqlPoolConnection from '../../config/mysql';
-import { formatGetRowsQuery, formatUpdateColumnsQuery } from '../../utils/formatDbQuery';
+import { formatGetRowsQuery, formatUpdateRowsQuery } from '../../utils/formatDbQuery';
 
 import faker from 'faker'
 
@@ -105,7 +105,7 @@ describe('Listed product routes', () => {
 
       const poolConn = await mysqlPoolConnection()
 
-      const updateQuery = formatUpdateColumnsQuery(LISTED_PRODUCTS, { prodStatus: randStatus }, `id = ${id}`)
+      const updateQuery = formatUpdateRowsQuery(LISTED_PRODUCTS, { prodStatus: randStatus }, `id = ${id}`)
       await poolConn.query(updateQuery)
     }
 

@@ -1,5 +1,5 @@
 import mysqlPoolConnection from '../config/mysql';
-import { formatInsertColumnsQuery, formatUpdateColumnsQuery, formatGetRowsQuery } from '../utils/formatDbQuery';
+import { formatInsertRowsQuery, formatUpdateRowsQuery, formatGetRowsQuery } from '../utils/formatDbQuery';
 import { TRANSACTION } from '../config/tables';
 import TranscationEntity from '../../../shared/@types/domains/entities/TransactionEntity';
 import { Transaction, BuyerPurchasedSneaker, MonthlyProfit } from '../../../shared';
@@ -17,11 +17,11 @@ class TransactionService implements TranscationEntity {
 
   async create(transaction: Transaction) {
     const poolConn = await mysqlPoolConnection();
-    return poolConn.query(formatInsertColumnsQuery(TRANSACTION, transaction));
+    return poolConn.query(formatInsertRowsQuery(TRANSACTION, transaction));
   }
 
   async rateBuyer(listedProductId: number, rating: number, comment: string) {
-    const rateSellerQuery = formatUpdateColumnsQuery(
+    const rateSellerQuery = formatUpdateRowsQuery(
       TRANSACTION,
       { buyerRatingFromSeller: rating, buyerCommentFromSeller: comment },
       `listedProductId = ${listedProductId}`
@@ -32,7 +32,7 @@ class TransactionService implements TranscationEntity {
   }
 
   async rateSeller(listedProductId: number, rating: number, comment: string) {
-    const rateSellerQuery = formatUpdateColumnsQuery(
+    const rateSellerQuery = formatUpdateRowsQuery(
       TRANSACTION,
       { sellerRatingFromBuyer: rating, sellerCommentFromBuyer: comment },
       `listedProductId = ${listedProductId}`

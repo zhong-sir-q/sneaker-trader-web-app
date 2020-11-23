@@ -1,8 +1,8 @@
 import {
-  formatUpdateColumnsQuery,
+  formatUpdateRowsQuery,
   doubleQuotedValue,
   doubleQuotedValues,
-  formatInsertColumnsQuery,
+  formatInsertRowsQuery,
   formatSetQuery,
   formatColumns,
   formatGetRowsQuery,
@@ -71,7 +71,7 @@ describe('Format db queries', () => {
       sizeSystem: 'US',
     };
 
-    const updateColumnsQuery = formatUpdateColumnsQuery('RandomTableName', listedProductOne, 'a = b');
+    const updateColumnsQuery = formatUpdateRowsQuery('RandomTableName', listedProductOne, 'a = b');
 
     const expectedQuery =
       'UPDATE RandomTableName SET productId=14, userId=3, askingPrice=420, quantity=1, currencyCode="NZD", prodCondition="new", sizeSystem="US" WHERE a = b';
@@ -86,7 +86,7 @@ describe('Format db queries', () => {
       year: 2004,
     };
 
-    const query = formatInsertColumnsQuery('Movies', mockMovie);
+    const query = formatInsertRowsQuery('Movies', mockMovie);
     const expectedQuery = 'INSERT INTO Movies (genre, name, year) VALUES ("Animation", "Star Wars", 2004)';
 
     expect(query).toBe(expectedQuery);
