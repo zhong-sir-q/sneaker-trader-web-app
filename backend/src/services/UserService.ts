@@ -11,9 +11,9 @@ import mysqlPoolConnection from '../config/mysql';
 import { USERS, TRANSACTION } from '../config/tables';
 
 class UserService implements UserServiceEntity {
-  async update(user: User) {
+  async update(email: string, user: Partial<User>) {
     const poolConn = await mysqlPoolConnection();
-    const condition = 'email = ' + doubleQuotedValue(user.email);
+    const condition = 'email = ' + doubleQuotedValue(email);
     const updateUserQuery = formatUpdateColumnsQuery(USERS, user, condition);
 
     return poolConn.query(updateUserQuery);

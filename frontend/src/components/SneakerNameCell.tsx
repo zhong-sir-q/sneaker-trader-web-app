@@ -1,16 +1,22 @@
-import React from "react"
+import React from 'react';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const ImgContainer = styled.div`
   float: left;
+`;
 
-  @media (min-width: 150px) {
-    width: 60px;
-  }
+const Img = styled.img`
+  object-fit: cover;
 
   @media (min-width: 768px) {
-    width: 80px;
+    width: 90px;
+    height: 70px;
+  }
+
+  @media (min-width: 150px) {
+    width: 70px;
+    height: 50px;
   }
 `;
 
@@ -48,7 +54,7 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
   return (
     <td>
       <ImgContainer>
-        <img src={imgSrc} alt={name + colorway} />
+        <Img src={imgSrc} alt={name + colorway} />
       </ImgContainer>
 
       <SneakerNameTextWrapper>

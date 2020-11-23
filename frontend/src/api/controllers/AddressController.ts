@@ -22,10 +22,10 @@ export class AddressController implements AddressEntity {
       formatRequestOptions({ verificationCode: code }, undefined, 'POST')
     ).then((r) => r.json());
 
-  generateAndUpdateVerifcationCode = (userId: number): Promise<void> =>
+  generateVerificationCode = (userId: number): Promise<void> =>
     fetch(
       concatPaths(this.addrPath, 'generateCode', userId),
-      formatRequestOptions(undefined, undefined, 'PUT')
+      formatRequestOptions(undefined, undefined, 'POST')
     ).then((r) => r.json());
 
   updateAddressByUserId = (userId: number, addr: Address): Promise<void> =>

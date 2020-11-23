@@ -40,10 +40,10 @@ export default (app: Router, AddressServiceInstance: AddressService) => {
       .catch(next);
   });
 
-  userAddrRoute.put('/generateCode/:userId', (req, res, next) => {
+  userAddrRoute.post('/generateCode/:userId', (req, res, next) => {
     const { userId } = req.params;
 
-    AddressServiceInstance.generateAndUpdateVerifcationCode(Number(userId))
+    AddressServiceInstance.generateVerificationCode(Number(userId))
       .then(() => res.json('Verification code generated'))
       .catch(next);
   });

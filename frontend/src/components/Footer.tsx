@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container } from 'reactstrap';
-import { Link } from 'react-router-dom';
 import { PRIVACY_POLICY, TERMS } from 'routes';
 
 type FooterProps = {
@@ -14,7 +13,7 @@ const Footer = (props: FooterProps) => (
       <nav>
         <ul>
           <li>
-            <a href='/' className='mr-4-px' target='_blank'>
+            <a href='/' className='mr-4-px'>
               Sneaker Trader
             </a>
           </li>
@@ -24,14 +23,16 @@ const Footer = (props: FooterProps) => (
             </a>
           </li>
           <li>
-            <Link to={PRIVACY_POLICY}>Privacy Policy</Link>
+            <a href={PRIVACY_POLICY}>Privacy Policy</a>
           </li>
           <li>
-            <Link to={TERMS}>Terms and Conditions</Link>
+            <a href={TERMS}>Terms and Conditions</a>
           </li>
         </ul>
       </nav>
-      <div className='copyright'>&copy; All rights reserved by Sneaker Trader, {new Date().getFullYear()}.</div>
+      <div className='copyright' data-testid='copyright'>
+        &copy; All rights reserved by Sneaker Trader LTD, {new Date().getFullYear()}.
+      </div>
     </Container>
   </footer>
 );

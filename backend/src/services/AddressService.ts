@@ -39,8 +39,8 @@ class AddressService implements AddressEntity {
     return this.AddressVerificationCodeServiceInstance.validateCode(userId, code);
   }
 
-  async generateAndUpdateVerifcationCode(userId: number): Promise<void> {
-    this.AddressVerificationCodeServiceInstance.generateAndUpdateVerifcationCode(userId);
+  async generateVerificationCode(userId: number): Promise<void> {
+    this.AddressVerificationCodeServiceInstance.generateVerificationCode(userId);
   }
 
   async updateAddressByUserId(userId: number, addr: Address): Promise<void> {

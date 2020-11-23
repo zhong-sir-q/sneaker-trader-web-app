@@ -7,7 +7,7 @@ import fakeUserAddress from '__mocks__/data/fakeUserAddress';
 test('Handling verifying the address', async (done) => {
   await onVerifyAddress(MockAddressControllerInstance)(faker.random.number(), fakeUserAddress());
   expect(MockAddressControllerInstance.addUserAddress).toBeCalledTimes(1);
-  expect(MockAddressControllerInstance.generateAndUpdateVerifcationCode).toBeCalledTimes(1);
+  expect(MockAddressControllerInstance.generateVerificationCode).toBeCalledTimes(1);
   expect(MockAddressControllerInstance.onSuccessGenerateCode).toBeCalledTimes(1);
 
   done();

@@ -83,7 +83,7 @@ const UserProfile = () => {
       formStates = { ...formStates, profilePicUrl: s3ImgUrl };
     }
 
-    await UserControllerInstance.update(formStates);
+    await UserControllerInstance.update(formStates.email, formStates);
     onShowAlert();
     updateCurrentUser(formStates);
   };
@@ -209,10 +209,7 @@ const UserProfile = () => {
           )}
         </Formik>
 
-        <AddressVerificationForm
-          address={userAddr || { ...DEFAULT_ADDRESS, zipcode: Number(DEFAULT_ADDRESS.zipcode) }}
-          goLoadAddress={goLoadAddress}
-        />
+        <AddressVerificationForm address={userAddr || DEFAULT_ADDRESS} goLoadAddress={goLoadAddress} />
       </div>
     </React.Fragment>
   );

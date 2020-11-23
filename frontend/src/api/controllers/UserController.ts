@@ -23,7 +23,8 @@ export class UserController implements UserEntity {
 
   create = (user: Partial<AppUser>) => fetch(this.userPath, formatRequestOptions(user)).then((res) => res.json());
 
-  update = (user: User) => fetch(this.userPath, formatRequestOptions(user, undefined, 'PUT')).then((res) => res);
+  update = (email: string, user: Partial<User>) =>
+    fetch(concatPaths(this.userPath, email), formatRequestOptions(user, undefined, 'PUT')).then((res) => res);
 
   deleteByUsername = (username: string) =>
     fetch(`${this.userPath}/name/${username}`, formatRequestOptions(undefined, undefined, 'DELETE')).then((r) =>
@@ -31,6 +32,6 @@ export class UserController implements UserEntity {
     );
 }
 
-const   UserControllerInstance = new UserController();
+const UserControllerInstance = new UserController();
 
 export default UserControllerInstance;

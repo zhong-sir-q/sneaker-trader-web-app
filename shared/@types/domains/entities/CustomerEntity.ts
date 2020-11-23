@@ -7,7 +7,8 @@ export interface UserEntity {
   create(user: Partial<User>): Promise<number>;
   getByEmail(email: string): Promise<User | null>;
   getByUsername(username: string): Promise<User | null>;
-  update(user: User): Promise<any>;
+  // each user has a unique email address
+  update(email: string, user: User): Promise<any>;
   deleteByUsername(username: string): Promise<any>;
   getRankingPointsByUserId(userId: number): Promise<number>;
   getAllUserRankingPoints(): Promise<UserRankingRow[]>;
