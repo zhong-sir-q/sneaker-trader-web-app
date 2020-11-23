@@ -121,17 +121,11 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
 
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelSelect
-                      name='currencyCode'
-                      label='Price Currency Code'
-                      id='sneaker-price-currency'
-                      data-testid='currency-input'
-                    >
-                      {currencyCodeOptions.map((cOpt, idx) => (
-                        <option key={idx} value={cOpt}>
-                          {cOpt}
-                        </option>
-                      ))}
+                    <FormikLabelSelect name='prodCondition' label='Condition' id='sneaker-prodCondition'>
+                      <option value=''>None</option>
+                      <option value='dead stock'>Dead Stock</option>
+                      <option value='new'>New</option>
+                      <option value='used'>Used</option>
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>
@@ -164,11 +158,17 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
 
                 <Col md='4'>
                   <FormGroup>
-                    <FormikLabelSelect name='prodCondition' label='Condition' id='sneaker-prodCondition'>
-                      <option value=''>None</option>
-                      <option value='dead stock'>Dead Stock</option>
-                      <option value='new'>New</option>
-                      <option value='used'>Used</option>
+                    <FormikLabelSelect
+                      name='currencyCode'
+                      label='Price Currency Code'
+                      id='sneaker-price-currency'
+                      data-testid='currency-input'
+                    >
+                      {currencyCodeOptions.map((cOpt, idx) => (
+                        <option key={idx} value={cOpt}>
+                          {cOpt}
+                        </option>
+                      ))}
                     </FormikLabelSelect>
                   </FormGroup>
                 </Col>

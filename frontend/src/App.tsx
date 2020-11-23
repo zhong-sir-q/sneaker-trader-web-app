@@ -29,6 +29,7 @@ import MarketPlaceProvider from 'providers/marketplace/MarketPlaceProvider';
 
 import NotFound from 'pages/NotFound';
 import ListedSneakerRoutesProvider from 'providers/ListedSneakerRoutesProvider';
+import UserRankingProvider from 'providers/UserRankingProvider';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -49,7 +50,7 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
   const { state } = props.location;
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={state as any || HOME} />;
+  return !signedIn ? <AuthLayout /> : <Redirect to={(state as any) || HOME} />;
 };
 
 const App = () => {
@@ -62,15 +63,17 @@ const App = () => {
           <Switch>
             <Route path={AUTH} component={RelaxedAuth} />
 
-            <Route path={ADMIN} component={ProtectedAdmin} />
+            <UserRankingProvider>
+              <Route path={ADMIN} component={ProtectedAdmin} />
 
-            <Route path={HOME}>
-              <ListedSneakerRoutesProvider>
-                <MarketPlaceProvider>
-                  <HomeLayout />
-                </MarketPlaceProvider>
-              </ListedSneakerRoutesProvider>
-            </Route>
+              <Route path={HOME}>
+                <ListedSneakerRoutesProvider>
+                  <MarketPlaceProvider>
+                    <HomeLayout />
+                  </MarketPlaceProvider>
+                </ListedSneakerRoutesProvider>
+              </Route>
+            </UserRankingProvider>
 
             {/* this currently does not work, ideally we want to show the 404 page
           when a random route is entered */}

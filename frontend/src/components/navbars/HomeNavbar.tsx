@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navbar, Nav, NavItem, Collapse, NavbarToggler } from 'reactstrap';
 
 import { Link, useHistory } from 'react-router-dom';
@@ -12,14 +12,11 @@ import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
-import { UserRankingRow, SearchBarSneaker } from '../../../../shared';
-import UserControllerInstance from 'api/controllers/UserController';
-
-import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';
+import { SearchBarSneaker } from '../../../../shared';
 
 import logo from 'assets/img/logo_transparent_background.png';
-import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+import { useUserRanking } from 'providers/UserRankingProvider';
 
 const SearchBarWrapper = styled.div`
   padding: 0.5rem 0.7rem;
@@ -45,20 +42,7 @@ const HomeNavbar = () => {
 
   const toggleNav = () => setOpenNav(!openNav);
 
-  const openCloseRankingDialog = useOpenCloseComp();
-
-  const openUserLeaderBoard = openCloseRankingDialog.open;
-  const onOpenUserLeaderBoard = openCloseRankingDialog.onOpen;
-  const onCloseUserLeaderBoard = openCloseRankingDialog.onClose;
-
-  const [rankingRows, setRankingRows] = useState<UserRankingRow[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const rows = await UserControllerInstance.getAllUserRankingPoints();
-      setRankingRows(rows);
-    })();
-  }, []);
+  const { onOpenLeaderBoard } = useUserRanking()
 
   const history = useHistory();
   const { signedIn } = useAuth();
@@ -89,7 +73,7 @@ const HomeNavbar = () => {
 
         <Nav navbar>
           <NavItem>
-            <div style={{ color: 'black', cursor: 'pointer' }} onClick={onOpenUserLeaderBoard} className='nav-link'>
+            <div style={{ color: 'black', cursor: 'pointer' }} onClick={onOpenLeaderBoard} className='nav-link'>
               Leaderboard
             </div>
           </NavItem>
@@ -117,12 +101,6 @@ const HomeNavbar = () => {
           )}
         </Nav>
       </Collapse>
-
-      <UserRankingLeaderBoardDialog
-        isDialogOpen={openUserLeaderBoard}
-        closeDialog={onCloseUserLeaderBoard}
-        rankings={rankingRows}
-      />
     </StyledNavbar>
   );
 };

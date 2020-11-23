@@ -5,13 +5,14 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Button, Collapse, Nav } from 'reactstrap';
 
 // routes
-import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
+import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE, DASHBOARD } from 'routes';
 
 import { useAuth } from 'providers/AuthProvider';
 
 import logo from 'assets/img/logo_transparent_background.png';
 import defaultAvatar from 'assets/img/placeholder.jpg';
 import { signOut } from 'utils/auth';
+import { useUserRanking } from 'providers/UserRankingProvider';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -70,10 +71,9 @@ const Sidebar = (props: SideBarProps) => {
   const [collapseStates, setCollapseStates] = useState({ openAvatar: false, ...getCollapseStates(props.routes) });
   // toggle this state to rerender the component upon route change
   const [, setReRender] = useState(false);
-
   const { currentUser } = useAuth();
-
   const location = useLocation();
+  const { onOpenLeaderBoard } = useUserRanking();
 
   // TODO: type this
   const sidebar = useRef<any>(null);
@@ -218,6 +218,15 @@ const Sidebar = (props: SideBarProps) => {
                 <React.Fragment>
                   <i className='now-ui-icons arrows-1_minimal-right' />
                   <p>Logout</p>
+                </React.Fragment>
+              </NavLink>
+            </li>
+            <li>
+              {/* location is unchanged */}
+              <NavLink to={ADMIN + DASHBOARD} onClick={onOpenLeaderBoard}>
+                <React.Fragment>
+                  <i className='now-ui-icons design_scissors' />
+                  <p>Leaderboard</p>
                 </React.Fragment>
               </NavLink>
             </li>

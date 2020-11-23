@@ -6,15 +6,9 @@ import { Collapse, Container, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem }
 
 import { HOME } from 'routes';
 
-import { UserRankingLeaderBoardDialog } from 'components/UserRankingLeaderBoard';
-
 import { signOut } from 'utils/auth';
 
-import useOpenCloseComp from 'hooks/useOpenCloseComp';
-
-import UserControllerInstance from 'api/controllers/UserController';
-
-import { UserRankingRow } from '../../../../shared';
+import { useUserRanking } from 'providers/UserRankingProvider';
 
 type NavbarColor = 'transparent' | 'white';
 
@@ -26,15 +20,10 @@ type AdminNavbarProps = {
 const AdminNavbar = (props: AdminNavbarProps) => {
   const [isOpenCollapse, setIsOpenCollapse] = useState(false);
   const [color, setColor] = useState<NavbarColor>('transparent');
-  const [rankingRows, setRankingRows] = useState<UserRankingRow[]>([]);
 
   const sidebarToggle = useRef<HTMLButtonElement>(null);
 
-  const openCloseRankingDialog = useOpenCloseComp();
-
-  const openUserLeaderBoard = openCloseRankingDialog.open;
-  const onOpenUserLeaderBoard = openCloseRankingDialog.onOpen;
-  const onCloseUserLeaderBoard = openCloseRankingDialog.onClose;
+  const { onOpenLeaderBoard } = useUserRanking()
 
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   const updateColor = () => setColor(window.innerWidth < 993 && isOpenCollapse ? 'white' : 'transparent');
@@ -46,13 +35,6 @@ const AdminNavbar = (props: AdminNavbarProps) => {
 
     return () => window.removeEventListener('resize', updateColor);
   });
-
-  useEffect(() => {
-    (async () => {
-      const rows = await UserControllerInstance.getAllUserRankingPoints();
-      setRankingRows(rows);
-    })();
-  }, []);
 
   const toggle = () => {
     setColor(isOpenCollapse ? 'transparent' : 'white');
@@ -94,7 +76,7 @@ const AdminNavbar = (props: AdminNavbarProps) => {
         <Collapse className='justify-content-end' isOpen={isOpenCollapse} navbar>
           <Nav navbar>
             <NavItem>
-              <div className='nav-link' onClick={onOpenUserLeaderBoard}>
+              <div className='nav-link' onClick={onOpenLeaderBoard}>
                 Leaderboard
               </div>
             </NavItem>
@@ -105,11 +87,6 @@ const AdminNavbar = (props: AdminNavbarProps) => {
             </NavItem>
           </Nav>
         </Collapse>
-        <UserRankingLeaderBoardDialog
-          isDialogOpen={openUserLeaderBoard}
-          closeDialog={onCloseUserLeaderBoard}
-          rankings={rankingRows}
-        />
       </Container>
     </Navbar>
   );
