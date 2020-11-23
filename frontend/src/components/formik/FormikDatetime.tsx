@@ -1,11 +1,10 @@
-import React from "react";
-import Datetime from 'react-datetime'
-import moment, { Moment } from "moment";
-import InputFieldError from "components/InputFieldError";
+import React from 'react';
+import Datetime from 'react-datetime';
+import moment, { Moment } from 'moment';
+import InputFieldError from 'components/InputFieldError';
 
-// This is used in Yup, too. can potentially put it in the shared folder
 const DATE_FORMAT = 'MM/DD/YYYY';
-// TODO: give th props the proper types
+// inherit the field and form from the Formik component
 const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean; placeholder: string }) => {
   const { form, field, timeFormat, placeholder } = props;
 
@@ -13,8 +12,6 @@ const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean; pla
     // if the date field isn't in a valid date format,
     // react-datetime's onChange handler returns a string
     // otherwise it returns a moment object
-    // this is why we can't override DateTime's onChange
-    // prop with Formik's field.onChange
     const dateValue = typeof value === 'string' ? value : moment(value).format(DATE_FORMAT);
 
     form.setFieldValue(field.name, dateValue);
@@ -40,4 +37,4 @@ const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean; pla
   );
 };
 
-export default FormikDatetime
+export default FormikDatetime;

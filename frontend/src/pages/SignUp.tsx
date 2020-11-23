@@ -21,6 +21,8 @@ import {
   CardText,
 } from 'reactstrap';
 
+import styled from 'styled-components';
+
 import FormikInput from 'components/formik/FormikInput';
 import FormikDatetime from 'components/formik/FormikDatetime';
 
@@ -40,13 +42,16 @@ import { CreateUserPayload } from '../../../shared';
 
 import bgImage from 'assets/img/bg16.jpg';
 import onSignup from 'usecases/onSignup';
+
 import UserRegistrationControllerInstance from 'api/controllers/UserRegistrationController';
 
 type SignupFormStateType = CreateUserPayload & { password: string; confirmPassword: string; policyAgreed: boolean };
 
-// Typescript does not throw an error when using SignupFormStateType instead of User
-// so I have to manually transform the form values to a User object, because I do not
-// want the policyAgreed, password and confirmPasswordField
+const RedStyledComp = styled.div`
+  color: red;
+`;
+
+// omit policyAgreed, password and confirmPasswordField
 const convertFormValuesToUser = (formValues: SignupFormStateType): CreateUserPayload => {
   const { firstName, lastName, username, gender, dob, email, phoneNo } = formValues;
 
@@ -112,18 +117,13 @@ const SignUpSuccess = () => (
   </React.Fragment>
 );
 
-// TODO: discussion, poor UX asking them to fill out so many fields upon sign up.
-// Somehow break up the steps?
 const SignupForm = () => {
   const [signUpError, setSignUpError] = useState<string>();
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const handleSubmit = async (formStates: SignupFormStateType) => {
     try {
-        await onSignup(UserRegistrationControllerInstance)(
-        convertFormValuesToUser(formStates),
-        formStates.password
-      );
+      await onSignup(UserRegistrationControllerInstance)(convertFormValuesToUser(formStates), formStates.password);
       setSignUpSuccess(true);
     } catch (err) {
       setSignUpError(err.message);
@@ -201,7 +201,6 @@ const SignupForm = () => {
                           iconname='ui-1_lock-circle-open'
                         />
 
-                        {/* FIXME: the text margin is off; not enough right padding on the arrow; how do I gray the color the place holder */}
                         <FormikInput
                           style={{ paddingLeft: '12px' }}
                           name='gender'
@@ -235,7 +234,9 @@ const SignupForm = () => {
                               </a>{' '}
                               and <a href='#policy'>terms and conditions</a>.
                             </div>
-                            <ErrorMessage name='policyAgreed' />
+                            <RedStyledComp>
+                              <ErrorMessage name='policyAgreed' />
+                            </RedStyledComp>
                           </Label>
                         </FormGroup>
                       </CardBody>
