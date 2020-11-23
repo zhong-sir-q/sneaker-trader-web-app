@@ -5,7 +5,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Button, Collapse, Nav } from 'reactstrap';
 
 // routes
-import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE, DASHBOARD } from 'routes';
+import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
 
 import { useAuth } from 'providers/AuthProvider';
 
