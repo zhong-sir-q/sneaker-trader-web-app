@@ -50,38 +50,46 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
   const { signedIn } = useAuth();
   const { state } = props.location;
 
-  return !signedIn ? <AuthLayout /> : <Redirect to={(state as any) || HOME} />;
+  // clear the cache before returning the route
+  const clearCachedRoute = () => {
+    const cachedRoute = localStorage.getItem('cached_route')
+    localStorage.removeItem('cached_route')
+    return cachedRoute
+  }
+
+  // state has the highest priority, then cached route, then HOME
+  return !signedIn ? <AuthLayout /> : <Redirect to={(state as any) || clearCachedRoute() || HOME} />;
 };
 
 const App = () => {
   return (
-    <Router>
-      <Elements stripe={stripePromise}>
-        {/* AuthProvider should be on the top-level as most app components consume the context  */}
-        <AuthProvider>
+    // AuthProvider should be on the top-level as most app components consume the context
+    <AuthProvider>
+      <Router>
+        <Elements stripe={stripePromise}>
           {/* Switch must be a direct parent of the Route components, otherwise it does not work */}
           <Switch>
             <Route path={AUTH} component={RelaxedAuth} />
 
-            <UserRankingProvider>
-              <Route path={ADMIN} component={ProtectedAdmin} />
+            <Route path={ADMIN} component={ProtectedAdmin} />
 
-              <Route path={HOME}>
+            <Route path={HOME}>
+              <UserRankingProvider>
                 <ListedSneakerRoutesProvider>
                   <MarketPlaceProvider>
                     <HomeLayout />
                   </MarketPlaceProvider>
                 </ListedSneakerRoutesProvider>
-              </Route>
-            </UserRankingProvider>
+              </UserRankingProvider>
+            </Route>
 
             {/* this currently does not work, ideally we want to show the 404 page
           when a random route is entered */}
             <Route component={NotFound} />
           </Switch>
-        </AuthProvider>
-      </Elements>
-    </Router>
+        </Elements>
+      </Router>
+    </AuthProvider>
   );
 };
 

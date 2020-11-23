@@ -11,6 +11,7 @@ import Footer from 'components/Footer';
 
 import routes, { SneakerTraderRoute, sidebarRoutes } from 'routes';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
+import UserRankingProvider from 'providers/UserRankingProvider';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map(({ collapse, views, layout, path, component }, idx) => {
@@ -85,24 +86,26 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className='wrapper'>
-      <NotificationAlert ref={notificationAlert} />
-      <Sidebar {...defaultSideBarProps} minimizeSidebar={pinSidebar} routes={sidebarRoutes} />
-      {/* NOTE: a temporary solution to make the panel scrollable, would
+    <UserRankingProvider>
+      <div className='wrapper'>
+        <NotificationAlert ref={notificationAlert} />
+        <Sidebar {...defaultSideBarProps} minimizeSidebar={pinSidebar} routes={sidebarRoutes} />
+        {/* NOTE: a temporary solution to make the panel scrollable, would
           not need it when the dashboard is properly implemented */}
-      <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>
-        <AdminNavbar brandText={getActiveRoute(routes)} />
-        <Switch>
-          {getRoutes(routes)}
-          <Redirect from='/admin' to='/admin/dashboard' />
-        </Switch>
+        <div className='main-panel' style={{ overflowY: 'auto' }} ref={mainPanel}>
+          <AdminNavbar brandText={getActiveRoute(routes)} />
+          <Switch>
+            {getRoutes(routes)}
+            <Redirect from='/admin' to='/admin/dashboard' />
+          </Switch>
 
-        {
-          // do not render footer on full screen maps page
-          window.location.href.indexOf('full-screen-maps') !== -1 ? null : <Footer fluid default={false} />
-        }
+          {
+            // do not render footer on full screen maps page
+            window.location.href.indexOf('full-screen-maps') !== -1 ? null : <Footer fluid default={false} />
+          }
+        </div>
       </div>
-    </div>
+    </UserRankingProvider>
   );
 };
 

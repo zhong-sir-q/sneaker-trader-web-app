@@ -38,6 +38,8 @@ const ViewSellersListContainer = () => {
   useEffect(() => {
     (async () => {
       if (!signedIn) {
+        // use localStorage to cache the route, because the state will be cleared after redirect
+        localStorage.setItem('cached_route', history.location.pathname)
         history.push(AUTH + SIGNIN, history.location.pathname);
         return;
       }
