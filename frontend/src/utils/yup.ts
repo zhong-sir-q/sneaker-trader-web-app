@@ -12,6 +12,12 @@ export const minCharacters = (limit: number) =>
 export const maxCharacters = (limit: number) =>
   Yup.string().max(limit, `Must be ${limit} characters or less`).required(REQUIRED);
 
+export const equalDigits = (digits: number) =>
+  Yup.number().test('len', 'Must be exactly 4 digits', (val) => {
+    if (val) return val.toString().length === digits;
+    return false;
+  });
+
 export const required = () => Yup.string().required(REQUIRED);
 
 export const customRequired = (message: string) => Yup.string().required(message);

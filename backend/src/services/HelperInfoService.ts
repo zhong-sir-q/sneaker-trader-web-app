@@ -1,4 +1,4 @@
-import { formateGetColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
+import { formatGetRowsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
 
 import mysqlPoolConnection from '../config/mysql';
 import { SNEAKER_NAMES, COLORWAYS, BRANDS } from '../config/tables';
@@ -14,7 +14,7 @@ class HelperInfoService implements HelperInfoServiceEntity {
     const poolConn = await mysqlPoolConnection();
     const tableName = this.getTableName(info);
 
-    return poolConn.query(formateGetColumnsQuery(tableName));
+    return poolConn.query(formatGetRowsQuery(tableName));
   }
 
   async create(info: HelperInfoType, payload: any) {

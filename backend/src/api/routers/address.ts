@@ -23,7 +23,7 @@ export default (app: Router, AddressServiceInstance: AddressService) => {
       .catch(next);
   });
 
-  userAddrRoute.get('/codeGeneratedSuccess/:userId', (req, res, next) => {
+  userAddrRoute.post('/codeGeneratedSuccess/:userId', (req, res, next) => {
     const { userId } = req.params;
 
     AddressServiceInstance.onSuccessGenerateCode(Number(userId))

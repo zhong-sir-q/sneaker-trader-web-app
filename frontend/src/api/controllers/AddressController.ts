@@ -32,7 +32,7 @@ export class AddressController implements AddressEntity {
     fetch(concatPaths(this.addrPath, userId), formatRequestOptions(addr, undefined, 'PUT')).then((r) => r.json());
 
   onSuccessGenerateCode = (userId: number): Promise<void> =>
-    fetch(concatPaths(this.addrPath, 'codeGeneratedSuccess', userId)).then((r) => r.json());
+    fetch(concatPaths(this.addrPath, 'codeGeneratedSuccess', userId), { method: 'POST' }).then((r) => r.json());
 }
 
 const AddressControllerInstance = new AddressController();

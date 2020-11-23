@@ -40,7 +40,7 @@ export const formatSetQuery = (obj: QueryObject) => {
 export const formatUpdateColumnsQuery = (tableName: string, obj: QueryObject, condition: string) =>
   `UPDATE ${tableName} SET ${formatSetQuery(obj)} WHERE ${condition}`;
 
-export const formateGetColumnsQuery = (tableName: string, condition?: string) =>
+export const formatGetRowsQuery = (tableName: string, condition?: string) =>
   condition ? `SELECT * FROM ${tableName} WHERE ${condition}` : `SELECT * FROM ${tableName}`;
 
 export const formatDeleteQuery = (tableName: string, condition: string) => `DELETE FROM ${tableName} WHERE ${condition}`

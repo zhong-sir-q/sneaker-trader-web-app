@@ -11,7 +11,7 @@ import { PRODUCTS, LISTED_PRODUCTS, USERS } from '../../config/tables';
 import initListedSneakerTable from '../../__mocks__/setup/initListedSneakerTable';
 import fakeListedSneaker from '../../__mocks__/fakeListedSneaker';
 import mysqlPoolConnection from '../../config/mysql';
-import { formateGetColumnsQuery, formatUpdateColumnsQuery } from '../../utils/formatDbQuery';
+import { formatGetRowsQuery, formatUpdateColumnsQuery } from '../../utils/formatDbQuery';
 
 import faker from 'faker'
 
@@ -90,7 +90,7 @@ describe('Listed product routes', () => {
 
   test('All sneakers should have the "listed" status', async (done) => {
     // randomly update the statuses of half the sneakers to either pending or sold
-    const getQuery = formateGetColumnsQuery(LISTED_PRODUCTS)
+    const getQuery = formatGetRowsQuery(LISTED_PRODUCTS)
     const poolConnOne = await mysqlPoolConnection()
     const initListedSneakers = await poolConnOne.query(getQuery)
 

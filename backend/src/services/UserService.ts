@@ -1,6 +1,6 @@
 import {
   formatInsertColumnsQuery,
-  formateGetColumnsQuery,
+  formatGetRowsQuery,
   doubleQuotedValue,
   formatUpdateColumnsQuery,
   formatDeleteQuery,
@@ -48,7 +48,7 @@ class UserService implements UserServiceEntity {
   async getByUsername(username: string): Promise<User | null> {
     const poolConn = await mysqlPoolConnection();
 
-    const getQuery = formateGetColumnsQuery(USERS, `username = ${doubleQuotedValue(username)}`);
+    const getQuery = formatGetRowsQuery(USERS, `username = ${doubleQuotedValue(username)}`);
     const res = await poolConn.query(getQuery);
 
     return res.length === 0 ? null : res[0];
@@ -56,7 +56,7 @@ class UserService implements UserServiceEntity {
 
   async getByEmail(email: string): Promise<User> {
     const poolConn = await mysqlPoolConnection();
-    const getUserByEmailQuery = formateGetColumnsQuery(USERS, 'email = ' + doubleQuotedValue(email));
+    const getUserByEmailQuery = formatGetRowsQuery(USERS, 'email = ' + doubleQuotedValue(email));
     const res = await poolConn.query(getUserByEmailQuery);
 
     return res.length === 0 ? null : res[0];

@@ -5,7 +5,7 @@ import {
   formatInsertColumnsQuery,
   formatSetQuery,
   formatColumns,
-  formateGetColumnsQuery,
+  formatGetRowsQuery,
 } from '../../utils/formatDbQuery';
 
 describe('Test format db queries dependent util functions', () => {
@@ -93,12 +93,12 @@ describe('Format db queries', () => {
   });
 
   test('Format get columns query without condition', () => {
-    const getQueryWithoutCondition = formateGetColumnsQuery('NBAStats');
+    const getQueryWithoutCondition = formatGetRowsQuery('NBAStats');
     expect(getQueryWithoutCondition).toBe('SELECT * FROM NBAStats');
   });
 
   test('Format get columns query with condition', () => {
-    const getQueryWithCondition = formateGetColumnsQuery('GameOfThrones', 'character = "Kalesi"');
+    const getQueryWithCondition = formatGetRowsQuery('GameOfThrones', 'character = "Kalesi"');
     expect(getQueryWithCondition).toBe('SELECT * FROM GameOfThrones WHERE character = "Kalesi"');
   });
 });

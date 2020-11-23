@@ -1,5 +1,5 @@
 import mysqlPoolConnection from '../config/mysql';
-import { formatInsertColumnsQuery, formatUpdateColumnsQuery, formateGetColumnsQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formatUpdateColumnsQuery, formatGetRowsQuery } from '../utils/formatDbQuery';
 import { TRANSACTION } from '../config/tables';
 import TranscationEntity from '../../../shared/@types/domains/entities/TransactionEntity';
 import { Transaction, BuyerPurchasedSneaker, MonthlyProfit } from '../../../shared';
@@ -7,7 +7,7 @@ import { getSellersAvgRatingQuery } from '../utils/queries';
 
 class TransactionService implements TranscationEntity {
   async get(listedSneakerId: number) {
-    const findTransactionQuery = formateGetColumnsQuery(TRANSACTION, `listedProductId = ${listedSneakerId}`);
+    const findTransactionQuery = formatGetRowsQuery(TRANSACTION, `listedProductId = ${listedSneakerId}`);
 
     const poolConn = await mysqlPoolConnection();
     const res = await poolConn.query(findTransactionQuery);

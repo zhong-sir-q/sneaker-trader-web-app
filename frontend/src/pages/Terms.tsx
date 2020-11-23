@@ -363,7 +363,7 @@ const Terms = () => {
         <b>Contact Us </b>
       </p>
 
-      <p>If you have any questions about these Terms, please contact us at hello@sneakertrader.coms.</p>
+      <p>If you have any questions about these Terms, please contact us at hello@sneakertrader.com.</p>
     </Container>
   );
 };

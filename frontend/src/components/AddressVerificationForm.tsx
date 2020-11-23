@@ -13,7 +13,7 @@ import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 import { Address } from '../../../shared';
-import { required } from 'utils/yup';
+import { required, equalDigits } from 'utils/yup';
 
 import { cities, regions } from 'data/nz';
 import AddressControllerInstance from 'api/controllers/AddressController';
@@ -43,7 +43,7 @@ const validationSchema = Yup.object({
   street: required(),
   city: required(),
   region: required(),
-  zipcode: required(),
+  zipcode: equalDigits(4),
   country: required(),
   suburb: required(),
 });
@@ -69,7 +69,11 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
   const disableField = () => address.verificationStatus === 'in_progress';
 
   const onFailCompleteVerification = () => alert('Verification code is not valid');
-  const onSuccessCompleteVerification = () => alert('Congratulations, your address is verified!');
+  const onSuccessCompleteVerification = async () => {
+    alert('Congratulations, your address is verified!');
+    onClose();
+    props.goLoadAddress();
+  };
 
   const onConfirmCode = async () => {
     if (!verificationCode || !currentUser) return;
@@ -79,8 +83,6 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
       onFailCompleteVerification,
       onSuccessCompleteVerification
     )(currentUser.id, verificationCode);
-
-    props.goLoadAddress();
   };
 
   const onUpdateAddressSuccess = () => alert('Address is updated!');

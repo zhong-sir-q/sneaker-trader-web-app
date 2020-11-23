@@ -1,12 +1,12 @@
 import { AddressEntity, Address, AddrVerificationStatus } from '../../../shared';
-import { formateGetColumnsQuery, formatUpdateColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
+import { formatGetRowsQuery, formatUpdateColumnsQuery, formatInsertColumnsQuery } from '../utils/formatDbQuery';
 
 import { ADDRESS } from '../config/tables';
 import mysqlPoolConnection from '../config/mysql';
 import AddressVerificationCodeService from './AddressVerificationCodeService';
 
 class AddressService implements AddressEntity {
-  AddressVerificationCodeServiceInstance: AddressVerificationCodeService;
+  private readonly AddressVerificationCodeServiceInstance: AddressVerificationCodeService;
 
   constructor(AddrVerifyCodeServ: AddressVerificationCodeService) {
     this.AddressVerificationCodeServiceInstance = AddrVerifyCodeServ;
@@ -26,7 +26,7 @@ class AddressService implements AddressEntity {
   async getAddressByUserId(userId: number): Promise<Address | null> {
     const poolConn = await mysqlPoolConnection();
 
-    const getAddrQuery = formateGetColumnsQuery(ADDRESS, `userId = ${userId}`);
+    const getAddrQuery = formatGetRowsQuery(ADDRESS, `userId = ${userId}`);
     const result = await poolConn.query(getAddrQuery);
 
     return result.length === 0 ? null : result[0];
@@ -36,7 +36,10 @@ class AddressService implements AddressEntity {
     const addr = await this.getAddressByUserId(userId);
     if (!addr) return false;
 
-    return this.AddressVerificationCodeServiceInstance.validateCode(userId, code);
+    const isCodeValid = await this.AddressVerificationCodeServiceInstance.validateCode(userId, code);
+    if (isCodeValid) this.updateVerificationStatus(userId, 'verified');
+
+    return isCodeValid;
   }
 
   async generateVerificationCode(userId: number): Promise<void> {

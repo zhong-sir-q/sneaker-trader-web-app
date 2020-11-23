@@ -1,4 +1,4 @@
-import { formatInsertColumnsQuery, formateGetColumnsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formatGetRowsQuery, doubleQuotedValue } from '../utils/formatDbQuery';
 
 import mysqlPoolConnection from '../config/mysql';
 
@@ -12,7 +12,7 @@ class SneakerService implements SneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     const condition = `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}`;
-    const getQuery = formateGetColumnsQuery(PRODUCTS, condition);
+    const getQuery = formatGetRowsQuery(PRODUCTS, condition);
     const prod = await poolConn.query(getQuery);
 
     // has to be null instead of undefined
@@ -23,7 +23,7 @@ class SneakerService implements SneakerEntity {
   async getFirstByNameColorway(nameColorway: string): Promise<Sneaker> {
     const poolConn = await mysqlPoolConnection();
 
-    const getByNameColorwayQuery = formateGetColumnsQuery(
+    const getByNameColorwayQuery = formatGetRowsQuery(
       PRODUCTS,
       `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)}`
     );

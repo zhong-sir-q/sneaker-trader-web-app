@@ -11,7 +11,7 @@ const pool = mysql.createPool(config.sqlConnectionConfig);
 
 export const endPool = () => pool.end();
 
-const mysqlPoolConnection = (): Promise<DataConnection> => {
+function mysqlPoolConnection(): Promise<DataConnection> {
   return new Promise((resolve, reject) => {
     pool.getConnection((err, conn) => {
       if (err) reject(err);

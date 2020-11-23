@@ -1,12 +1,12 @@
 import mysqlPoolConnection from '../config/mysql';
-import { formatInsertColumnsQuery, formateGetColumnsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
+import { formatInsertColumnsQuery, formatGetRowsQuery, formatDeleteQuery } from '../utils/formatDbQuery';
 import { WALLET } from '../config/tables';
 
 import WalletEntity from '../../../shared/@types/domains/entities/WalletEntity';
 
 class WalletService implements WalletEntity {
   async getBalanceByUserId(userId: number): Promise<number | null> {
-    const getBalanceByUserIdQuery = formateGetColumnsQuery(WALLET, `userId = ${userId}`);
+    const getBalanceByUserIdQuery = formatGetRowsQuery(WALLET, `userId = ${userId}`);
     const poolConn = await mysqlPoolConnection();
 
     const queryRes = await poolConn.query(getBalanceByUserIdQuery);
