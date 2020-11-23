@@ -32,7 +32,9 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
       <CollapseButtonDiv>
         <Button onClick={onOpen}>Filter</Button>
       </CollapseButtonDiv>
-      <Drawer anchor='bottom' open={open} onClose={onClose}>
+      {/* set variant to persistent, so the drawer does not unmount on open/close, so the
+      filters do not get re-rendereed */}
+      <Drawer variant='persistent' anchor='bottom' open={open} onClose={onClose}>
         <MuiCloseButton onClick={onClose} />
         <div style={{ padding: '50px' }}>
           <ButtonFilters filterKey='size' filters={sizeFilters} title='us sizes' />
