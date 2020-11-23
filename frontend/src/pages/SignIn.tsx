@@ -6,8 +6,6 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Card, CardBody, CardHeader, CardFooter, Container, Col, Button } from 'reactstrap';
 import styled from 'styled-components';
 
-import queryString from 'query-string';
-import jwt_decode from "jwt-decode"
 import * as Yup from 'yup';
 
 // components
@@ -16,15 +14,19 @@ import FormikInput from 'components/formik/FormikInput';
 
 import { validEmail, minCharacters } from 'utils/yup';
 
-import { SIGNUP, AUTH, FORGOT_PW, HOME } from 'routes';
+import { SIGNUP, AUTH, FORGOT_PW, HOME, SIGNIN } from 'routes';
 
 import stLogo from 'assets/img/logo_transparent_background.png';
 import bgImage from 'assets/img/bg14.jpg';
 import { signIn } from 'utils/auth';
-import SignInWithGoogle from 'components/buttons/SigninWithGoogle';
 import SignInWithFacebook from 'components/buttons/SignInWithFacebook';
-import formatApiEndpoint from 'utils/formatApiEndpoint';
-import formatRequestOptions from 'utils/formatRequestOptions';
+
+import googleLogo from 'assets/img/google_logo_svg.png';
+import {
+  GoogleOauth2Controller,
+  FederatedSigninError,
+  signinWithGoogleCredentials,
+} from 'api/controllers/external/GoogleOauth2Controller';
 
 type SignInFormStateType = {
   email: string;
@@ -41,13 +43,15 @@ const validationSchema = Yup.object({
   password: minCharacters(8),
 });
 
-type GoogleSinginButtonProps = {
+// refactor the goolge sign in code to separate files
+
+type FederatedSigninButtonProps = {
   onClick: () => void;
   img: string;
   btnText: string;
 };
 
-const StyledSigninButton = styled.button`
+const StyledFederatedSigninButton = styled.button`
   background-color: white;
   color: black;
   width: 100%;
@@ -56,76 +60,61 @@ const StyledSigninButton = styled.button`
   margin-bottom: 15px;
 `;
 
-const StyledSigninButtonImg = styled.img`
+const StyledFederatedSigninButtonImg = styled.img`
   margin-bottom: 3px;
   margin-right: 5px;
   width: 20px;
 `;
 
-const SigninButton = (props: GoogleSinginButtonProps) => {
+const FederatedSigninButton = (props: FederatedSigninButtonProps) => {
   return (
-    <StyledSigninButton onClick={props.onClick} type='button'>
-      <StyledSigninButtonImg alt='Signin button image' src={props.img} />
+    <StyledFederatedSigninButton onClick={props.onClick} type='button'>
+      <StyledFederatedSigninButtonImg alt='Signin button image' src={props.img} />
       {props.btnText}
-    </StyledSigninButton>
+    </StyledFederatedSigninButton>
   );
 };
 
-const googleOAuth2Url = () => {
-  const oauthConsentUrl = 'https://accounts.google.com/o/oauth2/auth';
-  const response_type = 'code';
-  const client_id = '1021202892438-g7803i6ust97vvb8mojt8lneu1fdajgd.apps.googleusercontent.com';
-  const scope = 'openid email profile';
-  const redirect_uri = 'https://localhost:3000/auth/signin';
-
-  const queries = queryString.stringify({ response_type, client_id, scope, redirect_uri });
-
-  return oauthConsentUrl + '?' + queries;
+type GoogleSigninButtonProps = {
+  googleOauth2Controller: GoogleOauth2Controller;
 };
 
 // sign in with google by redirect
-const GoogleSigninButton = () => {
-  // TODO: store and use the image locally
-  const btnImg =
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png';
+const GoogleSigninButton = (props: GoogleSigninButtonProps) => {
+  const redirectToGoogleAuthUrl = async () => {
+    const authUrl = await props.googleOauth2Controller.createAuthUrl();
+    window.location.href = authUrl;
+  };
 
-  return (
-    <SigninButton
-      img={btnImg}
-      btnText='Signin With Google'
-      onClick={() => (window.location.href = googleOAuth2Url())}
-    />
-  );
+  return <FederatedSigninButton img={googleLogo} btnText='Sign in with Google' onClick={redirectToGoogleAuthUrl} />;
 };
 
-const SignIn = () => {
+type SigninProps = {
+  googleOauth2Controller: GoogleOauth2Controller;
+};
+
+const SignIn = (props: SigninProps) => {
   const [loginError, setLoginError] = useState<string>();
 
   const location = useLocation();
+  const history = useHistory();
 
-  const exchangeCodeForTokens = (code: string) => fetch(formatApiEndpoint('auth/google/tokens'), formatRequestOptions({ code })).then(res => res.json())
-
+  // listen for the location to sign in the user with Google credentials
   useEffect(() => {
     const { search } = location;
 
-    const urlParams = new URLSearchParams(search)
-    const googleAuthCode = urlParams.get('code')
-    
-    // the user has signed in successfully with google
+    const urlParams = new URLSearchParams(search);
+    const googleAuthCode = urlParams.get('code');
+
+    // the user has granted the consent with google
     if (googleAuthCode) {
-      // retrive the info about the user and signin with AWS
-      (async () => {
-        console.log('I am here')
-        // user may input random auth code into the url and that will invalidate the request
-        const tokens = await exchangeCodeForTokens(googleAuthCode)
-
-        console.log(tokens)
-
-        // const googleUser = jwt_decode(id_token)
-        // console.log(googleAuthCode)
-      })()
+      signinWithGoogleCredentials(props.googleOauth2Controller, googleAuthCode).catch((err) => {
+        if (err instanceof FederatedSigninError) setLoginError(err.message);
+        // clears the google auth code from the url
+        history.push(AUTH + SIGNIN);
+      });
     }
-  }, [location]);
+  }, [location, history, props.googleOauth2Controller]);
 
   const updateLoginErr = (message: string) => setLoginError(message);
 
@@ -158,8 +147,7 @@ const SignIn = () => {
                           <img src={stLogo} alt='sneakertrader-logo' />
                         </Link>
                       </div>
-                      <GoogleSigninButton />
-                      {/* <SignInWithGoogle handleSignin={updateLoginErr} /> */}
+                      <GoogleSigninButton googleOauth2Controller={props.googleOauth2Controller} />
                       <SignInWithFacebook handleSignin={updateLoginErr} />
                     </CardHeader>
                     <CardBody>

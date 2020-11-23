@@ -20,6 +20,7 @@ import PreviewImgDropzoneProvider from 'providers/PreviewImgDropzoneProvider';
 import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
 import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
 import WalletProvider from 'providers/WalletProvider';
+import GoogleOauth2ControllerInstance from 'api/controllers/external/GoogleOauth2Controller';
 
 // routes
 export const AUTH = '/auth';
@@ -146,7 +147,7 @@ const routes: SneakerTraderRoute[] = [
   {
     path: SIGNIN,
     name: 'Signin',
-    component: SignIn,
+    component: () => <SignIn googleOauth2Controller={GoogleOauth2ControllerInstance} />,
     layout: AUTH,
   },
   {

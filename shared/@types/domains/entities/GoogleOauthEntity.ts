@@ -1,5 +1,5 @@
 interface GoogleOauthEntity {
-  createAuthUrl(): string;
+  createAuthUrl(): string | Promise<string>;
   exchangeCodeForTokens(code: string): Promise<any>;
 }
 
