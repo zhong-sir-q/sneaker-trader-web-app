@@ -47,7 +47,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
         </th>
         <th
           style={{ minWidth: '105px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'))}
+          className={clsx('sortable', getHeaderClassName('listedDatetime'))}
           onClick={() => requestSort('listedDatetime')}
         >
           list date
