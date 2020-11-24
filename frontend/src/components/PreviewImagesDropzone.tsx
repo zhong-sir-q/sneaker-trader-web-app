@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
 import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
+
+import Cropper from 'react-cropper';
+import { DeleteForever } from '@material-ui/icons';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {
@@ -26,36 +29,29 @@ const DropZoneContainer = styled.div`
   transition: border 0.24s ease-in-out;
 `;
 
-const PreviewAside = styled.aside`
-  display: flex;
-  max-height: 350px;
-`;
-
 type ThumbProps = {
-  isImageSelected: boolean;
   isFirstChild: boolean;
 };
 
+// flex = 1 so each sneaker preview thumb occupy the same proportion of the container
 const Thumb = styled.div<ThumbProps>`
   display: flex;
-  position: relative;
-  flex: 1 1 0;
+  flex: 1;
   flex-direction: column;
   align-items: center;
-  border: 2.5px solid;
   margin-top: 10px;
-  max-width: 265px;
-  padding-bottom: 23.5%;
   margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
-  border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;
 
-const PreviewImage = styled.img`
+type PreviewImageProps = {
+  isImageSelected: boolean;
+};
+
+const PreviewImage = styled.img<PreviewImageProps>`
   width: 100%;
   height: 100%;
-  position: absolute;
-  top: 0;
-  margin-bottom: 5px;
+  border: 2.5px solid;
+  border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;
 
 const GreenDot = styled.span`
@@ -78,19 +74,76 @@ type PreviewImagesDropZoneProps = {
   onNextStep: () => void;
 };
 
+const ImgCropper: React.FC = () => {
+  const cropperRef = useRef<HTMLImageElement>(null);
+  const { cropperImage, croppedImgFile, updateCroppedImage, onConfirmAddCroppedImg } = usePreviewImgDropzoneCtx();
+
+  const onCrop = () => {
+    const imageElement: any = cropperRef?.current;
+    const cropper: any = imageElement?.cropper;
+    updateCroppedImage(cropper.getCroppedCanvas().toDataURL());
+  };
+
+  if (!cropperImage) return null;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <Cropper
+        src={cropperImage}
+        style={{ width: '100%' }}
+        // Cropper.js options
+        initialAspectRatio={16 / 9}
+        crop={onCrop}
+        ref={cropperRef}
+        {...{
+          viewMode: 1,
+          background: false,
+          dragMode: 'move',
+          aspectRatio: 1.3333,
+          autoCropArea: 0.8,
+          center: false,
+          cropBoxMovable: true,
+          cropBoxResizable: false,
+          guides: false,
+        }}
+      />
+      <h5>Scroll wheel to zoom</h5>
+      {/* cropped img preview */}
+      <img src={croppedImgFile} alt='cropped file' />
+      <Button
+        color='primary'
+        onClick={() => {
+          if (croppedImgFile) onConfirmAddCroppedImg(croppedImgFile);
+        }}
+      >
+        Confirm
+      </Button>
+    </div>
+  );
+};
+
 const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   const { onPrevStep, onNextStep } = props;
   const { files, mainFileId, onDropFile, onRemoveFile, updateFileId } = usePreviewImgDropzoneCtx();
 
   const thumbs = files.map((file, idx) => (
-    <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.id}>
-      <PreviewImage onClick={() => updateFileId(file.id)} src={file.preview} alt={file.name} />
-      <i
-        style={{ cursor: 'pointer', position: 'absolute', bottom: '-22px' }}
-        onClick={() => onRemoveFile(file.id)}
-        className='now-ui-icons ui-1_simple-remove'
-        data-testid={`del-preview-${idx}`}
+    <Thumb
+      isFirstChild={idx === 0}
+      key={file.id}
+    >
+      <PreviewImage
+        isImageSelected={mainFileId === file.id}
+        onClick={() => updateFileId(file.id)}
+        src={file.preview}
+        alt={file.name}
       />
+      <DeleteForever onClick={() => onRemoveFile(file.id)} data-testid={`del-preview-${idx}`} />
     </Thumb>
   ));
 
@@ -121,8 +174,12 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
           <span>Select Images</span>
         </DropZoneContainer>
 
-        <PreviewAside data-testid='preview-img-container'>{thumbs}</PreviewAside>
+        <div className='flex' data-testid='preview-img-container'>
+          {thumbs}
+        </div>
       </CardBody>
+
+      <ImgCropper />
 
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Button onClick={onPrevStep}>Previous</Button>

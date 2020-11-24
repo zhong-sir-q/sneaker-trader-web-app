@@ -34,12 +34,7 @@ const fillSneakerListingForm = () => {
   cy.get(customAttribute('sneaker-prodCondition', 'id')).select('New');
 };
 
-const continueWithUncaughtExceptions = () => Cypress.on('uncaught:exception', (_err, _runnable) => false);
-
 describe('Whole app mono test', () => {
-  // need this because of the idpiframe_initialization_failed error when loading gapi
-  continueWithUncaughtExceptions()
-
   it('validates listing a pair of sneakers', () => {
     cy.visit('/admin/signin');
 
@@ -51,9 +46,12 @@ describe('Whole app mono test', () => {
     fillSneakerListingForm();
     cy.contains('Next').click();
 
-    // NOTE: can only upload one image for for now, multiple files will result in duplicate file uploads
-    // the old file gets uploaded too even after removing it using the ui
     cy.get(customAttribute('preview-img-dropzone')).attachFile('harden-vol-3.jpeg');
+    cy.contains('Confirm').click()
+    cy.get(customAttribute('preview-img-dropzone')).attachFile('17-black-white.jpg');
+    cy.contains('Confirm').click()
+    // remove the 17-black-white sneaker, 0 index based
+    cy.get(customAttribute('del-preview-1')).click()
     cy.contains('Preview').click();
 
     cy.contains('Confirm').click()
@@ -68,7 +66,7 @@ describe('Whole app mono test', () => {
     cy.visit('/')
 
     // go to buy sneaker page
-    const sneakerCardName = 'Jordan 4 Columbia White';
+    const sneakerCardName = 'Formposite 1 Gold';
     cy.contains(sneakerCardName).click();
     const sneakerSize = 'US 9';
     cy.contains(sneakerSize).click();
@@ -76,6 +74,10 @@ describe('Whole app mono test', () => {
 
     // redirect to sign in because I am unauthenticated
     login();
+
+    expect(cy.location().should((loc) => {
+      expect(loc.pathname).to.eq('/Formposite-1-Gold/9')
+    }))
 
     // redirect to the view seller list page
   });

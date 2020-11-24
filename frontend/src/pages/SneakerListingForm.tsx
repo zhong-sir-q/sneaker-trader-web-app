@@ -74,7 +74,7 @@ const SneakerListingForm = () => {
     };
 
     goTopupWalletIfNegativeWalletBalance();
-  });
+  }, [currentUser, history]);
 
   const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
@@ -113,19 +113,19 @@ const SneakerListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm goNextStep={goNextstep} />;
+      return <SneakerInfoForm goNextStep={goNextstep} />;
       case 1:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:
         const previewSneaker = {
           ...formatSneaker(listingSneakerFormState),
-          // although plural, but preview is always a single url
+          // although imageUrls plural, but the preview is always a single url
           imageUrls: getMainDisplayFile()!.preview,
         };
 
         return (
           <PreviewSneaker
-            aspectRatio='58.5%'
+            aspectRatio='66.6%'
             sneaker={previewSneaker}
             mainDisplayImage={previewSneaker.imageUrls}
             price={Number(listingSneakerFormState.askingPrice)}
