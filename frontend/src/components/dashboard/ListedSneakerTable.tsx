@@ -38,44 +38,40 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const ListedSneakerTableHeader = () => (
     <thead>
       <tr>
-        <th
-          style={{ cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('name'))}
-          onClick={() => requestSort('name')}
-        >
+        <th className={clsx('sortable', getHeaderClassName('name'), 'pointer')} onClick={() => requestSort('name')}>
           name
         </th>
         <th
-          style={{ minWidth: '105px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('listedDatetime'))}
+          style={{ minWidth: '115px' }}
+          className={clsx('sortable', getHeaderClassName('listedDatetime'), 'pointer')}
           onClick={() => requestSort('listedDatetime')}
         >
-          list date
+          listed date
         </th>
         <th
-          style={{ minWidth: '105px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'))}
+          style={{ minWidth: '105px' }}
+          className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'), 'pointer')}
           onClick={() => requestSort('buyer.transactionDatetime')}
         >
           sold date
         </th>
         <th
-          style={{ minWidth: '80px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('prodStatus'))}
+          style={{ minWidth: '80px' }}
+          className={clsx('sortable', getHeaderClassName('prodStatus'), 'pointer')}
           onClick={() => requestSort('prodStatus')}
         >
           status
         </th>
         <th
-          style={{ minWidth: '75px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('price'))}
+          style={{ minWidth: '75px' }}
+          className={clsx('sortable', getHeaderClassName('price'), 'pointer')}
           onClick={() => requestSort('price')}
         >
           price
         </th>
         <th
-          style={{ minWidth: '60px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('quantity'))}
+          style={{ minWidth: '60px'  }}
+          className={clsx('sortable', getHeaderClassName('quantity'), 'pointer')}
           onClick={() => requestSort('quantity')}
         >
           qty

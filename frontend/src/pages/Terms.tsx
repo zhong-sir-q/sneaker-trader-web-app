@@ -11,14 +11,14 @@ const Terms = () => {
       <p>Welcome to Sneaker Trader Limited.</p>
 
       <p>
-        Thanks for using our products and services (“Services”). The Services are provided by Sneaker Trader Limited
-        (“COMPANY NAME”), located at 18 Centre St, Auckland CBD, Auckland, New Zealand 1010.
+        Thanks for using our products and services (“Services”). The Services are provided by Sneaker Trader Limited,
+        located at 18 Centre St, Auckland CBD, Auckland, New Zealand 1010.
       </p>
 
       <p>
         By using our Services, you are agreeing to these terms. Please read these Terms and Conditions ("Terms", "Terms
-        and Conditions") carefully before using the https://www.sneakertrader.com website and the mobile application (the
-        "Service") operated by Sneaker Trader Limited ("us", "we", or "our").{' '}
+        and Conditions") carefully before using the https://www.sneakertrader.com website and the mobile application
+        (the "Service") operated by Sneaker Trader Limited ("us", "we", or "our").{' '}
       </p>
 
       <p>

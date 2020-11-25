@@ -79,7 +79,10 @@ const SneakerListingForm = () => {
   const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
-  const goPrevStep = () => setStep(step - 1);
+  const goPrevStep = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+  };
   const goNextstep = () => setStep(step + 1);
 
   const onFinishSubmit = async () => {
@@ -113,7 +116,7 @@ const SneakerListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-      return <SneakerInfoForm goNextStep={goNextstep} />;
+        return <SneakerInfoForm goNextStep={goNextstep} />;
       case 1:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
@@ -6,7 +6,8 @@ import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 
 import Cropper from 'react-cropper';
-import { DeleteForever } from '@material-ui/icons';
+import { DeleteForever, RotateRight, RotateLeft } from '@material-ui/icons';
+import { Slider } from '@material-ui/core';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {
@@ -76,13 +77,36 @@ type PreviewImagesDropZoneProps = {
 
 const ImgCropper: React.FC = () => {
   const cropperRef = useRef<HTMLImageElement>(null);
-  const { cropperImage, croppedImgFile, updateCroppedImage, onConfirmAddCroppedImg } = usePreviewImgDropzoneCtx();
 
-  const onCrop = () => {
-    const imageElement: any = cropperRef?.current;
-    const cropper: any = imageElement?.cropper;
-    updateCroppedImage(cropper.getCroppedCanvas().toDataURL());
+  // set it to 20 to allow the initial zoom out of the image
+  const INIT_SLIDER_VAL = 20;
+  const [sliderVal, setSliderVal] = useState<number | number[]>(INIT_SLIDER_VAL);
+  const { cropperImage, onConfirmAddCroppedImg } = usePreviewImgDropzoneCtx();
+
+  useEffect(() => {
+    // reset the slider value whenever the cropperImage is updated
+    setSliderVal(INIT_SLIDER_VAL);
+  }, [cropperImage]);
+
+  const handleSliderChange = (_evt: React.ChangeEvent<{}>, newVal: number | number[]) => {
+    if (typeof newVal === 'number' && typeof sliderVal === 'number') {
+      const zoomRatio = 0.1;
+      const delta = (newVal - sliderVal) / 10;
+      getCropper().zoom(delta * zoomRatio);
+    }
+
+    setSliderVal(newVal);
   };
+
+  const getCropper = () => (cropperRef.current as any).cropper;
+
+  const onConfirmCrop = () => {
+    const dataUrl = getCropper().getCroppedCanvas().toDataURL();
+    onConfirmAddCroppedImg(dataUrl);
+  };
+
+  const rotateLeft = () => getCropper().rotate(-90);
+  const rotateRight = () => getCropper().rotate(90);
 
   if (!cropperImage) return null;
 
@@ -99,29 +123,30 @@ const ImgCropper: React.FC = () => {
         style={{ width: '100%' }}
         // Cropper.js options
         initialAspectRatio={16 / 9}
-        crop={onCrop}
         ref={cropperRef}
         {...{
           viewMode: 1,
-          background: false,
+          // move the canvas
           dragMode: 'move',
+          background: false,
           aspectRatio: 1.3333,
           autoCropArea: 0.8,
           center: false,
-          cropBoxMovable: true,
+          cropBoxMovable: false,
           cropBoxResizable: false,
           guides: false,
+          zoomOnWheel: false,
+          zoomOnTouch: false
         }}
       />
-      <h5>Scroll wheel to zoom</h5>
-      {/* cropped img preview */}
-      <img src={croppedImgFile} alt='cropped file' />
-      <Button
-        color='primary'
-        onClick={() => {
-          if (croppedImgFile) onConfirmAddCroppedImg(croppedImgFile);
-        }}
-      >
+      <div style={{ width: '220px' }}>
+        <Slider value={sliderVal} onChange={handleSliderChange} />
+      </div>
+      <div style={{ fontSize: '32px', width: '120px', display: 'flex', justifyContent: 'space-around' }}>
+        <RotateLeft onClick={rotateLeft} fontSize='inherit' />
+        <RotateRight onClick={rotateRight} fontSize='inherit' />
+      </div>
+      <Button color='primary' onClick={onConfirmCrop}>
         Confirm
       </Button>
     </div>
@@ -133,10 +158,7 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   const { files, mainFileId, onDropFile, onRemoveFile, updateFileId } = usePreviewImgDropzoneCtx();
 
   const thumbs = files.map((file, idx) => (
-    <Thumb
-      isFirstChild={idx === 0}
-      key={file.id}
-    >
+    <Thumb isFirstChild={idx === 0} key={file.id}>
       <PreviewImage
         isImageSelected={mainFileId === file.id}
         onClick={() => updateFileId(file.id)}

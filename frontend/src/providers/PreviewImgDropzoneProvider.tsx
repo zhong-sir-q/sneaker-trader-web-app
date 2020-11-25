@@ -2,11 +2,11 @@ import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 
 import { PreviewFile } from 'components/PreviewImagesDropzone';
+import AlertDialogProvider, { useAlertComponent } from './AlertDialogProvider';
 
 type PreviewImgDropzoneCtxType = {
   files: PreviewFile[];
   mainFileId: string | undefined;
-  croppedImgFile: string | undefined;
   cropperImage: string | undefined;
   formDataFromFiles: () => FormData;
   getMainDisplayFile: () => PreviewFile | undefined;
@@ -15,13 +15,11 @@ type PreviewImgDropzoneCtxType = {
   onRemoveFile: (fileId: string) => void;
   onConfirmAddCroppedImg: (croppedImg: string) => void;
   destroyFiles: () => void;
-  updateCroppedImage: (newImg: string) => void;
 };
 
 const INIT_PREVIEW_DROPZONE_CTX: PreviewImgDropzoneCtxType = {
   files: [],
   mainFileId: undefined,
-  croppedImgFile: undefined,
   cropperImage: undefined,
   formDataFromFiles: () => new FormData(),
   getMainDisplayFile: () => undefined,
@@ -40,9 +38,6 @@ const INIT_PREVIEW_DROPZONE_CTX: PreviewImgDropzoneCtxType = {
   onRemoveFile: () => {
     throw new Error('Must overide onRemoveFile');
   },
-  updateCroppedImage: () => {
-    throw new Error('Must override!');
-  },
 };
 
 export const PreviewImgDropzoneCtx = createContext(INIT_PREVIEW_DROPZONE_CTX);
@@ -55,36 +50,25 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
   const [mainFileId, setMainFileId] = useState<string>();
   // main image to display inside the cropper
   const [cropperImage, setCropperImage] = useState<string>();
-  // preview of the cropped image
-  const [croppedImgFile, setCroppedImgFile] = useState<string>();
+
+  const { onOpenAlert } = useAlertComponent();
 
   const updateFileId = (fileId: string) => setMainFileId(fileId);
-
-  const updateCroppedImage = (newImg: string) => setCroppedImgFile(newImg);
 
   const destroyFiles = () => {
     for (const f of files) URL.revokeObjectURL(f.preview);
   };
 
   const onDropFile = (acceptedFiles: File[]) => {
+    const UPLOAD_LIMIT = 5;
+
+    if (files.length === UPLOAD_LIMIT) {
+      onOpenAlert();
+      return;
+    }
+
     const dataUrl = URL.createObjectURL(acceptedFiles[0]);
-    updateCroppedImage(dataUrl);
     setCropperImage(dataUrl);
-
-    // const UPLOAD_LIMIT = 5;
-
-    // if (files.length === UPLOAD_LIMIT) {
-    //   alert('Maximum upload of 5 images!');
-    //   return;
-    // }
-    // const filesAfterDrop = files.concat(
-    //   acceptedFiles.map((file: any) => {
-    //     const previewBlob = URL.createObjectURL(file);
-    //     return Object.assign(file, { preview: previewBlob, id: uuidV4() });
-    //   })
-    // );
-
-    // setFiles(filesAfterDrop);
   };
 
   const createPreviewFile = (f: File) => {
@@ -94,10 +78,7 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
 
   const createBlob = (fileDataUrl: string) => fetch(fileDataUrl).then((res) => res.blob());
 
-  const resetCropper = () => {
-    setCropperImage('');
-    updateCroppedImage('');
-  };
+  const resetCropper = () => setCropperImage(undefined);
 
   const onConfirmAddCroppedImg = async (img: string) => {
     const file: File = new File([await createBlob(img)], uuidV4());
@@ -140,13 +121,11 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
         files,
         mainFileId,
         cropperImage,
-        croppedImgFile,
         onConfirmAddCroppedImg,
         destroyFiles,
         getMainDisplayFile,
         formDataFromFiles,
         updateFileId,
-        updateCroppedImage,
         onDropFile,
         onRemoveFile,
       }}
@@ -156,4 +135,8 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
   );
 };
 
-export default PreviewImgDropzoneProvider;
+export default (props: { children: React.ReactNode }) => (
+  <AlertDialogProvider color='danger' msg='Maximum upload of 5 images!'>
+    <PreviewImgDropzoneProvider>{props.children}</PreviewImgDropzoneProvider>
+  </AlertDialogProvider>
+);

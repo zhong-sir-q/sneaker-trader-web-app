@@ -65,3 +65,11 @@
   padding: 2 25px 0 0;
   content: 'f';
 }
+
+.pointer {
+  cursor: pointer;
+}
+
+.no-margin {
+  margin: 0;
+}
