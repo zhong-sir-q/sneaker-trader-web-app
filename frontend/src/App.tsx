@@ -33,6 +33,9 @@ import NotFound from 'pages/NotFound';
 import ListedSneakerRoutesProvider from 'providers/ListedSneakerRoutesProvider';
 import UserRankingProvider from 'providers/UserRankingProvider';
 
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import EditListedSneakerRoutesProvider from 'providers/EditListedSneakerRoutesProvider';
+
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
 Amplify.configure({
@@ -54,10 +57,10 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
 
   // clear the cache before returning the route
   const clearCachedRoute = () => {
-    const cachedRoute = localStorage.getItem('cached_route')
-    localStorage.removeItem('cached_route')
-    return cachedRoute
-  }
+    const cachedRoute = localStorage.getItem('cached_route');
+    localStorage.removeItem('cached_route');
+    return cachedRoute;
+  };
 
   // state has the highest priority, then cached route, then HOME
   return !signedIn ? <AuthLayout /> : <Redirect to={(state as any) || clearCachedRoute() || HOME} />;
@@ -73,12 +76,16 @@ const App = () => {
           <Switch>
             <Route path={AUTH} component={RelaxedAuth} />
 
-            <Route path={ADMIN} component={ProtectedAdmin} />
+            <Route path={ADMIN}>
+              <EditListedSneakerRoutesProvider listedSneakerController={ListedSneakerControllerInstance}>
+                <ProtectedAdmin />
+              </EditListedSneakerRoutesProvider>
+            </Route>
 
             <Route path={HOME}>
               <UserRankingProvider>
-                <ListedSneakerRoutesProvider>
-                  <MarketPlaceProvider>
+                <ListedSneakerRoutesProvider listedSneakerController={ListedSneakerControllerInstance}>
+                  <MarketPlaceProvider listedSneakerController={ListedSneakerControllerInstance}>
                     <HomeLayout />
                   </MarketPlaceProvider>
                 </ListedSneakerRoutesProvider>

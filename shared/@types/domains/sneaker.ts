@@ -12,7 +12,7 @@ type SizeMinPriceType = { size: number; minPrice: number };
 export type SizeMinPriceGroupType = SizeMinPriceType[];
 
 export type CustomerSneaker = Pick<Sneaker, 'name' | 'colorway' | 'size' | 'brand'> &
-  Pick<ListedProduct, 'id' | 'prodStatus' | 'sizeSystem' | 'mainDisplayImage' | 'listedDatetime'> & { quantity: number; price: number };
+  ListedProduct & { quantity: number; price: number };
 
 export type AppSneaker = Omit<Sneaker, 'id' | 'RRP'>;
 
@@ -20,7 +20,10 @@ export type AppListedSneaker = Omit<ListedProduct, 'id' | 'listedDatetime'>;
 
 export type GallerySneaker = AppSneaker & AppListedSneaker & { minPrice: number };
 
-export type ListedSneakerFormPayload = Omit<ListedProduct, 'id' | 'productId' | 'userId' | 'imageUrls' | 'listedDatetime'>;
+export type ListedSneakerFormPayload = Omit<
+  ListedProduct,
+  'id' | 'productId' | 'userId' | 'imageUrls' | 'listedDatetime'
+>;
 
 export type ListingFormSneaker = Omit<AppSneaker, 'imageUrls'>;
 

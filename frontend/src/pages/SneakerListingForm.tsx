@@ -116,21 +116,15 @@ const SneakerListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm goNextStep={goNextstep} />;
+        return <SneakerInfoForm title='Sneaker Listing Form' goNextStep={goNextstep} />;
       case 1:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:
-        const previewSneaker = {
-          ...formatSneaker(listingSneakerFormState),
-          // although imageUrls plural, but the preview is always a single url
-          imageUrls: getMainDisplayFile()!.preview,
-        };
-
         return (
           <PreviewSneaker
             aspectRatio='66.6%'
-            sneaker={previewSneaker}
-            mainDisplayImage={previewSneaker.imageUrls}
+            sneaker={formatSneaker(listingSneakerFormState)}
+            mainDisplayImage={getMainDisplayFile()!.preview}
             price={Number(listingSneakerFormState.askingPrice)}
             onPrevStep={goPrevStep}
             onSubmit={onFinishSubmit}

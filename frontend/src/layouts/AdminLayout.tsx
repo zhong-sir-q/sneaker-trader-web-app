@@ -12,6 +12,7 @@ import Footer from 'components/Footer';
 import routes, { SneakerTraderRoute, sidebarRoutes } from 'routes';
 import Sidebar, { defaultSideBarProps } from 'components/Sidebar';
 import UserRankingProvider from 'providers/UserRankingProvider';
+import { useEditListedSneakerRoutes } from 'providers/EditListedSneakerRoutesProvider';
 
 const getRoutes = (routes: SneakerTraderRoute[]): (ReactNode | null)[] => {
   return routes.map(({ collapse, views, layout, path, component }, idx) => {
@@ -48,6 +49,8 @@ const AdminLayout = () => {
   const mainPanel = useRef<HTMLDivElement>(null);
   const notificationAlert = useRef<any>(null);
   const location = useLocation();
+
+  const { editListedSneakerRoutes } = useEditListedSneakerRoutes();
 
   useEffect(() => setReRender((val) => !val), [location]);
 
@@ -96,13 +99,10 @@ const AdminLayout = () => {
           <AdminNavbar brandText={getActiveRoute(routes)} />
           <Switch>
             {getRoutes(routes)}
+            {editListedSneakerRoutes}
             <Redirect from='/admin' to='/admin/dashboard' />
           </Switch>
-
-          {
-            // do not render footer on full screen maps page
-            window.location.href.indexOf('full-screen-maps') !== -1 ? null : <Footer fluid default={false} />
-          }
+          <Footer fluid default={false} />
         </div>
       </div>
     </UserRankingProvider>
