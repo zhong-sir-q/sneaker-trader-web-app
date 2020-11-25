@@ -136,7 +136,7 @@ const ImgCropper: React.FC = () => {
           cropBoxResizable: false,
           guides: false,
           zoomOnWheel: false,
-          zoomOnTouch: false
+          zoomOnTouch: false,
         }}
       />
       <div style={{ width: '220px' }}>

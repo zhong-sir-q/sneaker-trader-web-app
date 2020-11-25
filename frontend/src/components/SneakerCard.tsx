@@ -1,11 +1,8 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
 
 import FixedAspectRatioImg from './FixedAspectRatioImg';
-
-import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
 import { AppSneaker } from '../../../shared';
 
@@ -35,17 +32,12 @@ type SneakerCardProps = {
   styles?: React.CSSProperties;
   className?: string;
   aspectRatio?: string;
+  onClick?: () => void;
 };
 
 const SneakerCard = (props: SneakerCardProps) => {
-  const history = useHistory();
-
-  const { aspectRatio, sneaker, isListed, price, maxWidth, mainDisplayImage } = props;
+  const { aspectRatio, sneaker, isListed, price, maxWidth, mainDisplayImage, onClick } = props;
   const { name, size, colorway } = sneaker;
-
-  const onClick = () => {
-    if (isListed && name && colorway) redirectBuySneakerPage(history, name, colorway);
-  };
 
   const displayName = `${name} ${colorway}`;
 

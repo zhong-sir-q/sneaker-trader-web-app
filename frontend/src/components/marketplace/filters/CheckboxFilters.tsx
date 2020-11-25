@@ -18,7 +18,7 @@ const CheckboxInput = styled.input`
 const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
   const { filters, filterKey, title } = props;
 
-  const { onSelectFilter } = useMarketPlaceCtx();
+  const { onSelectFilter, isFilterSelected } = useMarketPlaceCtx();
   const { open, toggle } = useOpenCloseComp(true);
 
   return (
@@ -29,11 +29,14 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
       </FilterTitle>
       <Collapse isOpen={open}>
         {filters.map((val, idx) => (
-          <div key={idx}>
-            <Label>
-              <CheckboxInput type='checkbox' onClick={() => onSelectFilter(filterKey, val)} /> {val}
-            </Label>
-          </div>
+          <Label key={idx}>
+            <CheckboxInput
+              type='checkbox'
+              checked={isFilterSelected(val)}
+              onChange={() => onSelectFilter(filterKey, val)}
+            />{' '}
+            {val}
+          </Label>
         ))}
       </Collapse>
     </FilterWrapper>

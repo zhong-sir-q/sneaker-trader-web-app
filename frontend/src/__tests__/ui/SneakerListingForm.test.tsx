@@ -52,6 +52,8 @@ const mockFiles = Array(NUM_MOCK_PREVIEW_FILES)
 const MOCK_INIT_PREVIEW_DROPZONE_VALUES = {
   files: mockFiles,
   mainFileId: mockFiles[0].id,
+  cropperImage: undefined,
+  onConfirmAddCroppedImg: jest.fn(),
   formDataFromFiles: jest.fn(),
   getMainDisplayFile: jest.fn().mockReturnValue(mockFiles[0]),
   updateFileId: jest.fn(),
