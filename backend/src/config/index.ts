@@ -2,7 +2,9 @@ import dotenv from 'dotenv';
 import Stripe from 'stripe';
 
 // load variables from .env to process.env
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+const { NODE_ENV } = process.env
+const suffix = !NODE_ENV ? '' : `.${NODE_ENV}`
+dotenv.config({ path: `.env${suffix}` });
 
 const config = {
   sqlConnectionConfig: {
