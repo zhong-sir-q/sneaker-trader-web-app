@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Col, Card, CardHeader, CardBody, Row, FormGroup, CardFooter, Button } from 'reactstrap';
 
-import { Formik, Form as FormikForm } from 'formik';
+import { Formik, Form as FormikForm, useFormikContext } from 'formik';
 
 import FormikLabelInput from './formik/FormikLabelInput';
 import FormikLabelSelect from './formik/FormikLabelSelect';
@@ -11,16 +11,29 @@ import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 
 import { DASHBOARD, ADMIN } from 'routes';
 
-import { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
 import { range } from 'utils/utils';
 
 type SneakerInfoFormProps = {
-  goNextStep: () => void;
+  title: string;
+  goNextStep?: () => void;
 };
 
 const currencyCodeOptions = ['NZD', 'USD', 'AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'YUAN'];
 const shoeSizeOptions = ['US', 'EU', 'Japan', 'UK'];
 const sneakerConditionRatings = range(1, 10, 0.5);
+
+// sync the formik form values with the snekaer listing form provider values
+const FormikValueSubscriber = () => {
+  const { values } = useFormikContext();
+  const { updateFormState } = useSneakerListingFormCtx();
+
+  useEffect(() => {
+    updateFormState(values as SneakerListingFormStateType);
+  }, [values, updateFormState]);
+
+  return null;
+};
 
 const SneakerInfoForm = (props: SneakerInfoFormProps) => {
   const preventOnFormEnterDefault = (evt: React.KeyboardEvent<HTMLFormElement>) => {
@@ -33,7 +46,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
     sneakerNamesOptions,
     listingSneakerFormState,
     validationSchema,
-    onSubmit,
+    updateFormState,
   } = useSneakerListingFormCtx();
 
   return (
@@ -41,15 +54,16 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
       initialValues={listingSneakerFormState}
       validationSchema={validationSchema}
       onSubmit={(formStates) => {
-        onSubmit(formStates);
-        props.goNextStep();
+        updateFormState(formStates);
+        if (props.goNextStep) props.goNextStep();
       }}
       enableReinitialize
     >
       {({ setFieldValue, values }) => (
         <Card className='text-left'>
+          <FormikValueSubscriber />
           <CardHeader>
-            <h5 className='text-center title'>Sneaker Listing Form</h5>
+            <h5 className='text-center title'>{props.title}</h5>
           </CardHeader>
           <FormikForm onKeyDown={preventOnFormEnterDefault}>
             <CardBody>
@@ -193,7 +207,6 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 </Row>
               )}
               <FormGroup>
-                {/* TODO: add new line after enter is pressed */}
                 <FormikLabelInput
                   name='description'
                   placeholder='Description...'
@@ -202,14 +215,16 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 />
               </FormGroup>
             </CardBody>
-            <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-              <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
-                <Button type='button'>Cancel</Button>
-              </Link>
-              <Button type='submit' color='primary' data-testid='sneaker-info-form-submit-btn'>
-                Next
-              </Button>
-            </CardFooter>
+            {props.goNextStep && (
+              <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
+                <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
+                  <Button type='button'>Cancel</Button>
+                </Link>
+                <Button type='submit' color='primary' data-testid='sneaker-info-form-submit-btn'>
+                  Next
+                </Button>
+              </CardFooter>
+            )}
           </FormikForm>
         </Card>
       )}

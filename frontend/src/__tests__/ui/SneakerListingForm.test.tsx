@@ -34,7 +34,7 @@ const MockSneakerListingFormProvider = (props: { children: React.ReactNode }) =>
         ...INIT_LISTING_FORM_CTX,
         validationSchema: Yup.object().shape({}),
         listingSneakerFormState,
-        onSubmit: (_formValues: SneakerListingFormStateType) =>
+        updateFormState: (_formValues: SneakerListingFormStateType) =>
           setListingSneakerFormState(fakeListingFormStateValues()),
       }}
     >

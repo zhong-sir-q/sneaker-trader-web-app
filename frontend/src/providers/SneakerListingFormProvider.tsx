@@ -8,10 +8,11 @@ import * as Yup from 'yup';
 import { ListedProduct, Sneaker, SneakerCondition } from '../../../shared';
 import { useAuth } from './AuthProvider';
 
+// string | number so the type becomes compatible in EditListedSneakerPage
 export type SneakerListingFormStateType = Pick<
   Sneaker & ListedProduct,
   'name' | 'brand' | 'colorway' | 'description' | 'sizeSystem' | 'currencyCode' | 'prodCondition' | 'conditionRating'
-> & { size: string; originalPurchasePrice: string; askingPrice: string };
+> & { size: string | number; originalPurchasePrice: string | number; askingPrice: string | number };
 
 type SneakerListingFormCtxType = {
   brandOptions: string[];
@@ -19,7 +20,7 @@ type SneakerListingFormCtxType = {
   colorwayOptions: string[];
   listingSneakerFormState: SneakerListingFormStateType;
   validationSchema: Yup.ObjectSchema;
-  onSubmit: (newState: SneakerListingFormStateType) => void;
+  updateFormState: (newState: SneakerListingFormStateType) => void;
 };
 
 export const INIT_LISTING_FORM_STATE_VALUES: SneakerListingFormStateType = {
@@ -54,7 +55,7 @@ export const INIT_LISTING_FORM_CTX: SneakerListingFormCtxType = {
   colorwayOptions: [],
   listingSneakerFormState: INIT_LISTING_FORM_STATE_VALUES,
   validationSchema: sneakerListingFormValidationSchema,
-  onSubmit: () => {
+  updateFormState: () => {
     throw new Error('Must override onSubmit');
   },
 };
@@ -63,8 +64,10 @@ export const SneakerListingFormCtx = createContext(INIT_LISTING_FORM_CTX);
 
 export const useSneakerListingFormCtx = () => useContext(SneakerListingFormCtx);
 
-const SneakerListingFormProvider = (props: { children: React.ReactNode }) => {
-  const [listingSneakerFormState, setListingSneakerFormState] = useState(INIT_LISTING_FORM_STATE_VALUES);
+const SneakerListingFormProvider = (props: { children: React.ReactNode; formValues?: SneakerListingFormStateType }) => {
+  const [listingSneakerFormState, setListingSneakerFormState] = useState(
+    props.formValues || INIT_LISTING_FORM_STATE_VALUES
+  );
 
   const [brandOptions, setBrandOptions] = useState<string[]>([]);
   const [sneakerNamesOptions, setSneakerNamesOptions] = useState<string[]>([]);
@@ -87,7 +90,7 @@ const SneakerListingFormProvider = (props: { children: React.ReactNode }) => {
     }
   }, [currentUser, history]);
 
-  const onSubmit = (newState: SneakerListingFormStateType) => setListingSneakerFormState(newState);
+  const updateFormState = (newState: SneakerListingFormStateType) => setListingSneakerFormState(newState);
 
   return (
     <SneakerListingFormCtx.Provider
@@ -96,8 +99,8 @@ const SneakerListingFormProvider = (props: { children: React.ReactNode }) => {
         colorwayOptions,
         sneakerNamesOptions,
         listingSneakerFormState,
-        onSubmit,
         validationSchema: sneakerListingFormValidationSchema,
+        updateFormState,
       }}
     >
       {props.children}

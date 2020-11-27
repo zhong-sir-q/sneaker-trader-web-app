@@ -11,6 +11,8 @@ interface ListedSneakerEntity {
   getAllListedSneakers(): Promise<GetListedSneaker[]>;
 
   create(p: CreateListedSneakerPayload): Promise<number>;
+  // it returns the updated listed sneaker payload
+  update(listedSneakerId: number, listedSneaker: CreateListedSneakerPayload): Promise<ListedProduct>;
   handlePurchase(listedSneakerId: number, sellerId: number): Promise<any>;
   updateListedSneakerStatus(
     listedSneakerId: number,

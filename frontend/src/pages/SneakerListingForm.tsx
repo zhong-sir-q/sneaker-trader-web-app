@@ -17,42 +17,14 @@ import SneakerInfoForm from 'components/SneakerInfoForm';
 
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
-import { SneakerListingFormStateType, useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
 
 import { ADMIN, TOPUP_WALLET } from 'routes';
 
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 
-import { mapUpperCaseFirstLetter } from 'utils/utils';
-
-import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
-
-const formatListedSneakerPayload = (sneaker: SneakerListingFormStateType, quantity?: number) => (
-  s3UploadedUrls: string[]
-): ListedSneakerFormPayload => ({
-  askingPrice: Number(sneaker.askingPrice),
-  sizeSystem: sneaker.sizeSystem,
-  currencyCode: sneaker.currencyCode,
-  prodCondition: sneaker.prodCondition,
-  quantity: quantity || 1,
-  prodStatus: 'listed' as SneakerStatus,
-  conditionRating: sneaker.conditionRating,
-  description: sneaker.description,
-  serialNumber: '',
-  originalPurchasePrice: Number(sneaker.originalPurchasePrice),
-  mainDisplayImage: s3UploadedUrls[0],
-});
-
-const formatSneaker = (s: SneakerListingFormStateType) => {
-  const name = mapUpperCaseFirstLetter(s.name, ' ');
-  const colorway = mapUpperCaseFirstLetter(s.colorway, ' ');
-  const brand = mapUpperCaseFirstLetter(s.brand, ' ');
-
-  const size = Number(s.size);
-
-  return { name, colorway, brand, size };
-};
+import { formatListedSneakerPayload, formatSneaker } from 'utils/utils';
 
 // the providers reside in routes.tsx
 const SneakerListingForm = () => {
@@ -116,21 +88,15 @@ const SneakerListingForm = () => {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm goNextStep={goNextstep} />;
+        return <SneakerInfoForm title='Sneaker Listing Form' goNextStep={goNextstep} />;
       case 1:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 2:
-        const previewSneaker = {
-          ...formatSneaker(listingSneakerFormState),
-          // although imageUrls plural, but the preview is always a single url
-          imageUrls: getMainDisplayFile()!.preview,
-        };
-
         return (
           <PreviewSneaker
             aspectRatio='66.6%'
-            sneaker={previewSneaker}
-            mainDisplayImage={previewSneaker.imageUrls}
+            sneaker={formatSneaker(listingSneakerFormState)}
+            mainDisplayImage={getMainDisplayFile()!.preview}
             price={Number(listingSneakerFormState.askingPrice)}
             onPrevStep={goPrevStep}
             onSubmit={onFinishSubmit}

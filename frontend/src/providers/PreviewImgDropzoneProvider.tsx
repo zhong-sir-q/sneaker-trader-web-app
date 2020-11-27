@@ -44,9 +44,9 @@ export const PreviewImgDropzoneCtx = createContext(INIT_PREVIEW_DROPZONE_CTX);
 
 export const usePreviewImgDropzoneCtx = () => useContext(PreviewImgDropzoneCtx);
 
-const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
+const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewFiles?: PreviewFile[] }) => {
   // these are files because we need to use it to send form data through
-  const [files, setFiles] = useState<PreviewFile[]>([]);
+  const [files, setFiles] = useState<PreviewFile[]>(props.previewFiles || []);
   const [mainFileId, setMainFileId] = useState<string>();
   // main image to display inside the cropper
   const [cropperImage, setCropperImage] = useState<string>();
@@ -135,8 +135,8 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode }) => {
   );
 };
 
-export default (props: { children: React.ReactNode }) => (
+export default (props: { children: React.ReactNode; previewFiles?: PreviewFile[] }) => (
   <AlertDialogProvider color='danger' msg='Maximum upload of 5 images!'>
-    <PreviewImgDropzoneProvider>{props.children}</PreviewImgDropzoneProvider>
+    <PreviewImgDropzoneProvider previewFiles={props.previewFiles}>{props.children}</PreviewImgDropzoneProvider>
   </AlertDialogProvider>
 );

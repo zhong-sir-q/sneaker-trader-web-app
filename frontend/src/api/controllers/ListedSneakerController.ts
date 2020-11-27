@@ -6,6 +6,7 @@ import {
   SellerListedSneaker,
   ListedProduct,
   GetListedSneaker,
+  CreateListedSneakerPayload,
 } from '../../../../shared';
 
 import ListedSneakerEntity from '../../../../shared/@types/domains/entities/ListedSneakerEntity';
@@ -56,6 +57,12 @@ export class ListedSneakerController implements ListedSneakerEntity {
 
   getSoldListedSneakers = async (sellerId: number) =>
     (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus === 'sold');
+
+  update = (listedSneakerId: number, listedSneaker: CreateListedSneakerPayload): Promise<ListedProduct> =>
+    fetch(
+      concatPaths(this.listedSneakerPath, listedSneakerId),
+      formatRequestOptions(listedSneaker, undefined, 'PUT')
+    ).then((r) => r.json());
 }
 
 const ListedSneakerControllerInstance = new ListedSneakerController();

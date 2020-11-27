@@ -7,12 +7,12 @@ import { AppSneaker } from '../../../shared';
 import CenterSpinner from './CenterSpinner';
 
 type PreviewSneakerProps = {
-  sneaker: AppSneaker;
+  sneaker: Omit<AppSneaker, 'imageUrls'>;
   price: number;
   mainDisplayImage: string | undefined;
-  onPrevStep: () => void;
   onSubmit: () => void;
   aspectRatio?: string;
+  onPrevStep?: () => void;
 };
 
 const PreviewSneaker = (props: PreviewSneakerProps) => {
@@ -36,7 +36,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
         <SneakerCard aspectRatio={aspectRatio} sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <Button onClick={onPrevStep}>Previous</Button>
+        {onPrevStep && <Button onClick={onPrevStep}>Previous</Button>}
         <Button type='button' color='primary' onClick={handleSubmit} disabled={isSubmitDisabled}>
           Confirm
         </Button>

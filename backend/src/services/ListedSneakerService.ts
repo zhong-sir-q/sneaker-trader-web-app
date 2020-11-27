@@ -1,4 +1,9 @@
-import { formatInsertRowsQuery, doubleQuotedValue, formatUpdateRowsQuery } from '../utils/formatDbQuery';
+import {
+  formatInsertRowsQuery,
+  doubleQuotedValue,
+  formatUpdateRowsQuery,
+  formatGetRowsQuery,
+} from '../utils/formatDbQuery';
 
 import {
   ListedProduct,
@@ -7,7 +12,7 @@ import {
   GallerySneaker,
   SellerListedSneaker,
   CreateListedSneakerPayload,
-  GetListedSneaker
+  GetListedSneaker,
 } from '../../../shared';
 
 import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
@@ -165,6 +170,19 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneakerStatus, `id = ${listedSneakerId}`));
+  }
+
+  async update(listedSneakerId: number, listedSneaker: CreateListedSneakerPayload): Promise<ListedProduct> {
+    const poolConn = await mysqlPoolConnection();
+
+    return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneaker, `id = ${listedSneakerId}`));
+  }
+
+  async getById(listedSneakerId: Number): Promise<ListedProduct> {
+    const poolConn = await mysqlPoolConnection();
+    const res = await poolConn.query(formatGetRowsQuery(LISTED_PRODUCTS, `id = ${listedSneakerId}`));
+
+    return res.length > 0 ? res[0] : null;
   }
 }
 

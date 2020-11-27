@@ -1,7 +1,6 @@
 import React, { createContext, ReactNode, useContext } from 'react';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
-import { Alert } from 'reactstrap';
-import { Dialog } from '@material-ui/core';
+import AlertDialog from 'components/AlertDialog';
 
 type AlertComponentType = {
   onOpenAlert: () => void;
@@ -20,14 +19,11 @@ export const useAlertComponent = () => useContext(AlertComponentCtx);
 // uses the Reactstrap Alert Component
 const AlertDialogProvider = (props: { children: ReactNode; color: string; msg: string }) => {
   const { open, onOpen, onClose } = useOpenCloseComp();
+  const { color, msg } = props;
 
   return (
     <AlertComponentCtx.Provider value={{ onOpenAlert: onOpen }}>
-      <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
-        <Alert className='no-margin' color={props.color} toggle={onClose}>
-          {props.msg}
-        </Alert>
-      </Dialog>
+      <AlertDialog {...{ open, color, msg, onClose }} />
       {props.children}
     </AlertComponentCtx.Provider>
   );

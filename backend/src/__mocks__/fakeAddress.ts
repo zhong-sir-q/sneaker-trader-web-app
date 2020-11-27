@@ -5,7 +5,7 @@ const fakeAddress = (): Address => ({
   street: faker.address.streetName(),
   city: faker.address.city(),
   region: faker.address.state(),
-  zipcode: Number(faker.address.zipCode()),
+  zipcode: faker.random.number(),
   country: faker.address.country(),
   suburb: faker.address.county(),
   verificationStatus: ['not_verified', 'in_progress', 'verified'][faker.random.number(2)] as AddrVerificationStatus,

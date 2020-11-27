@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useContext, useState, useEffect, useCa
 
 import { useAuth } from 'providers/AuthProvider';
 
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import ListedSneakerControllerInstance, { ListedSneakerController } from 'api/controllers/ListedSneakerController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 import { GallerySneaker } from '../../../../shared';
@@ -61,7 +61,7 @@ const getSneakersBySizes = async (sizes: number[], sellerId: number) => {
 const filterByBrands = (sneakers: GallerySneaker[], brands: string[]) =>
   sneakers.filter((s) => brands.includes(s.brand));
 
-const MarketPlaceProvider = (props: { children: ReactNode }) => {
+const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerController: ListedSneakerController }) => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>();
   const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>();
   const [brands, setBrands] = useState<string[]>();
@@ -77,16 +77,16 @@ const MarketPlaceProvider = (props: { children: ReactNode }) => {
       let gallerySneakers: GallerySneaker[] = [];
 
       // if the user is not logged in, then render all gallery sneakers
-      if (!signedIn) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(-1);
+      if (!signedIn) gallerySneakers = await props.listedSneakerController.getGallerySneakers(-1);
       // otherwise hide the sneakers the seller has listed
-      else if (currentUser) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(currentUser.id);
+      else if (currentUser) gallerySneakers = await props.listedSneakerController.getGallerySneakers(currentUser.id);
 
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);
 
       setBrands(await HelperInfoControllerInstance.getBrands());
     })();
-  }, [signedIn, currentUser]);
+  }, [props.listedSneakerController, signedIn, currentUser]);
 
   const filterHandler = useCallback(async () => {
     if (!defaultSneakers) return;

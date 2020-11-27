@@ -39,6 +39,8 @@ import PortfolioSneakerService from '../services/PortfolioSneakerService';
 import createAuthRoutes from './routers/auth';
 import GoogleOauthService from '../services/external/GoogleOauthService';
 
+import createProxyRoutes from './routers/proxy';
+
 export default () => {
   const app = Router();
   // app will use the following routes as middleware at the respective routes
@@ -62,6 +64,9 @@ export default () => {
 
   app.use('/user', userRoutes.router);
   app.use('/user-registration', userRegistrationRoutes.router);
+
+  const proxyRoutes = createProxyRoutes();
+  app.use('/proxy', proxyRoutes.router);
 
   seller(app, new SellerService());
   address(app, new AddressService(new AddressVerificationCodeService()));

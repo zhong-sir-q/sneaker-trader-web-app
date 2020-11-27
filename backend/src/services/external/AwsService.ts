@@ -20,7 +20,10 @@ class CustomAwsService {
       Key: s3Folder + file.filename,
     };
 
-    return s3.upload(params).promise().then(r => r.Location);
+    return s3
+      .upload(params)
+      .promise()
+      .then((r) => r.Location);
   };
 
   s3UploadFiles = (files: Express.Multer.File[]): Promise<string[]> => {
@@ -28,6 +31,12 @@ class CustomAwsService {
 
     return Promise.all(s3Promises);
   };
+
+  getS3SneakerImageObject = (key: string) =>
+    s3
+      .getObject({ Bucket: 'sneaker-trader-client-images-uploads', Key: s3BucketFolder + key })
+      .promise()
+      .then((r) => r.Body);
 }
 
 export default CustomAwsService;

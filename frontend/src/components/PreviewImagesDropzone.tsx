@@ -71,8 +71,8 @@ export type PreviewFile = File & {
 };
 
 type PreviewImagesDropZoneProps = {
-  onPrevStep: () => void;
-  onNextStep: () => void;
+  onPrevStep?: () => void;
+  onNextStep?: () => void;
 };
 
 const ImgCropper: React.FC = () => {
@@ -203,17 +203,19 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
 
       <ImgCropper />
 
-      <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <Button onClick={onPrevStep}>Previous</Button>
-        <Button
-          disabled={files.length === 0}
-          color='primary'
-          onClick={onNextStep}
-          data-testid='dropzone-confirm-preview-btn'
-        >
-          Preview
-        </Button>
-      </CardFooter>
+      {props.onPrevStep && props.onNextStep && (
+        <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
+          <Button onClick={onPrevStep}>Previous</Button>
+          <Button
+            disabled={files.length === 0}
+            color='primary'
+            onClick={onNextStep}
+            data-testid='dropzone-confirm-preview-btn'
+          >
+            Preview
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

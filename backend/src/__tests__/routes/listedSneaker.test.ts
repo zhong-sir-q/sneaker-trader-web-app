@@ -13,7 +13,7 @@ import fakeListedSneaker from '../../__mocks__/fakeListedSneaker';
 import mysqlPoolConnection from '../../config/mysql';
 import { formatGetRowsQuery, formatUpdateRowsQuery } from '../../utils/formatDbQuery';
 
-import faker from 'faker'
+import faker from 'faker';
 
 beforeAll(async () => {
   const poolConn = await mysqlPoolConnection();
@@ -90,30 +90,60 @@ describe('Listed product routes', () => {
 
   test('All sneakers should have the "listed" status', async (done) => {
     // randomly update the statuses of half the sneakers to either pending or sold
-    const getQuery = formatGetRowsQuery(LISTED_PRODUCTS)
-    const poolConnOne = await mysqlPoolConnection()
-    const initListedSneakers = await poolConnOne.query(getQuery)
+    const getQuery = formatGetRowsQuery(LISTED_PRODUCTS);
+    const poolConnOne = await mysqlPoolConnection();
+    const initListedSneakers = await poolConnOne.query(getQuery);
 
-    const half = Math.floor(initListedSneakers.length * 0.5)
+    const half = Math.floor(initListedSneakers.length * 0.5);
 
     for (let i = 0; i < half; i++) {
-      const idx = faker.random.number(initListedSneakers.length - 1)
-      const sneakerToUpdate = initListedSneakers[idx]
+      const idx = faker.random.number(initListedSneakers.length - 1);
+      const sneakerToUpdate = initListedSneakers[idx];
 
-      const id = sneakerToUpdate.id
-      const randStatus = ['pending', 'sold'][faker.random.number(1)]
+      const id = sneakerToUpdate.id;
+      const randStatus = ['pending', 'sold'][faker.random.number(1)];
 
-      const poolConn = await mysqlPoolConnection()
+      const poolConn = await mysqlPoolConnection();
 
-      const updateQuery = formatUpdateRowsQuery(LISTED_PRODUCTS, { prodStatus: randStatus }, `id = ${id}`)
-      await poolConn.query(updateQuery)
+      const updateQuery = formatUpdateRowsQuery(LISTED_PRODUCTS, { prodStatus: randStatus }, `id = ${id}`);
+      await poolConn.query(updateQuery);
     }
 
     // then by getAllListedSneakers should return only sneakers with prodStatus = 'listed'
-    const allListedSneakers = await request(app).get('/api/listedSneaker').then(r => r.body)
+    const allListedSneakers = await request(app)
+      .get('/api/listedSneaker')
+      .then((r) => r.body);
 
-    for (const listed of allListedSneakers) expect(listed.prodStatus).toBe('listed')
+    for (const listed of allListedSneakers) expect(listed.prodStatus).toBe('listed');
 
-    done()
-  })
+    done();
+  });
+
+  test('Update the listed sneaker', async (done) => {
+    // sneakers should be populated from above
+    const allListedSneakers = await request(app)
+      .get('/api/listedSneaker')
+      .then((r) => r.body);
+    // get the first listed sneaker
+    const firstListedSneaker = allListedSneakers[0];
+
+    const updateFirstListedSneakerPayload = fakeListedSneaker(firstListedSneaker.userId, firstListedSneaker.productId);
+
+    const updateRes = await request(app)
+      .put(`/api/listedSneaker/${firstListedSneaker.id}`)
+      .send(updateFirstListedSneakerPayload);
+
+    expect(updateRes.status).toBe(200);
+
+    const getFirstListedSneaker = await request(app)
+      .get(`/api/listedSneaker/${firstListedSneaker.id}`)
+      .then((r) => r.body);
+
+    expect(getFirstListedSneaker.askingPrice).toBe(updateFirstListedSneakerPayload.askingPrice);
+    expect(getFirstListedSneaker.originalPurchasePrice).toBe(updateFirstListedSneakerPayload.originalPurchasePrice);
+    expect(getFirstListedSneaker.currencyCode).toBe(updateFirstListedSneakerPayload.currencyCode);
+    expect(getFirstListedSneaker.sizeSystem).toBe(updateFirstListedSneakerPayload.sizeSystem);
+
+    done();
+  });
 });

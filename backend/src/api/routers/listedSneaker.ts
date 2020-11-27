@@ -1,9 +1,36 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import ListedSneakerService from '../../services/ListedSneakerService';
+import { ExpressHandler } from '../../@types/express';
 
 const listedSneakerRoute = Router();
 
+const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService) => {
+  const update: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    const listedSneaker = req.body;
+
+    listedSneakerService
+      .update(Number(id), listedSneaker)
+      .then(() => res.json(listedSneaker))
+      .catch(next);
+  };
+
+  const get: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    listedSneakerService
+      .getById(Number(id))
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  return { get, update };
+};
+
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
+  const { get, update } = createListedSneakerHandlers(ListedSneakerServiceInstance);
+
   app.use('/listedSneaker', listedSneakerRoute);
 
   listedSneakerRoute.get('/', async (_req, res, next) => {
@@ -76,4 +103,6 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .then(() => res.json('Sneaker status updated'))
       .catch(next);
   });
+
+  listedSneakerRoute.route('/:id').get(get).put(update);
 };

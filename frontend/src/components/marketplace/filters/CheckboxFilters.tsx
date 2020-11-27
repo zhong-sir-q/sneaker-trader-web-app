@@ -29,7 +29,7 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
       </FilterTitle>
       <Collapse isOpen={open}>
         {filters.map((val, idx) => (
-          <Label key={idx}>
+          <Label style={{ display: 'block' }} key={idx}>
             <CheckboxInput
               type='checkbox'
               checked={isFilterSelected(val)}

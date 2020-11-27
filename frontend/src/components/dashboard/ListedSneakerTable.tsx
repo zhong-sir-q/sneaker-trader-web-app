@@ -9,12 +9,14 @@ import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
-import { upperCaseFirstLetter } from 'utils/utils';
+import { upperCaseFirstLetter, createEditListedSneakerPath } from 'utils/utils';
 
 import useSortableColData from 'hooks/useSortableColData';
 import usePagination from 'hooks/usePagination';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
+import { useHistory } from 'react-router-dom';
+import { Edit } from '@material-ui/icons';
 
 type ListedSneakerTableRowProps = {
   sneaker: SellerListedSneaker;
@@ -28,6 +30,8 @@ type ListedSneakerTableProps = {
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, setShowCompleteSaleSuccess } = props;
 
+  const history = useHistory()
+
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<SellerListedSneaker>(sneakers);
 
   const { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent } = usePagination(
@@ -35,45 +39,39 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     5
   );
 
+  const headerClass = (colName: string) => clsx('sortable', getHeaderClassName(colName), 'pointer');
+
   const ListedSneakerTableHeader = () => (
     <thead>
       <tr>
-        <th className={clsx('sortable', getHeaderClassName('name'), 'pointer')} onClick={() => requestSort('name')}>
+        <th className={headerClass('name')} onClick={() => requestSort('name')}>
           name
         </th>
         <th
           style={{ minWidth: '115px' }}
-          className={clsx('sortable', getHeaderClassName('listedDatetime'), 'pointer')}
+          className={headerClass('listedDatetime')}
           onClick={() => requestSort('listedDatetime')}
         >
           listed date
         </th>
         <th
           style={{ minWidth: '105px' }}
-          className={clsx('sortable', getHeaderClassName('buyer.transactionDatetime'), 'pointer')}
+          className={headerClass('buyer.transactionDatetime')}
           onClick={() => requestSort('buyer.transactionDatetime')}
         >
           sold date
         </th>
         <th
           style={{ minWidth: '80px' }}
-          className={clsx('sortable', getHeaderClassName('prodStatus'), 'pointer')}
+          className={headerClass('prodStatus')}
           onClick={() => requestSort('prodStatus')}
         >
           status
         </th>
-        <th
-          style={{ minWidth: '75px' }}
-          className={clsx('sortable', getHeaderClassName('price'), 'pointer')}
-          onClick={() => requestSort('price')}
-        >
+        <th style={{ minWidth: '75px' }} className={headerClass('price')} onClick={() => requestSort('price')}>
           price
         </th>
-        <th
-          style={{ minWidth: '60px'  }}
-          className={clsx('sortable', getHeaderClassName('quantity'), 'pointer')}
-          onClick={() => requestSort('quantity')}
-        >
+        <th style={{ minWidth: '60px' }} className={headerClass('quantity')} onClick={() => requestSort('quantity')}>
           qty
         </th>
       </tr>
@@ -109,6 +107,11 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       if (setShowCompleteSaleSuccess) setShowCompleteSaleSuccess();
     };
 
+    const onEdit = () => {
+      const editPath = createEditListedSneakerPath(props.sneaker.id)
+      history.push(editPath, props.sneaker);
+    };
+
     const displayName = `${brand} ${name}`;
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
 
@@ -130,6 +133,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             prodStatus={prodStatus}
             onCompleteSale={onCompleteSale}
           />
+          {prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}
         </td>
       </tr>
     );
