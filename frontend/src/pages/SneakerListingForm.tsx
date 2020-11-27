@@ -24,35 +24,7 @@ import { ADMIN, TOPUP_WALLET } from 'routes';
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 
-import { mapUpperCaseFirstLetter } from 'utils/utils';
-
-import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
-
-const formatListedSneakerPayload = (sneaker: SneakerListingFormStateType, quantity?: number) => (
-  s3UploadedUrls: string[]
-): ListedSneakerFormPayload => ({
-  askingPrice: Number(sneaker.askingPrice),
-  sizeSystem: sneaker.sizeSystem,
-  currencyCode: sneaker.currencyCode,
-  prodCondition: sneaker.prodCondition,
-  quantity: quantity || 1,
-  prodStatus: 'listed' as SneakerStatus,
-  conditionRating: sneaker.conditionRating,
-  description: sneaker.description,
-  serialNumber: '',
-  originalPurchasePrice: Number(sneaker.originalPurchasePrice),
-  mainDisplayImage: s3UploadedUrls[0],
-});
-
-const formatSneaker = (s: SneakerListingFormStateType) => {
-  const name = mapUpperCaseFirstLetter(s.name, ' ');
-  const colorway = mapUpperCaseFirstLetter(s.colorway, ' ');
-  const brand = mapUpperCaseFirstLetter(s.brand, ' ');
-
-  const size = Number(s.size);
-
-  return { name, colorway, brand, size };
-};
+import { formatListedSneakerPayload, formatSneaker } from 'utils/utils';
 
 // the providers reside in routes.tsx
 const SneakerListingForm = () => {
