@@ -14,7 +14,8 @@ const StyledListGroup = styled(ListGroup)`
   position: absolute;
   margin-top: 2px;
   z-index: 1;
-  max-height: 350px;
+  max-height: 21rem;
+  width: 100%;
   overflow: auto;
 `;
 

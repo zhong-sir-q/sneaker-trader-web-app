@@ -2,6 +2,8 @@ import React from 'react';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
 
+import LazyLoad from 'react-lazyload';
+
 import FixedAspectRatioImg from './FixedAspectRatioImg';
 
 import { AppSneaker } from '../../../shared';
@@ -55,7 +57,9 @@ const SneakerCard = (props: SneakerCardProps) => {
       }}
       data-testid={displayName}
     >
-      <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
+      <LazyLoad once>
+        <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
+      </LazyLoad>
       <InfoContainer>
         <div
           style={{
