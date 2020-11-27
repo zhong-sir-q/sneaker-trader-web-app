@@ -15,7 +15,8 @@ const AlertDialog = (props: AlertDialogProps) => {
 
   return (
     <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
-      <Alert className='no-margin' color={color} toggle={onClose}>
+      {/* hide the tiny bit of offset */}
+      <Alert className='no-margin' style={{ overflow: 'hidden' }} color={color} toggle={onClose}>
         {msg}
       </Alert>
     </Dialog>

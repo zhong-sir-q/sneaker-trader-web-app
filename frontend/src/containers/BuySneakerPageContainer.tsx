@@ -12,6 +12,8 @@ import SneakerControllerInstance from 'api/controllers/SneakerController';
 import BuySneakerPage from 'pages/BuySneakerPage';
 
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk, Size } from '../../../shared';
+import AlertDialog from 'components/AlertDialog';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 const nameColorwayFromPath = () => {
   const { pathname } = window.location;
@@ -34,6 +36,8 @@ const BuySneakerPageContainer = () => {
   const [chooseBuyAll, setChooseBuyAll] = useState(false);
 
   const [selectedSizeMinPrice, setSelectedSizeMinPrice] = useState<number>();
+
+  const alertDialogHook = useOpenCloseComp();
 
   const { currentUser } = useAuth();
 
@@ -82,6 +86,7 @@ const BuySneakerPageContainer = () => {
 
     if (selectedSize === 'all') {
       setChooseBuyAll(true);
+      alertDialogHook.onOpen()
       return;
     }
 
@@ -91,21 +96,29 @@ const BuySneakerPageContainer = () => {
   const onCloseViewAllAsksModal = () => setOpenViewAskModal(false);
 
   return (
-    <BuySneakerPage
-      {...{
-        selectedSize,
-        displaySneaker,
-        sizeMinPriceGroup,
-        filterAllAsks,
-        openViewAskModal,
-        chooseBuyAll,
-        selectedSizeMinPrice,
-        onCloseViewAllAsksModal,
-        onViewAllAsks,
-        onBuy,
-        onClickSizeTile,
-      }}
-    />
+    <React.Fragment>
+      <BuySneakerPage
+        {...{
+          selectedSize,
+          displaySneaker,
+          sizeMinPriceGroup,
+          filterAllAsks,
+          openViewAskModal,
+          chooseBuyAll,
+          selectedSizeMinPrice,
+          onCloseViewAllAsksModal,
+          onViewAllAsks,
+          onBuy,
+          onClickSizeTile,
+        }}
+      />
+      <AlertDialog
+        open={alertDialogHook.open}
+        color='info'
+        msg='Please select a size!'
+        onClose={alertDialogHook.onClose}
+      />
+    </React.Fragment>
   );
 };
 

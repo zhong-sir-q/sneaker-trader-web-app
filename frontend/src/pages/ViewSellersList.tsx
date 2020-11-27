@@ -12,13 +12,16 @@ import {
 
 import LazyLoad from 'react-lazyload';
 
+import styled from 'styled-components';
+
 import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
 import SneakerCarousel from 'components/SneakerCarousel';
 
 import { ListedSneakerSeller, Sneaker } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
-import styled from 'styled-components';
+
+import defaultAvatar from 'assets/img/placeholder.jpg';
 
 const SellerListGroupItem = styled(ListGroupItem)`
   outline: none;
@@ -127,7 +130,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
               <span>Rating: {!rating || rating <= 0 ? 0 : rating} out of 5</span>
             </div>
             <LazyLoad>
-              <ProfileImg src={profilePicUrl} alt={`${username} profile`} />
+              <ProfileImg src={profilePicUrl || defaultAvatar} alt={`${username} profile`} />
             </LazyLoad>
           </SellerListGroupItem>
         ))}
