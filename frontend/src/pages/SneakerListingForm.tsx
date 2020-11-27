@@ -17,7 +17,7 @@ import SneakerInfoForm from 'components/SneakerInfoForm';
 
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
-import { SneakerListingFormStateType, useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
 
 import { ADMIN, TOPUP_WALLET } from 'routes';
 

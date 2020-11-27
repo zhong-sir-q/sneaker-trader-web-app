@@ -6,7 +6,6 @@ import PreviewImgDropzoneProvider, { usePreviewImgDropzoneCtx } from 'providers/
 
 import { createPreviewFileFromBlob, formatListedSneakerPayload, getListedSneakerIdFromPath } from 'utils/utils';
 import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
-import formatRequestOptions from 'utils/formatRequestOptions';
 
 import SneakerInfoForm from 'components/SneakerInfoForm';
 import PanelHeader from 'components/PanelHeader';
@@ -38,12 +37,9 @@ const EditListedSneakerPageContainer = () => {
     (async () => {
       const files: PreviewFile[] = [];
       for (const url of imageUrls.split(',')) {
-        const blob = await fetch(
-          formatApiEndpoint(concatPaths('proxy', 'blob')),
-          formatRequestOptions({ url })
-        ).then((r) => r.blob());
-
-        console.log(blob);
+        const parts = url.split('/');
+        const imgId = parts[parts.length - 1];
+        const blob = await fetch(formatApiEndpoint(concatPaths('aws', 'image', imgId))).then((r) => r.blob());
 
         const previewFile = createPreviewFileFromBlob(blob);
         files.push(previewFile);
@@ -101,7 +97,7 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
     );
 
     updateSuccessAlertHook.onOpen();
-    history.push(ADMIN + DASHBOARD);
+    setTimeout(() => history.push(ADMIN + DASHBOARD), 1000);
   };
 
   return (
