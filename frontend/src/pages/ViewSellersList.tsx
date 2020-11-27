@@ -10,12 +10,31 @@ import {
   DropdownItem,
 } from 'reactstrap';
 
+import LazyLoad from 'react-lazyload';
+
 import SneakerCard from 'components/SneakerCard';
 import CenterSpinner from 'components/CenterSpinner';
 import SneakerCarousel from 'components/SneakerCarousel';
 
 import { ListedSneakerSeller, Sneaker } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
+import styled from 'styled-components';
+
+const SellerListGroupItem = styled(ListGroupItem)`
+  outline: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ProfileImg = styled.img`
+  border-radius: 50%;
+  max-width: 5.3125rem;
+
+  @media (max-width: 768px) {
+    max-width: 4.0625rem;
+  }
+`;
 
 type SortByPriceDropdownProps = {
   sortInDescendingOrder: () => void;
@@ -73,7 +92,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
   return !sellers || !displaySneaker || processingPurchase ? (
     <CenterSpinner />
   ) : (
-    <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='md'>
+    <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='sm'>
       {selectedSellerIdx === -1 ? (
         <SneakerCard
           styles={{ margin: 'auto', marginBottom: '15px' }}
@@ -83,31 +102,34 @@ const ViewSellersList = (props: ViewSellersListProps) => {
           maxWidth='400px'
         />
       ) : (
-        <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls(sellers[selectedSellerIdx].imageUrls)} />
+        <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls(sellers[selectedSellerIdx].sneakerImgUrls)} />
       )}
       <SortByPriceDropdown
         sortInAscendingOrder={sortSellersByAskingPriceAscending}
         sortInDescendingOrder={sortSellersByAskingPriceDescending}
       />
       <ListGroup>
-        {sellers.map(({ username, askingPrice, rating }, idx) => (
-          <ListGroupItem
+        {sellers.map(({ username, profilePicUrl, askingPrice, rating }, idx) => (
+          <SellerListGroupItem
             tag='button'
             key={idx}
             action
             onClick={() => onSelectSeller(idx)}
             style={{
               borderColor: idx === selectedSellerIdx ? 'green' : undefined,
-              outline: 'none',
               borderTopWidth: '1px',
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span>User Name: {username}</span>
+              <span>Username: {username}</span>
               <span>Asking Price: ${askingPrice}</span>
-              <span>Rating: {!rating || rating <= 0 ? 0 : rating}</span>
+              {/* TODO: use a const to define what the rating is out of */}
+              <span>Rating: {!rating || rating <= 0 ? 0 : rating} out of 5</span>
             </div>
-          </ListGroupItem>
+            <LazyLoad>
+              <ProfileImg src={profilePicUrl} alt={`${username} profile`} />
+            </LazyLoad>
+          </SellerListGroupItem>
         ))}
       </ListGroup>
       <footer>

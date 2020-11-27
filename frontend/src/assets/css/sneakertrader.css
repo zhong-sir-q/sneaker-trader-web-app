@@ -10,6 +10,8 @@
 .carousel-control-next,
 .carousel-control-prev {
   filter: invert(100%);
+  /* move the arrow outside the carousel slider */
+  margin: -20%;
 }
 
 .carousel {

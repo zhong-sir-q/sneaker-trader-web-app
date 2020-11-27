@@ -201,11 +201,11 @@ const UserProfile = () => {
                         onImageChange={handleImageChange(formikProps.setFieldValue)}
                       />
                       <h5 className='title'>
-                        {nameIfUndefined('Opps, no full name', currentUser.firstName, currentUser.lastName)}
+                        {nameIfUndefined('No full name...', currentUser.firstName, currentUser.lastName)}
                       </h5>
                       <p className='description'>{currentUser.email}</p>
                       <p className='description'>
-                        {nameIfUndefined('Ouch, where is my username', currentUser.username)}
+                        {nameIfUndefined('No username...', currentUser.username)}
                       </p>
                     </div>
                   </CardBody>
