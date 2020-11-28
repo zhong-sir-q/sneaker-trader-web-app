@@ -59,11 +59,8 @@ export const MarketPlaceCtx = createContext(INIT_CTX);
 
 export const useMarketPlaceCtx = () => useContext(MarketPlaceCtx);
 
-// 10 because initially we will fetch 10 sneakers
-let OFFSET = 10;
-let LIMIT = 10;
 
-const updateOffset = () => (OFFSET += LIMIT);
+const LIMIT = 10;
 
 const getSneakersBySizes = async (sizes: number[], sellerId: number) => {
   const nestedSneakers = await Promise.all(
@@ -87,6 +84,10 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
   const [filterItemGroup, setFilterItemGroup] = useState<FilterItem[]>([]);
 
   const [hasMoreListedSneakers, setHasMoreListedSneakers] = useState(true);
+  // 10 because initially we will fetch 10 sneakers
+  const [offset, setOffset] = useState(10)
+
+  const updateOffset = () => setOffset(offset + LIMIT)
 
   const { currentUser, signedIn } = useAuth();
 
@@ -95,7 +96,7 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
   // paginate the fetch listed sneakers request
   const fetchMoreListedSneakers = () =>
     setTimeout(async () => {
-      const more = await props.listedSneakerController.getGallerySneakers(-1, LIMIT, OFFSET);
+      const more = await props.listedSneakerController.getGallerySneakers(-1, LIMIT, offset);
       setFilterSneakers(filterSneakers?.concat(more));
       updateOffset();
       if (more.length === 0) setHasMoreListedSneakers(false);
