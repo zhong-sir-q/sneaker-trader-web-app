@@ -41,6 +41,9 @@ export class ListedSneakerController implements ListedSneakerEntity {
   getBySellerId = (sellerId: number): Promise<SellerListedSneaker[]> =>
     fetch(this.listedSneakerPath + `/all/${sellerId}`).then((res) => res.json());
 
+  getAll = (): Promise<{ name: string; colorway: string; brand: string; imageUrls: string }[]> =>
+    fetch(concatPaths(this.listedSneakerPath, 'history')).then((r) => r.json());
+
   handlePurchase = (id: number, sellerId: number) =>
     fetch(this.listedSneakerPath + '/purchase', formatRequestOptions({ id, sellerId }, undefined, 'PUT')).then((r) =>
       r.json()
@@ -60,7 +63,7 @@ export class ListedSneakerController implements ListedSneakerEntity {
 
   update = (listedSneakerId: number, listedSneaker: CreateListedSneakerPayload): Promise<ListedProduct> =>
     fetch(
-      concatPaths(this.listedSneakerPath, listedSneakerId),
+      concatPaths(this.listedSneakerPath, 'one', listedSneakerId),
       formatRequestOptions(listedSneaker, undefined, 'PUT')
     ).then((r) => r.json());
 }

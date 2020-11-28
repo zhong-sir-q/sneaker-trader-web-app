@@ -79,7 +79,7 @@ describe('Utility functions', () => {
     const u1 = 'abc, opq, xyz';
 
     expect(getMainDisplayImgUrl(u1)).toBe('abc');
-    expect(getMainDisplayImgUrl(undefined)).toBe(undefined);
+    expect(getMainDisplayImgUrl(undefined)).toBe('');
   });
 
   test('Format sneaker name colorway', () => {

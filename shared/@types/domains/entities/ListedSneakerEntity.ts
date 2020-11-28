@@ -8,7 +8,10 @@ interface ListedSneakerEntity {
   getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]>;
   getGallerySneakers(sellerId: number): Promise<GallerySneaker[]>;
   getSizeMinPriceGroupByNameColorway(name: string, sellerId: number): Promise<SizeMinPriceGroupType>;
+  // returns sneakers that have status of listed
   getAllListedSneakers(): Promise<GetListedSneaker[]>;
+  // returns all sneakers no matter the status
+  getAll(): Promise<{ name: string; colorway: string; brand: string; imageUrls: string }[]>;
 
   create(p: CreateListedSneakerPayload): Promise<number>;
   // it returns the updated listed sneaker payload

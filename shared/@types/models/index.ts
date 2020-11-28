@@ -25,7 +25,7 @@ export type Sneaker = {
 };
 
 export type SneakerCondition = 'new' | 'used' | 'dead stock';
-export type SneakerStatus = 'listed' | 'pending' | 'sold';
+export type SneakerStatus = 'listed' | 'pending' | 'sold' | 'new sneaker request';
 
 export type ListedProduct = {
   id: number;

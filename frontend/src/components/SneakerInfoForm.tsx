@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 
 import { Col, Card, CardHeader, CardBody, Row, FormGroup, CardFooter, Button } from 'reactstrap';
 
@@ -17,6 +16,7 @@ import { range } from 'utils/utils';
 type SneakerInfoFormProps = {
   title: string;
   goNextStep?: () => void;
+  goPrevStep?: () => void;
 };
 
 const currencyCodeOptions = ['NZD', 'USD', 'AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'YUAN'];
@@ -215,11 +215,11 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
                 />
               </FormGroup>
             </CardBody>
-            {props.goNextStep && (
+            {props.goNextStep && props.goPrevStep && (
               <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <Link style={{ color: 'white' }} to={ADMIN + DASHBOARD}>
-                  <Button type='button'>Cancel</Button>
-                </Link>
+                <Button type='button' onClick={props.goPrevStep}>
+                  Back
+                </Button>
                 <Button type='submit' color='primary' data-testid='sneaker-info-form-submit-btn'>
                   Next
                 </Button>

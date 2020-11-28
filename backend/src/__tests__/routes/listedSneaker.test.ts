@@ -130,13 +130,13 @@ describe('Listed product routes', () => {
     const updateFirstListedSneakerPayload = fakeListedSneaker(firstListedSneaker.userId, firstListedSneaker.productId);
 
     const updateRes = await request(app)
-      .put(`/api/listedSneaker/${firstListedSneaker.id}`)
+      .put(`/api/listedSneaker/one/${firstListedSneaker.id}`)
       .send(updateFirstListedSneakerPayload);
 
     expect(updateRes.status).toBe(200);
 
     const getFirstListedSneaker = await request(app)
-      .get(`/api/listedSneaker/${firstListedSneaker.id}`)
+      .get(`/api/listedSneaker/one/${firstListedSneaker.id}`)
       .then((r) => r.body);
 
     expect(getFirstListedSneaker.askingPrice).toBe(updateFirstListedSneakerPayload.askingPrice);

@@ -4,10 +4,14 @@ import { Card, CardHeader, CardTitle, CardFooter, Button } from 'reactstrap';
 
 import { ADMIN, DASHBOARD } from 'routes';
 
-const ListedSneakerSuccess = () => (
+type ListedSneakerSuccessProps = {
+  title: string;
+};
+
+const ListedSneakerSuccess = (props: ListedSneakerSuccessProps) => (
   <Card>
     <CardHeader>
-      <CardTitle tag='h4'>Congratulations, you successfully listed the sneakers!!!</CardTitle>
+      <CardTitle tag='h4'>{props.title}</CardTitle>
     </CardHeader>
     <CardFooter>
       <Link data-testid='listing-success-to-dashboard-link' style={{ color: 'white' }} to={ADMIN + DASHBOARD}>

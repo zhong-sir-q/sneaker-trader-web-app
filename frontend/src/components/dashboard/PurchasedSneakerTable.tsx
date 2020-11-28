@@ -14,14 +14,22 @@ import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 import { upperCaseFirstLetter } from 'utils/utils';
 import usePagination from 'hooks/usePagination';
 
+// this two components are the exact same ones from SneakerNameCell
 const ImgContainer = styled.div`
   float: left;
-  @media (min-width: 150px) {
-    width: 60px;
-  }
+`;
+
+const Img = styled.img`
+  object-fit: cover;
 
   @media (min-width: 768px) {
-    width: 80px;
+    width: 90px;
+    height: 70px;
+  }
+
+  @media (min-width: 150px) {
+    width: 70px;
+    height: 50px;
   }
 `;
 
@@ -116,7 +124,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       <tr>
         <td>
           <ImgContainer>
-            <img src={mainDisplayImage} alt={name + colorway} />
+            <Img src={mainDisplayImage} alt={name + colorway} />
           </ImgContainer>
           <div style={{ overflowX: 'hidden', paddingLeft: '8px', top: '5px' }}>
             <span style={{ fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'hidden' }}>

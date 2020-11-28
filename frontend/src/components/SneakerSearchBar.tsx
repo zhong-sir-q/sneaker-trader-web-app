@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
@@ -8,13 +8,14 @@ import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 
 const ListItemImg = styled.img`
-  height: 125px;
-  width: 125px;
+  height: 135px;
+  width: 145px;
   margin-right: 10px;
+  object-fit: cover;
 
   @media (min-width: 768px) {
-    height: 130px;
-    width: 150px;
+    height: 135px;
+    width: 165px;
     margin-right: 20px;
   }
 `;
@@ -33,7 +34,8 @@ const StyledListGroup = styled(ListGroup)`
   position: absolute;
   margin-top: 5px;
   z-index: 1;
-  width: 100%;
+  /* 1% offset to take into account the scrollbar */
+  width: 99%;
   overflow: auto;
   max-height: 500px;
 `;
@@ -61,12 +63,17 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
 type SneakerSearchBarProps = {
   sneakers: SearchBarSneaker[];
   onChooseSneaker: (sneaker: SearchBarSneaker) => void;
+  setSneakerNew?: () => void;
+  setSneakerExists?: () => void;
+  updateSearchVal?: (searchVal: string) => void;
 };
 
 const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [searchVal, setSearchVal] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
+
+  const { setSneakerExists, setSneakerNew, updateSearchVal } = props;
 
   const formatName = (sneaker: any) => [sneaker.brand, sneaker.name, sneaker.colorway].join(' ');
 
@@ -83,7 +90,14 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     if (value === '') hideSuggestions();
     else openSuggestions();
 
+    if (setSneakerExists && setSneakerNew) {
+      if (result.length > 0 || searchVal === '') setSneakerExists();
+      else setSneakerNew();
+    }
+
     setSearchVal(value);
+
+    if (updateSearchVal) updateSearchVal(value);
   };
 
   const clearSearchVal = () => setSearchVal('');

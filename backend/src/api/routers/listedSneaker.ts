@@ -25,13 +25,24 @@ const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService)
       .catch(next);
   };
 
-  return { get, update };
+  const getAll: ExpressHandler = (_req, res, next) => {
+    listedSneakerService
+      .getAll()
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  return { get, getAll, update };
 };
 
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
-  const { get, update } = createListedSneakerHandlers(ListedSneakerServiceInstance);
+  const { get, getAll, update } = createListedSneakerHandlers(ListedSneakerServiceInstance);
 
   app.use('/listedSneaker', listedSneakerRoute);
+
+  listedSneakerRoute.route('/one/:id').get(get).put(update);
+
+  listedSneakerRoute.route('/history').get(getAll);
 
   listedSneakerRoute.get('/', async (_req, res, next) => {
     ListedSneakerServiceInstance.getAllListedSneakers()
@@ -103,6 +114,4 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .then(() => res.json('Sneaker status updated'))
       .catch(next);
   });
-
-  listedSneakerRoute.route('/:id').get(get).put(update);
 };

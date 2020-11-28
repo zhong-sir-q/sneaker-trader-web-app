@@ -79,6 +79,18 @@ class ListedSneakerService implements ListedSneakerEntity {
     return sellerListedSneakers;
   }
 
+  // return all sneakers with no duplicates, they are duplicates if they have the same name, colorway, brand
+  async getAll() {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT name, brand, colorway, P.imageUrls FROM ${PRODUCTS} P, 
+        ${LISTED_PRODUCTS} L WHERE P.id = L.productId
+          GROUP BY name, brand, colorway`;
+
+    return poolConn.query(query);
+  }
+
   async getGallerySneakersBySize(sellerId: number, size: number): Promise<GallerySneaker[]> {
     const poolConn = await mysqlPoolConnection();
 

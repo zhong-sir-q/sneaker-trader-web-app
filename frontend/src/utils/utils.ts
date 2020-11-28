@@ -9,7 +9,7 @@ export const formatSneakerPathName = (name: string, color: string) =>
 
 export const formatSneakerNameColorway = (name: string, colorway: string) => `${name} ${colorway}`;
 
-export const getMainDisplayImgUrl = (imgUrls: string | undefined) => imgUrls?.split(',')[0];
+export const getMainDisplayImgUrl = (imgUrls: string | undefined) => (imgUrls ? imgUrls.split(',')[0] : '');
 
 export const upperCaseFirstLetter = (s: string | undefined) => {
   if (!s) return s;
@@ -67,15 +67,17 @@ export const createPreviewFileFromBlob = (blob: Blob) => {
   return createPreviewFile(file);
 };
 
-export const formatListedSneakerPayload = (sneaker: SneakerListingFormStateType, quantity?: number) => (
-  s3UploadedUrls: string[]
-): ListedSneakerFormPayload => ({
+export const formatListedSneakerPayload = (
+  sneaker: SneakerListingFormStateType,
+  status?: SneakerStatus,
+  quantity?: number
+) => (s3UploadedUrls: string[]): ListedSneakerFormPayload => ({
   askingPrice: Number(sneaker.askingPrice),
   sizeSystem: sneaker.sizeSystem,
   currencyCode: sneaker.currencyCode,
   prodCondition: sneaker.prodCondition,
   quantity: quantity || 1,
-  prodStatus: 'listed' as SneakerStatus,
+  prodStatus: status || ('listed' as SneakerStatus),
   conditionRating: sneaker.conditionRating,
   description: sneaker.description,
   serialNumber: '',

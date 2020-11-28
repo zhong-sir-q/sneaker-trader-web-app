@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Col, Container, Progress } from 'reactstrap';
+import { Col, Container, Progress, Button } from 'reactstrap';
 
 import AwsControllerInstance from 'api/controllers/AwsController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
@@ -17,21 +17,39 @@ import SneakerInfoForm from 'components/SneakerInfoForm';
 
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
-import { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import { useSneakerListingFormCtx, INIT_LISTING_FORM_STATE_VALUES } from 'providers/SneakerListingFormProvider';
 
 import { ADMIN, TOPUP_WALLET } from 'routes';
 
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 
-import { formatListedSneakerPayload, formatSneaker } from 'utils/utils';
+import { formatListedSneakerPayload, formatSneaker, getMainDisplayImgUrl } from 'utils/utils';
+import SneakerSearchBar from 'components/SneakerSearchBar';
+import { SearchBarSneaker, ListedSneakerFormPayload } from '../../../shared';
 
 // the providers reside in routes.tsx
 const SneakerListingForm = () => {
   const [step, setStep] = useState(0);
-  const history = useHistory();
+  // see if the sneaker is already in the suggestion list
+  const [isSneakerNew, setIsSneakerNew] = useState(false);
+
+  const setSnekaerNew = () => setIsSneakerNew(true);
+  const setSneakerExists = () => setIsSneakerNew(false);
+
+  const [listedSneakers, setListedSneakers] = useState<
+    { name: string; colorway: string; brand: string; mainDisplayImage: string }[]
+  >([]);
+
+  // use this state to get the one from the sneaker search bar
+  const [searchBarInputVal, setSearchBarInputVal] = useState('');
+  const updateSearchBarInputVal = (val: string) => setSearchBarInputVal(val);
 
   const { currentUser } = useAuth();
+
+  const history = useHistory();
+
+  const { updateFormState } = useSneakerListingFormCtx();
 
   useEffect(() => {
     if (!currentUser) return;
@@ -48,6 +66,18 @@ const SneakerListingForm = () => {
     goTopupWalletIfNegativeWalletBalance();
   }, [currentUser, history]);
 
+  useEffect(() => {
+    (async () => {
+      const sneakers = await ListedSneakerControllerInstance.getAll();
+      const imgUrlsToMainDisplayImage = sneakers.map((s) => ({
+        ...s,
+        mainDisplayImage: getMainDisplayImgUrl(s.imageUrls),
+      }));
+
+      setListedSneakers(imgUrlsToMainDisplayImage);
+    })();
+  }, []);
+
   const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
@@ -62,7 +92,11 @@ const SneakerListingForm = () => {
 
     const imgFormData = formDataFromFiles();
     const sneakerPayload = formatSneaker(listingSneakerFormState);
-    const createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
+    let createListedProductPayload: (s3Urls: string[]) => ListedSneakerFormPayload;
+
+    if (isSneakerNew)
+      createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState, 'new sneaker request');
+    else createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
 
     await onListingSneaker(
       AwsControllerInstance,
@@ -85,13 +119,54 @@ const SneakerListingForm = () => {
     destroyFiles();
   };
 
+  const onChooseSearchBarSneaker = (sneaker: SearchBarSneaker) => {
+    updateFormState({
+      ...INIT_LISTING_FORM_STATE_VALUES,
+      ...sneaker,
+    });
+
+    goNextstep();
+  };
+
+  const onRequestNewSneaker = (searchVal: string) => {
+    updateFormState({
+      ...INIT_LISTING_FORM_STATE_VALUES,
+      name: searchVal,
+    });
+
+    goNextstep();
+  };
+
+  const successTitle = isSneakerNew
+    ? 'Thank you, we will review your new sneaker request shortly.'
+    : 'Congratulations, you successfully listed the sneakers!';
+
+  const STEPS = 5;
+
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <SneakerInfoForm title='Sneaker Listing Form' goNextStep={goNextstep} />;
+        return (
+          <React.Fragment>
+            <SneakerSearchBar
+              sneakers={listedSneakers}
+              onChooseSneaker={onChooseSearchBarSneaker}
+              setSneakerNew={setSnekaerNew}
+              setSneakerExists={setSneakerExists}
+              updateSearchVal={updateSearchBarInputVal}
+            />
+            {isSneakerNew ? (
+              <Button color='primary' onClick={() => onRequestNewSneaker(searchBarInputVal)}>
+                Request a new listing
+              </Button>
+            ) : null}
+          </React.Fragment>
+        );
       case 1:
-        return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
+        return <SneakerInfoForm title='Sneaker Listing Form' goNextStep={goNextstep} goPrevStep={goPrevStep} />;
       case 2:
+        return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
+      case 3:
         return (
           <PreviewSneaker
             aspectRatio='66.6%'
@@ -102,22 +177,27 @@ const SneakerListingForm = () => {
             onSubmit={onFinishSubmit}
           />
         );
-      case 3:
-        return <ListedSneakerSuccess />;
+      case 4:
+        return <ListedSneakerSuccess title={successTitle} />;
       default:
-        return undefined;
+        return null;
     }
   };
 
-  const calcProgress = () => ((step + 1) / 4) * 100;
+  // STEPS - 1 because the last step is a success message
+  const calcProgress = () => ((step + 1) / (STEPS - 1)) * 100;
 
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content' style={{ paddingTop: '2.2rem' }}>
-        <Container style={{ maxWidth: step === 2 ? '625px' : undefined }}>
+        <Container style={{ maxWidth: step === 0 || step === 2 ? '625px' : undefined }}>
           <Col className='text-center'>
-            <p style={{ margin: 0 }}>{calcProgress()}%</p>
+            {step < 4 && (
+              <p style={{ margin: 0, fontSize: '1.75rem' }}>
+                Step {step + 1} out of {STEPS - 1}
+              </p>
+            )}
             <div style={{ marginBottom: '1rem' }}>
               <Progress value={calcProgress()} />
             </div>

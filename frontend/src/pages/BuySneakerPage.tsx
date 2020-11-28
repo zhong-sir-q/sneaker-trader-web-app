@@ -115,12 +115,12 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
     return !chooseBuyAll ? allSize.concat(sizeTiles) : sizeTiles;
   };
 
-  const formatSneaker = (): Partial<Sneaker> => ({
+  const sneaker: Partial<Sneaker> = {
     name: displaySneaker?.name,
     colorway: displaySneaker?.colorway,
     size: selectedSize === 'all' ? undefined : selectedSize,
     imageUrls: displaySneaker?.imageUrls,
-  });
+  };
 
   if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
     return (
@@ -135,8 +135,8 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
           <Col md='8'>
             <CenterContainer>
               <SneakerCard
-                mainDisplayImage={getMainDisplayImgUrl(formatSneaker().imageUrls)}
-                sneaker={formatSneaker()}
+                mainDisplayImage={sneaker.imageUrls && getMainDisplayImgUrl(sneaker.imageUrls)}
+                sneaker={sneaker}
                 price={selectedSizeMinPrice}
                 aspectRatio='78.5%'
               />
