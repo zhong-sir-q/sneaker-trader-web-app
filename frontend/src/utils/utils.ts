@@ -24,18 +24,6 @@ export const mapUpperCaseFirstLetter = (s: string, separator: string): string =>
   return arr.map(upperCaseFirstLetter).join(separator);
 };
 
-export const range = (start: number, end: number, step: number): number[] => {
-  let result: number[] = [];
-
-  if (step === 0) return [start];
-
-  if (start > end && step > 0) return [];
-
-  for (let num = start; num !== end; num += step) result.push(num);
-
-  return result;
-};
-
 export const createEditListedSneakerPath = (listedSneakerId: number) =>
   concatPaths(ADMIN, 'edit', `listed-sneaker-${listedSneakerId}`);
 

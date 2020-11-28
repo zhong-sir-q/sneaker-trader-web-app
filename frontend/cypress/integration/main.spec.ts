@@ -24,7 +24,6 @@ const typeInputFields = (payload: { [attrKey: string]: string }) => {
 };
 
 const login = () => {
-    
   typeInputFields(testAccount);
   cy.get(customAttribute('signin-btn')).click();
 };
@@ -43,27 +42,29 @@ describe('Whole app mono test', () => {
     cy.get(customAttribute('homebar-dashboard-link')).click();
     cy.contains('Product Listing').click();
 
+    cy.get(customAttribute('listing-form-search-bar')).type('Nike 14 Kobe Black');
+
     fillSneakerListingForm();
     cy.contains('Next').click();
 
     cy.get(customAttribute('preview-img-dropzone')).attachFile('harden-vol-3.jpeg');
-    cy.contains('Confirm').click()
+    cy.contains('Confirm').click();
     cy.get(customAttribute('preview-img-dropzone')).attachFile('17-black-white.jpg');
-    cy.contains('Confirm').click()
+    cy.contains('Confirm').click();
     // remove the 17-black-white sneaker, 0 index based
-    cy.get(customAttribute('del-preview-1')).click()
+    cy.get(customAttribute('del-preview-1')).click();
     cy.contains('Preview').click();
 
-    cy.contains('Confirm').click()
-    // going to loading motion
-    cy.contains('Confirm').should('not.exist')
+    // cy.contains('Confirm').click()
+    // // going to loading motion
+    // cy.contains('Confirm').should('not.exist')
 
-    cy.contains('Back to dashboard').click()
-    cy.get(customAttribute('admin-navbar-logout')).click()
+    // cy.contains('Back to dashboard').click()
+    // cy.get(customAttribute('admin-navbar-logout')).click()
   });
 
   it('tests the buying experience', () => {
-    cy.visit('/')
+    cy.visit('/');
 
     // go to buy sneaker page
     const sneakerCardName = 'Formposite 1 Gold';
@@ -75,9 +76,11 @@ describe('Whole app mono test', () => {
     // redirect to sign in because I am unauthenticated
     login();
 
-    expect(cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/Formposite-1-Gold/9')
-    }))
+    expect(
+      cy.location().should((loc) => {
+        expect(loc.pathname).to.eq('/Formposite-1-Gold/9');
+      })
+    );
 
     // redirect to the view seller list page
   });

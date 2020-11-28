@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
@@ -63,6 +63,7 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
 type SneakerSearchBarProps = {
   sneakers: SearchBarSneaker[];
   onChooseSneaker: (sneaker: SearchBarSneaker) => void;
+  placeholder?: string;
   setSneakerNew?: () => void;
   setSneakerExists?: () => void;
   updateSearchVal?: (searchVal: string) => void;
@@ -132,7 +133,14 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
-        <StyledInput autoFocus placeholder='Search...' value={searchVal} onChange={onChange} onKeyDown={onKeyDown} />
+        <StyledInput
+          placeholder={props.placeholder || 'Search...'}
+          value={searchVal}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          data-testid='listing-form-search-bar'
+          onFocus={() => openSuggestions()}
+        />
       </InputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>

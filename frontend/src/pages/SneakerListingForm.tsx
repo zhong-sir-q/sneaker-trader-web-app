@@ -26,11 +26,16 @@ import onListingSneaker from 'usecases/onListingSneaker';
 
 import { formatListedSneakerPayload, formatSneaker, getMainDisplayImgUrl } from 'utils/utils';
 import SneakerSearchBar from 'components/SneakerSearchBar';
-import { SearchBarSneaker, ListedSneakerFormPayload } from '../../../shared';
+import { SearchBarSneaker } from '../../../shared';
+
+// this prop is for testing purposes, so we can start from any step we want
+type SneakerListingFormProps = {
+  step?: number;
+};
 
 // the providers reside in routes.tsx
-const SneakerListingForm = () => {
-  const [step, setStep] = useState(0);
+const SneakerListingForm = (props: SneakerListingFormProps) => {
+  const [step, setStep] = useState(props.step || 0);
   // see if the sneaker is already in the suggestion list
   const [isSneakerNew, setIsSneakerNew] = useState(false);
 
@@ -92,11 +97,10 @@ const SneakerListingForm = () => {
 
     const imgFormData = formDataFromFiles();
     const sneakerPayload = formatSneaker(listingSneakerFormState);
-    let createListedProductPayload: (s3Urls: string[]) => ListedSneakerFormPayload;
-
-    if (isSneakerNew)
-      createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState, 'new sneaker request');
-    else createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
+    const createListedProductPayload = formatListedSneakerPayload(
+      listingSneakerFormState,
+      isSneakerNew ? 'new sneaker request' : 'listed'
+    );
 
     await onListingSneaker(
       AwsControllerInstance,

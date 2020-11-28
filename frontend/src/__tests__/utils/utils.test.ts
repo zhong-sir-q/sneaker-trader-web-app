@@ -3,7 +3,6 @@ import sneakerInfoFromPath from 'utils/sneakerInfoFromPath';
 import {
   upperCaseFirstLetter,
   mapUpperCaseFirstLetter,
-  range,
   getMainDisplayImgUrl,
   formatSneakerNameColorway,
   formatSneakerPathName,
@@ -58,21 +57,6 @@ describe('Utility functions', () => {
 
     // the separator is ',', so it will only uppercase the first letter of the string
     expect(mapUpperCaseFirstLetter(s1, ',')).toBe('This Is a Rand text');
-  });
-
-  // exclusive of the end
-  test('Create a list of numbers given a range', () => {
-    const nums1 = range(1, 4, 1);
-    expect(nums1).toEqual([1, 2, 3]);
-
-    const nums2 = range(5, 1, -1);
-    expect(nums2).toEqual([5, 4, 3, 2]);
-
-    const nums3 = range(10, 2, 1);
-    expect(nums3).toEqual([]);
-
-    const nums4 = range(10, 20, 0);
-    expect(nums4).toEqual([10]);
   });
 
   test('Get main display image url', () => {

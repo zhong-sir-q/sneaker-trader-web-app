@@ -4,14 +4,13 @@ import { Col, Card, CardHeader, CardBody, Row, FormGroup, CardFooter, Button } f
 
 import { Formik, Form as FormikForm, useFormikContext } from 'formik';
 
+import _ from 'lodash';
+
 import FormikLabelInput from './formik/FormikLabelInput';
 import FormikLabelSelect from './formik/FormikLabelSelect';
 import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 
-import { DASHBOARD, ADMIN } from 'routes';
-
 import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
-import { range } from 'utils/utils';
 
 type SneakerInfoFormProps = {
   title: string;
@@ -21,7 +20,7 @@ type SneakerInfoFormProps = {
 
 const currencyCodeOptions = ['NZD', 'USD', 'AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'YUAN'];
 const shoeSizeOptions = ['US', 'EU', 'Japan', 'UK'];
-const sneakerConditionRatings = range(1, 10, 0.5);
+const sneakerConditionRatings = _.range(1, 10, 0.5);
 
 // sync the formik form values with the snekaer listing form provider values
 const FormikValueSubscriber = () => {
