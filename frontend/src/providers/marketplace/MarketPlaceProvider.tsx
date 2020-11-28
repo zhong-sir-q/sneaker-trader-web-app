@@ -59,7 +59,6 @@ export const MarketPlaceCtx = createContext(INIT_CTX);
 
 export const useMarketPlaceCtx = () => useContext(MarketPlaceCtx);
 
-
 const LIMIT = 10;
 
 const getSneakersBySizes = async (sizes: number[], sellerId: number) => {
@@ -85,9 +84,9 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
 
   const [hasMoreListedSneakers, setHasMoreListedSneakers] = useState(true);
   // 10 because initially we will fetch 10 sneakers
-  const [offset, setOffset] = useState(10)
+  const [offset, setOffset] = useState(10);
 
-  const updateOffset = () => setOffset(offset + LIMIT)
+  const updateOffset = () => setOffset(offset + LIMIT);
 
   const { currentUser, signedIn } = useAuth();
 
@@ -107,10 +106,9 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
       let gallerySneakers: GallerySneaker[] = [];
 
       // if the user is not logged in, then render all gallery sneakers
-      if (!signedIn) gallerySneakers = await props.listedSneakerController.getGallerySneakers(-1, LIMIT);
+      if (!signedIn) gallerySneakers = await props.listedSneakerController.getGallerySneakers(-1);
       // otherwise hide the sneakers the seller has listed
-      else if (currentUser)
-        gallerySneakers = await props.listedSneakerController.getGallerySneakers(currentUser.id, LIMIT);
+      else if (currentUser) gallerySneakers = await props.listedSneakerController.getGallerySneakers(currentUser.id);
 
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);

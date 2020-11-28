@@ -118,8 +118,6 @@ class ListedSneakerService implements ListedSneakerEntity {
     if (limit) constraint = `LIMIT ${limit}`;
     if (offset) constraint = `${constraint} OFFSET ${offset}`;
 
-    console.log(constraint)
-
     query = query + ' ' + constraint;
 
     const poolConn = await mysqlPoolConnection();

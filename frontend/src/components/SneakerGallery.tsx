@@ -6,6 +6,7 @@ import SneakerCard from './SneakerCard';
 import { getMainDisplayImgUrl } from 'utils/utils';
 import { useHistory } from 'react-router-dom';
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+import usePagination from 'hooks/usePagination';
 
 type SneakerGalleryProps = {
   sneakers: GallerySneaker[];
@@ -13,11 +14,12 @@ type SneakerGalleryProps = {
 
 const SneakerGallery = (props: SneakerGalleryProps) => {
   const history = useHistory();
+  const { startRowCount, endRowCount, PaginationComponent } = usePagination(props.sneakers.length, 15);
 
   return (
     <Container>
       <Row data-testid='market-place-gallery' xs='2' sm='2' md='3' lg='3'>
-        {props.sneakers.map((s, idx) => {
+        {props.sneakers.slice(startRowCount(), endRowCount()).map((s, idx) => {
           const onClick = () => redirectBuySneakerPage(history, s.name, s.colorway);
 
           return (
@@ -34,6 +36,9 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
           );
         })}
       </Row>
+      <div className='flex justify-center'>
+        <PaginationComponent />
+      </div>
     </Container>
   );
 };
