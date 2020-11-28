@@ -23,7 +23,9 @@ type MarketPlaceCtxType = {
   brands: string[] | undefined;
   filterItemGroup: FilterItem[];
   numFilters: number;
+  hasMoreListedSneakers: boolean;
   clearFilters: () => void;
+  fetchMoreListedSneakers: () => void;
   isFilterSelected: (filterVal: string) => boolean;
   updateFilterSneakers: (sneakersToShow: GallerySneaker[]) => void;
   onSelectFilter: SelectFilterHandler;
@@ -35,6 +37,7 @@ const INIT_CTX: MarketPlaceCtxType = {
   brands: undefined,
   filterItemGroup: [],
   numFilters: 0,
+  hasMoreListedSneakers: true,
   clearFilters: () => {
     throw new Error('Must override!');
   },
@@ -47,11 +50,20 @@ const INIT_CTX: MarketPlaceCtxType = {
   isFilterSelected: () => {
     throw new Error('Must override!');
   },
+  fetchMoreListedSneakers: () => {
+    throw new Error('Must override!');
+  },
 };
 
 export const MarketPlaceCtx = createContext(INIT_CTX);
 
 export const useMarketPlaceCtx = () => useContext(MarketPlaceCtx);
+
+// 10 because initially we will fetch 10 sneakers
+let OFFSET = 10;
+let LIMIT = 10;
+
+const updateOffset = () => (OFFSET += LIMIT);
 
 const getSneakersBySizes = async (sizes: number[], sellerId: number) => {
   const nestedSneakers = await Promise.all(
@@ -74,18 +86,30 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
 
   const [filterItemGroup, setFilterItemGroup] = useState<FilterItem[]>([]);
 
+  const [hasMoreListedSneakers, setHasMoreListedSneakers] = useState(true);
+
   const { currentUser, signedIn } = useAuth();
 
   const updateFilterSneakers = useCallback((sneakers: GallerySneaker[]) => setFilterSneakers(sneakers), []);
+
+  // paginate the fetch listed sneakers request
+  const fetchMoreListedSneakers = () =>
+    setTimeout(async () => {
+      const more = await props.listedSneakerController.getGallerySneakers(-1, LIMIT, OFFSET);
+      setFilterSneakers(filterSneakers?.concat(more));
+      updateOffset();
+      if (more.length === 0) setHasMoreListedSneakers(false);
+    }, 500);
 
   useEffect(() => {
     (async () => {
       let gallerySneakers: GallerySneaker[] = [];
 
       // if the user is not logged in, then render all gallery sneakers
-      if (!signedIn) gallerySneakers = await props.listedSneakerController.getGallerySneakers(-1);
+      if (!signedIn) gallerySneakers = await props.listedSneakerController.getGallerySneakers(-1, LIMIT);
       // otherwise hide the sneakers the seller has listed
-      else if (currentUser) gallerySneakers = await props.listedSneakerController.getGallerySneakers(currentUser.id);
+      else if (currentUser)
+        gallerySneakers = await props.listedSneakerController.getGallerySneakers(currentUser.id, LIMIT);
 
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);
@@ -140,7 +164,9 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
         filterSneakers,
         filterItemGroup,
         brands,
+        hasMoreListedSneakers,
         numFilters: filterItemGroup.length,
+        fetchMoreListedSneakers,
         clearFilters,
         updateFilterSneakers,
         isFilterSelected,

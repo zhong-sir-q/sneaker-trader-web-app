@@ -6,7 +6,7 @@ interface ListedSneakerEntity {
   getGallerySneakersBySize(sellerId: number, size: number): Promise<GallerySneaker[]>;
   getBySellerId(sellerId: number): Promise<SellerListedSneaker[]>;
   getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]>;
-  getGallerySneakers(sellerId: number): Promise<GallerySneaker[]>;
+  getGallerySneakers(sellerId: number, limit?: number, offset?: number): Promise<GallerySneaker[]>;
   getSizeMinPriceGroupByNameColorway(name: string, sellerId: number): Promise<SizeMinPriceGroupType>;
   // returns sneakers that have status of listed
   getAllListedSneakers(): Promise<GetListedSneaker[]>;

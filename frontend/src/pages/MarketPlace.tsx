@@ -9,9 +9,11 @@ import FiltersDrawer from 'components/marketplace/filters/FiltersDrawer';
 import ButtonFilters from 'components/marketplace/filters/FilterButtons';
 import CheckboxFilters from 'components/marketplace/filters/CheckboxFilters';
 
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
-import _ from 'lodash'
+import _ from 'lodash';
 
 const FilterGroup = styled(Col)`
   min-width: 200px;
@@ -22,16 +24,13 @@ const FilterGroup = styled(Col)`
 `;
 
 const MarketPlace = () => {
-  const { filterSneakers, brands } = useMarketPlaceCtx();
+  const { filterSneakers, brands, hasMoreListedSneakers, fetchMoreListedSneakers } = useMarketPlaceCtx();
 
   return !brands || !filterSneakers ? (
     <CenterSpinner />
   ) : (
     <Container style={{ minHeight: 'calc(100vh - 150px)' }}>
-      <FiltersDrawer
-        brandFilters={brands}
-        sizeFilters={_.range(3, 14, 0.5).map((n) => String(n))}
-      />
+      <FiltersDrawer brandFilters={brands} sizeFilters={_.range(3, 14, 0.5).map((n) => String(n))} />
       <div className='flex'>
         <FilterGroup md={2} lg={2}>
           <ButtonFilters
@@ -42,7 +41,14 @@ const MarketPlace = () => {
 
           <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
         </FilterGroup>
-        <SneakerGallery sneakers={filterSneakers} />
+        <InfiniteScroll
+          dataLength={filterSneakers.length}
+          next={fetchMoreListedSneakers}
+          hasMore={hasMoreListedSneakers}
+          loader={<h4 className='text-center'>Loading...</h4>}
+        >
+          <SneakerGallery sneakers={filterSneakers} />
+        </InfiniteScroll>
       </div>
     </Container>
   );

@@ -105,14 +105,22 @@ class ListedSneakerService implements ListedSneakerEntity {
     return poolConn.query(getBySizeQuery);
   }
 
-  async getGallerySneakers(sellerId: number): Promise<GallerySneaker[]> {
+  async getGallerySneakers(sellerId: number, limit?: number, offset?: number): Promise<GallerySneaker[]> {
     // get all sneakers grouped by the names and their min price
-    const query = `
+    let query = `
       SELECT name, size, brand, colorway, P.imageUrls,
         MIN(minAskingPrice) as minPrice, mainDisplayImage FROM ${PRODUCTS} P JOIN (
           SELECT MIN(askingPrice) as minAskingPrice, productId, mainDisplayImage FROM ${LISTED_PRODUCTS}
             WHERE prodStatus = "listed" AND NOT userId = ${sellerId} GROUP BY productId
               ) L ON P.id = L.productId GROUP BY name, colorway`;
+
+    let constraint = '';
+    if (limit) constraint = `LIMIT ${limit}`;
+    if (offset) constraint = `${constraint} OFFSET ${offset}`;
+
+    console.log(constraint)
+
+    query = query + ' ' + constraint;
 
     const poolConn = await mysqlPoolConnection();
     const sneakersWithLowestAskPrice = await poolConn.query(query);

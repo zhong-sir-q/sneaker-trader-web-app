@@ -26,7 +26,7 @@ export const validEmail = () => Yup.string().email('Invalid email address').requ
 export const validDate = (dateFormat: string) =>
   Yup.string()
     .required(REQUIRED)
-    .test('valid-date', `Valid date format: ${dateFormat}`, (datevalue) => moment(datevalue, dateFormat, true).isValid());
+    .test('valid-date', `Date format should be: ${dateFormat}`, (datevalue) => moment(datevalue, dateFormat, true).isValid());
 
 export const matchingPassword = (pwFieldName: string) =>
   Yup.string()

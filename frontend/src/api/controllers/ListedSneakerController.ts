@@ -26,8 +26,15 @@ export class ListedSneakerController implements ListedSneakerEntity {
 
   getAllListedSneakers = (): Promise<GetListedSneaker[]> => fetch(this.listedSneakerPath).then((res) => res.json());
 
-  getGallerySneakers = (sellerId: number): Promise<GallerySneaker[]> =>
-    fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId)).then((res) => res.json());
+  getGallerySneakers = (sellerId: number, limit?: number, offset?: number): Promise<GallerySneaker[]> => {
+    // TODO: use a out of box solution or define a custom function to build the query
+    let query = '';
+    if (limit !== undefined) query = `limit=${limit}`;
+    if (offset !== undefined) query = `${query}&offset=${offset}`;
+    if (query) query = '?' + query;
+
+    return fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId + query)).then((res) => res.json());
+  };
 
   getSizeMinPriceGroupByNameColorway = (nameColorway: string, sellerId: number): Promise<SizeMinPriceGroupType> =>
     fetch(concatPaths(this.listedSneakerPath, 'sizeMinPriceGroup', nameColorway, sellerId)).then((res) => res.json());

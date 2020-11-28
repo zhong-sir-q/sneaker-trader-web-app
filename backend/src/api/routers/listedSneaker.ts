@@ -32,17 +32,29 @@ const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService)
       .catch(next);
   };
 
-  return { get, getAll, update };
+  const getGallerySneakersBySellerId: ExpressHandler = (req, res, next) => {
+    const { sellerId } = req.params;
+    const { limit, offset } = req.query;
+
+    listedSneakerService
+      .getGallerySneakers(Number(sellerId), Number(limit), Number(offset))
+      .then((gallerySneakers) => res.json(gallerySneakers))
+      .catch(next);
+  };
+
+  return { get, getAll, getGallerySneakersBySellerId, update };
 };
 
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
-  const { get, getAll, update } = createListedSneakerHandlers(ListedSneakerServiceInstance);
+  const { get, getAll, getGallerySneakersBySellerId, update } = createListedSneakerHandlers(
+    ListedSneakerServiceInstance
+  );
 
   app.use('/listedSneaker', listedSneakerRoute);
 
-  listedSneakerRoute.route('/one/:id').get(get).put(update);
-
   listedSneakerRoute.route('/history').get(getAll);
+  listedSneakerRoute.route('/one/:id').get(get).put(update);
+  listedSneakerRoute.route('/gallery/:sellerId').get(getGallerySneakersBySellerId);
 
   listedSneakerRoute.get('/', async (_req, res, next) => {
     ListedSneakerServiceInstance.getAllListedSneakers()
@@ -79,14 +91,6 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
 
     ListedSneakerServiceInstance.getAllAsksByNameColorway(nameColorway as string)
       .then((result) => res.json(result))
-      .catch(next);
-  });
-
-  listedSneakerRoute.get('/gallery/:sellerId', (req, res, next) => {
-    const { sellerId } = req.params;
-
-    ListedSneakerServiceInstance.getGallerySneakers(Number(sellerId))
-      .then((gallerySneakers) => res.json(gallerySneakers))
       .catch(next);
   });
 
