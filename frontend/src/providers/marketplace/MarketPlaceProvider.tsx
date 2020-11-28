@@ -22,6 +22,8 @@ type MarketPlaceCtxType = {
   filterSneakers: GallerySneaker[] | undefined;
   brands: string[] | undefined;
   filterItemGroup: FilterItem[];
+  numFilters: number;
+  clearFilters: () => void;
   isFilterSelected: (filterVal: string) => boolean;
   updateFilterSneakers: (sneakersToShow: GallerySneaker[]) => void;
   onSelectFilter: SelectFilterHandler;
@@ -32,6 +34,10 @@ const INIT_CTX: MarketPlaceCtxType = {
   filterSneakers: undefined,
   brands: undefined,
   filterItemGroup: [],
+  numFilters: 0,
+  clearFilters: () => {
+    throw new Error('Must override!');
+  },
   updateFilterSneakers: () => {
     throw new Error('Must override!');
   },
@@ -116,6 +122,8 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
     filterHandler();
   }, [filterHandler]);
 
+  const clearFilters = () => setFilterItemGroup([]);
+
   const isFilterSelected = (selectedVal: string) => filterItemGroup.findIndex((f) => f.value === selectedVal) > -1;
 
   const onSelectFilter = (filterKey: FilterByKey, filter: string) => {
@@ -132,6 +140,8 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
         filterSneakers,
         filterItemGroup,
         brands,
+        numFilters: filterItemGroup.length,
+        clearFilters,
         updateFilterSneakers,
         isFilterSelected,
         onSelectFilter,

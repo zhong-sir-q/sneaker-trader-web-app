@@ -15,7 +15,6 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 
-
 import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import { UserRankingRow } from '../../../shared';
@@ -45,12 +44,14 @@ const UserRankingLeaderBoardItem = (props: UserRankingLeaderBoardItemProps) => {
 
   return (
     <ListItem divider>
-      <span style={{ width: '30px' }}>{placing}</span>
+      {/* <span style={{ width: '25px' }}>{placing}</span> */}
       <ListItemAvatar>
         <Avatar src={profilePicUrl || defaultAvatar} alt={`${username} profile pic`}></Avatar>
       </ListItemAvatar>
       <div>
-        <ListItemText>{username || 'Anonymous'}</ListItemText>
+        <ListItemText>
+          {placing}. {username || 'No username'}
+        </ListItemText>
         {/* show if width > 600px */}
         <ListItemSecondaryAction className={styles.secondaryActionRoot}>{rankingPoints} Points</ListItemSecondaryAction>
 

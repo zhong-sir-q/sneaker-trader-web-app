@@ -55,7 +55,7 @@ describe('Utility functions', () => {
     const s1 = 'this Is a Rand text';
     expect(mapUpperCaseFirstLetter(s1, ' ')).toBe('This Is A Rand Text');
 
-    // the separator is ',', so it will only uppercase the first letter of the string
+    // uppercase the first letter of the string
     expect(mapUpperCaseFirstLetter(s1, ',')).toBe('This Is a Rand text');
   });
 

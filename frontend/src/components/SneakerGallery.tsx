@@ -26,9 +26,10 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
               mainDisplayImage={getMainDisplayImgUrl(s.imageUrls)}
               isListed
               sneaker={s}
-              key={idx}
               price={s.minPrice}
               onClick={onClick}
+              lazyLoad
+              key={idx}
             />
           );
         })}

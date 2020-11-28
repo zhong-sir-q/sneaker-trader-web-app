@@ -176,7 +176,7 @@ const Sidebar = (props: SideBarProps) => {
           </div>
         </div>
 
-        <div className='sidebar-wrapper' ref={sidebar}>
+        <div className='sidebar-wrapper' style={{ overflow: 'auto' }} ref={sidebar}>
           <div className='user'>
             <div className='photo' style={{ backgroundColor: 'white' }}>
               <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
@@ -189,7 +189,7 @@ const Sidebar = (props: SideBarProps) => {
                 onClick={() => setCollapseStates({ ...collapseStates, openAvatar: !collapseStates.openAvatar })}
               >
                 <span>
-                  {currentUser?.username || 'DEFAULT_USERNAME'}
+                  {currentUser?.username || 'No username'}
                   <b className='caret' />
                 </span>
               </a>
