@@ -11,17 +11,18 @@ import { FiltersProps, FilterButtonProps } from './filter';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
 const FilterButton = styled.button<FilterButtonProps>`
-  text-align: center;
   border: 1px solid rgb(229, 229, 229);
   border-radius: 5px;
   margin-right: 6px;
   margin-bottom: 6px;
-  flex: 0%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: transparent;
   color: ${(props) => (props.selected ? '#f96332' : '')};
+  display: flex;
+  justify-content: center;
+  padding: 3.5px;
+  /* width 0 and flex makes all the flex item the same size */
+  width: 0;
+  flex: 1 1 25%;
 
   &:focus {
     outline: none;

@@ -40,6 +40,7 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
         <MuiCloseButton onClick={onClose} />
         <div style={{ padding: '50px', overflow: 'auto', paddingBottom: 0 }}>
           <ButtonFilters filterKey='size' filters={sizeFilters} title='us sizes' />
+          {/* <CheckboxFilters filterKey='size' filters={sizeFilters} title='us sizes' /> */}
           <CheckboxFilters filterKey='brand' filters={brandFilters} title='brands' />
         </div>
         {numFilters > 0 && (
