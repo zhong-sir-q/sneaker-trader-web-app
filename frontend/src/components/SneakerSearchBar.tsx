@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
 import { ListGroup, ListGroupItem, ListGroupItemText, InputGroup } from 'reactstrap';
 
+// import InfiniteScroll from 'react-infinite-scroll-component';
+
 import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 
@@ -69,10 +71,21 @@ type SneakerSearchBarProps = {
   updateSearchVal?: (searchVal: string) => void;
 };
 
+// const LIMIT = 10;
+// const INIT_OFFSET = 0;
+
 const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [searchVal, setSearchVal] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
+  // const [lazySuggestions, setLazySuggestions] = useState<SearchBarSneaker[]>([]);
+
+  // const [offset, setOffset] = useState(INIT_OFFSET);
+
+  // const updateOffset = () => setOffset(offset + LIMIT);
+
+  // const clearOffset = () => setOffset(INIT_OFFSET);
+  // const resetLazySuggestions = () => setLazySuggestions([]);
 
   const { setSneakerExists, setSneakerNew, updateSearchVal } = props;
 
@@ -84,6 +97,13 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const result = !searchVal
     ? props.sneakers
     : props.sneakers.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
+
+  // const getMoreSuggestions = () => {
+  //   setTimeout(() => {
+  //     setLazySuggestions(lazySuggestions.concat(result.slice(offset, offset + LIMIT)));
+  //     updateOffset();
+  //   }, 500);
+  // };
 
   const onChange = (evt: any) => {
     const { value } = evt.target;
