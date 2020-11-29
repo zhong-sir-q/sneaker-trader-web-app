@@ -73,6 +73,15 @@ export class ListedSneakerController implements ListedSneakerEntity {
       concatPaths(this.listedSneakerPath, 'one', listedSneakerId),
       formatRequestOptions(listedSneaker, undefined, 'PUT')
     ).then((r) => r.json());
+
+  removeListing = (listedSneakerId: number) => {
+    fetch(
+      concatPaths(this.listedSneakerPath, 'one', listedSneakerId ), {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    ).then(r => r.json())
+  }
 }
 
 const ListedSneakerControllerInstance = new ListedSneakerController();
