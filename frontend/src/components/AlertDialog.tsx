@@ -8,13 +8,14 @@ type AlertDialogProps = {
   color: string;
   message: string;
   onClose: () => void;
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 };
 
 const AlertDialog = (props: AlertDialogProps) => {
-  const { open, color, message, onClose } = props;
+  const { open, color, message, maxWidth, onClose } = props;
 
   return (
-    <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth={maxWidth || 'xs'} open={open} onClose={onClose}>
       {/* hide the tiny bit of offset */}
       <Alert className='no-margin' style={{ overflow: 'hidden' }} color={color} toggle={onClose}>
         {message}

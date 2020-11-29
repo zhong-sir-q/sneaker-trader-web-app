@@ -28,6 +28,9 @@ import { formatListedSneakerPayload, formatSneaker, getMainDisplayImgUrl } from 
 import SneakerSearchBar from 'components/SneakerSearchBar';
 import { SearchBarSneaker } from '../../../shared';
 
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import AlertDialog from 'components/AlertDialog';
+
 // this prop is for testing purposes, so we can start from any step we want
 type SneakerListingFormProps = {
   step?: number;
@@ -38,6 +41,8 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
   const [step, setStep] = useState(props.step || 0);
   // see if the sneaker is already in the suggestion list
   const [isSneakerNew, setIsSneakerNew] = useState(false);
+
+  const negativeBalanceAlertHook = useOpenCloseComp();
 
   const setSnekaerNew = () => setIsSneakerNew(true);
   const setSneakerExists = () => setIsSneakerNew(false);
@@ -62,14 +67,16 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     const goTopupWalletIfNegativeWalletBalance = async () => {
       const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id);
 
-      if (!isWalletBalancePositive) {
-        history.push(ADMIN + TOPUP_WALLET);
-        alert('Please topup first, your wallet balance must be greater than 0');
-      }
+      if (!isWalletBalancePositive) negativeBalanceAlertHook.onOpen();
     };
 
     goTopupWalletIfNegativeWalletBalance();
-  }, [currentUser, history]);
+  }, [currentUser, history, negativeBalanceAlertHook]);
+
+  const onCloseNegWalletBalanceAlert = () => {
+    negativeBalanceAlertHook.onClose();
+    history.push(ADMIN + TOPUP_WALLET);
+  };
 
   useEffect(() => {
     (async () => {
@@ -209,6 +216,13 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
           </Col>
         </Container>
       </div>
+      <AlertDialog
+        color='info'
+        message='Please topup first, your wallet balance must be greater than 0'
+        open={negativeBalanceAlertHook.open}
+        onClose={onCloseNegWalletBalanceAlert}
+        maxWidth='sm'
+      />
     </React.Fragment>
   );
 };
