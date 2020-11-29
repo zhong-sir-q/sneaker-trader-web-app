@@ -3,7 +3,7 @@ import mysql from 'mysql';
 import config from '.';
 
 export type DataConnection = {
-  query(sql: string | mysql.QueryOptions): Promise<any>;
+  query(sql: string | mysql.QueryOptions, escapeData?: any[]): Promise<any>;
   close(): Promise<any>;
 };
 
@@ -16,11 +16,11 @@ function mysqlPoolConnection(): Promise<DataConnection> {
     pool.getConnection((err, conn) => {
       if (err) reject(err);
 
-      const query = (sql: string): Promise<any> => {
+      const query = (sql: string, escapeData: any[] = []): Promise<any> => {
         return new Promise((resolve, reject) => {
           conn.beginTransaction();
 
-          conn.query(sql, (queryErr, queryResult) => {
+          conn.query(sql, escapeData, (queryErr, queryResult) => {
             if (queryErr) {
               console.log(`Encountered error: ${queryErr.message}, rolling back...`);
               conn.rollback();
