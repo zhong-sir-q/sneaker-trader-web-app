@@ -2,7 +2,6 @@ import {
   formatInsertRowsQuery,
   doubleQuotedValue,
   formatUpdateRowsQuery,
-  formatGetRowsQuery,
 } from '../utils/formatDbQuery';
 
 import {
@@ -28,9 +27,9 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     const getAllAsksQuery = `
-      SELECT size, Min(askingPrice) as askingPrice, SUM(L.quantity) as numsAvailable 
+      SELECT size, Min(askingPrice) as askingPrice, SUM(L.quantity) as numsAvailable
         FROM ListedProducts L, Products P
-          WHERE L.prodStatus = "listed" AND L.productId = P.id 
+          WHERE L.prodStatus = "listed" AND L.productId = P.id
             AND CONCAT(P.name, ' ', P.colorWay) = ${doubleQuotedValue(nameColorway)}
               GROUP BY size ORDER BY askingPrice;
     `;
@@ -48,7 +47,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     `;
 
     const getBuyerQuery = `
-      SELECT JSON_OBJECT("email", email, "username", username, 
+      SELECT JSON_OBJECT("email", email, "username", username,
       "phoneNo", phoneNo, "buyerRating", buyerRating,
       "transactionDatetime", transactionDatetime, "hasSellerRatedBuyer", hasSellerRatedBuyer)
         FROM ( ${getBuyersInfo} ) q1 LEFT JOIN
@@ -57,7 +56,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     `;
 
     const buyerIfPendingOrSoldProduct = `
-      IF(prodStatus = 'pending' OR prodStatus = 'sold', 
+      IF(prodStatus = 'pending' OR prodStatus = 'sold',
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
@@ -84,7 +83,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     const query = `
-      SELECT name, brand, colorway, P.imageUrls FROM ${PRODUCTS} P, 
+      SELECT name, brand, colorway, P.imageUrls FROM ${PRODUCTS} P,
         ${LISTED_PRODUCTS} L WHERE P.id = L.productId
           GROUP BY name, brand, colorway`;
 
@@ -98,7 +97,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
     SELECT name, colorway, brand, size, P.imageUrls, minPrice, mainDisplayImage FROM ${PRODUCTS} P JOIN (
-      SELECT MIN(askingPrice) as minPrice, productId, mainDisplayImage FROM ${LISTED_PRODUCTS} 
+      SELECT MIN(askingPrice) as minPrice, productId, mainDisplayImage FROM ${LISTED_PRODUCTS}
       WHERE prodStatus = "listed" AND NOT userId = ${sellerId} GROUP BY productId
     ) L ON P.id = L.productId WHERE size = ${size}`;
 
@@ -160,7 +159,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     const allListedProductsQuery = `
-      SELECT L.*, name, brand, colorway, size FROM ${PRODUCTS} P, 
+      SELECT L.*, name, brand, colorway, size FROM ${PRODUCTS} P,
         ${LISTED_PRODUCTS} L WHERE P.id = L.productId AND L.prodStatus = 'listed'
           GROUP BY name, colorway`;
 
@@ -196,11 +195,18 @@ class ListedSneakerService implements ListedSneakerEntity {
     return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneaker, `id = ${listedSneakerId}`));
   }
 
-  async getById(listedSneakerId: Number): Promise<ListedProduct> {
+  async remove(listedSneakerId: number) {
     const poolConn = await mysqlPoolConnection();
-    const res = await poolConn.query(formatGetRowsQuery(LISTED_PRODUCTS, `id = ${listedSneakerId}`));
+    const sql = `DELETE FROM ${LISTED_PRODUCTS} WHERE id = ?`
 
-    return res.length > 0 ? res[0] : null;
+    return poolConn.query(sql, [listedSneakerId])
+  }
+
+  async getById(listedSneakerId: Number) {
+    const poolConn = await mysqlPoolConnection();
+    const sql = `SELECT * from ${LISTED_PRODUCTS} WHERE id = ?`
+
+    return poolConn.query(sql, [listedSneakerId]);
   }
 }
 
