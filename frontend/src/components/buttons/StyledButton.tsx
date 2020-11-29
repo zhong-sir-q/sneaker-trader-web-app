@@ -17,3 +17,7 @@ export const CompleteSaleButton = styled(DashboardButton)`
 export const RatingButton = styled(DashboardButton)`
   cursor: pointer;
 `;
+
+export const RemoveButton = styled(DashboardButton)`
+  cursor: pointer;
+`;

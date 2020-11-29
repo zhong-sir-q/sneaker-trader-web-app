@@ -126,6 +126,9 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           {price}
         </td>
         <td>{quantity || 1}</td>
+        <td>
+          {prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}
+        </td>
         <td style={{ minWidth: '220px' }}>
           <SellerCTAButtonsGroup
             listedProdId={id}
@@ -133,7 +136,6 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             prodStatus={prodStatus}
             onCompleteSale={onCompleteSale}
           />
-          {prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}
         </td>
       </tr>
     );
@@ -148,7 +150,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             <ListedSneakerRow key={idx} sneaker={s} />
           ))}
           <tr>
-            <td colSpan={5} />
+            <td colSpan={6} />
             <td className='td-total'>Total</td>
             <td className='td-price'>
               <small>$</small>

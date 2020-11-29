@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import RateCustomer from 'components/RateCustomer';
 import ContactCustomerButton from './ContactCustomerButton';
+import RemoveListingButton from './RemoveListingButton';
 import { CompleteSaleButton } from './StyledButton';
 
 import { SneakerStatus, Buyer } from '../../../../shared';
@@ -28,6 +29,12 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
   };
 
   switch (prodStatus) {
+    case 'listed':
+      return (
+        <div className='flex margin-right-except-last'>
+          <RemoveListingButton listedProdId={listedProdId} title='Remove Listing' />
+        </div>
+      );
     case 'pending':
       return (
         <div className='flex margin-right-except-last'>
@@ -38,7 +45,7 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
     case 'sold':
       return (
         <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={buyer!} title='Contact Buyer' />
+          <ContactCustomerButton customer={buyer} title='Contact Buyer' />
           {!hasSellerRatedBuyer && (
             <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompleteRating} />
           )}
