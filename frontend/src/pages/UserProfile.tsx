@@ -27,6 +27,8 @@ import AddressVerificationForm, { DEFAULT_ADDRESS } from 'components/AddressVeri
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import AddressControllerInstance from 'api/controllers/AddressController';
 import FormikDatetime from 'components/formik/FormikDatetime';
+import { Tooltip } from '@material-ui/core';
+import { VerifiedUser } from '@material-ui/icons';
 
 // user may have empty firstname or empty lastname or both
 const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
@@ -41,6 +43,24 @@ const validationSchema = (userId: number) =>
     username: checkDuplicateUsername(userId),
     dob: validDate('MM/DD/YYYY'),
   });
+
+type BadgesProp = {
+  addressVerified: boolean;
+};
+
+const Badges = (props: BadgesProp) => {
+  const { addressVerified } = props;
+
+  return (
+    <React.Fragment>
+      {addressVerified && (
+        <Tooltip title='Address Verified'>
+          <VerifiedUser style={{ color: 'green' }} />
+        </Tooltip>
+      )}
+    </React.Fragment>
+  );
+};
 
 const UserProfile = () => {
   const openCloseAlertHook = useOpenCloseComp();
@@ -191,8 +211,15 @@ const UserProfile = () => {
 
               <Col md='4'>
                 <Card className='card-user'>
+                  {/* avatar, fullname, email and username */}
                   <CardBody>
                     <div className='text-center'>
+                      {/* badges on the top left corner */}
+                      <div style={{ position: 'absolute' }}>
+                        <Badges
+                          addressVerified={userAddr !== undefined && userAddr.verificationStatus === 'verified'}
+                        />
+                      </div>
                       <ImageUpload
                         imgPreviewUrl={
                           formikProps.values.profilePicUrl ? formikProps.values.profilePicUrl : defaultAvatar
@@ -204,9 +231,7 @@ const UserProfile = () => {
                         {nameIfUndefined('No full name...', currentUser.firstName, currentUser.lastName)}
                       </h5>
                       <p className='description'>{currentUser.email}</p>
-                      <p className='description'>
-                        {nameIfUndefined('No username...', currentUser.username)}
-                      </p>
+                      <p className='description'>{nameIfUndefined('No username...', currentUser.username)}</p>
                     </div>
                   </CardBody>
                   <hr />

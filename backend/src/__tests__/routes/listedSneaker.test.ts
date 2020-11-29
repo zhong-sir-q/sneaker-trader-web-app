@@ -16,10 +16,13 @@ import { formatGetRowsQuery, formatUpdateRowsQuery } from '../../utils/formatDbQ
 import faker from 'faker';
 
 beforeAll(async () => {
+  await initListedSneakerTable();
+});
+
+beforeEach(async () => {
   const poolConn = await mysqlPoolConnection();
   // disable only full group by
   await poolConn.query(`SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY', ''))`);
-  await initListedSneakerTable();
 });
 
 afterAll(async () => {
