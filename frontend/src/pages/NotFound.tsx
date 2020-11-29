@@ -10,7 +10,7 @@ const NotFound = () => {
         <div className='err'>4</div>
         <i className='far fa-question-circle fa-spin'></i>
         <div className='err2'>4</div>
-        <div className='msg'>
+        <div className='message'>
           Maybe this page moved? Got deleted? Is hiding out in quarantine? Never existed in the first place?
           <p>
             Let's go <Link to={HOME}>home</Link> and try from there.

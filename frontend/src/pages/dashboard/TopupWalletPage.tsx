@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardBody, Button } from 'reactstrap';
+import { Card, CardHeader, CardTitle, CardBody, Button, Container } from 'reactstrap';
 
 import { Paper } from '@material-ui/core';
 
@@ -21,7 +21,7 @@ const PaperContainer = styled(Paper)`
 `;
 
 const TopupWalletPage = () => {
-  const { open, onOpen, onClose } = useOpenCloseComp()
+  const { open, onOpen, onClose } = useOpenCloseComp();
 
   const { walletBalance } = useWalletCtx();
 
@@ -30,23 +30,25 @@ const TopupWalletPage = () => {
   ) : (
     <div>
       <PanelHeader size='sm' />
-      <PaperContainer>
-        <div style={{ width: '300px' }}>
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h5 style={{ margin: 0 }}>Balance</h5>
-              </CardTitle>
-            </CardHeader>
-            <CardBody>
-              <h3 style={{ margin: 0 }}>{`$${walletBalance}`}</h3>
-            </CardBody>
-          </Card>
-          <Button onClick={onOpen} style={{ width: '100%', fontSize: '1.25em' }} color='primary'>
-            Topup
-          </Button>
-        </div>
-      </PaperContainer>
+      <Container fluid='sm'>
+        <PaperContainer>
+          <div style={{ width: '300px' }}>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <h5 style={{ margin: 0 }}>Balance</h5>
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <h3 style={{ margin: 0 }}>{`$${walletBalance}`}</h3>
+              </CardBody>
+            </Card>
+            <Button onClick={onOpen} style={{ width: '100%', fontSize: '1.25em' }} color='primary'>
+              Topup
+            </Button>
+          </div>
+        </PaperContainer>
+      </Container>
       <TopupWalletDialog isOpen={open} handleClose={onClose} />
     </div>
   );

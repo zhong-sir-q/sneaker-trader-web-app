@@ -115,7 +115,7 @@ const BuySneakerPageContainer = () => {
       <AlertDialog
         open={alertDialogHook.open}
         color='info'
-        msg='Please select a size!'
+        message='Please select a size!'
         onClose={alertDialogHook.onClose}
       />
     </React.Fragment>

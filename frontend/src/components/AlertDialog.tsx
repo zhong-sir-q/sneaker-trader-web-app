@@ -6,18 +6,18 @@ import { Alert } from 'reactstrap';
 type AlertDialogProps = {
   open: boolean;
   color: string;
-  msg: string;
+  message: string;
   onClose: () => void;
 };
 
 const AlertDialog = (props: AlertDialogProps) => {
-  const { open, color, msg, onClose } = props;
+  const { open, color, message, onClose } = props;
 
   return (
     <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
       {/* hide the tiny bit of offset */}
       <Alert className='no-margin' style={{ overflow: 'hidden' }} color={color} toggle={onClose}>
-        {msg}
+        {message}
       </Alert>
     </Dialog>
   );

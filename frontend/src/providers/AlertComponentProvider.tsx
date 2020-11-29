@@ -4,7 +4,7 @@ import { Alert } from 'reactstrap';
 import { Dialog } from '@material-ui/core';
 
 type AlertComponentType = {
-  onOpenAlert: (color?: string, msg?: string) => void;
+  onOpenAlert: (color?: string, message?: string) => void;
 };
 
 const INIT_CTX: AlertComponentType = {
@@ -18,14 +18,14 @@ const AlertComponentCtx = createContext(INIT_CTX);
 export const useAlertComponent = () => useContext(AlertComponentCtx);
 
 // uses the Reactstrap Alert Component
-const AlertComponentProvider = (props: { children: ReactNode; color: string; msg: string }) => {
+const AlertComponentProvider = (props: { children: ReactNode; color: string; message: string }) => {
   const { open, onOpen, onClose } = useOpenCloseComp();
   const [color, setColor] = useState<string>(props.color);
-  const [alertMsg, setAlertMsg] = useState<string>(props.msg);
+  const [alertMsg, setAlertMsg] = useState<string>(props.message);
 
-  const onOpenAlert = (color?: string, msg?: string) => {
+  const onOpenAlert = (color?: string, message?: string) => {
     if (color) setColor(color);
-    if (msg) setAlertMsg(msg);
+    if (message) setAlertMsg(message);
     onOpen();
   };
 

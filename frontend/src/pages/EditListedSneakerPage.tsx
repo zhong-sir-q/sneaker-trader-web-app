@@ -121,7 +121,7 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
       <AlertDialog
         open={updateSuccessAlertHook.open}
         color='success'
-        msg='Successful update!'
+        message='Successful update!'
         onClose={updateSuccessAlertHook.onClose}
       />
     </React.Fragment>

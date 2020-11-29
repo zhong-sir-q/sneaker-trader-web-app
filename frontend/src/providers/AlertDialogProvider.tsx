@@ -17,13 +17,13 @@ const AlertComponentCtx = createContext(INIT_CTX);
 export const useAlertComponent = () => useContext(AlertComponentCtx);
 
 // uses the Reactstrap Alert Component
-const AlertDialogProvider = (props: { children: ReactNode; color: string; msg: string }) => {
+const AlertDialogProvider = (props: { children: ReactNode; color: string; message: string }) => {
   const { open, onOpen, onClose } = useOpenCloseComp();
-  const { color, msg } = props;
+  const { color, message } = props;
 
   return (
     <AlertComponentCtx.Provider value={{ onOpenAlert: onOpen }}>
-      <AlertDialog {...{ open, color, msg, onClose }} />
+      <AlertDialog {...{ open, color, message, onClose }} />
       {props.children}
     </AlertComponentCtx.Provider>
   );

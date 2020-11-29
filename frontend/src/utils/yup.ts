@@ -68,5 +68,5 @@ export const noSpecialChar = () =>
     .matches(/^[a-zA-Z0-9\s]+$/, 'No special characters')
     .required(REQUIRED);
 
-export const minNumber = (lowerLim: number, msg: string) => Yup.number().min(lowerLim, msg).required(REQUIRED);
+export const minNumber = (lowerLim: number, message: string) => Yup.number().min(lowerLim, message).required(REQUIRED);
 export const allowedRange = (lo: number, hi: number) => Yup.number().min(lo).max(hi).required(REQUIRED);
