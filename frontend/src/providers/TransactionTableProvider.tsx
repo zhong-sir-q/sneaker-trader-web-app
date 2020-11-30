@@ -56,6 +56,7 @@ const TransactionTableProvider = (props: { children: ReactNode }) => {
     setUnsoldListedSneakers(unsold)
   }
 
+  // refetch the data if a sale has been completed
   useEffect(() => {
     (async () => {
       if (currentUser) {

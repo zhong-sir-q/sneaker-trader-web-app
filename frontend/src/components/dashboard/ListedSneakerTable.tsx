@@ -30,7 +30,7 @@ type ListedSneakerTableProps = {
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, setShowCompleteSaleSuccess } = props;
 
-  const history = useHistory()
+  const history = useHistory();
 
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<SellerListedSneaker>(sneakers);
 
@@ -107,8 +107,10 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       if (setShowCompleteSaleSuccess) setShowCompleteSaleSuccess();
     };
 
+    const onRemoveListing = () => ListedSneakerControllerInstance.removeListing(id);
+
     const onEdit = () => {
-      const editPath = createEditListedSneakerPath(props.sneaker.id)
+      const editPath = createEditListedSneakerPath(props.sneaker.id);
       history.push(editPath, props.sneaker);
     };
 
@@ -126,15 +128,14 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           {price}
         </td>
         <td>{quantity || 1}</td>
-        <td>
-          {prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}
-        </td>
+        <td>{prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}</td>
         <td style={{ minWidth: '220px' }}>
           <SellerCTAButtonsGroup
             listedProdId={id}
             buyer={buyer}
             prodStatus={prodStatus}
             onCompleteSale={onCompleteSale}
+            onRemoveListing={onRemoveListing}
           />
         </td>
       </tr>

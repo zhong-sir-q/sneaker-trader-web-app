@@ -3,37 +3,38 @@ import React, { useState } from 'react';
 import { RemoveButton } from './StyledButton';
 
 import { useTransactionTableContext } from 'providers/TransactionTableProvider';
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
 import { Button } from 'reactstrap';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
-type RemoveListingProps = {
+type RemoveListingButtonProps = {
   listedProdId: number;
   title: string;
+  onConfirmRemove: () => void;
 };
 
-const RemoveListing = (props: RemoveListingProps) => {
-  const { removeUnsoldSneakers } = useTransactionTableContext()
-  const [showDialog, setShowDialog] = useState(false);
+const RemoveListingButton = (props: RemoveListingButtonProps) => {
+  const { removeUnsoldSneakers } = useTransactionTableContext();
+  const openDialogHook = useOpenCloseComp();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { title, listedProdId } = props;
+  const { title, listedProdId, onConfirmRemove } = props;
 
-  const handleShow = () => setShowDialog(true);
-  const handleClose = () => setShowDialog(false);
-  const handleRemoveListing = async () => {
-    setIsLoading(true)
-    await ListedSneakerControllerInstance.removeListing(listedProdId)
-    removeUnsoldSneakers(listedProdId)
-    setShowDialog(false)
-    setIsLoading(false)
-  }
+  const handleRemoveListing = () => {
+    setIsLoading(true);
+    onConfirmRemove();
+    removeUnsoldSneakers(listedProdId);
+    openDialogHook.onClose();
+    setIsLoading(false);
+  };
 
   return (
     <React.Fragment>
-      <RemoveButton color='primary' onClick={handleShow}>{title}</RemoveButton>
-      <Dialog open={showDialog} onClose={handleClose}>
+      <RemoveButton color='primary' onClick={openDialogHook.onOpen}>
+        {title}
+      </RemoveButton>
+      <Dialog open={openDialogHook.open} onClose={openDialogHook.onClose}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <p>Are you sure you want to remove this listing?</p>
@@ -48,4 +49,4 @@ const RemoveListing = (props: RemoveListingProps) => {
   );
 };
 
-export default RemoveListing;
+export default RemoveListingButton;
