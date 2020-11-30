@@ -88,3 +88,12 @@ export type Colorway = {
 export type SneakerName = {
   name: string;
 };
+
+export type Chat = {
+  id: number;
+  productId: number;
+  buyerId: number;
+  sellerId: number;
+  message: string;
+  userType: string;
+};

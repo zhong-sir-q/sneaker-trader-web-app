@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { ContactButton } from './StyledButton';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
-import { Button } from 'reactstrap';
+import { Input } from 'reactstrap';
+import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import { Customer } from '../../../../shared';
 
@@ -20,23 +21,38 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const handleShow = () => setShowContact(true);
   const handleClose = () => setShowContact(false);
 
-  const { username, email, phoneNo, buyerRating, sellerRating } = customer;
-
+  const { username } = customer;
   return (
     <React.Fragment>
       <ContactButton onClick={handleShow}>{title}</ContactButton>
-      <Dialog open={showContact} onClose={handleClose}>
-        <DialogTitle>{title}</DialogTitle>
+      <Dialog open={showContact} onClose={handleClose} className="chat-container">
+        <DialogTitle>
+          {username || 'Anonymous'}
+          <span className="close"><i className="fa fa-times-circle"></i></span>
+        </DialogTitle>
         <DialogContent>
-          <p>Username: {username || 'Anonymous'}</p>
-          <p>Email: {email || 'None'}</p>
-          <p>Phone Number: {phoneNo || 'None'}</p>
-          <p>Rating: {buyerRating || sellerRating || 0} out of 10</p>
+          <div className="message-left">
+            <div className="profile">
+              <div className='photo' style={{ backgroundColor: 'white' }}>
+                <img className='h-100' src={defaultAvatar} alt='uploaed file' />
+              </div>
+              <span>10: 55am</span>
+            </div>
+            <div className="chat-content-left">Hi!</div>
+          </div>
+          <div className="message-right">
+            <div className="chat-content-right">Hello</div>
+            <div className="profile">
+              <div className='photo' style={{ backgroundColor: 'white' }}>
+                <img className='h-100' src={defaultAvatar} alt='uploaed file' />
+              </div>
+              <span>11: 00am</span>
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button color='primary' onClick={handleClose}>
-            Okay
-          </Button>
+          <Input placeholder="Type your message here" />
+          <i className="send"></i>
         </DialogActions>
       </Dialog>
     </React.Fragment>

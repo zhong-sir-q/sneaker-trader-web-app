@@ -12,6 +12,7 @@ export * from './entities/SneakerEntity';
 export * from './entities/AddressEntity';
 export * from './entities/PortfolioSneakerEntity'
 export * from './entities/GoogleOauthEntity'
+export * from './entities/ChatEntity'
 
 export type DecreaseWalletPayload = {
   userId: number;

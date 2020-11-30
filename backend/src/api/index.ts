@@ -38,6 +38,8 @@ import portfolio from './routers/portfolio';
 import PortfolioSneakerService from '../services/PortfolioSneakerService';
 import createAuthRoutes from './routers/auth';
 import GoogleOauthService from '../services/external/GoogleOauthService';
+import chat from './routers/chat';
+import ChatService from '../services/ChatService';
 
 export default () => {
   const app = Router();
@@ -74,6 +76,7 @@ export default () => {
 
   wallet(app, walletService);
   transaction(app, new TransactionService());
+  chat(app, new ChatService());
 
   return app;
 };

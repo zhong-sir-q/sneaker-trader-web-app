@@ -65,3 +65,99 @@
   padding: 2 25px 0 0;
   content: 'f';
 }
+
+i.send {
+  height: 30px;
+  width: 35px;
+  position: relative;
+  border-radius: 50%;
+  background: -webkit-gradient(linear, left top, left bottom, from(#7dcae8), to(#3cafdd));
+  background: linear-gradient(to bottom, #f47137, #fdac80);
+}
+i.send:before {
+  content: "";
+  display: block;
+  background: #fff;
+  position: absolute;
+  top: 20%;
+  height: 16px;
+  width: 21px;
+  -webkit-clip-path: polygon(10% 0%, 90% 50%, 10% 100%, 20% 55%, 50% 50%, 20% 45%);
+  -moz-clip-path: polygon(10% 0%, 90% 50%, 10% 100%, 20% 55%, 50% 50%, 20% 45%);
+  clip-path: polygon(10% 0%, 90% 50%, 10% 100%, 20% 55%, 50% 50%, 20% 45%);
+  left: 8px;
+  top: 8px;
+}
+.chat-container .MuiDialog-paperWidthSm {
+  border-radius: 0;
+  width: 460px;
+  max-height: 460px;
+  height: 420px;
+}
+.chat-container .MuiDialogTitle-root {
+  background: #F7F9FA;
+  padding: 10px 20px;
+}
+.chat-container .MuiDialogActions-root {
+  background: #EBEBEB;
+}
+.chat-container .form-control:focus {
+  background: none;
+}
+.chat-container .form-control {
+  border: none;
+}
+.chat-container .MuiTypography-root {
+  font-size: 16px;
+  font-weight: bold;
+}
+.chat-container .fa-times-circle {
+  position: relative;
+  left: 10px;
+}
+.chat-container .chat-content-left {
+  width: 100%;
+  background: #e4e4e4;
+  padding: 10px;
+  margin: 20px 0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.chat-container .chat-content-right {
+  width: 100%;
+  float: right;
+  color: #fff;
+  background: linear-gradient(180deg, #fdac80, #f47137);
+  margin: 20px 0;
+  padding: 10px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+}
+.chat-container .MuiDialogContent-root {
+  padding: 8px;
+}
+.message-left,
+.message-right {
+  width: 55%;
+  display: flex;
+}
+.message-right {
+  float: right;
+}
+.chat-container .profile {
+  width: 66px;
+  position: relative;
+  top: 18px;
+  text-align: center;
+}
+.chat-container img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50px;
+}
+.message-left span,
+.message-right span {
+  font-size: 10px;
+}
