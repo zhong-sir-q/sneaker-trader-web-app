@@ -28,7 +28,7 @@ import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import AddressControllerInstance from 'api/controllers/AddressController';
 import FormikDatetime from 'components/formik/FormikDatetime';
 import { Tooltip } from '@material-ui/core';
-import { VerifiedUser } from '@material-ui/icons';
+import { HouseOutlined } from '@material-ui/icons';
 
 // user may have empty firstname or empty lastname or both
 const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
@@ -55,7 +55,7 @@ const Badges = (props: BadgesProp) => {
     <React.Fragment>
       {addressVerified && (
         <Tooltip title='Address Verified'>
-          <VerifiedUser style={{ color: 'green' }} />
+          <HouseOutlined style={{ color: 'green', fontSize: '2em' }} />
         </Tooltip>
       )}
     </React.Fragment>

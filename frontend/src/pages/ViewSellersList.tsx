@@ -79,6 +79,11 @@ type ViewSellersListProps = {
   onConfirm: () => void;
 };
 
+const StyledListGroup = styled(ListGroup)`
+  height: 500px;
+  overflow: auto;
+`;
+
 const ViewSellersList = (props: ViewSellersListProps) => {
   const {
     sellers,
@@ -111,7 +116,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
         sortInAscendingOrder={sortSellersByAskingPriceAscending}
         sortInDescendingOrder={sortSellersByAskingPriceDescending}
       />
-      <ListGroup>
+      <StyledListGroup>
         {sellers.map(({ username, profilePicUrl, askingPrice, rating }, idx) => (
           <SellerListGroupItem
             tag='button'
@@ -124,17 +129,26 @@ const ViewSellersList = (props: ViewSellersListProps) => {
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span>Username: {username}</span>
-              <span>Asking Price: ${askingPrice}</span>
+              <div>
+                <span className='bold'>Username:</span>
+                <span> {username}</span>
+              </div>
+              <div>
+                <span className='bold'>Asking price:</span>
+                <span> $ {askingPrice}</span>
+              </div>
               {/* TODO: use a const to define what the rating is out of */}
-              <span>Rating: {!rating || rating <= 0 ? 0 : rating} out of 5</span>
+              <div>
+                <span className='bold'>Rating:</span>
+                <span> {!rating || rating <= 0 ? 0 : rating} out of 5</span>
+              </div>
             </div>
             <LazyLoad>
               <ProfileImg src={profilePicUrl || defaultAvatar} alt={`${username} profile`} />
             </LazyLoad>
           </SellerListGroupItem>
         ))}
-      </ListGroup>
+      </StyledListGroup>
       <footer>
         {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (
           <ListGroup style={{ marginTop: '15px' }}>
