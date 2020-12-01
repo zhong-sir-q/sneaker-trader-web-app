@@ -1,42 +1,54 @@
 import React, { createContext, useContext, useState } from 'react';
-import { v4 as uuidV4 } from 'uuid';
 
 import { PreviewFile } from 'components/PreviewImagesDropzone';
 import AlertDialogProvider, { useAlertComponent } from './AlertDialogProvider';
+import { createPreviewFileFromDataUrl } from 'utils/utils';
 
 type PreviewImgDropzoneCtxType = {
   files: PreviewFile[];
+  cropperImages: string[];
   mainFileId: string | undefined;
-  cropperImage: string | undefined;
+  mainDisplayFileDataUrl: string | undefined;
+  resetCropperImages: () => void;
+  onRemoveFromCropperImages: (img: string) => void;
+  onRemoveFromCropperImagesByIdx: (idx: number) => void;
   formDataFromFiles: () => FormData;
-  getMainDisplayFile: () => PreviewFile | undefined;
   updateFileId: (fileId: string) => void;
   onDropFile: (acceptedFiles: File[]) => void;
   onRemoveFile: (fileId: string) => void;
-  onConfirmAddCroppedImg: (croppedImg: string) => void;
+  onAddCroppedImgs: (croppedImgs: string[]) => void;
   destroyFiles: () => void;
 };
 
 const INIT_PREVIEW_DROPZONE_CTX: PreviewImgDropzoneCtxType = {
   files: [],
   mainFileId: undefined,
-  cropperImage: undefined,
+  cropperImages: [],
+  mainDisplayFileDataUrl: undefined,
   formDataFromFiles: () => new FormData(),
-  getMainDisplayFile: () => undefined,
+  onRemoveFromCropperImages: () => {
+    throw new Error('Must override!');
+  },
+  onRemoveFromCropperImagesByIdx: () => {
+    throw new Error('Must override!');
+  },
+  resetCropperImages: () => {
+    throw new Error('Must override!');
+  },
   destroyFiles: () => {
-    throw new Error('Must overide destroyFiles');
+    throw new Error('Must overide!');
   },
   updateFileId: () => {
-    throw new Error('Must overide updateFileId');
+    throw new Error('Must overide!');
   },
-  onConfirmAddCroppedImg: () => {
+  onAddCroppedImgs: () => {
     throw new Error('Must override!');
   },
   onDropFile: () => {
-    throw new Error('Must overide onDropFile');
+    throw new Error('Must overide!');
   },
   onRemoveFile: () => {
-    throw new Error('Must overide onRemoveFile');
+    throw new Error('Must overide!');
   },
 };
 
@@ -48,8 +60,10 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
   // these are files because we need to use it to send form data through
   const [files, setFiles] = useState<PreviewFile[]>(props.previewFiles || []);
   const [mainFileId, setMainFileId] = useState<string>();
-  // main image to display inside the cropper
-  const [cropperImage, setCropperImage] = useState<string>();
+
+  // sources of the image files
+  const [cropperImages, setCropperImages] = useState<string[]>([]);
+  const resetCropperImages = () => setCropperImages([]);
 
   const { onOpenAlert } = useAlertComponent();
 
@@ -62,30 +76,24 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
   const onDropFile = (acceptedFiles: File[]) => {
     const UPLOAD_LIMIT = 5;
 
-    if (files.length === UPLOAD_LIMIT) {
+    if (cropperImages.length + files.length + acceptedFiles.length > UPLOAD_LIMIT) {
       onOpenAlert();
       return;
     }
 
-    const dataUrl = URL.createObjectURL(acceptedFiles[0]);
-    setCropperImage(dataUrl);
+    const newFiles = acceptedFiles.map((f) => URL.createObjectURL(f));
+    setCropperImages(cropperImages.concat(newFiles));
   };
 
-  const createPreviewFile = (f: File) => {
-    const previewDataUrl = URL.createObjectURL(f);
-    return Object.assign(f, { preview: previewDataUrl, id: uuidV4() });
+  const onAddCroppedImgs = async (imgs: string[]) => {
+    const newPreviewFiles = await Promise.all(imgs.map((img) => createPreviewFileFromDataUrl(img)));
+    setFiles(files.concat(newPreviewFiles));
   };
 
-  const createBlob = (fileDataUrl: string) => fetch(fileDataUrl).then((res) => res.blob());
+  const onRemoveFromCropperImages = (img: string) => setCropperImages(cropperImages.filter((image) => image !== img));
 
-  const resetCropper = () => setCropperImage(undefined);
-
-  const onConfirmAddCroppedImg = async (img: string) => {
-    const file: File = new File([await createBlob(img)], uuidV4());
-    const previewFile = createPreviewFile(file);
-    setFiles([...files, previewFile]);
-    resetCropper();
-  };
+  const onRemoveFromCropperImagesByIdx = (idx: number) =>
+    setCropperImages(cropperImages.filter((_img, index) => index !== idx));
 
   const onRemoveFile = (fileId: string) => {
     if (mainFileId === fileId) setMainFileId(undefined);
@@ -96,7 +104,7 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
 
   const getMainFileIdx = () => files.findIndex((f) => f.id === mainFileId);
 
-  const getMainDisplayFile = () => files[getMainFileIdx()];
+  const getMainDisplayFileDataUrl = () => files[getMainFileIdx()]?.preview;
 
   const formDataFromFiles = () => {
     const formData = new FormData();
@@ -120,10 +128,13 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
       value={{
         files,
         mainFileId,
-        cropperImage,
-        onConfirmAddCroppedImg,
+        cropperImages,
+        mainDisplayFileDataUrl: getMainDisplayFileDataUrl(),
+        onRemoveFromCropperImages,
+        onRemoveFromCropperImagesByIdx,
+        resetCropperImages,
+        onAddCroppedImgs,
         destroyFiles,
-        getMainDisplayFile,
         formDataFromFiles,
         updateFileId,
         onDropFile,

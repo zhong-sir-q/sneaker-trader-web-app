@@ -51,7 +51,7 @@ type PreviewImageProps = {
 const PreviewImage = styled.img<PreviewImageProps>`
   width: 100%;
   height: 100%;
-  border: 2.5px solid;
+  border: 3.5px solid;
   border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
 `;
 
@@ -75,18 +75,85 @@ type PreviewImagesDropZoneProps = {
   onNextStep?: () => void;
 };
 
-const ImgCropper: React.FC = () => {
+const CropperGridWrapper = styled.div`
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 3px;
+  align-items: center;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 800px) {
+    grid-template-columns: repeat(1, 1fr);
+    height: 31.25em;
+    overflow: auto;
+  }
+`;
+
+const CropperGrid = () => {
+  const {
+    cropperImages,
+    onAddCroppedImgs,
+    onRemoveFromCropperImages,
+    onRemoveFromCropperImagesByIdx,
+  } = usePreviewImgDropzoneCtx();
+
+  const onConfirmCrop = (img: string, idx: number) => {
+    onAddCroppedImgs([img]);
+    onRemoveFromCropperImagesByIdx(idx);
+  };
+
+  return (
+    <React.Fragment>
+      <CropperGridWrapper>
+        {cropperImages.map((img, idx) => (
+          <ImgCropper
+            img={img}
+            key={idx}
+            onRemove={onRemoveFromCropperImages}
+            onConfirmCrop={(img) => onConfirmCrop(img, idx)}
+          />
+        ))}
+      </CropperGridWrapper>
+    </React.Fragment>
+  );
+};
+
+const SliderContainer = styled.div`
+  width: 220px;
+
+  @media (max-width: 528px) {
+    width: 180px;
+  }
+`;
+
+type ImgCropperProps = {
+  img: string;
+  // add a single image
+  onConfirmCrop?: (img: string) => void;
+  onImgChange?: (img: string) => void;
+  onRemove?: (img: string) => void;
+};
+
+const ImgCropper = (props: ImgCropperProps) => {
   const cropperRef = useRef<HTMLImageElement>(null);
 
   // set it to 20 to allow the initial zoom out of the image
   const INIT_SLIDER_VAL = 20;
   const [sliderVal, setSliderVal] = useState<number | number[]>(INIT_SLIDER_VAL);
-  const { cropperImage, onConfirmAddCroppedImg } = usePreviewImgDropzoneCtx();
 
-  useEffect(() => {
-    // reset the slider value whenever the cropperImage is updated
-    setSliderVal(INIT_SLIDER_VAL);
-  }, [cropperImage]);
+  const { img, onRemove, onImgChange, onConfirmCrop } = props;
+
+  const getCropper = () => (cropperRef.current as any).cropper;
+
+  const cropperDataUrl = () => getCropper().getCroppedCanvas().toDataURL();
+
+  const handleImgChange = () => {
+    if (onImgChange) onImgChange(cropperDataUrl());
+  };
 
   const handleSliderChange = (_evt: React.ChangeEvent<{}>, newVal: number | number[]) => {
     if (typeof newVal === 'number' && typeof sliderVal === 'number') {
@@ -96,19 +163,12 @@ const ImgCropper: React.FC = () => {
     }
 
     setSliderVal(newVal);
-  };
-
-  const getCropper = () => (cropperRef.current as any).cropper;
-
-  const onConfirmCrop = () => {
-    const dataUrl = getCropper().getCroppedCanvas().toDataURL();
-    onConfirmAddCroppedImg(dataUrl);
+    handleImgChange();
   };
 
   const rotateLeft = () => getCropper().rotate(-90);
-  const rotateRight = () => getCropper().rotate(90);
 
-  if (!cropperImage) return null;
+  const rotateRight = () => getCropper().rotate(90);
 
   return (
     <div
@@ -119,8 +179,7 @@ const ImgCropper: React.FC = () => {
       }}
     >
       <Cropper
-        src={cropperImage}
-        style={{ width: '100%' }}
+        src={img}
         // Cropper.js options
         initialAspectRatio={16 / 9}
         ref={cropperRef}
@@ -139,23 +198,49 @@ const ImgCropper: React.FC = () => {
           zoomOnTouch: false,
         }}
       />
-      <div style={{ width: '220px' }}>
+      <SliderContainer>
         <Slider value={sliderVal} onChange={handleSliderChange} />
-      </div>
-      <div style={{ fontSize: '32px', width: '120px', display: 'flex', justifyContent: 'space-around' }}>
+      </SliderContainer>
+      <div style={{ fontSize: '32px', width: '140px', display: 'flex', justifyContent: 'space-around' }}>
         <RotateLeft onClick={rotateLeft} fontSize='inherit' />
+        {onRemove && <DeleteForever onClick={() => onRemove(img)} fontSize='inherit' />}
         <RotateRight onClick={rotateRight} fontSize='inherit' />
       </div>
-      <Button color='primary' onClick={onConfirmCrop}>
-        Confirm
-      </Button>
+      {onConfirmCrop && (
+        <Button color='primary' onClick={() => onConfirmCrop(cropperDataUrl())}>
+          Crop Image
+        </Button>
+      )}
     </div>
   );
 };
 
+const ThumbsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 800px) {
+    grid-template-columns: repeat(1, 1fr);
+    max-height: 1024px;
+    overflow: auto;
+  }
+`;
+
 const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   const { onPrevStep, onNextStep } = props;
-  const { files, mainFileId, onDropFile, onRemoveFile, updateFileId } = usePreviewImgDropzoneCtx();
+  const {
+    files,
+    mainFileId,
+    cropperImages,
+    onDropFile,
+    onRemoveFile,
+    updateFileId,
+  } = usePreviewImgDropzoneCtx();
 
   const thumbs = files.map((file, idx) => (
     <Thumb isFirstChild={idx === 0} key={file.id}>
@@ -165,7 +250,9 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
         src={file.preview}
         alt={file.name}
       />
-      <DeleteForever onClick={() => onRemoveFile(file.id)} data-testid={`del-preview-${idx}`} />
+      <div style={{ fontSize: '2em' }}>
+        <DeleteForever fontSize='inherit' onClick={() => onRemoveFile(file.id)} data-testid={`del-preview-${idx}`} />
+      </div>
     </Thumb>
   ));
 
@@ -196,12 +283,10 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
           <span>Select Images</span>
         </DropZoneContainer>
 
-        <div className='flex' data-testid='preview-img-container'>
-          {thumbs}
-        </div>
+        {thumbs.length > 0 && <ThumbsWrapper data-testid='preview-img-container'>{thumbs}</ThumbsWrapper>}
       </CardBody>
 
-      <ImgCropper />
+      {cropperImages.length > 0 && <CropperGrid />}
 
       {props.onPrevStep && props.onNextStep && (
         <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>

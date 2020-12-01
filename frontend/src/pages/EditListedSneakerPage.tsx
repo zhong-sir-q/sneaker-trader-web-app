@@ -65,15 +65,13 @@ type EditListedSneakerPageProps = {
 };
 
 const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
-  const { getMainDisplayFile, formDataFromFiles } = usePreviewImgDropzoneCtx();
+  const { mainDisplayFileDataUrl, formDataFromFiles } = usePreviewImgDropzoneCtx();
   const { listingSneakerFormState } = useSneakerListingFormCtx();
   const { currentUser } = useAuth();
 
   const history = useHistory();
 
   const updateSuccessAlertHook = useOpenCloseComp();
-
-  const mainDisplayFile = getMainDisplayFile();
 
   const onConfirmUpdate = async () => {
     // prepare the payload
@@ -107,15 +105,13 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
         <Container fluid='sm'>
           <SneakerInfoForm title='Edit Sneaker Form' />
           <PreviewImagesDropzone />
-          {mainDisplayFile && (
-            <PreviewSneaker
-              aspectRatio='66.6%'
-              sneaker={listingSneakerFormState as SellerListedSneaker}
-              mainDisplayImage={mainDisplayFile.preview}
-              price={Number(listingSneakerFormState.askingPrice)}
-              onSubmit={onConfirmUpdate}
-            />
-          )}
+          <PreviewSneaker
+            aspectRatio='66.6%'
+            sneaker={listingSneakerFormState as SellerListedSneaker}
+            mainDisplayImage={mainDisplayFileDataUrl}
+            price={Number(listingSneakerFormState.askingPrice)}
+            onSubmit={onConfirmUpdate}
+          />
         </Container>
       </div>
       <AlertDialog
