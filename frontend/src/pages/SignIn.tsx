@@ -139,65 +139,72 @@ const SignIn = (props: SigninProps) => {
                 validationSchema={validationSchema}
                 onSubmit={async (formStates) => await onSignin(formStates.email, formStates.password)}
               >
-                <FormikForm>
-                  <Card className='card-login card-plain'>
-                    <CardHeader>
-                      <div className='logo-container' style={{ width: '120px', marginBottom: '35px' }}>
-                        <Link to={HOME}>
-                          <img src={stLogo} alt='sneakertrader-logo' />
-                        </Link>
-                      </div>
-                      <GoogleSigninButton googleOauth2Controller={props.googleOauth2Controller} />
-                      <SignInWithFacebook handleSignin={updateLoginErr} />
-                    </CardHeader>
-                    <CardBody>
-                      {loginError && <InputFieldError error={loginError} />}
+                {(formikProps) => (
+                  <FormikForm>
+                    <Card className='card-login card-plain'>
+                      <CardHeader>
+                        <div className='logo-container' style={{ width: '120px', marginBottom: '35px' }}>
+                          <Link to={HOME}>
+                            <img src={stLogo} alt='sneakertrader-logo' />
+                          </Link>
+                        </div>
+                        <GoogleSigninButton googleOauth2Controller={props.googleOauth2Controller} />
+                        <SignInWithFacebook handleSignin={updateLoginErr} />
+                      </CardHeader>
+                      <CardBody>
+                        {loginError && <InputFieldError error={loginError} />}
 
-                      <FormikInput
-                        placeholder='Email...'
-                        type='text'
-                        name='email'
-                        iconname='users_circle-08'
-                        inputgroupclassname='no-border form-control-lg'
-                        data-testid='email-input'
-                      />
-                      <FormikInput
-                        placeholder='Password...'
-                        type='password'
-                        name='password'
-                        iconname='text_caps-small'
-                        inputgroupclassname='no-border form-control-lg'
-                        data-testid='password-input'
-                      />
-                    </CardBody>
-                    <CardFooter>
-                      <Button
-                        block
-                        type='submit'
-                        color='primary'
-                        size='lg'
-                        className='mb-3 btn-round'
-                        data-testid='signin-btn'
-                      >
-                        Login
-                      </Button>
-                      <div className='pull-left'>
-                        <h6>
-                          <Link to={AUTH + SIGNUP} className='link footer-link'>
-                            Create Account
-                          </Link>
-                        </h6>
-                      </div>
-                      <div className='pull-right'>
-                        <h6>
-                          <Link to={AUTH + FORGOT_PW} className='link footer-link'>
-                            Forgot Password?
-                          </Link>
-                        </h6>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </FormikForm>
+                        <FormikInput
+                          placeholder='Email...'
+                          type='text'
+                          name='email'
+                          iconname='users_circle-08'
+                          inputgroupclassname='no-border form-control-lg'
+                          data-testid='email-input'
+                          onChange={(e: any) => {
+                            // AWS Amplify is case-sensitive about the keys
+                            e.target.value = (e.target.value as string).toLowerCase();
+                            formikProps.handleChange(e);
+                          }}
+                        />
+                        <FormikInput
+                          placeholder='Password...'
+                          type='password'
+                          name='password'
+                          iconname='text_caps-small'
+                          inputgroupclassname='no-border form-control-lg'
+                          data-testid='password-input'
+                        />
+                      </CardBody>
+                      <CardFooter>
+                        <Button
+                          block
+                          type='submit'
+                          color='primary'
+                          size='lg'
+                          className='mb-3 btn-round'
+                          data-testid='signin-btn'
+                        >
+                          Login
+                        </Button>
+                        <div className='pull-left'>
+                          <h6>
+                            <Link to={AUTH + SIGNUP} className='link footer-link'>
+                              Create Account
+                            </Link>
+                          </h6>
+                        </div>
+                        <div className='pull-right'>
+                          <h6>
+                            <Link to={AUTH + FORGOT_PW} className='link footer-link'>
+                              Forgot Password?
+                            </Link>
+                          </h6>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </FormikForm>
+                )}
               </Formik>
             </Col>
           </Container>

@@ -39,15 +39,15 @@ export const getListedSneakerIdFromPath = (pathname: string): number => {
 
 const createBlob = (fileDataUrl: string) => fetch(fileDataUrl).then((res) => res.blob());
 
-const createPreviewFile = (f: File) => {
+const createPreviewFile = (f: File, id?: string) => {
   const previewDataUrl = URL.createObjectURL(f);
-  return Object.assign(f, { preview: previewDataUrl, id: uuidV4() });
+  return Object.assign(f, { preview: previewDataUrl, id: id || uuidV4() });
 };
 
 // these two functions can be refactored
-export const createPreviewFileFromDataUrl = async (url: string) => {
+export const createPreviewFileFromDataUrl = async (url: string, id?: string) => {
   const file = new File([await createBlob(url)], uuidV4());
-  return createPreviewFile(file);
+  return createPreviewFile(file, id);
 };
 
 export const createPreviewFileFromBlob = (blob: Blob) => {

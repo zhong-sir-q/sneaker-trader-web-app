@@ -10,16 +10,8 @@ import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 
 const ListItemImg = styled.img`
-  height: 135px;
-  width: 145px;
+  width: 33%;
   margin-right: 10px;
-  object-fit: cover;
-
-  @media (min-width: 768px) {
-    height: 135px;
-    width: 165px;
-    margin-right: 20px;
-  }
 `;
 
 const StyledInput = styled.input`
@@ -32,6 +24,12 @@ const StyledInput = styled.input`
   }
 `;
 
+const SearchIconWrapper = styled.div`
+  position: absolute;
+  padding: 2px;
+  padding-left: 8px;
+`;
+
 const StyledListGroup = styled(ListGroup)`
   position: absolute;
   margin-top: 5px;
@@ -40,12 +38,6 @@ const StyledListGroup = styled(ListGroup)`
   width: 99%;
   overflow: auto;
   max-height: 500px;
-`;
-
-const SearchIconWrapper = styled.div`
-  position: absolute;
-  padding: 2px;
-  padding-left: 8px;
 `;
 
 const StyledListGroupItem = styled(ListGroupItem)`
@@ -71,21 +63,10 @@ type SneakerSearchBarProps = {
   updateSearchVal?: (searchVal: string) => void;
 };
 
-// const LIMIT = 10;
-// const INIT_OFFSET = 0;
-
 const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [searchVal, setSearchVal] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
-  // const [lazySuggestions, setLazySuggestions] = useState<SearchBarSneaker[]>([]);
-
-  // const [offset, setOffset] = useState(INIT_OFFSET);
-
-  // const updateOffset = () => setOffset(offset + LIMIT);
-
-  // const clearOffset = () => setOffset(INIT_OFFSET);
-  // const resetLazySuggestions = () => setLazySuggestions([]);
 
   const { setSneakerExists, setSneakerNew, updateSearchVal } = props;
 
@@ -97,13 +78,6 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const result = !searchVal
     ? props.sneakers
     : props.sneakers.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
-
-  // const getMoreSuggestions = () => {
-  //   setTimeout(() => {
-  //     setLazySuggestions(lazySuggestions.concat(result.slice(offset, offset + LIMIT)));
-  //     updateOffset();
-  //   }, 500);
-  // };
 
   const onChange = (evt: any) => {
     const { value } = evt.target;
