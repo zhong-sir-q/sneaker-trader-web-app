@@ -63,7 +63,7 @@ export class ListedSneakerController implements ListedSneakerEntity {
     ).then((r) => r.json());
 
   getUnsoldListedSneakers = async (sellerId: number) =>
-    (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold');
+    (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold' && p.prodStatus !== 'deleted');
 
   getSoldListedSneakers = async (sellerId: number) =>
     (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus === 'sold');
@@ -72,6 +72,12 @@ export class ListedSneakerController implements ListedSneakerEntity {
     fetch(
       concatPaths(this.listedSneakerPath, 'one', listedSneakerId),
       formatRequestOptions(listedSneaker, undefined, 'PUT')
+    ).then((r) => r.json());
+
+  removeListing = (listedSneakerId: number) =>
+    fetch(
+      concatPaths(this.listedSneakerPath, 'one', listedSneakerId),
+      formatRequestOptions(undefined, undefined, 'DELETE')
     ).then((r) => r.json());
 }
 
