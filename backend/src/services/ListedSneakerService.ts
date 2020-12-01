@@ -1,8 +1,4 @@
-import {
-  formatInsertRowsQuery,
-  doubleQuotedValue,
-  formatUpdateRowsQuery,
-} from '../utils/formatDbQuery';
+import { formatInsertRowsQuery, doubleQuotedValue, formatUpdateRowsQuery } from '../utils/formatDbQuery';
 
 import {
   ListedProduct,
@@ -195,16 +191,14 @@ class ListedSneakerService implements ListedSneakerEntity {
     return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneaker, `id = ${listedSneakerId}`));
   }
 
+  // soft delete the listed sneaker
   async remove(listedSneakerId: number) {
-    const poolConn = await mysqlPoolConnection();
-    const sql = `DELETE FROM ${LISTED_PRODUCTS} WHERE id = ?`
-
-    return poolConn.query(sql, [listedSneakerId])
+    return this.updateListedSneakerStatus(listedSneakerId, { prodStatus: 'deleted' });
   }
 
   async getById(listedSneakerId: Number) {
     const poolConn = await mysqlPoolConnection();
-    const sql = `SELECT * from ${LISTED_PRODUCTS} WHERE id = ?`
+    const sql = `SELECT * from ${LISTED_PRODUCTS} WHERE id = ?`;
 
     return poolConn.query(sql, [listedSneakerId]);
   }

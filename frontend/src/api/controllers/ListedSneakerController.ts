@@ -63,7 +63,7 @@ export class ListedSneakerController implements ListedSneakerEntity {
     ).then((r) => r.json());
 
   getUnsoldListedSneakers = async (sellerId: number) =>
-    (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold');
+    (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold' && p.prodStatus !== 'deleted');
 
   getSoldListedSneakers = async (sellerId: number) =>
     (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus === 'sold');
