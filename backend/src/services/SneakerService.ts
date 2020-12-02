@@ -31,7 +31,7 @@ class SneakerService implements SneakerEntity {
 
     const res = await poolConn.query(getByNameColorwayQuery, [name, colorway]);
 
-    return res ? res[0] : null;
+    return res.length ? res[0] : null;
   }
 
   async getFirstByNameBrandColorway(name: string, brand: string, colorway: string): Promise<Sneaker> {
@@ -43,7 +43,7 @@ class SneakerService implements SneakerEntity {
 
     const res = await poolConn.query(getByNameColorwayQuery, [name, brand, colorway]);
 
-    return res ? res[0] : null;
+    return res.length ? res[0] : null;
   }
 
   async create(sneaker: AppSneaker): Promise<number> {

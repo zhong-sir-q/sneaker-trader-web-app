@@ -122,7 +122,10 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
     imageUrls: displaySneaker?.imageUrls,
   };
 
-  if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
+  if (displaySneaker && sizeMinPriceGroup && filterAllAsks) {
+    const mainDisplayImage = sneaker.imageUrls && getMainDisplayImgUrl(sneaker.imageUrls);
+    if (!mainDisplayImage) return null;
+
     return (
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
@@ -135,7 +138,7 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
           <Col md='8'>
             <CenterContainer>
               <SneakerCard
-                mainDisplayImage={sneaker.imageUrls && getMainDisplayImgUrl(sneaker.imageUrls)}
+                mainDisplayImage={mainDisplayImage}
                 sneaker={sneaker}
                 price={selectedSizeMinPrice}
                 aspectRatio='78.5%'
@@ -183,7 +186,7 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
         </Row>
       </Container>
     );
-  else return <CenterSpinner />;
+  } else return <CenterSpinner />;
 };
 
 export default BuySneakerPage;

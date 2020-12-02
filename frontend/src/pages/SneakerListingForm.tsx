@@ -178,6 +178,8 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
       case 2:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 3:
+        if (!mainDisplayFileDataUrl) return null;
+
         return (
           <PreviewSneaker
             aspectRatio='66.6%'
@@ -204,7 +206,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
       <div className='content' style={{ paddingTop: '2.2rem' }}>
         {/* TODO: tailor the container width according to the step */}
         <Container fluid='lg'>
-        {/* <Container style={{ maxWidth: step === 0 || step === 3 ? '625px' : undefined }}> */}
+          {/* <Container style={{ maxWidth: step === 0 || step === 3 ? '625px' : undefined }}> */}
           <Col className='text-center'>
             {step < 4 && (
               <p style={{ margin: 0, fontSize: '1.75rem' }}>

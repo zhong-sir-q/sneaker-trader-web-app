@@ -4,7 +4,12 @@ import { useHistory } from 'react-router-dom';
 import SneakerListingFormProvider, { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
 import PreviewImgDropzoneProvider, { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 
-import { createPreviewFileFromBlob, formatListedSneakerPayload, getListedSneakerIdFromPath } from 'utils/utils';
+import {
+  createPreviewFileFromBlob,
+  formatListedSneakerPayload,
+  getListedSneakerIdFromPath,
+  formatSneaker,
+} from 'utils/utils';
 import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 
 import SneakerInfoForm from 'components/SneakerInfoForm';
@@ -14,7 +19,7 @@ import PreviewSneaker from 'components/PreviewSneaker';
 import PreviewImagesDropzone, { PreviewFile } from 'components/PreviewImagesDropzone';
 
 import { SellerListedSneaker } from '../../../shared';
-import { Container } from 'reactstrap';
+import { Container, Button } from 'reactstrap';
 import { useAuth } from 'providers/AuthProvider';
 import onEditListedSneaker from 'usecases/onEditListedSneaker';
 import AwsControllerInstance from 'api/controllers/AwsController';
@@ -24,6 +29,7 @@ import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import AlertDialog from 'components/AlertDialog';
 import { ADMIN, DASHBOARD } from 'routes';
+import { Dialog, DialogContent, DialogActions } from '@material-ui/core';
 
 // get the history state from listed sneaker table
 const EditListedSneakerPageContainer = () => {
@@ -67,25 +73,59 @@ type EditListedSneakerPageProps = {
 const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
   const { mainDisplayFileDataUrl, formDataFromFiles } = usePreviewImgDropzoneCtx();
   const { listingSneakerFormState } = useSneakerListingFormCtx();
-  const { currentUser } = useAuth();
+
+  const [confirmMakeNewRequest, setConfirmMakeNewRequest] = useState(false);
+  const confirmationDialogHook = useOpenCloseComp();
+  const newRequestDialogHook = useOpenCloseComp();
 
   const history = useHistory();
+  const { currentUser } = useAuth();
 
   const updateSuccessAlertHook = useOpenCloseComp();
+
+  useEffect(() => {
+    // listen to this state, if true, then change the current status of the sneaker
+    if (confirmMakeNewRequest) {
+      (async () => {
+        setConfirmMakeNewRequest(false);
+        const imgFormData = formDataFromFiles();
+
+        await onEditListedSneaker(
+          AwsControllerInstance,
+          SneakerControllerInstance,
+          ListedSneakerControllerInstance,
+          HelperInfoControllerInstance
+        )(
+          props.listedSneakerId,
+          imgFormData,
+          currentUser!.id,
+          formatSneaker(listingSneakerFormState),
+          undefined,
+          undefined,
+          undefined,
+          formatListedSneakerPayload(listingSneakerFormState, 'new sneaker request')
+        );
+
+        newRequestDialogHook.onOpen();
+        setTimeout(() => history.push(ADMIN + DASHBOARD), 1500);
+      })();
+    }
+  });
 
   const onConfirmUpdate = async () => {
     // prepare the payload
     const imgFormData = formDataFromFiles();
 
-    // check if the product already exists in the db
-    // if yes, finish editing, otherwise, ask them to make a new request (would it be a new reueqst if only the size changes?)
     const sneaker = await SneakerControllerInstance.getFirstByNameColorway(
       listingSneakerFormState.name,
       listingSneakerFormState.colorway
     );
 
-    // a new request? or cancel the current edit
-    if (!sneaker) return
+    // sneaker is not in the db, ask the user if they want to make a new request
+    if (!sneaker) {
+      confirmationDialogHook.onOpen();
+      return;
+    }
 
     // TODO: the helperInfo such as brand, name and colorway can be updated, and we need to give updates on our side
     await onEditListedSneaker(
@@ -97,7 +137,7 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
       props.listedSneakerId,
       imgFormData,
       currentUser!.id,
-      listingSneakerFormState as any,
+      formatSneaker(listingSneakerFormState),
       undefined,
       undefined,
       undefined,
@@ -105,7 +145,7 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
     );
 
     updateSuccessAlertHook.onOpen();
-    setTimeout(() => history.push(ADMIN + DASHBOARD), 1000);
+    setTimeout(() => history.push(ADMIN + DASHBOARD), 1500);
   };
 
   return (
@@ -115,13 +155,15 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
         <Container fluid='sm' style={{ padding: '0 8%' }}>
           <SneakerInfoForm title='Edit Sneaker Form' />
           <PreviewImagesDropzone />
-          <PreviewSneaker
-            aspectRatio='66.6%'
-            sneaker={listingSneakerFormState as SellerListedSneaker}
-            mainDisplayImage={mainDisplayFileDataUrl}
-            price={Number(listingSneakerFormState.askingPrice)}
-            onSubmit={onConfirmUpdate}
-          />
+          {mainDisplayFileDataUrl && (
+            <PreviewSneaker
+              aspectRatio='66.6%'
+              sneaker={listingSneakerFormState as SellerListedSneaker}
+              mainDisplayImage={mainDisplayFileDataUrl}
+              price={Number(listingSneakerFormState.askingPrice)}
+              onSubmit={onConfirmUpdate}
+            />
+          )}
         </Container>
       </div>
       <AlertDialog
@@ -130,6 +172,23 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
         message='Successful update!'
         onClose={updateSuccessAlertHook.onClose}
       />
+
+      <AlertDialog
+        open={newRequestDialogHook.open}
+        color='primary'
+        message='Thank you for making a new sneaker request, we will review it shortly!'
+        onClose={newRequestDialogHook.onClose}
+      />
+
+      <Dialog open={confirmationDialogHook.open} onClose={confirmationDialogHook.onClose}>
+        <DialogContent>Do you want to request a pair of new sneakers?</DialogContent>
+        <DialogActions>
+          <Button color='danger' onClick={() => setConfirmMakeNewRequest(true)}>
+            Yes
+          </Button>
+          <Button onClick={confirmationDialogHook.onClose}>No</Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 };

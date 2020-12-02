@@ -16,15 +16,11 @@ export class SneakerController implements SneakerEntity {
   create = (sneaker: AppSneaker): Promise<number> =>
     fetch(this.sneakerPath, formatRequestOptions(sneaker)).then((res) => res.json());
 
-  getFirstByNameColorway = (name: string, colorway: string): Promise<Sneaker | null> => {
-    console.log(this.sneakerPath + `?${queryString.stringify({ name, colorway })}`);
-    return fetch(this.sneakerPath + `?${queryString.stringify({ name, colorway })}`).then((res) => res.json());
-  };
+  getFirstByNameColorway = (name: string, colorway: string): Promise<Sneaker | null> =>
+    fetch(this.sneakerPath + `?${queryString.stringify({ name, colorway })}`).then((res) => res.json());
 
-  getFirstByNameBrandColorway = (name: string, brand: string, colorway: string): Promise<Sneaker | null> => {
-    console.log(this.sneakerPath + `?${queryString.stringify({ name, brand, colorway })}`);
-    return fetch(this.sneakerPath + `?${queryString.stringify({ name, brand, colorway })}`).then((res) => res.json());
-  };
+  getFirstByNameBrandColorway = (name: string, brand: string, colorway: string): Promise<Sneaker | null> =>
+    fetch(this.sneakerPath + `?${queryString.stringify({ name, brand, colorway })}`).then((res) => res.json());
 
   getByNameColorwaySize = (name: string, colorway: string, size: number): Promise<Sneaker | null> =>
     fetch(this.sneakerPath + `?${queryString.stringify({ name, colorway, size })}`).then((res) => res.json());

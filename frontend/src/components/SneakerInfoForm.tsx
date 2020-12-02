@@ -11,6 +11,7 @@ import FormikLabelSelect from './formik/FormikLabelSelect';
 import FormikAutoSuggestInput from './formik/FormikAutoSuggestInput';
 
 import { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
+import { trimValues } from 'utils/utils';
 
 type SneakerInfoFormProps = {
   title: string;
@@ -53,7 +54,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
       initialValues={listingSneakerFormState}
       validationSchema={validationSchema}
       onSubmit={(formStates) => {
-        updateFormState(formStates);
+        updateFormState(trimValues(formStates));
         if (props.goNextStep) props.goNextStep();
       }}
       enableReinitialize

@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 
 import SneakerCard from './SneakerCard';
 
 import { AppSneaker } from '../../../shared';
-import CenterSpinner from './CenterSpinner';
 
 type PreviewSneakerProps = {
   sneaker: Omit<AppSneaker, 'imageUrls'>;
   price: number;
-  mainDisplayImage: string | undefined;
+  mainDisplayImage: string;
   onSubmit: () => void;
   aspectRatio?: string;
   onPrevStep?: () => void;
@@ -20,14 +19,19 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
 
   const [isSubmitDisabled, setSubmitDisabled] = useState(false);
 
+  useEffect(() => {
+    if (isSubmitDisabled)
+      setTimeout(() => {
+        setSubmitDisabled(false);
+      }, 2000);
+  }, [isSubmitDisabled]);
+
   const handleSubmit = () => {
-    setSubmitDisabled(!isSubmitDisabled);
+    setSubmitDisabled(true);
     onSubmit();
   };
 
-  return isSubmitDisabled ? (
-    <CenterSpinner />
-  ) : (
+  return (
     <Card className='text-center'>
       <CardHeader data-testid='preview-sneaker-card-header'>
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>

@@ -10,7 +10,7 @@ import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 
 const ListItemImg = styled.img`
-  width: 33%;
+  width: 28%;
   margin-right: 10px;
 `;
 
@@ -37,7 +37,7 @@ const StyledListGroup = styled(ListGroup)`
   /* 1% offset to take into account the scrollbar */
   width: 99%;
   overflow: auto;
-  max-height: 500px;
+  max-height: 650px;
 `;
 
 const StyledListGroupItem = styled(ListGroupItem)`

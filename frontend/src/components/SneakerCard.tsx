@@ -25,7 +25,7 @@ const LowestAsk = styled.div`
 
 type SneakerCardProps = {
   sneaker: Partial<AppSneaker>;
-  mainDisplayImage: string | undefined;
+  mainDisplayImage: string;
   price: number | undefined;
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
