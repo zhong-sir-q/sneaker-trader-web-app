@@ -156,7 +156,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
 
   const renderStep = () => {
     switch (step) {
-      case -1:
+      case 0:
         return (
           <React.Fragment>
             <SneakerSearchBar
@@ -175,7 +175,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
         );
       case 1:
         return <SneakerInfoForm title='Sneaker Listing Form' goNextStep={goNextstep} goPrevStep={goPrevStep} />;
-      case 0:
+      case 2:
         return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
       case 3:
         return (

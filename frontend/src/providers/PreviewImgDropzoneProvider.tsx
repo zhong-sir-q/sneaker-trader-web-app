@@ -14,6 +14,7 @@ type PreviewImgDropzoneCtxType = {
   onRemoveFromCropperImagesByIdx: (idx: number) => void;
   formDataFromFiles: () => FormData;
   updateFileId: (fileId: string) => void;
+  updateMainDisplayFile: (newImg: string) => void;
   onDropFile: (acceptedFiles: File[]) => void;
   onRemoveFile: (fileId: string) => void;
   onAddCroppedImgs: (croppedImgs: string[]) => void;
@@ -40,6 +41,9 @@ const INIT_PREVIEW_DROPZONE_CTX: PreviewImgDropzoneCtxType = {
   },
   updateFileId: () => {
     throw new Error('Must overide!');
+  },
+  updateMainDisplayFile: () => {
+    throw new Error('Must override!');
   },
   onAddCroppedImgs: () => {
     throw new Error('Must override!');
@@ -123,6 +127,19 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
     return formData;
   };
 
+  const updateMainDisplayFile = async (newImg: string) => {
+    const newFiles = await Promise.all(
+      files.map(async (f) => {
+        if (f.id !== mainFileId) return f;
+
+        const newMainDisplayFile = await createPreviewFileFromDataUrl(newImg, f.id);
+        return newMainDisplayFile;
+      })
+    );
+
+    setFiles(newFiles);
+  };
+
   return (
     <PreviewImgDropzoneCtx.Provider
       value={{
@@ -135,6 +152,7 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
         resetCropperImages,
         onAddCroppedImgs,
         destroyFiles,
+        updateMainDisplayFile,
         formDataFromFiles,
         updateFileId,
         onDropFile,

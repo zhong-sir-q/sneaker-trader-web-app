@@ -6,8 +6,9 @@ import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 
 import Cropper from 'react-cropper';
-import { DeleteForever, RotateRight, RotateLeft } from '@material-ui/icons';
-import { Slider } from '@material-ui/core';
+import { DeleteForever, RotateRight, RotateLeft, Edit } from '@material-ui/icons';
+import { Slider, Dialog, DialogTitle, DialogContent } from '@material-ui/core';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {
@@ -28,6 +29,7 @@ const DropZoneContainer = styled.div`
   background-color: #fafafa;
   color: #bdbdbd;
   transition: border 0.24s ease-in-out;
+  margin-bottom: 10px;
 `;
 
 type ThumbProps = {
@@ -219,6 +221,7 @@ const ThumbsWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 1fr;
+  margin-bottom: 15px;
 
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 1fr);
@@ -231,40 +234,44 @@ const ThumbsWrapper = styled.div`
   }
 `;
 
+const FileEditingOptionsWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  font-size: 2em;
+  width: 40%;
+  margin-top: 5px;
+`;
+
 const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   const { onPrevStep, onNextStep } = props;
   const {
     files,
     mainFileId,
     cropperImages,
+    mainDisplayFileDataUrl,
     onDropFile,
     onRemoveFile,
     updateFileId,
+    updateMainDisplayFile,
   } = usePreviewImgDropzoneCtx();
-
-  const thumbs = files.map((file, idx) => (
-    <Thumb isFirstChild={idx === 0} key={file.id}>
-      <PreviewImage
-        isImageSelected={mainFileId === file.id}
-        onClick={() => updateFileId(file.id)}
-        src={file.preview}
-        alt={file.name}
-      />
-      <div style={{ fontSize: '2em' }}>
-        <DeleteForever fontSize='inherit' onClick={() => onRemoveFile(file.id)} data-testid={`del-preview-${idx}`} />
-      </div>
-    </Thumb>
-  ));
 
   // set the first image to be the default main display
   useEffect(() => {
-    if (!mainFileId && thumbs.length > 0) updateFileId(thumbs[0].key as string);
-  }, [mainFileId, thumbs, updateFileId]);
+    if (!mainFileId && files.length > 0) updateFileId(files[0].id);
+  }, [mainFileId, files, updateFileId]);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     accept: 'image/*',
     onDrop: onDropFile,
   });
+
+  const editingFileCropperHook = useOpenCloseComp();
+
+  // can only update the main display file
+  const onFinishEditFile = (img: string) => {
+    editingFileCropperHook.onClose();
+    updateMainDisplayFile(img);
+  };
 
   return (
     <Card style={{ padding: '15px 15px 0px 15px' }}>
@@ -283,10 +290,55 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
           <span>Select Images</span>
         </DropZoneContainer>
 
-        {thumbs.length > 0 && <ThumbsWrapper data-testid='preview-img-container'>{thumbs}</ThumbsWrapper>}
-      </CardBody>
+        {files.length > 0 && (
+          <React.Fragment>
+            <h4>Selected Images</h4>
+            <ThumbsWrapper data-testid='preview-img-container'>
+              {files.map((file, idx) => (
+                <Thumb isFirstChild={idx === 0} key={file.id}>
+                  <PreviewImage
+                    isImageSelected={mainFileId === file.id}
+                    onClick={() => updateFileId(file.id)}
+                    src={file.preview}
+                    alt={file.name}
+                  />
+                  <FileEditingOptionsWrapper>
+                    <Edit
+                      className='pointer'
+                      fontSize='inherit'
+                      onClick={() => {
+                        // set the editing file to the main display file
+                        updateFileId(file.id);
+                        editingFileCropperHook.onOpen();
+                      }}
+                    />
+                    <DeleteForever
+                      className='pointer'
+                      fontSize='inherit'
+                      onClick={() => onRemoveFile(file.id)}
+                      data-testid={`del-preview-${idx}`}
+                    />
+                  </FileEditingOptionsWrapper>
+                </Thumb>
+              ))}
+            </ThumbsWrapper>
+          </React.Fragment>
+        )}
 
-      {cropperImages.length > 0 && <CropperGrid />}
+        {cropperImages.length > 0 && (
+          <React.Fragment>
+            <h4>Crop Images</h4>
+            <CropperGrid />
+          </React.Fragment>
+        )}
+
+        <Dialog open={editingFileCropperHook.open} onClose={editingFileCropperHook.onClose}>
+          <DialogTitle>Edit Image</DialogTitle>
+          <DialogContent>
+            {mainDisplayFileDataUrl && <ImgCropper img={mainDisplayFileDataUrl} onConfirmCrop={onFinishEditFile} />}
+          </DialogContent>
+        </Dialog>
+      </CardBody>
 
       {props.onPrevStep && props.onNextStep && (
         <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
