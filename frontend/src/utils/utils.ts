@@ -3,7 +3,6 @@ import { concatPaths } from './formatApiEndpoint';
 import { ADMIN } from 'routes';
 import { SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
 import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
-import { cpuUsage } from 'process';
 
 export const formatSneakerPathName = (name: string, color: string) =>
   name.split(' ').join('-') + '.' + color.split(' ').join('-');
@@ -96,11 +95,11 @@ export const formatSneaker = (s: SneakerListingFormStateType) => {
   return { name, colorway, brand, size };
 };
 
-export const trimValues = (obj: any) => {
+export const trimValues = (obj: { [k in string | number]: any }) => {
   const copy = { ...obj };
 
   Object.entries(copy).forEach(([k, v]) => {
-    copy[k] = (v as string).trim();
+    if (typeof v === 'string') copy[k] = v.trim();
   });
 
   return copy;

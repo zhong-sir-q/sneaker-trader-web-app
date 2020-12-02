@@ -54,7 +54,7 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
       initialValues={listingSneakerFormState}
       validationSchema={validationSchema}
       onSubmit={(formStates) => {
-        updateFormState(trimValues(formStates));
+        updateFormState(trimValues(formStates) as SneakerListingFormStateType);
         if (props.goNextStep) props.goNextStep();
       }}
       enableReinitialize

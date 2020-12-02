@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import SneakerListingFormProvider, { useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import SneakerListingFormProvider, { useSneakerListingFormCtx, SneakerListingFormStateType } from 'providers/SneakerListingFormProvider';
 import PreviewImgDropzoneProvider, { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 
 import {
@@ -9,6 +9,7 @@ import {
   formatListedSneakerPayload,
   getListedSneakerIdFromPath,
   formatSneaker,
+  trimValues,
 } from 'utils/utils';
 import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 
@@ -90,6 +91,8 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
         setConfirmMakeNewRequest(false);
         const imgFormData = formDataFromFiles();
 
+        const sanitizedStateValues = trimValues(listingSneakerFormState) as SneakerListingFormStateType
+
         await onEditListedSneaker(
           AwsControllerInstance,
           SneakerControllerInstance,
@@ -99,11 +102,11 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
           props.listedSneakerId,
           imgFormData,
           currentUser!.id,
-          formatSneaker(listingSneakerFormState),
+          formatSneaker(sanitizedStateValues),
           undefined,
           undefined,
           undefined,
-          formatListedSneakerPayload(listingSneakerFormState, 'new sneaker request')
+          formatListedSneakerPayload(sanitizedStateValues, 'new sneaker request')
         );
 
         newRequestDialogHook.onOpen();
@@ -116,9 +119,11 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
     // prepare the payload
     const imgFormData = formDataFromFiles();
 
+    const sanitizedStateValues = trimValues(listingSneakerFormState) as SneakerListingFormStateType
+
     const sneaker = await SneakerControllerInstance.getFirstByNameColorway(
-      listingSneakerFormState.name,
-      listingSneakerFormState.colorway
+      sanitizedStateValues.name,
+      sanitizedStateValues.colorway
     );
 
     // sneaker is not in the db, ask the user if they want to make a new request
@@ -137,11 +142,11 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
       props.listedSneakerId,
       imgFormData,
       currentUser!.id,
-      formatSneaker(listingSneakerFormState),
+      formatSneaker(sanitizedStateValues),
       undefined,
       undefined,
       undefined,
-      formatListedSneakerPayload(listingSneakerFormState)
+      formatListedSneakerPayload(sanitizedStateValues)
     );
 
     updateSuccessAlertHook.onOpen();
