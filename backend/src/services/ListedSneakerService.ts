@@ -19,18 +19,18 @@ import { getBuyersAvgRatingQuery } from '../utils/queries';
 class ListedSneakerService implements ListedSneakerEntity {
   // get all sneaker asks along with the min asking price of each size the
   // the available numbers
-  async getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]> {
+  async getAllAsksByNameColorway(name: string, colorway: string): Promise<SneakerAsk[]> {
     const poolConn = await mysqlPoolConnection();
 
     const getAllAsksQuery = `
       SELECT size, Min(askingPrice) as askingPrice, SUM(L.quantity) as numsAvailable
         FROM ListedProducts L, Products P
           WHERE L.prodStatus = "listed" AND L.productId = P.id
-            AND CONCAT(P.name, ' ', P.colorWay) = ${doubleQuotedValue(nameColorway)}
+            AND P.name = ? AND P.colorway = ?
               GROUP BY size ORDER BY askingPrice;
     `;
 
-    return poolConn.query(getAllAsksQuery);
+    return poolConn.query(getAllAsksQuery, [name, colorway]);
   }
 
   async getBySellerId(sellerId: number): Promise<SellerListedSneaker[]> {
@@ -125,7 +125,8 @@ class ListedSneakerService implements ListedSneakerEntity {
    * @param nameColorway space separated name, e.g. Kobe 4 Black
    */
   getSizeMinPriceGroupByNameColorway = async (
-    nameColorway: string,
+    name: string,
+    colorway: string,
     sellerId: number
   ): Promise<SizeMinPriceGroupType> => {
     const poolConn = await mysqlPoolConnection();
@@ -143,12 +144,11 @@ class ListedSneakerService implements ListedSneakerEntity {
     // pair of sneakers with the same name colorway and size
     const query = `
       SELECT P.size, MIN(L.askingPrice) as minPrice FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L
-        WHERE P.id = L.productId AND L.prodStatus = "listed" AND NOT L.userId = ${sellerId} AND
-          CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)}
-            GROUP BY P.id
+        WHERE P.id = L.productId AND L.prodStatus = "listed" AND NOT L.userId = ? AND
+          P.name = ? AND P.colorway = ? GROUP BY P.id
     `;
 
-    return poolConn.query(query);
+    return poolConn.query(query, [sellerId, name, colorway]);
   };
 
   async getAllListedSneakers(): Promise<GetListedSneaker[]> {

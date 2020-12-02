@@ -1,12 +1,12 @@
 import mysqlPoolConnection from '../config/mysql';
-import { doubleQuotedValue } from '../utils/formatDbQuery';
 import { getSellersAvgRatingQuery } from '../utils/queries';
 import { SellerEntity, ListedSneakerSeller } from '../../../shared';
 
 class SellerService implements SellerEntity {
   async getSellersBySneakerNameSize(
     currentUserId: number,
-    nameColorway: string,
+    name: string,
+    colorway: string,
     size: number
   ): Promise<ListedSneakerSeller[]> {
     const poolConn = await mysqlPoolConnection();
@@ -14,8 +14,8 @@ class SellerService implements SellerEntity {
     const getSellersQuery = `
       SELECT U.id, U.username, U.email, U.profilePicUrl, L.askingPrice, L.id as listedProductId,
         L.imageUrls as sneakerImgUrls FROM Users U, ListedProducts L, Products P WHERE U.id = L.userId
-          AND NOT L.userId = ${currentUserId} AND P.id = L.productId AND L.prodStatus = "listed" AND
-            CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}
+          AND NOT L.userId = ? AND P.id = L.productId AND L.prodStatus = "listed" AND
+            P.name = ? AND P.colorway = ? AND size = ?
     `;
 
     // order it by their rating in descending order
@@ -27,7 +27,7 @@ class SellerService implements SellerEntity {
              ON (q1.id = q2.sellerId) ORDER BY rating DESC, askingPrice
     `;
 
-    return poolConn.query(sellersQuery);
+    return poolConn.query(sellersQuery, [currentUserId, name, colorway, size]);
   }
 }
 

@@ -274,8 +274,8 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   };
 
   return (
-    <Card style={{ padding: '15px 15px 0px 15px' }}>
-      <CardHeader style={{ textAlign: 'center' }}>
+    <Card className='text-center' style={{ padding: '15px 15px 0px 15px' }}>
+      <CardHeader>
         <p>
           <GreenDot /> Main Display Image
         </p>

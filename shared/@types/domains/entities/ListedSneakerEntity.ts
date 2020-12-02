@@ -5,9 +5,9 @@ import { SellerListedSneaker, CreateListedSneakerPayload, GetListedSneaker } fro
 interface ListedSneakerEntity {
   getGallerySneakersBySize(sellerId: number, size: number): Promise<GallerySneaker[]>;
   getBySellerId(sellerId: number): Promise<SellerListedSneaker[]>;
-  getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]>;
+  getAllAsksByNameColorway(name: string, colorway: string): Promise<SneakerAsk[]>;
   getGallerySneakers(sellerId: number, limit?: number, offset?: number): Promise<GallerySneaker[]>;
-  getSizeMinPriceGroupByNameColorway(name: string, sellerId: number): Promise<SizeMinPriceGroupType>;
+  getSizeMinPriceGroupByNameColorway(name: string, colorway: string, sellerId: number): Promise<SizeMinPriceGroupType>;
   // returns sneakers that have status of listed
   getAllListedSneakers(): Promise<GetListedSneaker[]>;
   // returns all sneakers no matter the status

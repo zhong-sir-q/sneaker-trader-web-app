@@ -80,7 +80,7 @@ type ViewSellersListProps = {
 };
 
 const StyledListGroup = styled(ListGroup)`
-  height: 500px;
+  max-height: 500px;
   overflow: auto;
 `;
 

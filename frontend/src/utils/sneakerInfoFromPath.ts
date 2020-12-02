@@ -6,12 +6,16 @@ const sneakerInfoFromPath = (pathname: string) => {
   const nameColorwayIdx = paths.findIndex((p: string) => p.includes('-'));
   const sneakerInfo = paths.slice(nameColorwayIdx);
 
-  const sneakerNameColorway = sneakerInfo[0].split('-').join(' ');
-  const sneakerSize = Number(sneakerInfo[sneakerInfo.length - 1]);
+  const shoeNameColorway = sneakerInfo[0].split('.');
+  shoeNameColorway[0] = shoeNameColorway[0].split('-').join(' ');
+  shoeNameColorway[1] = shoeNameColorway[1].split('-').join(' ');
 
-  if (!sneakerSize) throw new Error('Sneaker size is not in the path')
+  const [name, colorway] = shoeNameColorway;
+  const size = Number(sneakerInfo[sneakerInfo.length - 1]);
 
-  return { nameColorway: sneakerNameColorway, size: sneakerSize };
+  if (!size) throw new Error('Sneaker size is not in the path');
+
+  return { name, colorway, size };
 };
 
 export default sneakerInfoFromPath;

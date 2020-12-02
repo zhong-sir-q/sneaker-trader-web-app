@@ -77,6 +77,16 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
     // prepare the payload
     const imgFormData = formDataFromFiles();
 
+    // check if the product already exists in the db
+    // if yes, finish editing, otherwise, ask them to make a new request (would it be a new reueqst if only the size changes?)
+    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(
+      listingSneakerFormState.name,
+      listingSneakerFormState.colorway
+    );
+
+    // a new request? or cancel the current edit
+    if (!sneaker) return
+
     // TODO: the helperInfo such as brand, name and colorway can be updated, and we need to give updates on our side
     await onEditListedSneaker(
       AwsControllerInstance,
@@ -102,7 +112,7 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content'>
-        <Container fluid='sm'>
+        <Container fluid='sm' style={{ padding: '0 8%' }}>
           <SneakerInfoForm title='Edit Sneaker Form' />
           <PreviewImagesDropzone />
           <PreviewSneaker

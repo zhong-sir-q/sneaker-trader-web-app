@@ -5,7 +5,19 @@ import { SneakerListingFormStateType } from 'providers/SneakerListingFormProvide
 import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
 
 export const formatSneakerPathName = (name: string, color: string) =>
-  formatSneakerNameColorway(name, color).split(' ').join('-');
+  name.split(' ').join('-') + '.' + color.split(' ').join('-');
+
+// this method is coupled to formatSneakerPathName
+export const nameColorwayFromPath = (pathname: string) => {
+  const pathArray = pathname.split('/');
+  const shoeNameColorway = pathArray[pathArray.length - 1].split('.');
+  // format the name
+  shoeNameColorway[0] = shoeNameColorway[0].split('-').join(' ');
+  // format the colorway
+  shoeNameColorway[1] = shoeNameColorway[1].split('-').join(' ');
+
+  return shoeNameColorway;
+};
 
 export const formatSneakerNameColorway = (name: string, colorway: string) => `${name} ${colorway}`;
 

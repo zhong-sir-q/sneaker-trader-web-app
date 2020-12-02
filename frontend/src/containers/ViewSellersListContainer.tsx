@@ -54,7 +54,8 @@ const ViewSellersListContainer = () => {
       const sneakerInfo = sneakerInfoFromPath(history.location.pathname);
 
       const sneakerToBuy = await SneakerControllerInstance.getByNameColorwaySize(
-        sneakerInfo.nameColorway,
+        sneakerInfo.name,
+        sneakerInfo.colorway,
         sneakerInfo.size
       );
 
@@ -64,7 +65,8 @@ const ViewSellersListContainer = () => {
 
       const sellersBySneakerNameSize = await SellerControllerInstance.getSellersBySneakerNameSize(
         currentUser.id,
-        sneakerInfo.nameColorway,
+        sneakerInfo.name,
+        sneakerInfo.colorway,
         sneakerInfo.size
       );
 
@@ -134,7 +136,7 @@ const ViewSellersListContainer = () => {
       sellerUserName: username,
       buyerUserName: currentUser!.username,
       buyerEmail: currentUser!.email,
-      productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
+      productName: `Size ${sneakerInfo.size} ${sneakerInfo.name} ${sneakerInfo.colorway}`,
     };
 
     await onConfirmPurchaseSneaker(

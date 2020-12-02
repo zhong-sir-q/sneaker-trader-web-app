@@ -1,7 +1,10 @@
 import SneakerEntity from '../../../../shared/@types/domains/entities/SneakerEntity';
-import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
+import formatApiEndpoint from 'utils/formatApiEndpoint';
 import { AppSneaker, Sneaker } from '../../../../shared';
+
 import formatRequestOptions from 'utils/formatRequestOptions';
+
+import queryString from 'query-string';
 
 export class SneakerController implements SneakerEntity {
   sneakerPath: string;
@@ -13,11 +16,18 @@ export class SneakerController implements SneakerEntity {
   create = (sneaker: AppSneaker): Promise<number> =>
     fetch(this.sneakerPath, formatRequestOptions(sneaker)).then((res) => res.json());
 
-  getFirstByNameColorway = (nameColorway: string): Promise<Sneaker | null> =>
-    fetch(concatPaths(this.sneakerPath, nameColorway)).then((res) => res.json());
+  getFirstByNameColorway = (name: string, colorway: string): Promise<Sneaker | null> => {
+    console.log(this.sneakerPath + `?${queryString.stringify({ name, colorway })}`);
+    return fetch(this.sneakerPath + `?${queryString.stringify({ name, colorway })}`).then((res) => res.json());
+  };
 
-  getByNameColorwaySize = (nameColorway: string, size: number): Promise<Sneaker | null> =>
-    fetch(concatPaths(this.sneakerPath, nameColorway, size)).then((res) => res.json());
+  getFirstByNameBrandColorway = (name: string, brand: string, colorway: string): Promise<Sneaker | null> => {
+    console.log(this.sneakerPath + `?${queryString.stringify({ name, brand, colorway })}`);
+    return fetch(this.sneakerPath + `?${queryString.stringify({ name, brand, colorway })}`).then((res) => res.json());
+  };
+
+  getByNameColorwaySize = (name: string, colorway: string, size: number): Promise<Sneaker | null> =>
+    fetch(this.sneakerPath + `?${queryString.stringify({ name, colorway, size })}`).then((res) => res.json());
 }
 
 const SneakerControllerInstance = new SneakerController();

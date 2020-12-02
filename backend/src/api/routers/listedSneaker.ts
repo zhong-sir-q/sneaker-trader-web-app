@@ -19,7 +19,7 @@ const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService)
 
     listedSneakerService
       .getById(Number(id))
-      .then(r => r.length > 0 ? r[0] : null)
+      .then((r) => (r.length > 0 ? r[0] : null))
       .then((r) => res.json(r))
       .catch(next);
   };
@@ -36,9 +36,9 @@ const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService)
 
     listedSneakerService
       .remove(Number(id))
-      .then(r => res.json(r))
-      .catch(next)
-  }
+      .then((r) => res.json(r))
+      .catch(next);
+  };
 
   const getGallerySneakersBySellerId: ExpressHandler = (req, res, next) => {
     const { sellerId } = req.params;
@@ -60,13 +60,9 @@ const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService)
 };
 
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
-  const {
-    update,
-    get,
-    getAll,
-    remove,
-    getGallerySneakersBySellerId
-  } = createListedSneakerHandlers(ListedSneakerServiceInstance);
+  const { update, get, getAll, remove, getGallerySneakersBySellerId } = createListedSneakerHandlers(
+    ListedSneakerServiceInstance
+  );
 
   const router = Router();
 
@@ -82,10 +78,10 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .catch((err) => next(err));
   });
 
-  router.get('/sizeMinPriceGroup/:nameColorway/:sellerId', (req, res, next) => {
-    const { nameColorway, sellerId } = req.params;
+  router.get('/sizeMinPriceGroup/:name/:colorway/:sellerId', (req, res, next) => {
+    const { name, colorway, sellerId } = req.params;
 
-    ListedSneakerServiceInstance.getSizeMinPriceGroupByNameColorway(nameColorway, Number(sellerId))
+    ListedSneakerServiceInstance.getSizeMinPriceGroupByNameColorway(name, colorway, Number(sellerId))
       .then((r) => res.json(r))
       .catch(next);
   });
@@ -106,10 +102,10 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .catch(next);
   });
 
-  router.get('/allAsks', (req, res, next) => {
-    const { nameColorway } = req.query;
+  router.get('/allAsks/:name/:colorway', (req, res, next) => {
+    const { name, colorway } = req.params;
 
-    ListedSneakerServiceInstance.getAllAsksByNameColorway(nameColorway as string)
+    ListedSneakerServiceInstance.getAllAsksByNameColorway(name, colorway)
       .then((result) => res.json(result))
       .catch(next);
   });

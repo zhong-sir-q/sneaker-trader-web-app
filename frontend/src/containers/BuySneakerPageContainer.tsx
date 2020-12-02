@@ -14,15 +14,7 @@ import BuySneakerPage from 'pages/BuySneakerPage';
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk, Size } from '../../../shared';
 import AlertDialog from 'components/AlertDialog';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
-
-const nameColorwayFromPath = () => {
-  const { pathname } = window.location;
-
-  const pathArray = pathname.split('/');
-  const shoeNameColorway = pathArray[pathArray.length - 1].split('-').join(' ');
-
-  return shoeNameColorway;
-};
+import { nameColorwayFromPath } from 'utils/utils';
 
 const BuySneakerPageContainer = () => {
   const [selectedSize, setSelectedSize] = useState<Size>('all');
@@ -44,14 +36,17 @@ const BuySneakerPageContainer = () => {
   const history = useHistory();
 
   const onComponentMounted = useCallback(async () => {
-    const shoeNameColorway = nameColorwayFromPath();
+    const [shoeName, shoeColorway] = nameColorwayFromPath(window.location.pathname);
+
     const sizeMinPriceItems = await ListedSneakerControllerInstance.getSizeMinPriceGroupByNameColorway(
-      shoeNameColorway,
+      shoeName,
+      shoeColorway,
       currentUser ? currentUser.id : -1
     );
-    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeNameColorway);
 
-    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeNameColorway);
+    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeName, shoeColorway);
+
+    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeName, shoeColorway);
 
     if (!sneaker) {
       history.push(HOME);
@@ -86,7 +81,7 @@ const BuySneakerPageContainer = () => {
 
     if (selectedSize === 'all') {
       setChooseBuyAll(true);
-      alertDialogHook.onOpen()
+      alertDialogHook.onOpen();
       return;
     }
 

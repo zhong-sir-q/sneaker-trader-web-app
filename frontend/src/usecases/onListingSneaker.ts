@@ -4,7 +4,6 @@ import { ListedSneakerController } from 'api/controllers/ListedSneakerController
 import { HelperInfoController } from 'api/controllers/HelperInfoController';
 import { SneakerController } from 'api/controllers/SneakerController';
 import { AwsController } from 'api/controllers/AwsController';
-import { formatSneakerNameColorway } from 'utils/utils';
 
 const onListingSneaker = (
   AwsControllerInstance: AwsController,
@@ -23,9 +22,12 @@ const onListingSneaker = (
   const uploadedUrls = await AwsControllerInstance.uploadS3MultipleImages(imgFormData);
 
   let prodId: number;
-  const nameColorway = formatSneakerNameColorway(listingFormSneaker.name, listingFormSneaker.colorway);
 
-  const product = await SneakerControllerInstance.getByNameColorwaySize(nameColorway, listingFormSneaker.size);
+  const product = await SneakerControllerInstance.getByNameColorwaySize(
+    listingFormSneaker.name,
+    listingFormSneaker.colorway,
+    listingFormSneaker.size
+  );
 
   if (product) prodId = product.id;
   else prodId = await SneakerControllerInstance.create({ ...listingFormSneaker, imageUrls: uploadedUrls.join(',') });

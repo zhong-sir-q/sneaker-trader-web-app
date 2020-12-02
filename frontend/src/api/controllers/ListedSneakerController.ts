@@ -36,14 +36,18 @@ export class ListedSneakerController implements ListedSneakerEntity {
     return fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId + query)).then((res) => res.json());
   };
 
-  getSizeMinPriceGroupByNameColorway = (nameColorway: string, sellerId: number): Promise<SizeMinPriceGroupType> =>
-    fetch(concatPaths(this.listedSneakerPath, 'sizeMinPriceGroup', nameColorway, sellerId)).then((res) => res.json());
+  getSizeMinPriceGroupByNameColorway = (
+    name: string,
+    colorway: string,
+    sellerId: number
+  ): Promise<SizeMinPriceGroupType> =>
+    fetch(concatPaths(this.listedSneakerPath, 'sizeMinPriceGroup', name, colorway, sellerId)).then((res) => res.json());
 
   getGallerySneakersBySize = (sellerId: number, size: number): Promise<GallerySneaker[]> =>
     fetch(concatPaths(this.listedSneakerPath, 'gallery', 'size', sellerId, size)).then((res) => res.json());
 
-  getAllAsksByNameColorway = (nameColorway: string): Promise<SneakerAsk[]> =>
-    fetch(this.listedSneakerPath + `/allAsks?nameColorway=${nameColorway}`).then((res) => res.json());
+  getAllAsksByNameColorway = (name: string, colorway: string): Promise<SneakerAsk[]> =>
+    fetch(concatPaths(this.listedSneakerPath, 'allAsks', name, colorway)).then((res) => res.json());
 
   getBySellerId = (sellerId: number): Promise<SellerListedSneaker[]> =>
     fetch(this.listedSneakerPath + `/all/${sellerId}`).then((res) => res.json());

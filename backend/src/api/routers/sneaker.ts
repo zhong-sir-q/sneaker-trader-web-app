@@ -1,32 +1,48 @@
 import { Router } from 'express';
 import SneakerService from '../../services/SneakerService';
+import { ExpressHandler } from '../../@types/express';
 
 const sneakerRoute = Router();
 
-export default (app: Router, SneakerServiceInstance: SneakerService) => {
-  app.use('/sneaker', sneakerRoute);
+const createSneakerHandlers = (sneakerService: SneakerService) => {
+  const getSneakerByQuery: ExpressHandler = (req, res, next) => {
+    const { name, colorway, size, brand } = req.query;
 
-  sneakerRoute.get('/:nameColorway', (req, res, next) => {
-    const { nameColorway } = req.params
+    if (name && colorway && size) {
+      sneakerService
+        .getByNameColorwaySize(name as string, colorway as string, Number(size))
+        .then((sneaker) => res.json(sneaker))
+        .catch(next);
+    } else if (name && colorway && brand) {
+      sneakerService
+        .getFirstByNameBrandColorway(name as string, brand as string, colorway as string)
+        .then((sneaker) => res.json(sneaker))
+        .catch(next);
+    } else if (name && colorway) {
+      sneakerService
+        .getFirstByNameColorway(name as string, colorway as string)
+        .then((sneaker) => res.json(sneaker))
+        .catch(next);
+    } else next(new Error('Invalid query at the get sneaker route'));
+  };
 
-    SneakerServiceInstance.getFirstByNameColorway(nameColorway)
-      .then((sneaker) => res.json(sneaker))
-      .catch(next);
-  });
-
-  sneakerRoute.get('/:nameColorway/:size', (req, res, next) => {
-    const { nameColorway, size } = req.params;
-
-    SneakerServiceInstance.getByNameColorwaySize(nameColorway, Number(size))
-      .then((sneaker) => res.json(sneaker))
-      .catch(next);
-  });
-
-  sneakerRoute.post('/', (req, res, next) => {
+  const create: ExpressHandler = (req, res, next) => {
     const sneaker = req.body;
 
-    SneakerServiceInstance.create(sneaker)
+    sneakerService
+      .create(sneaker)
       .then((sneakerId) => res.json(sneakerId))
       .catch(next);
-  });
+  };
+
+  return { create, getSneakerByQuery };
+};
+export default (app: Router, sneakerService: SneakerService) => {
+  app.use('/sneaker', sneakerRoute);
+
+  const { create, getSneakerByQuery } = createSneakerHandlers(
+    sneakerService
+  );
+
+  sneakerRoute.route('/').post(create).get(getSneakerByQuery);
 };

@@ -22,7 +22,7 @@ describe('Utility functions', () => {
       expect(sneakerInfoFromPath(mockPath)).toThrowError();
     } catch {}
 
-    const mockPath = '/abc/market.k/pfafds/afa/lebron-james-sk/12';
+    const mockPath = '/abc/market.k/pfafds/afa/lebron-james.sk/12';
 
     // max of i is 4 because there are 4 paths before the sneaker name colorway
     for (let i = 0; i < 5; i++) {
@@ -31,12 +31,14 @@ describe('Utility functions', () => {
       const info = sneakerInfoFromPath(path);
 
       const desiredObj = {
-        nameColorway: expect.any(String),
+        name: expect.any(String),
+        colorway: expect.any(String),
         size: expect.any(Number),
       };
 
       expect(info).toMatchObject(desiredObj);
-      expect(info.nameColorway).toBe('lebron james sk');
+      expect(info.name).toBe('lebron james');
+      expect(info.colorway).toBe('sk');
       expect(info.size).toBe(12);
     }
   });
@@ -77,6 +79,10 @@ describe('Utility functions', () => {
     const n1 = 'Kobe';
     const c1 = 'Black';
 
-    expect(formatSneakerPathName(n1, c1)).toBe('Kobe-Black');
+    const n2 = 'slim kd 5';
+    const colorway = 'red and blue';
+
+    expect(formatSneakerPathName(n1, c1)).toBe('Kobe.Black');
+    expect(formatSneakerPathName(n2, colorway)).toBe('slim-kd-5.red-and-blue');
   });
 });

@@ -5,9 +5,6 @@ import { ListedSneakerController } from 'api/controllers/ListedSneakerController
 
 import { ListingFormSneaker, ListedSneakerFormPayload } from '../../../shared';
 
-import { formatSneakerNameColorway } from 'utils/utils';
-
-// exact same argument parameters to onListingSneaker but these two functions are very different
 const onEditListedSneaker = (
   awsController: AwsController,
   sneakerController: SneakerController,
@@ -26,9 +23,12 @@ const onEditListedSneaker = (
   const uploadedUrls = await awsController.uploadS3MultipleImages(imgFormData);
 
   let prodId: number;
-  const nameColorway = formatSneakerNameColorway(listingFormSneaker.name, listingFormSneaker.colorway);
 
-  const product = await sneakerController.getByNameColorwaySize(nameColorway, listingFormSneaker.size);
+  const product = await sneakerController.getByNameColorwaySize(
+    listingFormSneaker.name,
+    listingFormSneaker.colorway,
+    listingFormSneaker.size
+  );
 
   if (product) prodId = product.id;
   else prodId = await sneakerController.create({ ...listingFormSneaker, imageUrls: uploadedUrls.join(',') });

@@ -10,12 +10,11 @@ class SellerController implements SellerEntity {
 
   getSellersBySneakerNameSize = (
     currentUserId: number,
-    nameColorway: string,
+    name: string,
+    colorway: string,
     size: number
   ): Promise<ListedSneakerSeller[]> =>
-    fetch(concatPaths(this.sellerPath, currentUserId) + `?sneakerName=${nameColorway}&size=${size}`).then((res) =>
-      res.json()
-    );
+    fetch(concatPaths(this.sellerPath, currentUserId, name, colorway, size)).then((res) => res.json());
 }
 
 const SellerControllerInstance = new SellerController();
