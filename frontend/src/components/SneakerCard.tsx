@@ -72,7 +72,16 @@ const SneakerCard = (props: SneakerCardProps) => {
             fontSize: isListed ? '16px' : '1.55em',
           }}
         >
-          {displayName}
+          {name}
+        </div>
+        <div
+          style={{
+            marginBottom: '4px',
+            lineHeight: '1.3',
+            fontSize: isListed ? '16px' : '1.55em',
+          }}
+        >
+          {colorway}
         </div>
         <div>
           {price !== undefined && (

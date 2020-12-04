@@ -28,8 +28,6 @@ export const DEFAULT_ADDRESS: Omit<Address, 'zipcode'> & { zipcode: number | '' 
   city: '',
   region: '',
   suburb: '',
-  // make it undefined instead of empty string
-  // so it renders a blank field rather than a 0
   zipcode: '',
   country: 'New Zealand',
   verificationStatus: 'not_verified',
@@ -225,14 +223,14 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
       </Dialog>
 
       <AlertDialog
-        message='A verification code will be sent to your address by mail'
+        message='A verification code will be sent to your address by mail.'
         open={requestVerificationAlertHook.open}
         color='info'
         onClose={requestVerificationAlertHook.onClose}
       />
 
       <AlertDialog
-        message='Address is updated!'
+        message='Address is updated, we will send you a verification code by mail.'
         open={updateAddressSuccessAlertHook.open}
         color='primary'
         onClose={updateAddressSuccessAlertHook.onClose}
@@ -246,7 +244,7 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
       />
 
       <AlertDialog
-        message='Verification code is not valid'
+        message='Verification code is not valid.'
         open={invalidCodeAlertHook.open}
         color='danger'
         onClose={invalidCodeAlertHook.onClose}

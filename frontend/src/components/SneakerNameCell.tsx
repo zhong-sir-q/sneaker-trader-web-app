@@ -1,6 +1,7 @@
 import React from 'react';
 
 import styled from 'styled-components';
+import { Tooltip } from '@material-ui/core';
 
 const ImgContainer = styled.div`
   float: left;
@@ -58,8 +59,12 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
       </ImgContainer>
 
       <SneakerNameTextWrapper>
-        <SneakerNameCellText>{name}</SneakerNameCellText>
-        <SneakerNameCellText>{colorway}</SneakerNameCellText>
+        <Tooltip title={`${name} ${colorway}`}>
+          <div>
+            <SneakerNameCellText>{name}</SneakerNameCellText>
+            <SneakerNameCellText>{colorway}</SneakerNameCellText>
+          </div>
+        </Tooltip>
         <SizeText className='category'>{displaySize}</SizeText>
       </SneakerNameTextWrapper>
     </td>

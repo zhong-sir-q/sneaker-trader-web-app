@@ -32,4 +32,6 @@ export type Address = {
   country: string;
   suburb: string;
   verificationStatus: AddrVerificationStatus;
+  requestVerificationDate?: string;
+  updateVerificationDate?: string;
 };

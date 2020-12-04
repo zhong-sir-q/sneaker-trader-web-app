@@ -217,7 +217,7 @@ const Sidebar = (props: SideBarProps) => {
               {/* location is unchanged */}
               <NavLink to={location.pathname} onClick={onOpenLeaderBoard}>
                 <React.Fragment>
-                  <i className='now-ui-icons design_scissors' />
+                  <i className='now-ui-icons business_chart-bar-32' />
                   <p>Leaderboard</p>
                 </React.Fragment>
               </NavLink>

@@ -30,14 +30,14 @@ const SearchIconWrapper = styled.div`
   padding-left: 8px;
 `;
 
-const StyledListGroup = styled(ListGroup)`
+const StyledListGroup = styled(ListGroup)<{ maxHeight: string }>`
   position: absolute;
   margin-top: 5px;
   z-index: 1;
   /* 1% offset to take into account the scrollbar */
   width: 99%;
   overflow: auto;
-  max-height: 650px;
+  max-height: ${(props) => props.maxHeight || '70vh'};
 `;
 
 const StyledListGroupItem = styled(ListGroupItem)`
@@ -61,6 +61,7 @@ type SneakerSearchBarProps = {
   setSneakerNew?: () => void;
   setSneakerExists?: () => void;
   updateSearchVal?: (searchVal: string) => void;
+  suggestionMaxHeight?: string;
 };
 
 const SneakerSearchBar = (props: SneakerSearchBarProps) => {
@@ -138,7 +139,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
       </InputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>
-          <StyledListGroup>
+          <StyledListGroup maxHeight={props.suggestionMaxHeight}>
             {result.map((item, idx) => (
               <StyledListGroupItem
                 active={activeSuggestionIdx === idx}

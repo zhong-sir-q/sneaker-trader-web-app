@@ -165,6 +165,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
               setSneakerNew={setSnekaerNew}
               setSneakerExists={setSneakerExists}
               updateSearchVal={updateSearchBarInputVal}
+              suggestionMaxHeight='55vh'
             />
             {isSneakerNew ? (
               <Button color='primary' onClick={() => onRequestNewSneaker(searchBarInputVal)}>

@@ -1,11 +1,17 @@
 import { AddressController } from 'api/controllers/AddressController';
 import { Address } from '../../../../shared';
 
-const updateAddress = (AddressControllerInstance: AddressController, cb: () => void) => async (
+const updateAddress = (addressController: AddressController, cb: () => void) => async (
   userId: number,
   address: Address
 ) => {
-  await AddressControllerInstance.updateAddressByUserId(userId, address);
+  await addressController.updateAddressByUserId(userId, {
+    ...address,
+    updateVerificationDate: new Date().toISOString(),
+  });
+
+  await addressController.generateVerificationCode(userId);
+
   cb();
 };
 

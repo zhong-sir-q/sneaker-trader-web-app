@@ -1,28 +1,37 @@
 import mysqlPoolConnection from '../config/mysql';
-import { formatGetRowsQuery, formatInsertRowsQuery, formatUpdateRowsQuery } from '../utils/formatDbQuery';
+import { formatInsertRowsQuery } from '../utils/formatDbQuery';
 import { ADDRESS_VERIFICATION_CODE } from '../config/tables';
 
 class AddressVerificationCodeService {
   async validateCode(userId: number, code: number) {
-    const poolConn = await mysqlPoolConnection();
-    const getCodeQuery = formatGetRowsQuery(ADDRESS_VERIFICATION_CODE, `userId = ${userId}`);
-    const res = await poolConn.query(getCodeQuery);
+    const { verificationCode, id } = await this.getVerificationCode(userId);
+    const isValid = verificationCode === code;
 
-    if (res.length === 0) return false;
+    if (isValid) this.onUseValidationCode(id);
 
-    return res[0].verificationCode === code;
+    return isValid;
   }
 
-  private async getVerificationCode(userId: number): Promise<number> {
+  private async getVerificationCode(userId: number): Promise<{ id: number; verificationCode: number }> {
     const poolConn = await mysqlPoolConnection();
 
     const getCodeQuery = `
-      SELECT verificationCode FROM ${ADDRESS_VERIFICATION_CODE} WHERE userId = ${userId}
+      SELECT verificationCode FROM ${ADDRESS_VERIFICATION_CODE} WHERE userId = ? AND used = 0
     `;
 
-    const res = await poolConn.query(getCodeQuery);
+    const res = await poolConn.query(getCodeQuery, [userId]);
 
     return res.length ? res[0] : null;
+  }
+
+  private async onUseValidationCode(id: number): Promise<any> {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      UPDATE ${ADDRESS_VERIFICATION_CODE} SET used = 1 WHERE id = ?
+    `;
+
+    return poolConn.query(query, [id]);
   }
 
   // inserts a new code if the user does not already have one, otherwise create a new code
@@ -30,20 +39,6 @@ class AddressVerificationCodeService {
     const poolConn = await mysqlPoolConnection();
 
     const randSixDigitCode = Math.floor(100000 + Math.random() * 900000);
-
-    const code = this.getVerificationCode(userId);
-
-    if (code) {
-      const updateQuery = formatUpdateRowsQuery(
-        ADDRESS_VERIFICATION_CODE,
-        { verificationCode: randSixDigitCode },
-        `userId = ${userId}`
-      );
-
-      await poolConn.query(updateQuery);
-
-      return;
-    }
 
     const insertQuery = formatInsertRowsQuery(ADDRESS_VERIFICATION_CODE, {
       userId,

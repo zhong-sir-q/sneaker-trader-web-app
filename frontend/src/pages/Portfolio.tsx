@@ -133,7 +133,7 @@ const Portfolio = () => {
   });
 
   const afterSubmitPortfolioForm = () => {
-    goFetchPortfolioSneaker()
+    goFetchPortfolioSneaker();
     onClose();
 
     // clean up
@@ -188,16 +188,16 @@ const Portfolio = () => {
             Add Item
           </Button>
         </div>
-        <Card>
-          {!portfolioSneakers || fetchPortfolioSneakers ? (
-            <CenterSpinner />
-          ) : (
+        {!portfolioSneakers || fetchPortfolioSneakers ? (
+          <CenterSpinner />
+        ) : (
+          <Card>
             <PortfolioTable
               sneakers={portfolioSneakers.map(formatTablePortfolioSneaker)}
               onDeleteRow={removePortfolioTableRow}
             />
-          )}
-        </Card>
+          </Card>
+        )}
         <Dialog
           classes={{
             paperFullWidth: classes.paperFullWidth,
