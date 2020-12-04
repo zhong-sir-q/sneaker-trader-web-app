@@ -37,14 +37,12 @@ const SneakerNameTextWrapper = styled.div`
 const SizeText = styled.div`
   color: #000;
   font-size: 0.85em;
-  white-space: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
 `;
 
 const SneakerNameCellText = styled.div`
   font-weight: 600;
-  white-space: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
 `;

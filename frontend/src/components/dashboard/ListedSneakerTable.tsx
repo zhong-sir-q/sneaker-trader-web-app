@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { Table } from 'reactstrap';
+import { List, ListItem } from '@material-ui/core';
+import { Edit, KeyboardArrowDown } from '@material-ui/icons';
 
 import clsx from 'clsx';
 import moment from 'moment';
@@ -11,14 +15,13 @@ import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerContro
 
 import { upperCaseFirstLetter, createEditListedSneakerPath, mapUpperCaseFirstLetter } from 'utils/utils';
 
+import useWindowDimensions from 'hooks/useWindowDimensions';
 import useSortableColData from 'hooks/useSortableColData';
 import usePagination from 'hooks/usePagination';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
-import { useHistory } from 'react-router-dom';
-import { Edit, KeyboardArrowDown } from '@material-ui/icons';
-import styled from 'styled-components';
-import { List, ListItem } from '@material-ui/core';
+
+import { Header, ShowDropdownHeader, Cell, ShowDropdownCell, DropdownRow } from './table/Common';
 
 type ListedSneakerTableRowProps = {
   sneaker: SellerListedSneaker;
@@ -31,69 +34,6 @@ type ListedSneakerTableProps = {
   sneakers: SellerListedSneaker[];
   setShowCompleteSaleSuccess?: () => void;
 };
-
-const StyledListedSneakerRowCell = styled.td`
-  @media (max-width: 1024px) {
-    display: none;
-  }
-`;
-
-const ShowDropdownSneakerHeader = styled.th`
-  @media (min-width: 1024px) {
-    display: none;
-  }
-`;
-
-const DropdownRow = styled.tr`
-  font-weight: 600;
-  font-size: 1.25em;
-
-  @media (min-width: 1024px) {
-    display: none;
-  }
-`;
-
-const ShowDropdownSneakerRowCell = styled.td`
-  vertical-align: middle;
-  text-align: center;
-
-  @media (min-width: 1024px) {
-    display: none;
-  }
-`;
-
-const StyledListedSneakerHeader = styled.th<{ minWidth: string }>`
-  min-width: ${({ minWidth }) => minWidth};
-
-  @media (max-width: 1024px) {
-    display: none;
-    width: 0;
-  }
-`;
-
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-
-  return {
-    width,
-    height,
-  };
-}
-
-function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowDimensions(getWindowDimensions());
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowDimensions;
-}
 
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, setShowCompleteSaleSuccess } = props;
@@ -129,42 +69,30 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
         <th className={headerClass('name')} onClick={() => requestSort('name')}>
           name
         </th>
-        <StyledListedSneakerHeader
+        <Header
           minWidth='115px'
           className={headerClass('listedDatetime')}
           onClick={() => requestSort('listedDatetime')}
         >
           listed date
-        </StyledListedSneakerHeader>
-        <StyledListedSneakerHeader
+        </Header>
+        <Header
           minWidth='105px'
           className={headerClass('buyer.transactionDatetime')}
           onClick={() => requestSort('buyer.transactionDatetime')}
         >
           sold date
-        </StyledListedSneakerHeader>
-        <StyledListedSneakerHeader
-          minWidth='80px'
-          className={headerClass('prodStatus')}
-          onClick={() => requestSort('prodStatus')}
-        >
+        </Header>
+        <Header minWidth='80px' className={headerClass('prodStatus')} onClick={() => requestSort('prodStatus')}>
           status
-        </StyledListedSneakerHeader>
-        <StyledListedSneakerHeader
-          minWidth='75px'
-          className={headerClass('price')}
-          onClick={() => requestSort('price')}
-        >
+        </Header>
+        <Header minWidth='75px' className={headerClass('price')} onClick={() => requestSort('price')}>
           price
-        </StyledListedSneakerHeader>
-        <StyledListedSneakerHeader
-          minWidth='60px'
-          className={headerClass('quantity')}
-          onClick={() => requestSort('quantity')}
-        >
+        </Header>
+        <Header minWidth='60px' className={headerClass('quantity')} onClick={() => requestSort('quantity')}>
           qty
-        </StyledListedSneakerHeader>
-        <ShowDropdownSneakerHeader />
+        </Header>
+        <ShowDropdownHeader />
       </tr>
     </thead>
   );
@@ -215,20 +143,16 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       <React.Fragment>
         <tr>
           <SneakerNameCell imgSrc={mainDisplayImage} name={displayName} displaySize={displaySize} colorway={colorway} />
-          <StyledListedSneakerRowCell>{moment(listedDatetime).format('YYYY-MM-DD')}</StyledListedSneakerRowCell>
-          <StyledListedSneakerRowCell>
-            {buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}
-          </StyledListedSneakerRowCell>
-          <StyledListedSneakerRowCell>{upperCaseFirstLetter(prodStatus)}</StyledListedSneakerRowCell>
-          <StyledListedSneakerRowCell>
+          <Cell>{moment(listedDatetime).format('YYYY-MM-DD')}</Cell>
+          <Cell>{buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</Cell>
+          <Cell>{upperCaseFirstLetter(prodStatus)}</Cell>
+          <Cell>
             <small>$</small>
             {price}
-          </StyledListedSneakerRowCell>
-          <StyledListedSneakerRowCell>{quantity || 1}</StyledListedSneakerRowCell>
-          <StyledListedSneakerRowCell>
-            {prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}
-          </StyledListedSneakerRowCell>
-          <StyledListedSneakerRowCell style={{ minWidth: '220px' }}>
+          </Cell>
+          <Cell>{quantity || 1}</Cell>
+          <Cell>{prodStatus === 'listed' && <Edit className='pointer' onClick={onEdit} />}</Cell>
+          <Cell style={{ minWidth: '220px' }}>
             <SellerCTAButtonsGroup
               listedProdId={id}
               buyer={buyer}
@@ -236,10 +160,10 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
               onCompleteSale={onCompleteSale}
               onRemoveListing={onRemoveListing}
             />
-          </StyledListedSneakerRowCell>
-          <ShowDropdownSneakerRowCell onClick={() => onClickShowDropdown(rowIdx)}>
-            <KeyboardArrowDown fontSize='large' />
-          </ShowDropdownSneakerRowCell>
+          </Cell>
+          <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
+            <KeyboardArrowDown fontSize='default' />
+          </ShowDropdownCell>
         </tr>
         {/* use a large colspan to take up the whole row */}
         {showRowDropdown && (
@@ -286,7 +210,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           <tr>
             {windowDimensions.width > 1024 && <td colSpan={6} />}
             <td className='td-total'>Total</td>
-            <td className='td-price'>
+            <td className='td-price' style={{ fontSize: '1.25em' }}>
               <small>$</small>
               {computeTotalAmount(sortedItems)}
             </td>

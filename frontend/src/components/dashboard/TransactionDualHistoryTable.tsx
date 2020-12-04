@@ -1,12 +1,13 @@
 import React from 'react';
 
 import { Dialog, DialogTitle, Switch } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+
 import { Card, CardBody, CardHeader, CardTitle } from 'reactstrap';
 
 import { useTransactionTableContext } from 'providers/TransactionTableProvider';
 import ListedSneakerTable from './ListedSneakerTable';
 import PurchasedSneakerTable from './PurchasedSneakerTable';
-import CenterSpinner from 'components/CenterSpinner';
 
 const TransactionDualHistoryTable = () => {
   const {
@@ -18,6 +19,8 @@ const TransactionDualHistoryTable = () => {
     handleClosePopup,
     toggleShowListed,
   } = useTransactionTableContext();
+
+  if (!unsoldListedSneakers || !purchasedSneakers) return <Skeleton height={500} />;
 
   return (
     <React.Fragment>
@@ -31,9 +34,7 @@ const TransactionDualHistoryTable = () => {
           </div>
         </CardHeader>
         <CardBody>
-          {!unsoldListedSneakers || !purchasedSneakers ? (
-            <CenterSpinner />
-          ) : showListed ? (
+          {showListed ? (
             <ListedSneakerTable sneakers={unsoldListedSneakers} setShowCompleteSaleSuccess={handleOpenPopup} />
           ) : (
             <PurchasedSneakerTable sneakers={purchasedSneakers} />
