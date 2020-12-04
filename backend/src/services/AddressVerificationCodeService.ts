@@ -28,7 +28,7 @@ class AddressVerificationCodeService {
     const poolConn = await mysqlPoolConnection();
 
     const query = `
-      UPDATE ${ADDRESS_VERIFICATION_CODE} SET used = 1 WHERE id = ?
+      UPDATE ${ADDRESS_VERIFICATION_CODE} SET used = '1' WHERE id = ?
     `;
 
     return poolConn.query(query, [id]);

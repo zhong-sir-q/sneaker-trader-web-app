@@ -234,6 +234,7 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
         open={updateAddressSuccessAlertHook.open}
         color='primary'
         onClose={updateAddressSuccessAlertHook.onClose}
+        maxWidth='sm'
       />
 
       <AlertDialog
