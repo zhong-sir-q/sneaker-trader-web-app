@@ -105,6 +105,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       prodStatus,
       buyer,
       sizeSystem,
+      userId,
       listedDatetime,
     } = props.sneaker;
 
@@ -133,6 +134,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             buyer={buyer}
             prodStatus={prodStatus}
             onCompleteSale={onCompleteSale}
+            sellerId={userId}
           />
         </td>
       </tr>

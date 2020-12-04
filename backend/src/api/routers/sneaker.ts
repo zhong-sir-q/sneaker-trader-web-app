@@ -7,7 +7,7 @@ export default (app: Router, SneakerServiceInstance: SneakerService) => {
   app.use('/sneaker', sneakerRoute);
 
   sneakerRoute.get('/:nameColorway', (req, res, next) => {
-    const { nameColorway } = req.params
+    const { nameColorway } = req.params;
 
     SneakerServiceInstance.getFirstByNameColorway(nameColorway)
       .then((sneaker) => res.json(sneaker))

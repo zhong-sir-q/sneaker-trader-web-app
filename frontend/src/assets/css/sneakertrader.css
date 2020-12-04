@@ -70,6 +70,7 @@ i.send {
   height: 30px;
   width: 35px;
   position: relative;
+  cursor: pointer;
   border-radius: 50%;
   background: -webkit-gradient(linear, left top, left bottom, from(#7dcae8), to(#3cafdd));
   background: linear-gradient(to bottom, #f47137, #fdac80);

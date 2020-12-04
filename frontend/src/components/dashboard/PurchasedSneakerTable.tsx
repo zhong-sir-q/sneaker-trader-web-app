@@ -105,6 +105,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       quantity,
       prodStatus,
       seller,
+      userId,
       sizeSystem,
       transactionDatetime,
     } = props.sneaker;
@@ -145,7 +146,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
         </td>
         <td>{quantity || 1}</td>
         <td style={{ minWidth: '220px' }}>
-          <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} />
+          <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} sellerId={userId}/>
         </td>
       </tr>
     );

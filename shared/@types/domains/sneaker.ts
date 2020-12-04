@@ -12,7 +12,7 @@ type SizeMinPriceType = { size: number; minPrice: number };
 export type SizeMinPriceGroupType = SizeMinPriceType[];
 
 export type CustomerSneaker = Pick<Sneaker, 'name' | 'colorway' | 'size' | 'brand'> &
-  Pick<ListedProduct, 'id' | 'prodStatus' | 'sizeSystem' | 'mainDisplayImage' | 'listedDatetime'> & { quantity: number; price: number };
+  Pick<ListedProduct, 'id' | 'prodStatus' | 'sizeSystem' | 'mainDisplayImage' | 'listedDatetime' | 'userId'> & { quantity: number; price: number };
 
 export type AppSneaker = Omit<Sneaker, 'id' | 'RRP'>;
 

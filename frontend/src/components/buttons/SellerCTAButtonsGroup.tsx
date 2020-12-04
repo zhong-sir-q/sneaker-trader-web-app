@@ -10,12 +10,13 @@ import TransactionControllerInstance from 'api/controllers/TransactionController
 type SellerCTAButtonsGroupProps = {
   prodStatus: SneakerStatus;
   listedProdId: number;
+  sellerId: number;
   buyer: Buyer;
   onCompleteSale: () => void;
 };
 
 const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
-  const { prodStatus, listedProdId, buyer, onCompleteSale } = props;
+  const { prodStatus, listedProdId, buyer, onCompleteSale, sellerId } = props;
 
   // DIRTY TRICK: update the state after the rating is completed to hide the RateCustomer
   // button, if this state is not used, I have to tell the parent to fetch all data in order to update
@@ -31,14 +32,14 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
     case 'pending':
       return (
         <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={buyer} title='Contact Buyer' />
+          <ContactCustomerButton customer={buyer} title='Contact Buyer' productId={listedProdId} sellerId={sellerId}/>
           <CompleteSaleButton onClick={onCompleteSale}>Complete Sale</CompleteSaleButton>
         </div>
       );
     case 'sold':
       return (
         <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={buyer!} title='Contact Buyer' />
+          <ContactCustomerButton customer={buyer!} title='Contact Buyer' productId={listedProdId} sellerId={sellerId}/>
           {!hasSellerRatedBuyer && (
             <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompleteRating} />
           )}
