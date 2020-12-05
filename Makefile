@@ -15,6 +15,8 @@ push-ecr-img:
 	sudo docker tag "$(LOCAL_IMAGE_NAME):$(TAG_NAME)" "$(ECR_URL):$(TAG_NAME)"
 	sudo docker push "$(ECR_URL):$(TAG_NAME)"
 
+# not necessary to manually create the deployment because when a new image is
+# pushed to ECR, it automatically triggers the CodeDeploy pipeline
 create-bluegreen-deploy:
 	aws deploy create-deployment --cli-input-json file://$(BG_DEPLOYMENT_FILE)
 
@@ -22,7 +24,8 @@ create-bluegreen-deploy:
 update-ecs-service:
 	aws ecs update-service --cluster sneaker-trader-cluster --service $SERVICE_NAME --force-new-deployment
 
-run-bluegreen-deploy: push-ecr-img create-bluegreen-deploy
+# run-bluegreen-deploy: push-ecr-img create-bluegreen-deploy
+run-bluegreen-deploy: push-ecr-img
 
 run-rolling-update: push-ecr-img update-ecs-service
 

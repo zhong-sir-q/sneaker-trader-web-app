@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardBody, Button, Container } from 'reactstrap';
+import { Card, CardHeader, CardTitle, CardBody, Button } from 'reactstrap';
 
 import { Paper } from '@material-ui/core';
 
@@ -28,9 +28,9 @@ const TopupWalletPage = () => {
   return walletBalance === null ? (
     <CenterSpinner />
   ) : (
-    <div>
+    <React.Fragment>
       <PanelHeader size='sm' />
-      <Container fluid='sm'>
+      <div className='content'>
         <PaperContainer>
           <div style={{ width: '300px' }}>
             <Card>
@@ -48,9 +48,9 @@ const TopupWalletPage = () => {
             </Button>
           </div>
         </PaperContainer>
-      </Container>
+      </div>
       <TopupWalletDialog isOpen={open} handleClose={onClose} />
-    </div>
+    </React.Fragment>
   );
 };
 

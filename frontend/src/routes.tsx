@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidV4 } from 'uuid';
 
 // pages
 import SignIn from 'pages/SignIn';
@@ -43,7 +44,8 @@ export const PORTFOLIO = '/portfolio';
 export const TERMS = '/terms';
 export const PRIVACY_POLICY = '/policy';
 
-const SUPER_USER_EDIT_GALLERY = '/edit-gallery-sneaker';
+// a random string so no user know about it
+export const SUPER_USER_EDIT_GALLERY = '/' + uuidV4();
 
 type AppLayout = '/auth' | '/admin' | '/';
 

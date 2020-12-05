@@ -12,7 +12,7 @@ import { SneakerController } from 'api/controllers/SneakerController';
 import { useAuth } from 'providers/AuthProvider';
 import isAdminUser from 'usecases/isAdminUser';
 import { useHistory } from 'react-router-dom';
-import { ADMIN } from 'routes';
+import { ADMIN, DASHBOARD } from 'routes';
 import { Skeleton } from '@material-ui/lab';
 import { AwsController } from 'api/controllers/AwsController';
 import { Sneaker } from '../../../../shared';
@@ -119,7 +119,7 @@ const SuperEditGallery = (props: SuperEditGalleryProps) => {
     if (!currentUser) return;
 
     if (!signedIn || !isAdminUser(currentUser.email)) {
-      history.push(ADMIN);
+      history.push(ADMIN + DASHBOARD);
       return;
     }
 
