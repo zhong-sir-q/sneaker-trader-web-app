@@ -178,7 +178,7 @@ const Sidebar = (props: SideBarProps) => {
 
         <div className='sidebar-wrapper' style={{ overflowY: 'auto' }} ref={sidebar}>
           <div className='user'>
-            <div className='photo' style={{ backgroundColor: 'white' }}>
+            <div className='photo'>
               <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
             </div>
             <div className='info'>

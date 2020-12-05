@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Table } from 'reactstrap';
 import { List, ListItem } from '@material-ui/core';
-import { Edit, KeyboardArrowDown } from '@material-ui/icons';
+import { Edit, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 import clsx from 'clsx';
 import moment from 'moment';
@@ -162,7 +162,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             />
           </Cell>
           <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
-            <KeyboardArrowDown fontSize='default' />
+            {showRowDropdown ? <KeyboardArrowUp fontSize='default' /> : <KeyboardArrowDown fontSize='default' />}
           </ShowDropdownCell>
         </tr>
         {/* use a large colspan to take up the whole row */}

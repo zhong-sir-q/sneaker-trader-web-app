@@ -2,8 +2,6 @@ import { Router } from 'express';
 import SneakerService from '../../services/SneakerService';
 import { ExpressHandler } from '../../@types/express';
 
-const sneakerRoute = Router();
-
 const createSneakerHandlers = (sneakerService: SneakerService) => {
   const getSneakerByQuery: ExpressHandler = (req, res, next) => {
     const { name, colorway, size, brand } = req.query;
@@ -35,14 +33,34 @@ const createSneakerHandlers = (sneakerService: SneakerService) => {
       .catch(next);
   };
 
-  return { create, getSneakerByQuery };
+  const getGallerySneakers: ExpressHandler = (_req, res, next) => {
+    sneakerService
+      .getGallerySneakers()
+      .then((sneakers) => res.json(sneakers))
+      .catch(next);
+  };
+
+  const updateDisplayImage: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+    const { imageUrls } = req.body;
+
+    sneakerService
+      .updateDisplayImage(Number(id), imageUrls)
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  return { create, getSneakerByQuery, getGallerySneakers, updateDisplayImage };
 };
+
+const sneakerRoute = Router();
+
 export default (app: Router, sneakerService: SneakerService) => {
   app.use('/sneaker', sneakerRoute);
 
-  const { create, getSneakerByQuery } = createSneakerHandlers(
-    sneakerService
-  );
+  const { create, getSneakerByQuery, getGallerySneakers, updateDisplayImage } = createSneakerHandlers(sneakerService);
 
   sneakerRoute.route('/').post(create).get(getSneakerByQuery);
+  sneakerRoute.route('/updateImage/:id').put(updateDisplayImage);
+  sneakerRoute.route('/gallery').get(getGallerySneakers);
 };

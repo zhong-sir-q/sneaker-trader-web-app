@@ -1,5 +1,5 @@
 import SneakerEntity from '../../../../shared/@types/domains/entities/SneakerEntity';
-import formatApiEndpoint from 'utils/formatApiEndpoint';
+import formatApiEndpoint, { concatPaths } from 'utils/formatApiEndpoint';
 import { AppSneaker, Sneaker } from '../../../../shared';
 
 import formatRequestOptions from 'utils/formatRequestOptions';
@@ -24,6 +24,14 @@ export class SneakerController implements SneakerEntity {
 
   getByNameColorwaySize = (name: string, colorway: string, size: number): Promise<Sneaker | null> =>
     fetch(this.sneakerPath + `?${queryString.stringify({ name, colorway, size })}`).then((res) => res.json());
+
+  getGallerySneakers = (): Promise<Sneaker[]> => fetch(concatPaths(this.sneakerPath, 'gallery')).then((r) => r.json());
+
+  updateDisplayImage = (id: number, imageUrls: string): Promise<any> =>
+    fetch(
+      concatPaths(this.sneakerPath, 'updateImage', id),
+      formatRequestOptions({ imageUrls }, undefined, 'PUT')
+    ).then((r) => r.json());
 }
 
 const SneakerControllerInstance = new SneakerController();

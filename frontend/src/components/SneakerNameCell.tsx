@@ -1,7 +1,6 @@
 import React from 'react';
 
 import styled from 'styled-components';
-import { Tooltip } from '@material-ui/core';
 
 const ImgContainer = styled.div`
   float: left;
@@ -11,13 +10,13 @@ const Img = styled.img`
   object-fit: cover;
 
   @media (min-width: 768px) {
-    width: 90px;
-    height: 70px;
+    width: 5.625rem;
+    height: 4.375rem;
   }
 
   @media (min-width: 150px) {
-    width: 70px;
-    height: 50px;
+    width: 4.375rem;
+    height: 3.125rem;
   }
 `;
 
@@ -57,12 +56,8 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
       </ImgContainer>
 
       <SneakerNameTextWrapper>
-        <Tooltip title={`${name} ${colorway}`}>
-          <div>
-            <SneakerNameCellText>{name}</SneakerNameCellText>
-            <SneakerNameCellText>{colorway}</SneakerNameCellText>
-          </div>
-        </Tooltip>
+        <SneakerNameCellText>{name}</SneakerNameCellText>
+        <SneakerNameCellText>{colorway}</SneakerNameCellText>
         <SizeText className='category'>{displaySize}</SizeText>
       </SneakerNameTextWrapper>
     </td>

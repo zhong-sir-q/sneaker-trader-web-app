@@ -2,7 +2,7 @@ import { formatInsertRowsQuery, formatGetRowsQuery, doubleQuotedValue } from '..
 
 import mysqlPoolConnection from '../config/mysql';
 
-import { PRODUCTS } from '../config/tables';
+import { PRODUCTS, LISTED_PRODUCTS } from '../config/tables';
 
 import { AppSneaker, Sneaker } from '../../../shared';
 import SneakerEntity from '../../../shared/@types/domains/entities/SneakerEntity';
@@ -46,6 +46,17 @@ class SneakerService implements SneakerEntity {
     return res.length ? res[0] : null;
   }
 
+  async getGallerySneakers(): Promise<Sneaker[]> {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT P.* FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L WHERE L.prodStatus = 'listed'
+        AND P.id = L.productId GROUP BY P.id, name, colorway, size
+    `;
+
+    return poolConn.query(query);
+  }
+
   async create(sneaker: AppSneaker): Promise<number> {
     const poolConn = await mysqlPoolConnection();
 
@@ -57,6 +68,16 @@ class SneakerService implements SneakerEntity {
     const createSneakerQuery = formatInsertRowsQuery(PRODUCTS, sneaker);
 
     return poolConn.query(createSneakerQuery).then((res) => res.insertId);
+  }
+
+  async updateDisplayImage(id: number, imgUrl: string): Promise<any> {
+    const poolConn = await mysqlPoolConnection();
+
+    const updateQuery = `
+      UPDATE ${PRODUCTS} SET imageUrls = '${imgUrl}' WHERE id = ?
+    `;
+
+    return poolConn.query(updateQuery, [id]);
   }
 }
 

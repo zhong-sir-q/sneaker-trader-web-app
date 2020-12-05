@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import clsx from 'clsx';
 
 import { Table } from 'reactstrap';
+import { List, ListItem } from '@material-ui/core';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 import moment from 'moment';
 
-import useSortableColData from 'hooks/useSortableColData';
-
 import BuyerCTAButtonsGroup from 'components/buttons/BuyerCTAButtonsGroup';
+
+import useSortableColData from 'hooks/useSortableColData';
+import usePagination from 'hooks/usePagination';
+import useWindowDimensions from 'hooks/useWindowDimensions';
+
+import { Header, DropdownRow, Cell, ShowDropdownHeader, ShowDropdownCell } from './table/Common';
+
+import SneakerNameCell from 'components/SneakerNameCell';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 import { upperCaseFirstLetter, mapUpperCaseFirstLetter } from 'utils/utils';
-import usePagination from 'hooks/usePagination';
-
-import { Header, DropdownRow, Cell, ShowDropdownHeader, ShowDropdownCell } from './table/Common';
-import useWindowDimensions from 'hooks/useWindowDimensions';
-import { List, ListItem } from '@material-ui/core';
-import SneakerNameCell from 'components/SneakerNameCell';
-import { KeyboardArrowDown } from '@material-ui/icons';
 
 const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
   let total = 0;
@@ -128,7 +129,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
             <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} />
           </Cell>
           <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
-            <KeyboardArrowDown fontSize='default' />
+            {showRowDropdown ? <KeyboardArrowUp fontSize='default' /> : <KeyboardArrowDown fontSize='default' />}
           </ShowDropdownCell>
         </tr>
         {showRowDropdown && (

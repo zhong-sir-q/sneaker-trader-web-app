@@ -21,6 +21,9 @@ import SneakerListingFormProvider from 'providers/SneakerListingFormProvider';
 import UserStatsProvider from 'providers/marketplace/UserStatsProvider';
 import WalletProvider from 'providers/WalletProvider';
 import GoogleOauth2ControllerInstance from 'api/controllers/external/GoogleOauth2Controller';
+import SuperEditGallery from 'pages/dashboard/SuperEditGallery';
+import SneakerControllerInstance from 'api/controllers/SneakerController';
+import AwsControllerInstance from 'api/controllers/AwsController';
 
 // routes
 export const AUTH = '/auth';
@@ -39,6 +42,8 @@ export const PORTFOLIO = '/portfolio';
 
 export const TERMS = '/terms';
 export const PRIVACY_POLICY = '/policy';
+
+const SUPER_USER_EDIT_GALLERY = '/edit-gallery-sneaker';
 
 type AppLayout = '/auth' | '/admin' | '/';
 
@@ -109,6 +114,12 @@ export const sidebarRoutes = [
     path: PORTFOLIO,
     name: 'Portfolio',
     icon: 'now-ui-icons business_chart-pie-36',
+    layout: ADMIN,
+  },
+  {
+    path: SUPER_USER_EDIT_GALLERY,
+    name: 'Edit Gallery Sneaker',
+    icon: 'now-ui-icons business_bank',
     layout: ADMIN,
   },
 ];
@@ -201,6 +212,14 @@ const routes: SneakerTraderRoute[] = [
     path: PORTFOLIO,
     name: 'Porfolio',
     component: Portfolio,
+    layout: ADMIN,
+  },
+  {
+    path: SUPER_USER_EDIT_GALLERY,
+    name: 'Edit Gallery Sneaker',
+    component: () => (
+      <SuperEditGallery sneakerController={SneakerControllerInstance} awsController={AwsControllerInstance} />
+    ),
     layout: ADMIN,
   },
 ];
