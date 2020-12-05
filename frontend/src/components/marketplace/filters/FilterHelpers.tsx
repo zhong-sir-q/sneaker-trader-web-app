@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 
 export const FilterWrapper = styled.div`
-  margin-bottom: 15px;
+  margin-bottom: 25px;
+  height: 215px;
+  overflow: auto;
 `;
 
 export const ArrowDirectionWrapper = styled.div`

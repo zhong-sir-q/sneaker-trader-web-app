@@ -5,7 +5,6 @@ import styled from 'styled-components';
 
 import SneakerGallery from 'components/SneakerGallery';
 import FiltersDrawer from 'components/marketplace/filters/FiltersDrawer';
-import ButtonFilters from 'components/marketplace/filters/FilterButtons';
 import CheckboxFilters from 'components/marketplace/filters/CheckboxFilters';
 
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
@@ -69,7 +68,7 @@ const MarketPlace = () => {
       <FiltersDrawer brandFilters={brands} sizeFilters={_.range(3, 14, 0.5).map((n) => String(n))} />
       <div className='flex'>
         <FilterGroup md={2} lg={2}>
-          <ButtonFilters
+          <CheckboxFilters
             filterKey='size'
             filters={_.range(3.5, 15.5, 0.5).map((size) => String(size))}
             title='us sizes'
