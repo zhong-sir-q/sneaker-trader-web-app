@@ -162,7 +162,6 @@ const EditListedSneakerPage = (props: EditListedSneakerPageProps) => {
           <PreviewImagesDropzone />
           {mainDisplayFileDataUrl && (
             <PreviewSneaker
-              aspectRatio='66.6%'
               sneaker={listingSneakerFormState as SellerListedSneaker}
               mainDisplayImage={mainDisplayFileDataUrl}
               price={Number(listingSneakerFormState.askingPrice)}

@@ -10,12 +10,11 @@ type PreviewSneakerProps = {
   price: number;
   mainDisplayImage: string;
   onSubmit: () => void;
-  aspectRatio?: string;
   onPrevStep?: () => void;
 };
 
 const PreviewSneaker = (props: PreviewSneakerProps) => {
-  const { aspectRatio, sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
+  const { sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
 
   const [isSubmitDisabled, setSubmitDisabled] = useState(false);
 
@@ -37,7 +36,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
       <CardBody data-testid='preview-sneaker-card-body'>
-        <SneakerCard aspectRatio={aspectRatio} sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
+        <SneakerCard sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         {onPrevStep && <Button onClick={onPrevStep}>Previous</Button>}

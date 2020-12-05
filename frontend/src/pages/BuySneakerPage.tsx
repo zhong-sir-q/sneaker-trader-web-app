@@ -141,7 +141,6 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
                 mainDisplayImage={mainDisplayImage}
                 sneaker={sneaker}
                 price={selectedSizeMinPrice}
-                aspectRatio='78.5%'
               />
               <Button onClick={onViewAllAsks}>View All Asks</Button>
               <Button

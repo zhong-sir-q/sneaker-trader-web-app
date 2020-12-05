@@ -79,3 +79,7 @@
 .bold {
   font-weight: bold;
 }
+
+.w-full {
+  width: 100%;
+}

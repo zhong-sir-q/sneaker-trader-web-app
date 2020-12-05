@@ -2,8 +2,6 @@ import React from 'react';
 import { Card } from 'reactstrap';
 import styled from 'styled-components';
 
-import FixedAspectRatioImg from './FixedAspectRatioImg';
-
 import { AppSneaker } from '../../../shared';
 import LazyLoad from 'react-lazyload';
 
@@ -32,13 +30,12 @@ type SneakerCardProps = {
   isListed?: boolean;
   styles?: React.CSSProperties;
   className?: string;
-  aspectRatio?: string;
   lazyLoad?: boolean;
   onClick?: () => void;
 };
 
 const SneakerCard = (props: SneakerCardProps) => {
-  const { aspectRatio, sneaker, isListed, price, maxWidth, mainDisplayImage, onClick } = props;
+  const { sneaker, isListed, price, maxWidth, mainDisplayImage, onClick } = props;
   const { name, size, colorway } = sneaker;
 
   const displayName = `${name} ${colorway}`;
@@ -59,10 +56,12 @@ const SneakerCard = (props: SneakerCardProps) => {
     >
       {props.lazyLoad ? (
         <LazyLoad>
-          <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
+          <img className='w-full' src={mainDisplayImage} alt={displayName} />
+          {/* <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} /> */}
         </LazyLoad>
       ) : (
-        <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
+        <img className='w-full' src={mainDisplayImage} alt={displayName} />
+        // <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
       )}
       <InfoContainer>
         <div

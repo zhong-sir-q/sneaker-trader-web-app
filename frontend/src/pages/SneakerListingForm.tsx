@@ -183,7 +183,6 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
 
         return (
           <PreviewSneaker
-            aspectRatio='66.6%'
             sneaker={formatSneaker(listingSneakerFormState)}
             mainDisplayImage={mainDisplayFileDataUrl}
             price={Number(listingSneakerFormState.askingPrice)}
