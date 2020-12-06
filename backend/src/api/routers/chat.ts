@@ -18,8 +18,9 @@ export default (app: Router, ChatServiceInstance: ChatService) => {
   chatRoute.post('/:productId', (req, res, next) => {
     const { productId } = req.params;
     const { message, userType, buyerId, sellerId } = req.body;
-
-    ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType)
+    const myDate = new Date();
+    const dateTime = myDate.toUTCString();
+    ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType, dateTime)
       .then(() => res.json('Sent message'))
       .catch(next);
   });

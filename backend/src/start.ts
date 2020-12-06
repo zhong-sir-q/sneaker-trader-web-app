@@ -8,17 +8,23 @@ const io = require('socket.io')(http, {
     }
   });
 const chatHistory: any = [];
+const ChatServiceInstance = new ChatService();
 
-io.on('connection', function(socket: any, ChatServiceInstance: ChatService) {
+io.on('connection', function(socket: any) {
     console.log('A user connected');
     socket.on("join", async function(room: any) {
       socket.join(room);
       io.emit("roomJoined", room);
     });
     socket.on("message", async function(data: any) {
-        const { message } = data;
+        const { message, productId, buyerId, sellerId, userType} = data;
         io.emit("newMessage", message);
         chatHistory.push(data);
+        const myDate = new Date();
+    const dateTime = myDate.toUTCString();
+    ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType, dateTime)
+      .then(() => console.log('Sent message'))
+      .catch(() => {console.log('llll')});
 
     //Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {

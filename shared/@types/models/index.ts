@@ -96,4 +96,5 @@ export type Chat = {
   sellerId: number;
   message: string;
   userType: string;
+  dateTime: string;
 };

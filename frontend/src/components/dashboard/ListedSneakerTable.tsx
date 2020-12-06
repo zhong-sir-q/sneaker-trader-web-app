@@ -134,7 +134,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             buyer={buyer}
             prodStatus={prodStatus}
             onCompleteSale={onCompleteSale}
-            sellerId={userId}
+            userId={userId}
           />
         </td>
       </tr>

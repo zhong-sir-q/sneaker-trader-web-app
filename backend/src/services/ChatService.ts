@@ -6,10 +6,10 @@ import mysqlPoolConnection from '../config/mysql';
 
 class ChatService implements ChatEntity {
 
-  async sendMessage(productId: number, buyerId: number, sellerId: number, message: string, userType: string): Promise<void> {
+  async sendMessage(productId: number, buyerId: number, sellerId: number, message: string, userType: string, dateTime: string): Promise<void> {
     const poolConn = await mysqlPoolConnection();
 
-    const sendMessageQuery = formatInsertRowsQuery(CHAT, { productId, buyerId, sellerId, message, userType });
+    const sendMessageQuery = formatInsertRowsQuery(CHAT, { productId, buyerId, sellerId, message, userType, dateTime });
     await poolConn.query(sendMessageQuery);
   }
 

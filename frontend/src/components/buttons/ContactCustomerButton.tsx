@@ -17,13 +17,14 @@ type ContactCustomerButtonProps = {
   customer: Customer;
   title: string;
   productId: number;
-  sellerId: number;
+  userId: number;
+  userType: string;
 };
 
 const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const [showContact, setShowContact] = useState(false);
 
-  const { customer, title, productId, sellerId } = props;
+  const { customer, title, productId, userId, userType } = props;
   const { currentUser } = useAuth();
   const handleShow = () => setShowContact(true);
   const handleClose = () => setShowContact(false);
@@ -32,6 +33,8 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const [messages, setMessages] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [text, setText] = useState('');
+  const [buyerId, setBuyerId] = useState(0);
+  const [sellerId, setSellerId] = useState(0);
   const handleChange = async (evt: any) => {
     const data = Object.assign({}, evt);
     setText(data.target.value)
@@ -39,14 +42,14 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const handleSubmit = async () => {
     const today = new Date();
     const time = today.getHours() + ":" + today.getMinutes();
-    const userType = currentUser?.username === customer.username ? 'seller' : 'buyer';
-    const data = {message: text, buyerId: currentUser?.id, sellerId, userType, time, productId};
+    const data = {message: text, buyerId, sellerId, userType, time, productId};
     socket.emit("message", data);
     setText('');
   };
   const connectToRoom = () => {
     socket.on("connect", (data: any) => {
-      socket.emit("join", 'test');
+      const roomName = `${productId}_${buyerId}_${sellerId}`;
+      socket.emit("join", roomName);
     });
     socket.on("newMessage", (data: any) => {
       getMessages();
@@ -54,8 +57,11 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
     setInitialized(true);
   };
   const getMessages = async () => {
-    const buyerId = currentUser?.id;
-    if (buyerId) {
+    if (currentUser) {
+      const buyerId = userType === 'seller' ? customer.id : currentUser?.id;
+      const sellerId = userType === 'buyer' ? userId : currentUser?.id;
+      setBuyerId(buyerId);
+      setSellerId(sellerId);
       const response = await ChatControllerInstance.getChatByProductIdAndBuyerIDAndSellerId(productId, buyerId, sellerId);
       setMessages(response);
       setInitialized(true);
@@ -86,8 +92,8 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
         <DialogContent>
           {
             messages.map(function(item: any, i: any){
-              if (currentUser?.id && item.buyerId === currentUser.id && item.productId === productId && item.sellerId === sellerId) {
-                if (currentUser?.id && (currentUser.id === item.sellerId || currentUser.id === item.buyerId)) {
+              if (item.buyerId === buyerId && item.productId === productId && item.sellerId === sellerId) {
+                if (item.userType === userType) {
                   return (<div className="message-right">
                     <div className="chat-content-right">{item.message}</div>
                     <div className="profile">
