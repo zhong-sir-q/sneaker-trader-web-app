@@ -94,7 +94,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
 
   useEffect(() => {
     if (setSneakerExists && setSneakerNew) {
-      if (result.length > 0) setSneakerExists();
+      if (result.length > 0 || !searchVal) setSneakerExists();
       else setSneakerNew();
     }
   });

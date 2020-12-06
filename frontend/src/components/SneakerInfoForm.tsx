@@ -35,15 +35,6 @@ const FormikValueSubscriber = () => {
   return null;
 };
 
-const LogError = () => {
-  const { errors } = useFormikContext();
-
-  console.log('In LogError')
-  useEffect(() => console.log(errors));
-
-  return null;
-};
-
 const SneakerInfoForm = (props: SneakerInfoFormProps) => {
   const preventOnFormEnterDefault = (evt: React.KeyboardEvent<HTMLFormElement>) => {
     if ((evt.charCode || evt.keyCode) === 13) evt.preventDefault();
@@ -70,7 +61,6 @@ const SneakerInfoForm = (props: SneakerInfoFormProps) => {
     >
       {({ setFieldValue, values }) => (
         <Card className='text-left'>
-          <LogError />
           <FormikValueSubscriber />
           <CardHeader>
             <h5 className='text-center title'>{props.title}</h5>

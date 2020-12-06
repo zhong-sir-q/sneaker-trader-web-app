@@ -23,6 +23,7 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
+// TODO: the mainDisplayImage field should be in the db instead
 type TableRowProps = {
   sneaker: Sneaker & { mainDisplayImage: string };
   sneakerController: SneakerController;
@@ -32,16 +33,13 @@ type TableRowProps = {
 const TableRow = (props: TableRowProps) => {
   const confirmUploadDialogHook = useOpenCloseComp();
   const successAlertHook = useOpenCloseComp();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { sneaker, sneakerController, awsController } = props;
-
   const { brand, mainDisplayImage, name, colorway, id } = sneaker;
 
   const [displayImg, setDisplayImg] = useState(mainDisplayImage);
-
   const displayName = `${brand} ${name}`;
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const onUpload = () => {
     if (inputRef.current) inputRef.current.click();
@@ -73,7 +71,7 @@ const TableRow = (props: TableRowProps) => {
     <tr>
       <SneakerNameCell imgSrc={displayImg} name={displayName} displaySize='' colorway={colorway} />
       <td>
-        <Edit onClick={confirmUploadDialogHook.onOpen} fontSize='default' />
+        <Edit className='pointer' onClick={confirmUploadDialogHook.onOpen} fontSize='default' />
         <Dialog open={confirmUploadDialogHook.open} onClose={confirmUploadDialogHook.onClose}>
           <DialogTitle>New Image</DialogTitle>
           <DialogActions>

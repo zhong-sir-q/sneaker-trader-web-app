@@ -2,6 +2,10 @@ import React from 'react';
 import { Col } from 'reactstrap';
 
 import styled from 'styled-components';
+import { Skeleton } from '@material-ui/lab';
+
+import _ from 'lodash';
+import { useHistory } from 'react-router-dom';
 
 import SneakerGallery from 'components/SneakerGallery';
 import FiltersDrawer from 'components/marketplace/filters/FiltersDrawer';
@@ -9,13 +13,12 @@ import CheckboxFilters from 'components/marketplace/filters/CheckboxFilters';
 
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
-import _ from 'lodash';
-import { Skeleton } from '@material-ui/lab';
 import FilterButtons from 'components/marketplace/filters/FilterButtons';
 import SneakerSearchBar from 'components/SneakerSearchBar';
-import { SearchBarSneaker } from '../../../shared';
+
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
-import { useHistory } from 'react-router-dom';
+
+import { SearchBarSneaker } from '../../../shared';
 
 const FilterGroup = styled(Col)`
   min-width: 200px;
@@ -40,6 +43,11 @@ const SkeletonPlaceHolder = styled.div`
   padding-top: 66.6%;
 `;
 
+const SkeletonWrapper = styled.div`
+  min-height: calc(100vh - 150px);
+  width: 100%;
+`;
+
 const Wrapper = styled.div`
   min-height: calc(100vh - 150px);
   width: 100%;
@@ -55,7 +63,7 @@ const Wrapper = styled.div`
 const SkeletonGrid = () => {
   return (
     <Grid>
-      {Array(18)
+      {Array(24)
         .fill(0)
         .map((_, idx) => (
           <Skeleton key={idx} width='100%'>
@@ -84,9 +92,9 @@ const MarketPlace = () => {
 
   if (!filterSneakers || !brands)
     return (
-      <Wrapper>
+      <SkeletonWrapper>
         <SkeletonGrid />
-      </Wrapper>
+      </SkeletonWrapper>
     );
 
   const sizeFilters = _.range(3, 15, 0.5);
@@ -105,9 +113,9 @@ const MarketPlace = () => {
         <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
       </FilterGroup>
       {isFetching ? (
-        <Wrapper>
+        <SkeletonWrapper>
           <SkeletonGrid />
-        </Wrapper>
+        </SkeletonWrapper>
       ) : (
         <SneakerGallery sneakers={filterSneakers} />
       )}
