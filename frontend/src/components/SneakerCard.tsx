@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from 'reactstrap';
 import styled from 'styled-components';
 
 import { AppSneaker } from '../../../shared';
@@ -19,6 +18,23 @@ const LowestAsk = styled.div`
   line-height: 1.3;
   color: rgba(0, 0, 0, 0.5);
   text-transform: capitalize;
+`;
+
+const StyledCard = styled.div``;
+
+type InfoProps = { isListed: boolean | undefined };
+
+const MainText = styled.div<InfoProps>`
+  margin-bottom: 4px;
+  line-height: 1.3;
+  font-size: ${({ isListed }) => (isListed ? '16px' : '1.55em')};
+`;
+
+const Price = styled.div<InfoProps>`
+  line-height: 1.3;
+  font-size: ${({ isListed }) => (isListed ? '18px' : '1.75em')};
+  white-space: nowrap;
+  font-weight: 700;
 `;
 
 type SneakerCardProps = {
@@ -41,61 +57,31 @@ const SneakerCard = (props: SneakerCardProps) => {
   const displayName = `${name} ${colorway}`;
 
   return (
-    <Card
+    <StyledCard
       className={props.className}
       onClick={onClick}
       style={{
         ...props.styles,
         maxWidth,
         cursor: isListed ? 'pointer' : '',
-        boxShadow: 'none',
-        display: 'flex',
-        textAlign: 'left',
       }}
       data-testid={displayName}
     >
       {props.lazyLoad ? (
         <LazyLoad>
           <img className='w-full' src={mainDisplayImage} alt={displayName} />
-          {/* <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} /> */}
         </LazyLoad>
       ) : (
         <img className='w-full' src={mainDisplayImage} alt={displayName} />
-        // <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
       )}
       <InfoContainer>
-        <div
-          style={{
-            marginBottom: '4px',
-            lineHeight: '1.3',
-            fontSize: isListed ? '16px' : '1.55em',
-          }}
-        >
-          {name}
-        </div>
-        <div
-          style={{
-            marginBottom: '4px',
-            lineHeight: '1.3',
-            fontSize: isListed ? '16px' : '1.55em',
-          }}
-        >
-          {colorway}
-        </div>
+        <MainText isListed={isListed}>{name}</MainText>
+        <MainText isListed={isListed}>{colorway}</MainText>
         <div>
           {price !== undefined && (
             <React.Fragment>
               <LowestAsk>Lowest Ask</LowestAsk>
-              <div
-                style={{
-                  fontSize: isListed ? '18px' : '1.75em',
-                  lineHeight: '1.3',
-                  fontWeight: 700,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                ${price}
-              </div>
+              <Price isListed={isListed}>${price}</Price>
             </React.Fragment>
           )}
           {size && (
@@ -105,7 +91,7 @@ const SneakerCard = (props: SneakerCardProps) => {
           )}
         </div>
       </InfoContainer>
-    </Card>
+    </StyledCard>
   );
 };
 

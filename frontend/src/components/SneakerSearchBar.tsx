@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
@@ -30,14 +30,14 @@ const SearchIconWrapper = styled.div`
   padding-left: 8px;
 `;
 
-const StyledListGroup = styled(ListGroup)<{ maxHeight: string }>`
+const StyledListGroup = styled(ListGroup)<{ maxheight: string }>`
   position: absolute;
   margin-top: 5px;
   z-index: 1;
   /* 1% offset to take into account the scrollbar */
   width: 99%;
   overflow: auto;
-  max-height: ${(props) => props.maxHeight || '70vh'};
+  max-height: ${(props) => props.maxheight || '70vh'};
 `;
 
 const StyledListGroupItem = styled(ListGroupItem)`
@@ -80,16 +80,18 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     ? props.sneakers
     : props.sneakers.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
 
+  useEffect(() => {
+    if (setSneakerExists && setSneakerNew) {
+      if (result.length > 0) setSneakerExists();
+      else setSneakerNew();
+    }
+  });
+
   const onChange = (evt: any) => {
     const { value } = evt.target;
 
     if (value === '') hideSuggestions();
     else openSuggestions();
-
-    if (setSneakerExists && setSneakerNew) {
-      if (result.length > 0 || searchVal === '') setSneakerExists();
-      else setSneakerNew();
-    }
 
     setSearchVal(value);
 
@@ -139,7 +141,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
       </InputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>
-          <StyledListGroup maxHeight={props.suggestionMaxHeight}>
+          <StyledListGroup maxheight={props.suggestionMaxHeight}>
             {result.map((item, idx) => (
               <StyledListGroupItem
                 active={activeSuggestionIdx === idx}

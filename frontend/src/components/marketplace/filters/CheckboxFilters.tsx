@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
-import { Collapse, Label } from 'reactstrap';
 
 import styled from 'styled-components';
 
@@ -9,6 +8,45 @@ import { FilterWrapper, ArrowDirectionWrapper, FilterTitle } from './FilterHelpe
 
 import { FiltersProps } from './filter';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
+
+type CheckMarkProps = {
+  checked: boolean;
+};
+
+const CheckMark = styled.div<CheckMarkProps>`
+  position: absolute;
+  display: ${(props) => (props.checked ? 'inline-block' : 'none')};
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: -3px;
+
+  ::before {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 50%;
+    width: 3px;
+    background-color: #336699;
+    content: '';
+    transform: translateX(10px) rotate(-45deg);
+    transform-origin: left bottom;
+    transition: all 0.12s, border-color 0.08s;
+  }
+
+  ::after {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background-color: #336699;
+    content: '';
+    /* use translate to offset the distance at  */
+    transform: translateX(10px) rotate(-45deg);
+    transform-origin: left bottom;
+  }
+`;
 
 const CheckboxLabel = styled.label`
   /* 10 + 20 where 20 is the width of the checkbox */
@@ -24,19 +62,6 @@ const CheckboxLabel = styled.label`
     left: 0;
     top: 0;
     opacity: 0.6;
-    transition: all 0.12s, border-color 0.08s;
-  }
-`;
-
-const CheckMark = styled.span`
-  ::after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    transform: rotate(45deg);
   }
 `;
 
@@ -56,39 +81,16 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
         <span>{title}</span>
         <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
       </FilterTitle>
-      <FilterWrapper>
-        {filters.map((val, idx) => (
-          <CheckboxWrapper key={idx} onClick={() => onSelectFilter(filterKey, val)}>
-            {/* <input
-              style={{ display: isFilterSelected(val) ? 'block' : 'none' }}
-              type='checkbox'
-              checked={isFilterSelected(val)}
-            /> */}
-            <CheckboxLabel>{val}</CheckboxLabel>
-            <CheckMark />
-          </CheckboxWrapper>
-          // <Label style={{ display: 'block' }} key={idx}>
-          //   <CheckboxInput
-          // type='checkbox'
-          // checked={isFilterSelected(val)}
-          // onChange={() => onSelectFilter(filterKey, val)}
-          //   />{' '}
-          //   {val}
-          // </Label>
-        ))}
-        {/* <Collapse isOpen={open}>
-        {filters.map((val, idx) => (
-          <Label style={{ display: 'block' }} key={idx}>
-            <CheckboxInput
-              type='checkbox'
-              checked={isFilterSelected(val)}
-              onChange={() => onSelectFilter(filterKey, val)}
-            />{' '}
-            {val}
-          </Label>
-        ))}
-      </Collapse> */}
-      </FilterWrapper>
+      {open && (
+        <FilterWrapper>
+          {filters.map((val, idx) => (
+            <CheckboxWrapper key={idx} onClick={() => onSelectFilter(filterKey, val)}>
+              <CheckboxLabel>{val}</CheckboxLabel>
+              <CheckMark checked={isFilterSelected(val)} />
+            </CheckboxWrapper>
+          ))}
+        </FilterWrapper>
+      )}
     </React.Fragment>
   );
 };

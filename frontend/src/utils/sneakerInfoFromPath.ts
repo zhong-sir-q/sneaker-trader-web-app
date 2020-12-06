@@ -1,10 +1,8 @@
+// the name colorway and size must be at the end of the path
 const sneakerInfoFromPath = (pathname: string) => {
   const paths = pathname.split('/');
 
-  // current implementation depends on that the sneaker name colorway should
-  // be the only string that contains the hyphen '-'
-  const nameColorwayIdx = paths.findIndex((p: string) => p.includes('-'));
-  const sneakerInfo = paths.slice(nameColorwayIdx);
+  const sneakerInfo = paths.slice(paths.length - 2);
 
   const shoeNameColorway = sneakerInfo[0].split('.');
   shoeNameColorway[0] = shoeNameColorway[0].split('-').join(' ');

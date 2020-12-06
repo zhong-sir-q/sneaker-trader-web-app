@@ -6,6 +6,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/
 import { Button } from 'reactstrap';
 
 import { Customer } from '../../../../shared';
+import { USER_RATING } from 'const/variables';
 
 type ContactCustomerButtonProps = {
   customer: Customer;
@@ -31,7 +32,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
           <p>Username: {username || 'Anonymous'}</p>
           <p>Email: {email || 'None'}</p>
           <p>Phone Number: {phoneNo || 'None'}</p>
-          <p>Rating: {buyerRating || sellerRating || 0} out of 10</p>
+          <p>Rating: {buyerRating || sellerRating || 0} out of ${USER_RATING}</p>
         </DialogContent>
         <DialogActions>
           <Button color='primary' onClick={handleClose}>

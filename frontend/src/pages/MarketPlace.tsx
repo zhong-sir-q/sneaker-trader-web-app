@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container } from 'reactstrap';
+import { Col } from 'reactstrap';
 
 import styled from 'styled-components';
 
@@ -31,12 +31,17 @@ const Grid = styled.div`
   }
 `;
 
-const PlaceHolder = styled.div`
+const SkeletonPlaceHolder = styled.div`
   padding-top: 66.6%;
 `;
 
-const FullContainer = styled(Container)`
+const Wrapper = styled.div`
   min-height: calc(100vh - 150px);
+  padding: 0 6%;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 `;
 
 const SkeletonGrid = () => {
@@ -46,7 +51,7 @@ const SkeletonGrid = () => {
         .fill(0)
         .map((_, idx) => (
           <Skeleton key={idx} width='100%'>
-            <PlaceHolder />
+            <SkeletonPlaceHolder />
           </Skeleton>
         ))}
     </Grid>
@@ -58,13 +63,13 @@ const MarketPlace = () => {
 
   if (!filterSneakers || !brands)
     return (
-      <FullContainer>
+      <Wrapper>
         <SkeletonGrid />
-      </FullContainer>
+      </Wrapper>
     );
 
   return (
-    <FullContainer>
+    <Wrapper>
       <FiltersDrawer brandFilters={brands} sizeFilters={_.range(3, 14, 0.5).map((n) => String(n))} />
       <div className='flex'>
         <FilterGroup md={2} lg={2}>
@@ -77,7 +82,7 @@ const MarketPlace = () => {
         </FilterGroup>
         <SneakerGallery sneakers={filterSneakers} />
       </div>
-    </FullContainer>
+    </Wrapper>
   );
 };
 

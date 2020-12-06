@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  ListGroup,
-  ListGroupItem,
-  Container,
-  Button,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
+import { ListGroup, ListGroupItem, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 import LazyLoad from 'react-lazyload';
 
@@ -22,6 +13,7 @@ import { ListedSneakerSeller, Sneaker } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
 
 import defaultAvatar from 'assets/img/placeholder.jpg';
+import { USER_RATING } from 'const/variables';
 
 const SellerListGroupItem = styled(ListGroupItem)`
   outline: none;
@@ -84,6 +76,11 @@ const StyledListGroup = styled(ListGroup)`
   overflow: auto;
 `;
 
+const Wrapper = styled.div`
+  padding: 0 15%;
+  min-height: calc(95vh - 75px);
+`;
+
 const ViewSellersList = (props: ViewSellersListProps) => {
   const {
     sellers,
@@ -100,7 +97,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
   return !sellers || !displaySneaker || processingPurchase ? (
     <CenterSpinner />
   ) : (
-    <Container style={{ minHeight: 'calc(95vh - 96px)' }} fluid='sm'>
+    <Wrapper>
       {selectedSellerIdx === -1 ? (
         <SneakerCard
           styles={{ margin: 'auto', marginBottom: '15px' }}
@@ -119,7 +116,6 @@ const ViewSellersList = (props: ViewSellersListProps) => {
       <StyledListGroup>
         {sellers.map(({ username, profilePicUrl, askingPrice, rating }, idx) => (
           <SellerListGroupItem
-            tag='button'
             key={idx}
             action
             onClick={() => onSelectSeller(idx)}
@@ -137,10 +133,12 @@ const ViewSellersList = (props: ViewSellersListProps) => {
                 <span className='bold'>Asking price:</span>
                 <span> $ {askingPrice}</span>
               </div>
-              {/* TODO: use a const to define what the rating is out of */}
               <div>
                 <span className='bold'>Rating:</span>
-                <span> {!rating || rating <= 0 ? 0 : rating} out of 5</span>
+                <span>
+                  {' '}
+                  {!rating || rating <= 0 ? 0 : rating} out of {USER_RATING}
+                </span>
               </div>
             </div>
             <LazyLoad>
@@ -171,7 +169,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
           </div>
         </div>
       </footer>
-    </Container>
+    </Wrapper>
   );
 };
 
