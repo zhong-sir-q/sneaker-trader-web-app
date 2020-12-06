@@ -1,24 +1,36 @@
 import React, { useRef, useState, useEffect } from 'react';
-import PanelHeader from 'components/PanelHeader';
 
 import { Table, Card, CardBody, Button } from 'reactstrap';
-import SneakerNameCell from 'components/SneakerNameCell';
+import { Dialog, DialogTitle, DialogActions, DialogContent, makeStyles } from '@material-ui/core';
 
-// mock data
+import { v4 as uuidV4 } from 'uuid';
+
 import { Edit } from '@material-ui/icons';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import styled from 'styled-components';
-import { SneakerController } from 'api/controllers/SneakerController';
-import { useAuth } from 'providers/AuthProvider';
-import isAdminUser from 'usecases/isAdminUser';
-import { useHistory } from 'react-router-dom';
-import { ADMIN, DASHBOARD } from 'routes';
-import { Skeleton } from '@material-ui/lab';
-import { AwsController } from 'api/controllers/AwsController';
-import { Sneaker } from '../../../../shared';
-import { Dialog, DialogTitle, DialogActions, DialogContent, makeStyles } from '@material-ui/core';
-import AlertDialog from 'components/AlertDialog';
+
 import ImgCropper from 'components/ImgCropper';
+import PanelHeader from 'components/PanelHeader';
+import AlertDialog from 'components/AlertDialog';
+import SneakerNameCell from 'components/SneakerNameCell';
+
+import { SneakerController } from 'api/controllers/SneakerController';
+
+import { useAuth } from 'providers/AuthProvider';
+
+import isAdminUser from 'usecases/isAdminUser';
+
+import { Skeleton } from '@material-ui/lab';
+import { useHistory } from 'react-router-dom';
+
+import { ADMIN, DASHBOARD } from 'routes';
+
+import { AwsController } from 'api/controllers/AwsController';
+
+import { Sneaker } from '../../../../shared';
+
+import { createBlob } from 'utils/utils';
+import MuiCloseButton from 'components/buttons/MuiCloseButton';
 
 const HiddenInput = styled.input`
   display: none;
@@ -33,25 +45,48 @@ type TableRowProps = {
 
 const useRowDialogStyle = makeStyles((_theme) => ({
   dialogAction: {
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
   },
 }));
 
 const TableRow = (props: TableRowProps) => {
   const confirmUploadDialogHook = useOpenCloseComp();
+  const confirmCancelEditDialogHook = useOpenCloseComp();
   const successAlertHook = useOpenCloseComp();
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const styles = useRowDialogStyle();
+  const classes = useRowDialogStyle();
 
   const { sneaker, sneakerController, awsController } = props;
   const { brand, mainDisplayImage, name, colorway, id } = sneaker;
 
   const [displayImg, setDisplayImg] = useState(mainDisplayImage);
+  const [cropperImage, setCropperImage] = useState(mainDisplayImage);
   const displayName = `${brand} ${name}`;
 
   const onUpload = () => {
     if (inputRef.current) inputRef.current.click();
+  };
+
+  const changeSneakerRemoteImage = async (sneakerId: number, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const s3ImgUrl = await awsController.uploadS3SignleImage(formData);
+
+    sneakerController.updateDisplayImage(sneakerId, s3ImgUrl);
+  };
+
+  // create some lag, so the user does not see the change
+  // of cropper image upon closing the dialog
+  const lagUpdateCropperImage = (newImg: string) => setTimeout(() => setCropperImage(newImg), 200);
+
+  const onConfirmEdit = async (editedImgDataUrl: string) => {
+    setDisplayImg(editedImgDataUrl);
+    lagUpdateCropperImage(editedImgDataUrl);
+    const f = new File([await createBlob(editedImgDataUrl)], uuidV4());
+    await changeSneakerRemoteImage(id, f);
+    confirmUploadDialogHook.onClose();
   };
 
   const onImgChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,18 +97,19 @@ const TableRow = (props: TableRowProps) => {
     const file = files[0];
     const reader = new FileReader();
 
-    reader.onloadend = async () => {
-      const formData = new FormData();
-      formData.append('file', file);
-      const s3ImgUrl = await awsController.uploadS3SignleImage(formData);
-
-      sneakerController.updateDisplayImage(id, s3ImgUrl);
-
-      setDisplayImg(reader.result as string);
-      confirmUploadDialogHook.onClose();
-    };
+    reader.onloadend = async () => setCropperImage(reader.result as string);
 
     if (file) reader.readAsDataURL(file);
+  };
+
+  const cancleEditing = () => confirmCancelEditDialogHook.onOpen();
+
+  const continuneEdit = () => confirmCancelEditDialogHook.onClose();
+
+  const confrimCancel = () => {
+    confirmCancelEditDialogHook.onClose();
+    confirmUploadDialogHook.onClose();
+    lagUpdateCropperImage(displayImg);
   };
 
   return (
@@ -81,16 +117,17 @@ const TableRow = (props: TableRowProps) => {
       <SneakerNameCell imgSrc={displayImg} name={displayName} displaySize='' colorway={colorway} />
       <td>
         <Edit className='pointer' onClick={confirmUploadDialogHook.onOpen} fontSize='default' />
-        <Dialog open={confirmUploadDialogHook.open} onClose={confirmUploadDialogHook.onClose}>
-          <DialogTitle>New Image</DialogTitle>
+        <Dialog open={confirmUploadDialogHook.open} onClose={cancleEditing}>
+          <MuiCloseButton onClick={cancleEditing} />
+          <DialogTitle>Edit Image</DialogTitle>
           <DialogContent>
-            <ImgCropper img={displayImg} />
+            <ImgCropper img={cropperImage} onConfirmCrop={onConfirmEdit} />
           </DialogContent>
-          <DialogActions className={styles.dialogAction}>
-            <Button style={{ marginRight: '15px' }} color='primary' onClick={onUpload}>
-              Upload
+          <DialogActions className={classes.dialogAction}>
+            <Button color='info' onClick={onUpload}>
+              Or Upload A New Image
             </Button>
-            <Button onClick={confirmUploadDialogHook.onClose}>Cancel</Button>
+            <Button onClick={cancleEditing}>Cancel</Button>
           </DialogActions>
         </Dialog>
         <AlertDialog
@@ -99,6 +136,15 @@ const TableRow = (props: TableRowProps) => {
           open={successAlertHook.open}
           onClose={successAlertHook.onClose}
         />
+        <Dialog open={confirmCancelEditDialogHook.open} onClose={confirmCancelEditDialogHook.onClose}>
+          <DialogTitle>Cancel Edit?</DialogTitle>
+          <DialogActions className={classes.dialogAction}>
+            <Button onClick={continuneEdit} color='primary'>
+              No
+            </Button>
+            <Button onClick={confrimCancel}>Yes</Button>
+          </DialogActions>
+        </Dialog>
         <HiddenInput onChange={onImgChange} type='file' accept='image/*' ref={inputRef} />
       </td>
     </tr>

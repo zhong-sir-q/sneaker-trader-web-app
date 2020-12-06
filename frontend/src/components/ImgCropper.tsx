@@ -67,15 +67,13 @@ const ImgCropper = (props: ImgCropperProps) => {
       <Cropper
         src={img}
         // Cropper.js options
-        initialAspectRatio={16 / 9}
         ref={cropperRef}
         {...{
           viewMode: 1,
           // move the canvas
           dragMode: 'move',
           background: false,
-          aspectRatio: 1.3333,
-          autoCropArea: 0.8,
+          aspectRatio: 4 / 3,
           center: false,
           cropBoxMovable: false,
           cropBoxResizable: false,

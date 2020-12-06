@@ -208,7 +208,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
             />
           ))}
           <tr>
-            {windowDimensions.width > 1024 && <td colSpan={6} />}
+            {windowDimensions.width > 1124 && <td colSpan={6} />}
             <td className='td-total'>Total</td>
             <td className='td-price' style={{ fontSize: '1.25em' }}>
               <small>$</small>
