@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
-import { ListGroup, ListGroupItem, ListGroupItemText, InputGroup } from 'reactstrap';
+import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
 
 // import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -67,12 +67,13 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
 
 type SneakerSearchBarProps = {
   sneakers: SearchBarSneaker[];
-  onChooseSneaker: (sneaker: SearchBarSneaker) => void;
   placeholder?: string;
+  suggestionMaxHeight?: string;
+  width?: string;
+  onChooseSneaker: (sneaker: SearchBarSneaker) => void;
   setSneakerNew?: () => void;
   setSneakerExists?: () => void;
   updateSearchVal?: (searchVal: string) => void;
-  suggestionMaxHeight?: string;
 };
 
 const SneakerSearchBar = (props: SneakerSearchBarProps) => {
@@ -127,7 +128,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     } else if (e.key === 'ArrowDown') {
       if (activeSuggestionIdx === result.length - 1) return;
       setActiveSuggestionIdx(activeSuggestionIdx + 1);
-    } else if (e.key === 'Tab') hideSuggestions();
+    } else if (e.key === 'Tab' || e.key === 'Escape') hideSuggestions();
   };
 
   const onMouseDown = () => {
@@ -136,8 +137,8 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      <InputGroup>
+    <div style={{ position: 'relative', width: props.width }}>
+      <StyledInputGroup>
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
@@ -149,7 +150,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
           data-testid='listing-form-search-bar'
           onFocus={() => openSuggestions()}
         />
-      </InputGroup>
+      </StyledInputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>
           <StyledListGroup maxheight={props.suggestionMaxHeight}>
@@ -170,5 +171,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     </div>
   );
 };
+
+const StyledInputGroup = styled.div``;
 
 export default SneakerSearchBar;

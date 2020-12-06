@@ -21,6 +21,10 @@ import { useUserRanking } from 'providers/UserRankingProvider';
 const SearchBarWrapper = styled.div`
   padding: 0.5rem 0.7rem;
 
+  @media (max-width: 768px) {
+    display: none;
+  }
+
   @media (min-width: 680px) {
     width: 550px;
   }
@@ -42,7 +46,7 @@ const HomeNavbar = () => {
 
   const toggleNav = () => setOpenNav(!openNav);
 
-  const { onOpenLeaderBoard } = useUserRanking()
+  const { onOpenLeaderBoard } = useUserRanking();
 
   const history = useHistory();
   const { signedIn } = useAuth();

@@ -12,6 +12,10 @@ import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import _ from 'lodash';
 import { Skeleton } from '@material-ui/lab';
 import FilterButtons from 'components/marketplace/filters/FilterButtons';
+import SneakerSearchBar from 'components/SneakerSearchBar';
+import { SearchBarSneaker } from '../../../shared';
+import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+import { useHistory } from 'react-router-dom';
 
 const FilterGroup = styled(Col)`
   min-width: 200px;
@@ -40,9 +44,11 @@ const Wrapper = styled.div`
   min-height: calc(100vh - 150px);
   width: 100%;
   padding: 0 6%;
+  display: flex;
 
   @media (max-width: 768px) {
     padding: 0;
+    flex-direction: column;
   }
 `;
 
@@ -60,8 +66,21 @@ const SkeletonGrid = () => {
   );
 };
 
+// only show on small screen
+const MobileWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  @media (min-width: 786px) {
+    display: none;
+  }
+`;
+
 const MarketPlace = () => {
-  const { filterSneakers, brands, isFetching } = useMarketPlaceCtx();
+  const { defaultSneakers, filterSneakers, brands, isFetching } = useMarketPlaceCtx();
+
+  const history = useHistory();
 
   if (!filterSneakers || !brands)
     return (
@@ -72,22 +91,26 @@ const MarketPlace = () => {
 
   const sizeFilters = _.range(3, 15, 0.5);
 
+  const navigateBuySneakerPage = (sneaker: SearchBarSneaker) =>
+    redirectBuySneakerPage(history, sneaker.name, sneaker.colorway);
+
   return (
     <Wrapper>
-      <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
-      <div className='flex'>
-        <FilterGroup md={2} lg={2}>
-          <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
-          <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
-        </FilterGroup>
-        {isFetching ? (
-          <Wrapper>
-            <SkeletonGrid />
-          </Wrapper>
-        ) : (
-          <SneakerGallery sneakers={filterSneakers} />
-        )}
-      </div>
+      <MobileWrapper>
+        <SneakerSearchBar width='80%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
+        <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
+      </MobileWrapper>
+      <FilterGroup md={2} lg={2}>
+        <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
+        <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
+      </FilterGroup>
+      {isFetching ? (
+        <Wrapper>
+          <SkeletonGrid />
+        </Wrapper>
+      ) : (
+        <SneakerGallery sneakers={filterSneakers} />
+      )}
     </Wrapper>
   );
 };

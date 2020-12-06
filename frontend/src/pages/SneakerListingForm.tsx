@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Col, Container, Progress, Button } from 'reactstrap';
+import { Col, Progress, Button } from 'reactstrap';
 
 import AwsControllerInstance from 'api/controllers/AwsController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
@@ -30,6 +30,7 @@ import { SearchBarSneaker } from '../../../shared';
 
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import AlertDialog from 'components/AlertDialog';
+import styled from 'styled-components';
 
 // this prop is for testing purposes, so we can start from any step we want
 type SneakerListingFormProps = {
@@ -204,9 +205,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content' style={{ paddingTop: '2.2rem' }}>
-        {/* TODO: tailor the container width according to the step */}
-        <Container fluid='lg'>
-          {/* <Container style={{ maxWidth: step === 0 || step === 3 ? '625px' : undefined }}> */}
+        <StepContainer>
           <Col className='text-center'>
             {step < 4 && (
               <p style={{ margin: 0, fontSize: '1.75rem' }}>
@@ -218,7 +217,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
             </div>
             {renderStep()}
           </Col>
-        </Container>
+        </StepContainer>
       </div>
       <AlertDialog
         color='info'
@@ -230,5 +229,18 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     </React.Fragment>
   );
 };
+
+const StepContainer = styled.div`
+  margin: auto;
+  width: 50%;
+
+  @media (max-width: 1536px) {
+    width: 70%;
+  }
+
+  @media (max-width: 768px) {
+    width: 92.5%;
+  }
+`;
 
 export default SneakerListingForm;

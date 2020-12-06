@@ -20,7 +20,9 @@ const LowestAsk = styled.div`
   text-transform: capitalize;
 `;
 
-const StyledCard = styled.div``;
+const StyledCard = styled.div`
+  text-align: left;
+`;
 
 type InfoProps = { isListed: boolean | undefined };
 

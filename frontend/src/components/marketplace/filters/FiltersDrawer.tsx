@@ -29,20 +29,14 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
   const { open, onOpen, onClose } = useOpenCloseComp();
   const { numFilters, clearFilters } = useMarketPlaceCtx();
 
-  const onCloseNotApplied = () => {
-    clearFilters();
-    onClose();
-  };
-
   return (
     <React.Fragment>
       <CollapseButtonDiv>
         <Button onClick={onOpen}>Filter</Button>
       </CollapseButtonDiv>
-      {/* set variant to persistent, so the drawer does not unmount on open/close, so the
-      filters do not get re-rendereed */}
-      <Drawer variant='persistent' anchor='bottom' open={open} onClose={onCloseNotApplied}>
-        <MuiCloseButton onClick={onCloseNotApplied} />
+      {/* the user cannot close the drawer by clicking the outside */}
+      <Drawer anchor='bottom' open={open} onClose={() => {}}>
+        <MuiCloseButton onClick={onClose} />
         <div style={{ padding: '50px', overflow: 'auto', paddingBottom: 0 }}>
           <FilterButtons filterKey='size' filters={sizeFilters} title='us sizes' />
           <CheckboxFilters filterKey='brand' filters={brandFilters} title='brands' />
