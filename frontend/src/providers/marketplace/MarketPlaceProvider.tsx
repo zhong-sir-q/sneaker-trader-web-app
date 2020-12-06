@@ -24,6 +24,7 @@ type MarketPlaceCtxType = {
   filterItemGroup: FilterItem[];
   numFilters: number;
   hasMoreListedSneakers: boolean;
+  isFetching: boolean;
   clearFilters: () => void;
   fetchMoreListedSneakers: () => void;
   isFilterSelected: (filterVal: string) => boolean;
@@ -38,6 +39,7 @@ const INIT_CTX: MarketPlaceCtxType = {
   filterItemGroup: [],
   numFilters: 0,
   hasMoreListedSneakers: true,
+  isFetching: false,
   clearFilters: () => {
     throw new Error('Must override!');
   },
@@ -83,6 +85,8 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
   const [filterItemGroup, setFilterItemGroup] = useState<FilterItem[]>([]);
 
   const [hasMoreListedSneakers, setHasMoreListedSneakers] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+
   // 10 because initially we will fetch 10 sneakers
   const [offset, setOffset] = useState(10);
 
@@ -117,6 +121,11 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
     })();
   }, [props.listedSneakerController, signedIn, currentUser]);
 
+  useEffect(() => {
+    // give it a second to fetch
+    if (isFetching) setTimeout(() => setIsFetching(false), 500);
+  }, [isFetching]);
+
   const filterHandler = useCallback(async () => {
     if (!defaultSneakers) return;
 
@@ -126,11 +135,13 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
 
     // filter by brands and sizes
     if (!_.isEmpty(sizes) && !_.isEmpty(brands)) {
+      setIsFetching(true);
       const sneakersBySizes = await getSneakersBySizes(sizes, userId);
       const sneakersBySizesAndBrands = filterByBrands(sneakersBySizes, brands);
       updateFilterSneakers(sneakersBySizesAndBrands);
       // filter by sizes only
     } else if (!_.isEmpty(sizes)) {
+      setIsFetching(true);
       const sneakersBySizes = await getSneakersBySizes(sizes, userId);
       updateFilterSneakers(sneakersBySizes);
       // filter by brands only
@@ -159,10 +170,11 @@ const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerControll
   return (
     <MarketPlaceCtx.Provider
       value={{
+        brands,
+        isFetching,
         defaultSneakers,
         filterSneakers,
         filterItemGroup,
-        brands,
         hasMoreListedSneakers,
         numFilters: filterItemGroup.length,
         fetchMoreListedSneakers,

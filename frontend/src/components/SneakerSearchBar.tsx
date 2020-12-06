@@ -17,17 +17,28 @@ const ListItemImg = styled.img`
 const StyledInput = styled.input`
   width: 100%;
   padding-left: 35px;
+  border-radius: 3px;
+  border: none;
+  background-color: #f6f6f6;
+  padding-right: 15px;
+  box-shadow: none;
+  text-overflow: ellipsis;
+  height: 44px;
 
   /* apply margin to the input before collapse */
   @media (min-width: 991px) {
     margin-right: 15px;
   }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const SearchIconWrapper = styled.div`
   position: absolute;
-  padding: 2px;
-  padding-left: 8px;
+  padding-left: 6px;
+  top: 22%;
 `;
 
 const StyledListGroup = styled(ListGroup)<{ maxheight: string }>`
@@ -131,7 +142,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
           <SearchIcon />
         </SearchIconWrapper>
         <StyledInput
-          placeholder={props.placeholder || 'Search...'}
+          placeholder={props.placeholder || 'Search for brand, color, etc...'}
           value={searchVal}
           onChange={onChange}
           onKeyDown={onKeyDown}

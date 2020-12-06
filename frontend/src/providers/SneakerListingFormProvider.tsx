@@ -41,12 +41,12 @@ const sneakerListingFormValidationSchema = Yup.object({
   name: noSpecialChar(),
   brand: noSpecialChar(),
   colorway: noSpecialChar(),
-  currencyCode: required(),
-  sizeSystem: required(),
-  prodCondition: required() as Yup.Schema<SneakerCondition>,
-  askingPrice: minNumber(20, 'Minimum $20'),
-  size: allowedRange(1, 15),
-  originalPurchasePrice: minNumber(1, 'Minimum $1'),
+  currencyCode: required('currency code'),
+  sizeSystem: required('size system'),
+  prodCondition: required('product condition') as Yup.Schema<SneakerCondition>,
+  askingPrice: minNumber(20, 'Minimum $20').required('Asking price is required'),
+  size: allowedRange(1, 15).required('Size is required'),
+  originalPurchasePrice: minNumber(1, 'Minimum $1').required('Original purchase price is required'),
 });
 
 export const INIT_LISTING_FORM_CTX: SneakerListingFormCtxType = {

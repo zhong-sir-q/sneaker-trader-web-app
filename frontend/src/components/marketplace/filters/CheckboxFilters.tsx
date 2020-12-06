@@ -8,6 +8,11 @@ import { FilterWrapper, ArrowDirectionWrapper, FilterTitle } from './FilterHelpe
 
 import { FiltersProps } from './filter';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
+import { Collapse } from 'reactstrap';
+
+import SimpleBar from 'simplebar-react';
+// keep the css for custom scrollbar style
+import 'simplebar/dist/simplebar.min.css';
 
 type CheckMarkProps = {
   checked: boolean;
@@ -65,15 +70,21 @@ const CheckboxLabel = styled.label`
   }
 `;
 
-const CheckboxWrapper = styled.div`
+// attempt to change the height of the scrollbar but does not work
+const StyledSimpleBar = styled(SimpleBar)``;
+
+const CheckboxWrapper = styled.div<{ fetching: boolean }>`
   position: relative;
+  opacity: ${({ fetching }) => (fetching ? 0.5 : undefined)};
 `;
 
 const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
   const { filters, filterKey, title } = props;
 
-  const { onSelectFilter, isFilterSelected } = useMarketPlaceCtx();
+  const { onSelectFilter, isFilterSelected, isFetching } = useMarketPlaceCtx();
   const { open, toggle } = useOpenCloseComp(true);
+
+  const onCheck = (value: string) => (isFetching ? (() => {})() : onSelectFilter(filterKey, value));
 
   return (
     <React.Fragment>
@@ -81,16 +92,19 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
         <span>{title}</span>
         <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
       </FilterTitle>
-      {open && (
-        <FilterWrapper>
-          {filters.map((val, idx) => (
-            <CheckboxWrapper key={idx} onClick={() => onSelectFilter(filterKey, val)}>
-              <CheckboxLabel>{val}</CheckboxLabel>
-              <CheckMark checked={isFilterSelected(val)} />
-            </CheckboxWrapper>
-          ))}
-        </FilterWrapper>
-      )}
+      <Collapse isOpen={open}>
+        <StyledSimpleBar autoHide={false} style={{ maxHeight: 235 }}>
+          <FilterWrapper>
+            {filters.map((val, idx) => (
+              // the wrapper is still clickable, dim the opacity to create an illusion that it is disabled
+              <CheckboxWrapper fetching={isFetching} key={idx} onClick={() => onCheck(val)}>
+                <CheckboxLabel>{val}</CheckboxLabel>
+                <CheckMark checked={isFilterSelected(val)} />
+              </CheckboxWrapper>
+            ))}
+          </FilterWrapper>
+        </StyledSimpleBar>
+      </Collapse>
     </React.Fragment>
   );
 };

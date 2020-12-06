@@ -11,6 +11,7 @@ import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
 import _ from 'lodash';
 import { Skeleton } from '@material-ui/lab';
+import FilterButtons from 'components/marketplace/filters/FilterButtons';
 
 const FilterGroup = styled(Col)`
   min-width: 200px;
@@ -37,6 +38,7 @@ const SkeletonPlaceHolder = styled.div`
 
 const Wrapper = styled.div`
   min-height: calc(100vh - 150px);
+  width: 100%;
   padding: 0 6%;
 
   @media (max-width: 768px) {
@@ -59,7 +61,7 @@ const SkeletonGrid = () => {
 };
 
 const MarketPlace = () => {
-  const { filterSneakers, brands } = useMarketPlaceCtx();
+  const { filterSneakers, brands, isFetching } = useMarketPlaceCtx();
 
   if (!filterSneakers || !brands)
     return (
@@ -68,19 +70,23 @@ const MarketPlace = () => {
       </Wrapper>
     );
 
+  const sizeFilters = _.range(3, 15, 0.5);
+
   return (
     <Wrapper>
-      <FiltersDrawer brandFilters={brands} sizeFilters={_.range(3, 14, 0.5).map((n) => String(n))} />
+      <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
       <div className='flex'>
         <FilterGroup md={2} lg={2}>
-          <CheckboxFilters
-            filterKey='size'
-            filters={_.range(3.5, 15.5, 0.5).map((size) => String(size))}
-            title='us sizes'
-          />
+          <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
           <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
         </FilterGroup>
-        <SneakerGallery sneakers={filterSneakers} />
+        {isFetching ? (
+          <Wrapper>
+            <SkeletonGrid />
+          </Wrapper>
+        ) : (
+          <SneakerGallery sneakers={filterSneakers} />
+        )}
       </div>
     </Wrapper>
   );
