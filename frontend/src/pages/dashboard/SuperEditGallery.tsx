@@ -16,8 +16,9 @@ import { ADMIN, DASHBOARD } from 'routes';
 import { Skeleton } from '@material-ui/lab';
 import { AwsController } from 'api/controllers/AwsController';
 import { Sneaker } from '../../../../shared';
-import { Dialog, DialogTitle, DialogActions } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogActions, DialogContent, makeStyles } from '@material-ui/core';
 import AlertDialog from 'components/AlertDialog';
+import ImgCropper from 'components/ImgCropper';
 
 const HiddenInput = styled.input`
   display: none;
@@ -30,10 +31,18 @@ type TableRowProps = {
   awsController: AwsController;
 };
 
+const useRowDialogStyle = makeStyles((_theme) => ({
+  dialogAction: {
+    justifyContent: 'center',
+  },
+}));
+
 const TableRow = (props: TableRowProps) => {
   const confirmUploadDialogHook = useOpenCloseComp();
   const successAlertHook = useOpenCloseComp();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const styles = useRowDialogStyle();
 
   const { sneaker, sneakerController, awsController } = props;
   const { brand, mainDisplayImage, name, colorway, id } = sneaker;
@@ -74,7 +83,10 @@ const TableRow = (props: TableRowProps) => {
         <Edit className='pointer' onClick={confirmUploadDialogHook.onOpen} fontSize='default' />
         <Dialog open={confirmUploadDialogHook.open} onClose={confirmUploadDialogHook.onClose}>
           <DialogTitle>New Image</DialogTitle>
-          <DialogActions>
+          <DialogContent>
+            <ImgCropper img={displayImg} />
+          </DialogContent>
+          <DialogActions className={styles.dialogAction}>
             <Button style={{ marginRight: '15px' }} color='primary' onClick={onUpload}>
               Upload
             </Button>

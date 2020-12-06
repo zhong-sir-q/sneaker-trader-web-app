@@ -156,13 +156,13 @@ const Sidebar = (props: SideBarProps) => {
     <React.Fragment>
       <div className='sidebar' data-color={props.backgroundColor}>
         <div className='logo'>
-          <Link to={HOME} className='simple-text logo-mini'>
+          <Link to={HOME} className='simple-text logo-mini' style={{ margin: 0, width: '70px' }}>
             <div className='logo-img'>
               <img src={logo} alt='sneakertrader-logo' />
             </div>
           </Link>
-          <Link to={HOME} className='simple-text logo-normal'>
-            Home
+          <Link style={{ visibility: 'hidden' }} to={HOME} className='simple-text logo-normal'>
+            USE_ME_TO_OCCUPY_SPACE
           </Link>
 
           <div className='navbar-minimize'>
