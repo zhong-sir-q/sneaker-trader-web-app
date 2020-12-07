@@ -206,11 +206,11 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
       <PanelHeader size='sm' />
       <div className='content' style={{ paddingTop: '2.2rem' }}>
         <StepContainer>
-          <Col className='text-center'>
+          <Col>
             {step < 4 && (
-              <p style={{ margin: 0, fontSize: '1.75rem' }}>
-                Step {step + 1} out of {STEPS - 1}
-              </p>
+              <StepIndicator>
+                Step {step + 1} of {STEPS - 1}
+              </StepIndicator>
             )}
             <div style={{ marginBottom: '1rem' }}>
               <Progress value={calcProgress()} />
@@ -229,6 +229,11 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     </React.Fragment>
   );
 };
+
+const StepIndicator = styled.div`
+  text-align: center;
+  font-size: 1.75rem;
+`;
 
 const StepContainer = styled.div`
   margin: auto;

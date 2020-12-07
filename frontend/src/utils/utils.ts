@@ -51,7 +51,7 @@ export const getListedSneakerIdFromPath = (pathname: string): number => {
 
 export const createBlob = (fileDataUrl: string) => fetch(fileDataUrl).then((res) => res.blob());
 
-const createPreviewFile = (f: File, id?: string) => {
+export const createPreviewFile = (f: File, id?: string) => {
   const previewDataUrl = URL.createObjectURL(f);
   return Object.assign(f, { preview: previewDataUrl, id: id || uuidV4() });
 };

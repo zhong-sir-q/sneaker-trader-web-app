@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState } from 'react';
 
 import { PreviewFile } from 'components/PreviewImagesDropzone';
 import AlertDialogProvider, { useAlertComponent } from './AlertDialogProvider';
-import { createPreviewFileFromDataUrl } from 'utils/utils';
+import { createPreviewFileFromDataUrl, createPreviewFile } from 'utils/utils';
+import { LISTING_FILE_UPLOAD_LIMIT } from 'const/variables';
 
 type PreviewImgDropzoneCtxType = {
   files: PreviewFile[];
@@ -13,8 +14,8 @@ type PreviewImgDropzoneCtxType = {
   onRemoveFromCropperImages: (img: string) => void;
   onRemoveFromCropperImagesByIdx: (idx: number) => void;
   formDataFromFiles: () => FormData;
-  updateFileId: (fileId: string) => void;
-  updateMainDisplayFile: (newImg: string) => void;
+  updateMainFileId: (fileId: string) => void;
+  updateFile: (newImg: string, fileId: string) => void;
   onDropFile: (acceptedFiles: File[]) => void;
   onRemoveFile: (fileId: string) => void;
   onAddCroppedImgs: (croppedImgs: string[]) => void;
@@ -39,10 +40,10 @@ const INIT_PREVIEW_DROPZONE_CTX: PreviewImgDropzoneCtxType = {
   destroyFiles: () => {
     throw new Error('Must overide!');
   },
-  updateFileId: () => {
+  updateMainFileId: () => {
     throw new Error('Must overide!');
   },
-  updateMainDisplayFile: () => {
+  updateFile: () => {
     throw new Error('Must override!');
   },
   onAddCroppedImgs: () => {
@@ -71,22 +72,21 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
 
   const { onOpenAlert } = useAlertComponent();
 
-  const updateFileId = (fileId: string) => setMainFileId(fileId);
+  const updateMainFileId = (fileId: string) => setMainFileId(fileId);
 
   const destroyFiles = () => {
     for (const f of files) URL.revokeObjectURL(f.preview);
   };
 
   const onDropFile = (acceptedFiles: File[]) => {
-    const UPLOAD_LIMIT = 5;
-
-    if (cropperImages.length + files.length + acceptedFiles.length > UPLOAD_LIMIT) {
+    if (files.length + acceptedFiles.length > LISTING_FILE_UPLOAD_LIMIT) {
       onOpenAlert();
       return;
     }
 
-    const newFiles = acceptedFiles.map((f) => URL.createObjectURL(f));
-    setCropperImages(cropperImages.concat(newFiles));
+    const newDataUrls = acceptedFiles.map((f) => URL.createObjectURL(f));
+    setFiles(files.concat(acceptedFiles.map((f) => createPreviewFile(f))));
+    setCropperImages(cropperImages.concat(newDataUrls));
   };
 
   const onAddCroppedImgs = async (imgs: string[]) => {
@@ -127,13 +127,13 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
     return formData;
   };
 
-  const updateMainDisplayFile = async (newImg: string) => {
+  const updateFile = async (newImg: string, fileId: string) => {
     const newFiles = await Promise.all(
       files.map(async (f) => {
-        if (f.id !== mainFileId) return f;
+        if (f.id !== fileId) return f;
 
-        const newMainDisplayFile = await createPreviewFileFromDataUrl(newImg, f.id);
-        return newMainDisplayFile;
+        const newDisplayFile = await createPreviewFileFromDataUrl(newImg, f.id);
+        return newDisplayFile;
       })
     );
 
@@ -152,9 +152,9 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
         resetCropperImages,
         onAddCroppedImgs,
         destroyFiles,
-        updateMainDisplayFile,
+        updateFile,
         formDataFromFiles,
-        updateFileId,
+        updateMainFileId,
         onDropFile,
         onRemoveFile,
       }}
