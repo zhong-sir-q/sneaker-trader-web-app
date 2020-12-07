@@ -6,10 +6,10 @@ import { ADMIN, DASHBOARD } from 'routes';
 
 type ListedSneakerSuccessProps = {
   title: string;
-};
+} & React.ComponentProps<any>;
 
 const ListedSneakerSuccess = (props: ListedSneakerSuccessProps) => (
-  <Card>
+  <Card {...props}>
     <CardHeader>
       <CardTitle tag='h4'>{props.title}</CardTitle>
     </CardHeader>

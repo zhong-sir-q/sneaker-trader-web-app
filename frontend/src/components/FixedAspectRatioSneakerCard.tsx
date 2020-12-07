@@ -101,6 +101,7 @@ const CardV2 = styled.div`
   cursor: pointer;
   border: 1px solid #ebebeb;
   border-radius: 8px;
+  text-align: left;
 `;
 
 export default FixedAspectRatioSneakerCard;

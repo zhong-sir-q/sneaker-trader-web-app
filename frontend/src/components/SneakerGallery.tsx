@@ -12,17 +12,6 @@ type SneakerGalleryProps = {
   sneakers: GallerySneaker[];
 };
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1em;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 0;
-  }
-`;
-
 const Flexbox = styled.div`
   display: flex;
   flex-wrap: wrap;

@@ -189,10 +189,11 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
             price={Number(listingSneakerFormState.askingPrice)}
             onPrevStep={goPrevStep}
             onSubmit={onFinishSubmit}
+            ratio='66.6%'
           />
         );
       case 4:
-        return <ListedSneakerSuccess title={successTitle} />;
+        return <ListedSneakerSuccess className='text-center' title={successTitle} />;
       default:
         return null;
     }

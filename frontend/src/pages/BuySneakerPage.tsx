@@ -5,7 +5,6 @@ import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/
 import styled from 'styled-components';
 
 import CenterSpinner from 'components/CenterSpinner';
-import SneakerCard from 'components/SneakerCard';
 
 import { Size, SizeMinPriceGroupType, Sneaker, SneakerAsk } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
