@@ -9,11 +9,6 @@ import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
 import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 
-const ListItemImg = styled.img`
-  width: 28%;
-  margin-right: 10px;
-`;
-
 const StyledInput = styled.input`
   width: 100%;
   padding-left: 35px;
@@ -35,18 +30,21 @@ const StyledInput = styled.input`
   }
 `;
 
-const SearchIconWrapper = styled.div`
-  position: absolute;
+const SearchIconOutternWrapper = styled.div`
+  position: relative;
   padding-left: 6px;
-  top: 22%;
+`;
+
+const SearchIconInnerWrapper = styled.div`
+  position: absolute;
+  top: 10px;
 `;
 
 const StyledListGroup = styled(ListGroup)<{ maxheight: string }>`
   position: absolute;
   margin-top: 5px;
   z-index: 1;
-  /* 1% offset to take into account the scrollbar */
-  width: 99%;
+  width: 100%;
   overflow: auto;
   max-height: ${(props) => props.maxheight || '70vh'};
 `;
@@ -139,9 +137,11 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   return (
     <div style={{ position: 'relative', width: props.width }}>
       <StyledInputGroup>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
+        <SearchIconOutternWrapper>
+          <SearchIconInnerWrapper>
+            <SearchIcon />
+          </SearchIconInnerWrapper>
+        </SearchIconOutternWrapper>
         <StyledInput
           placeholder={props.placeholder || 'Search for brand, color, etc...'}
           value={searchVal}
@@ -161,7 +161,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
                 onMouseOver={() => setActiveSuggestionIdx(idx)}
                 onMouseDown={onMouseDown}
               >
-                <ListItemImg src={item.mainDisplayImage} />
+                <BackgroundImg background={item.mainDisplayImage} />
                 <StyledListGroupItemText>{formatName(item)}</StyledListGroupItemText>
               </StyledListGroupItem>
             ))}
@@ -173,5 +173,25 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
 };
 
 const StyledInputGroup = styled.div``;
+
+// similar component used in PreviewImageDropzone
+type BackgroundImgProps = {
+  background: string;
+};
+
+const BackgroundImg = styled.div<BackgroundImgProps>`
+  background-image: url(${({ background }) => `"${background}"`});
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  padding-bottom: 40%;
+  padding-left: 40%;
+  margin-right: 8px;
+
+  @media (max-width: 768px) {
+    padding-bottom: 60%;
+    padding-left: 60%;
+  }
+`;
 
 export default SneakerSearchBar;

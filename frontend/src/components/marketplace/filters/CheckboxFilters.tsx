@@ -93,7 +93,7 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
         <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
       </FilterTitle>
       <Collapse isOpen={open}>
-        <StyledSimpleBar autoHide={false} style={{ maxHeight: 235 }}>
+        <StyledSimpleBar style={{ maxHeight: 215 }}>
           <FilterWrapper>
             {filters.map((val, idx) => (
               // the wrapper is still clickable, dim the opacity to create an illusion that it is disabled

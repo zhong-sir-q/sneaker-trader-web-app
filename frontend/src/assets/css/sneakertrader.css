@@ -83,3 +83,7 @@
 .w-full {
   width: 100%;
 }
+
+.simplebar-track.simplebar-vertical {
+  width: 8px;
+}

@@ -54,7 +54,7 @@ const Wrapper = styled.div`
   padding: 0 6%;
   display: flex;
 
-  @media (max-width: 768px) {
+  @media (max-width: 786px) {
     padding: 0;
     flex-direction: column;
   }
@@ -76,9 +76,9 @@ const SkeletonGrid = () => {
 
 // only show on small screen
 const MobileWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+  margin-bottom: 8px;
+  margin-left: 4px;
+  margin-right: 4px;
 
   @media (min-width: 786px) {
     display: none;
@@ -105,11 +105,13 @@ const MarketPlace = () => {
   return (
     <Wrapper>
       <MobileWrapper>
-        <SneakerSearchBar width='80%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
         <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
+          <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
       </MobileWrapper>
       <FilterGroup md={2} lg={2}>
-        <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
+        <FilterButtonWrapper>
+          <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
+        </FilterButtonWrapper>
         <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
       </FilterGroup>
       {isFetching ? (
@@ -122,5 +124,9 @@ const MarketPlace = () => {
     </Wrapper>
   );
 };
+
+const FilterButtonWrapper = styled.div`
+  margin-bottom: 22px;
+`;
 
 export default MarketPlace;

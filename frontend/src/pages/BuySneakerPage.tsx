@@ -131,7 +131,7 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
           <Col md='4'>
-            <Container fluid='md'>
+            <Container fluid='md'>  
               <Row>{renderTiles()}</Row>
             </Container>
           </Col>
@@ -142,7 +142,7 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
                   mainDisplayImage={mainDisplayImage}
                   sneaker={sneaker}
                   price={selectedSizeMinPrice}
-                  ratio='90%'
+                  ratio='66.6%'
                 />
               </SneakerCardWrapper>
               <Button onClick={onViewAllAsks}>View All Asks</Button>

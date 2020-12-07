@@ -53,8 +53,7 @@ const FilterButtons = (props: FiltersProps) => {
         <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
       </FilterTitle>
       <Collapse isOpen={open}>
-        {/* the simple bar max height is the  */}
-        <SimpleBar autoHide={false} style={{ maxHeight: 235 }}>
+        <SimpleBar style={{ maxHeight: 215 }}>
           <FilterWrapper>
             <Row style={{ margin: 0 }}>
               {filters.map((val, idx) => (

@@ -30,7 +30,7 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
           const onClick = () => redirectBuySneakerPage(history, s.name, s.colorway);
 
           return (
-            <CardWrapper>
+            <CardWrapper key={idx}>
               <FixedAspectRatioSneakerCard
                 mainDisplayImage={getMainDisplayImgUrl(s.imageUrls)}
                 isListed
@@ -52,12 +52,16 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
 };
 
 const CardWrapper = styled.div`
-  width: 32%;
-  margin-right: 8px;
-  margin-bottom: 8px;
+  flex: 0 0 33%;
+  padding: 8px;
 
   @media (max-width: 1024px) {
-    width: 48%;
+    flex: 0 0 50%;
+    padding: 4px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0;
   }
 `;
 

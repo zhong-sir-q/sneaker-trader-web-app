@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 
-import SneakerCard from './SneakerCard';
-
 import { AppSneaker } from '../../../shared';
 import FixedAspectRatioSneakerCard from './FixedAspectRatioSneakerCard';
 import CenterSpinner from './CenterSpinner';

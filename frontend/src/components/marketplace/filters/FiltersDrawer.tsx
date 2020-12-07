@@ -13,12 +13,7 @@ import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import FilterButtons from './FilterButtons';
 
 const CollapseButtonDiv = styled.div`
-  text-align: end;
   display: block;
-
-  @media (min-width: 786px) {
-    display: none;
-  }
 `;
 
 type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] };
@@ -38,7 +33,9 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
       <Drawer anchor='bottom' open={open} onClose={() => {}}>
         <MuiCloseButton onClick={onClose} />
         <div style={{ padding: '50px', overflow: 'auto', paddingBottom: 0 }}>
-          <FilterButtons filterKey='size' filters={sizeFilters} title='us sizes' />
+          <FilterButtonWrapper>
+            <FilterButtons filterKey='size' filters={sizeFilters} title='us sizes' />
+          </FilterButtonWrapper>
           <CheckboxFilters filterKey='brand' filters={brandFilters} title='brands' />
         </div>
         {numFilters > 0 && (
@@ -56,5 +53,9 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
     </React.Fragment>
   );
 };
+
+const FilterButtonWrapper = styled.div`
+  margin-bottom: 22px;
+`;
 
 export default FiltersDrawer;
