@@ -1,14 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
-
 import { AppSneaker } from '../../../shared';
-import LazyLoad from 'react-lazyload';
+import styled from 'styled-components';
 
 const InfoContainer = styled.div`
   padding: 5%;
   background-color: rgb(250, 250, 250);
+  /* the container has border-radius of 8px */
+  border-radius: 8px;
+
   & > * {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
   }
 `;
 
@@ -18,10 +19,6 @@ const LowestAsk = styled.div`
   line-height: 1.3;
   color: rgba(0, 0, 0, 0.5);
   text-transform: capitalize;
-`;
-
-const StyledCard = styled.div`
-  text-align: left;
 `;
 
 type InfoProps = { isListed: boolean | undefined };
@@ -48,43 +45,23 @@ const SizeText = styled.div<SizeTextProps>`
   line-height: 1.3;
 `;
 
-type SneakerCardProps = {
+type FixedAspectRatioSneakerCardProps = {
   sneaker: Partial<AppSneaker>;
   mainDisplayImage: string;
   price: number | undefined;
-  maxWidth?: string;
+  ratio?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
-  styles?: React.CSSProperties;
-  className?: string;
   lazyLoad?: boolean;
-  onClick?: () => void;
-};
+} & React.ComponentProps<any>;
 
-const SneakerCard = (props: SneakerCardProps) => {
-  const { sneaker, isListed, price, maxWidth, mainDisplayImage, onClick } = props;
+const FixedAspectRatioSneakerCard = (props: FixedAspectRatioSneakerCardProps) => {
+  const { sneaker, ratio, isListed, price, mainDisplayImage, onClick } = props;
   const { name, size, colorway } = sneaker;
 
-  const displayName = `${name} ${colorway}`;
-
   return (
-    <StyledCard
-      className={props.className}
-      onClick={onClick}
-      style={{
-        ...props.styles,
-        maxWidth,
-        cursor: isListed ? 'pointer' : '',
-      }}
-      data-testid={displayName}
-    >
-      {props.lazyLoad ? (
-        <LazyLoad>
-          <img className='w-full' src={mainDisplayImage} alt={displayName} />
-        </LazyLoad>
-      ) : (
-        <img className='w-full' src={mainDisplayImage} alt={displayName} />
-      )}
+    <CardV2 onClick={onClick}>
+      <BackgroundImg ratio={ratio} background={mainDisplayImage} />
       <InfoContainer>
         <MainText isListed={isListed}>{name}</MainText>
         <MainText isListed={isListed}>{colorway}</MainText>
@@ -95,11 +72,35 @@ const SneakerCard = (props: SneakerCardProps) => {
               <Price isListed={isListed}>${price}</Price>
             </React.Fragment>
           )}
-          {size && <SizeText className='category' isListed={isListed}>Size: {size}</SizeText>}
+          {size && (
+            <SizeText className='category' isListed={isListed}>
+              Size: {size}
+            </SizeText>
+          )}
         </div>
       </InfoContainer>
-    </StyledCard>
+    </CardV2>
   );
 };
 
-export default SneakerCard;
+// similar component used in PreviewImageDropzone
+type BackgroundImgProps = {
+  background: string;
+  ratio?: string;
+};
+
+const BackgroundImg = styled.div<BackgroundImgProps>`
+  background-image: url(${({ background }) => `"${background}"`});
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  padding-bottom: ${({ ratio }) => ratio || '100%'};
+`;
+
+const CardV2 = styled.div`
+  cursor: pointer;
+  border: 1px solid #ebebeb;
+  border-radius: 8px;
+`;
+
+export default FixedAspectRatioSneakerCard;

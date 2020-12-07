@@ -9,8 +9,9 @@ import SneakerCard from 'components/SneakerCard';
 
 import { Size, SizeMinPriceGroupType, Sneaker, SneakerAsk } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
+import FixedAspectRatioSneakerCard from 'components/FixedAspectRatioSneakerCard';
 
-const CenterContainer = styled(Container)`
+const FlexContainer = styled(Container)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,12 +137,15 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
             </Container>
           </Col>
           <Col md='8'>
-            <CenterContainer>
-              <SneakerCard
-                mainDisplayImage={mainDisplayImage}
-                sneaker={sneaker}
-                price={selectedSizeMinPrice}
-              />
+            <FlexContainer>
+              <SneakerCardWrapper>
+                <FixedAspectRatioSneakerCard
+                  mainDisplayImage={mainDisplayImage}
+                  sneaker={sneaker}
+                  price={selectedSizeMinPrice}
+                  ratio='90%'
+                />
+              </SneakerCardWrapper>
               <Button onClick={onViewAllAsks}>View All Asks</Button>
               <Button
                 style={{ display: 'block', margin: 'auto' }}
@@ -180,12 +184,16 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
                   </Button>
                 </DialogActions>
               </Dialog>
-            </CenterContainer>
+            </FlexContainer>
           </Col>
         </Row>
       </Container>
     );
   } else return <CenterSpinner />;
 };
+
+const SneakerCardWrapper = styled.div`
+  width: 100%;
+`;
 
 export default BuySneakerPage;
