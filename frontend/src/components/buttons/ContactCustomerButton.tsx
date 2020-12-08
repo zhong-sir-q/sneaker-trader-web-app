@@ -31,7 +31,6 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
 
   const [initialized, setInitialized] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [rooms, setRooms] = useState([]);
   const [text, setText] = useState('');
   const [buyerId, setBuyerId] = useState(0);
   const [sellerId, setSellerId] = useState(0);
@@ -67,16 +66,10 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
       setInitialized(true);
     }
   };
-  const getRooms = async () => {
-    const response = {data: []};
-    setRooms(response.data);
-    setInitialized(true);
-  };
   useEffect(() => {
    if (!initialized) {
       getMessages();
       connectToRoom();
-      getRooms();
     }
   });
 

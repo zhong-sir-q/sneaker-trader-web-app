@@ -7,7 +7,7 @@ const io = require('socket.io')(http, {
       origin: '*',
     }
   });
-const chatHistory: any = [];
+
 const ChatServiceInstance = new ChatService();
 
 io.on('connection', function(socket: any) {
@@ -19,7 +19,6 @@ io.on('connection', function(socket: any) {
     socket.on("message", async function(data: any) {
         const { message, productId, buyerId, sellerId, userType} = data;
         io.emit("newMessage", message);
-        chatHistory.push(data);
     ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType)
       .then(() => console.log('Sent message'))
       .catch(() => {console.log('llll')});
@@ -31,9 +30,7 @@ io.on('connection', function(socket: any) {
  });
  
 });
-
-export default chatHistory;
  
- http.listen(PORT, function() {
-    console.log('listening on *:' + PORT);
- });
+http.listen(PORT, function() {
+  console.log('listening on *:' + PORT);
+});

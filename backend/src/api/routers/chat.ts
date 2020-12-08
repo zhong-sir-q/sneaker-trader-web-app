@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import ChatService from '../../services/ChatService';
-import chartHistory from '../../start';
 
 const chatRoute = Router();
 
