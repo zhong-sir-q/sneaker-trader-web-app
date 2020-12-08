@@ -50,7 +50,7 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
   const { imgSrc, name, colorway, displaySize } = props;
 
   return (
-    <td>
+    <TableCell>
       <ImgContainer>
         <Img src={imgSrc} alt={name + colorway} />
       </ImgContainer>
@@ -60,8 +60,11 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
         <SneakerNameCellText>{colorway}</SneakerNameCellText>
         <SizeText className='category'>{displaySize}</SizeText>
       </SneakerNameTextWrapper>
-    </td>
+    </TableCell>
   );
 };
+
+const TableCell = styled.td`
+`;
 
 export default SneakerNameCell;

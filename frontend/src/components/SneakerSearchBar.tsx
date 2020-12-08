@@ -8,6 +8,7 @@ import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
 
 import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
+import LazyBackgroundImg from './img/LazyBackgroundImg';
 
 const StyledInput = styled.input`
   width: 100%;
@@ -161,7 +162,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
                 onMouseOver={() => setActiveSuggestionIdx(idx)}
                 onMouseDown={onMouseDown}
               >
-                <BackgroundImg background={item.mainDisplayImage} />
+                <LazyBackgroundImg BackgroundImgElement={BackgroundImg} background={item.mainDisplayImage} placeholder='_' />
                 <StyledListGroupItemText>{formatName(item)}</StyledListGroupItemText>
               </StyledListGroupItem>
             ))}

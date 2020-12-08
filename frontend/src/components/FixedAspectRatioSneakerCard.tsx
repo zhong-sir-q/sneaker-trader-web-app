@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { AppSneaker } from '../../../shared';
 import styled from 'styled-components';
+
+import LazyBackgroundImg from './img/LazyBackgroundImg';
+import BackgroundImg from './img/BackgroundImg';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -61,7 +64,12 @@ const FixedAspectRatioSneakerCard = (props: FixedAspectRatioSneakerCardProps) =>
 
   return (
     <CardV2 onClick={onClick}>
-      <LazyBackgroundImg ratio={ratio} background={mainDisplayImage} placeholder='' />
+      <LazyBackgroundImg
+        ratio={ratio}
+        background={mainDisplayImage}
+        placeholder=''
+        BackgroundImgElement={BackgroundImg}
+      />
       <InfoContainer>
         <MainText isListed={isListed}>{name}</MainText>
         <MainText isListed={isListed}>{colorway}</MainText>
@@ -81,38 +89,6 @@ const FixedAspectRatioSneakerCard = (props: FixedAspectRatioSneakerCardProps) =>
       </InfoContainer>
     </CardV2>
   );
-};
-
-// similar component used in PreviewImageDropzone
-type BackgroundImgProps = {
-  background: string;
-  ratio?: string;
-};
-
-const BackgroundImg = styled.div<BackgroundImgProps>`
-  background-image: url(${({ background }) => `"${background}"`});
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  padding-bottom: ${({ ratio }) => ratio || '100%'};
-`;
-
-type LazyBackgroundImgProps = {
-  placeholder: string;
-};
-
-const LazyBackgroundImg = (props: BackgroundImgProps & LazyBackgroundImgProps) => {
-  const [src, setSrc] = useState<string>();
-
-  useEffect(() => {
-    const { background } = props;
-    const imageLoader = new Image();
-    imageLoader.src = background;
-
-    imageLoader.onload = () => setSrc(background);
-  }, [props]);
-
-  return <BackgroundImg {...props} background={src || props.placeholder} />;
 };
 
 const CardV2 = styled.div`
