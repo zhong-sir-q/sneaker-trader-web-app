@@ -134,7 +134,6 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
 
   return (
     <React.Fragment>
-      <TopGradient />
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
@@ -201,12 +200,6 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
 
 const SneakerCardWrapper = styled.div`
   width: 100%;
-`;
-
-const TopGradient = styled.div`
-  height: 11vh;
-  background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
-  background-color: #fff;
 `;
 
 export default BuySneakerPage;

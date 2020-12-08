@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppSneaker } from '../../../shared';
 import styled from 'styled-components';
 
@@ -52,8 +52,8 @@ type FixedAspectRatioSneakerCardProps = {
   ratio?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
-  lazyLoad?: boolean;
-} & React.ComponentProps<any>;
+  onClick?: () => void;
+};
 
 const FixedAspectRatioSneakerCard = (props: FixedAspectRatioSneakerCardProps) => {
   const { sneaker, ratio, isListed, price, mainDisplayImage, onClick } = props;
@@ -61,7 +61,7 @@ const FixedAspectRatioSneakerCard = (props: FixedAspectRatioSneakerCardProps) =>
 
   return (
     <CardV2 onClick={onClick}>
-      <BackgroundImg ratio={ratio} background={mainDisplayImage} />
+      <LazyBackgroundImg ratio={ratio} background={mainDisplayImage} placeholder='' />
       <InfoContainer>
         <MainText isListed={isListed}>{name}</MainText>
         <MainText isListed={isListed}>{colorway}</MainText>
@@ -97,11 +97,30 @@ const BackgroundImg = styled.div<BackgroundImgProps>`
   padding-bottom: ${({ ratio }) => ratio || '100%'};
 `;
 
+type LazyBackgroundImgProps = {
+  placeholder: string;
+};
+
+const LazyBackgroundImg = (props: BackgroundImgProps & LazyBackgroundImgProps) => {
+  const [src, setSrc] = useState<string>();
+
+  useEffect(() => {
+    const { background } = props;
+    const imageLoader = new Image();
+    imageLoader.src = background;
+
+    imageLoader.onload = () => setSrc(background);
+  }, [props]);
+
+  return <BackgroundImg {...props} background={src || props.placeholder} />;
+};
+
 const CardV2 = styled.div`
   cursor: pointer;
   border: 1px solid #ebebeb;
   border-radius: 8px;
   text-align: left;
+  height: 100%;
 `;
 
 export default FixedAspectRatioSneakerCard;

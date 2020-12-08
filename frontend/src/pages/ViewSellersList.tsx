@@ -98,7 +98,6 @@ const ViewSellersList = (props: ViewSellersListProps) => {
     <CenterSpinner fullHeight />
   ) : (
     <React.Fragment>
-      <TopGradient />
       <Wrapper>
         {selectedSellerIdx === -1 ? (
           <SneakerCard
@@ -175,11 +174,5 @@ const ViewSellersList = (props: ViewSellersListProps) => {
     </React.Fragment>
   );
 };
-
-const TopGradient = styled.div`
-  height: 80px;
-  background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
-  background-color: #fff;
-`;
 
 export default ViewSellersList;

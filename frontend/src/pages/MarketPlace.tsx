@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col } from 'reactstrap';
 
 import styled from 'styled-components';
@@ -18,7 +18,10 @@ import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
+import heroSplashImg from 'assets/img/aj1-splash.jpg';
+
 import { SearchBarSneaker } from '../../../shared';
+
 import { MD_WIDTH } from 'const/variables';
 
 const FilterGroup = styled(Col)`
@@ -90,54 +93,71 @@ const MobileWrapper = styled.div`
 
 const MarketPlace = () => {
   const { defaultSneakers, filterSneakers, brands, isFetching } = useMarketPlaceCtx();
+  // lag some time to allow the sneakers to be
+  // fetched first then render the filters
+  const [lagging, setLagging] = useState(true);
+
+  // 1.5s to load the sneakers, then we show the filters
+  // there should be a better solution than this
+  useEffect(() => {
+    setTimeout(() => setLagging(false), 1500);
+  }, []);
 
   const history = useHistory();
-
-  if (!filterSneakers || !brands)
-    return (
-      <SkeletonWrapper>
-        <SkeletonGrid />
-      </SkeletonWrapper>
-    );
 
   const sizeFilters = _.range(3, 15, 0.5);
 
   const navigateBuySneakerPage = (sneaker: SearchBarSneaker) =>
     redirectBuySneakerPage(history, sneaker.name, sneaker.colorway);
 
+  if (!filterSneakers)
+    return (
+      <SkeletonWrapper>
+        <SkeletonGrid />
+      </SkeletonWrapper>
+    );
+
   return (
     <React.Fragment>
-      <Hero>
+      <Hero img={heroSplashImg}>
         <Jumbo>
           <JumboHeader>
             <JumboHeaderText>Get your sneakers before Xmas</JumboHeaderText>
             <JumboSubHeaderText>The Place to get your Kicks for the holidays</JumboSubHeaderText>
           </JumboHeader>
         </Jumbo>
-        <FilterButtonWrapper>
-          <SearchBarRow>
-            <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
-          </SearchBarRow>
-        </FilterButtonWrapper>
+        <SearchBarRow>
+          <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
+        </SearchBarRow>
       </Hero>
       <Wrapper>
         <MobileWrapper>
           <TopGradient />
-          <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
-          <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
+          {!lagging && (
+            <React.Fragment>
+              <FiltersDrawer brandFilters={brands || []} sizeFilters={sizeFilters.map((n) => String(n))} />
+              <SneakerSearchBar
+                width='100%'
+                sneakers={defaultSneakers || []}
+                onChooseSneaker={navigateBuySneakerPage}
+              />
+            </React.Fragment>
+          )}
         </MobileWrapper>
-        <FilterGroup md={2} lg={2}>
-          <FilterButtonWrapper>
-            <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
-          </FilterButtonWrapper>
-          <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
-        </FilterGroup>
+        {!lagging && (
+          <FilterGroup md={2} lg={2}>
+            <FilterButtonWrapper>
+              <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
+            </FilterButtonWrapper>
+            <CheckboxFilters filterKey='brand' filters={brands || []} title='brands' />
+          </FilterGroup>
+        )}
         {isFetching ? (
           <SkeletonWrapper>
             <SkeletonGrid />
           </SkeletonWrapper>
         ) : (
-          <SneakerGallery sneakers={filterSneakers} />
+          <SneakerGallery sneakers={filterSneakers || []} />
         )}
       </Wrapper>
     </React.Fragment>
@@ -145,7 +165,7 @@ const MarketPlace = () => {
 };
 
 const SearchBarRow = styled.div`
-  max-width: 640px;
+  max-width: 720px;
   margin: auto;
 `;
 
@@ -153,16 +173,20 @@ const FilterButtonWrapper = styled.div`
   margin-bottom: 22px;
 `;
 
-const Hero = styled.div`
+type HeroProps = {
+  img: string;
+};
+
+const Hero = styled.div<HeroProps>`
   background-position: top;
   background-repeat: no-repeat;
   background-size: cover;
   background-color: #000;
   text-align: center;
-  background-image: url('https://stockx-assets.imgix.net/Core/holiday-siteheader-2020-2x.png?auto=compress,format');
-  height: 520px;
+  background-image: url(${({ img }) => `"${img}"`});
+  height: 80vh;
   margin-top: 0;
-  padding-top: 111px;
+  padding-top: 25vh;
   margin-bottom: 25px;
 
   @media (max-width: ${MD_WIDTH}) {

@@ -30,7 +30,7 @@ export const ShowDropdownCell = styled.td`
   }
 `;
 
-export const Header = styled.th<{ minWidth: string }>`
+export const Header = styled.th<{ minWidth?: string }>`
   min-width: ${({ minWidth }) => minWidth};
 
   @media (max-width: 1124px) {

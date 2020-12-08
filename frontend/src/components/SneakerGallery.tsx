@@ -17,7 +17,9 @@ const Flexbox = styled.div`
   flex-wrap: wrap;
 `;
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  width: 100%;
+`;
 
 const SneakerGallery = (props: SneakerGalleryProps) => {
   const history = useHistory();
@@ -37,16 +39,17 @@ const SneakerGallery = (props: SneakerGalleryProps) => {
                 sneaker={s}
                 price={s.minPrice}
                 onClick={onClick}
-                lazyLoad
                 key={idx}
               />
             </CardWrapper>
           );
         })}
       </Flexbox>
-      <div className='flex justify-center'>
-        <PaginationComponent />
-      </div>
+      {props.sneakers.length > 0 && (
+        <div className='flex justify-center'>
+          <PaginationComponent />
+        </div>
+      )}
     </Wrapper>
   );
 };

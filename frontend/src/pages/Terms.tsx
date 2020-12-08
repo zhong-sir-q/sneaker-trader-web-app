@@ -4,9 +4,7 @@ import { Container } from 'reactstrap';
 const Terms = () => {
   return (
     <Container fluid='sm'>
-      <p>
-        <b>Terms and Conditions</b>
-      </p>
+      <h1>Terms and Conditions</h1>
 
       <p>Welcome to Sneaker Trader Limited.</p>
 

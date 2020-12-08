@@ -23,7 +23,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
     if (isSubmitDisabled)
       setTimeout(() => {
         setSubmitDisabled(false);
-      }, 2500);
+      }, 3000);
   }, [isSubmitDisabled]);
 
   const handleSubmit = () => {

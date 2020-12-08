@@ -3,13 +3,16 @@ import { useHistory } from 'react-router-dom';
 
 import { Col, Progress, Button } from 'reactstrap';
 
+import { DialogContent, Dialog, DialogTitle, makeStyles } from '@material-ui/core';
+
+import styled from 'styled-components';
+
 import AwsControllerInstance from 'api/controllers/AwsController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import WalletControllerInstance from 'api/controllers/WalletController';
 
-import ListedSneakerSuccess from 'components/ListSneakerSuccess';
 import PanelHeader from 'components/PanelHeader';
 import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 import PreviewSneaker from 'components/PreviewSneaker';
@@ -19,18 +22,21 @@ import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 import { useSneakerListingFormCtx, INIT_LISTING_FORM_STATE_VALUES } from 'providers/SneakerListingFormProvider';
 
-import { ADMIN, TOPUP_WALLET } from 'routes';
+import { ADMIN, TOPUP_WALLET, DASHBOARD } from 'routes';
 
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 
 import { formatListedSneakerPayload, formatSneaker, getMainDisplayImgUrl } from 'utils/utils';
 import SneakerSearchBar from 'components/SneakerSearchBar';
+
 import { SearchBarSneaker } from '../../../shared';
 
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
+
+import FixedAspectRatioSneakerCard from 'components/FixedAspectRatioSneakerCard';
+import MuiCloseButton from 'components/buttons/MuiCloseButton';
 import AlertDialog from 'components/AlertDialog';
-import styled from 'styled-components';
 
 // this prop is for testing purposes, so we can start from any step we want
 type SneakerListingFormProps = {
@@ -56,8 +62,8 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
   const [searchBarInputVal, setSearchBarInputVal] = useState('');
   const updateSearchBarInputVal = (val: string) => setSearchBarInputVal(val);
 
+  const successDialogHook = useOpenCloseComp();
   const { currentUser } = useAuth();
-
   const history = useHistory();
 
   const { updateFormState } = useSneakerListingFormCtx();
@@ -126,9 +132,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     );
 
     // Go to the success message
-    goNextstep();
-
-    destroyFiles();
+    successDialogHook.onOpen();
   };
 
   const onChooseSearchBarSneaker = (sneaker: SearchBarSneaker) => {
@@ -150,10 +154,10 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
   };
 
   const successTitle = isSneakerNew
-    ? 'Thank you, we will review your new sneaker request shortly.'
-    : 'Congratulations, you successfully listed the sneakers!';
+    ? `Thank you ${currentUser?.username}, we will review your new sneaker request shortly.`
+    : 'Your sneaker is now listed!';
 
-  const STEPS = 5;
+  const STEPS = 4;
 
   const renderStep = () => {
     switch (step) {
@@ -194,11 +198,46 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
             ratio='66.6%'
           />
         );
-      case 4:
-        return <ListedSneakerSuccess className='text-center' title={successTitle} />;
       default:
         return null;
     }
+  };
+
+  const SuccessDialog = () => {
+    if (!mainDisplayFileDataUrl) return null;
+
+    const sneaker = formatSneaker(listingSneakerFormState);
+
+    const classes = makeStyles(() => ({
+      dialogTitle: {
+        fontSize: '1.5rem',
+        fontWeight: 600,
+        textAlign: 'center',
+      },
+    }))();
+
+    const onCloseDialog = () => {
+      successDialogHook.onClose();
+      history.push(ADMIN + DASHBOARD);
+      destroyFiles()
+    };
+
+    return (
+      <Dialog fullWidth maxWidth='sm' open={successDialogHook.open} onClose={onCloseDialog}>
+        <MuiCloseButton onClick={onCloseDialog} />
+        <DialogTitle classes={{
+          root: classes.dialogTitle
+        }}>{successTitle}</DialogTitle>
+        <DialogContent>
+          <FixedAspectRatioSneakerCard
+            ratio='100%'
+            sneaker={sneaker}
+            mainDisplayImage={mainDisplayFileDataUrl}
+            price={Number(listingSneakerFormState.askingPrice)}
+          />
+        </DialogContent>
+      </Dialog>
+    );
   };
 
   // STEPS - 1 because the last step is a success message
@@ -222,6 +261,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
           </Col>
         </StepContainer>
       </div>
+      <SuccessDialog />
       <AlertDialog
         color='info'
         message='Please topup first, your wallet balance must be greater than 0'

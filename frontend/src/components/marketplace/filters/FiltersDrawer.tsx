@@ -40,7 +40,7 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
           <CheckboxFilters filterKey='brand' filters={brandFilters} title='brands' />
         </div>
         {numFilters > 0 && (
-          <div style={{ display: 'flex', padding: '0 50px' }}>
+          <div style={{ display: 'flex', padding: '20px 50px' }}>
             <Button style={{ flex: 1 }} onClick={clearFilters}>
               Clear ({numFilters})
             </Button>
