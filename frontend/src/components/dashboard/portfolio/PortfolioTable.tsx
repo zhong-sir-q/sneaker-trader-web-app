@@ -1,12 +1,18 @@
-import React from "react";
-import clsx from "clsx";
-import { Button, Table } from "reactstrap";
+import React, { useState } from 'react';
+import clsx from 'clsx';
+import { Button, Table } from 'reactstrap';
 
-import SneakerNameCell from "components/SneakerNameCell";
+import { KeyboardArrowUp, KeyboardArrowDown } from '@material-ui/icons';
+import { List, ListItem } from '@material-ui/core';
 
-import { SneakerCondition } from "../../../../../shared";
+import SneakerNameCell from 'components/SneakerNameCell';
 
-import useSortableColData from "hooks/useSortableColData";
+import { SneakerCondition } from '../../../../../shared';
+
+import useSortableColData from 'hooks/useSortableColData';
+import { Header, ShowDropdownHeader, Cell, ShowDropdownCell, DropdownRow } from '../table/Common';
+
+import { mapUpperCaseFirstLetter } from 'utils/utils';
 
 // NOTE: the only different field between this type
 // and PortfolioSneakerWithMarketValue is purchaseDate
@@ -27,6 +33,9 @@ type TablePortfolioSneaker = {
 
 type PortfolioTabaleRowProps = {
   sneaker: TablePortfolioSneaker;
+  rowIdx: number;
+  showRowDropdown: boolean;
+  onClickShowDropdown: (rowIdx: number) => void;
 };
 
 type PortfolioTableProps = {
@@ -39,59 +48,50 @@ const PortfolioTable = (props: PortfolioTableProps) => {
 
   const { onDeleteRow } = props;
 
+  const [selectedDropdownIdx, setSelectedDropdownIdx] = useState<number>();
+
+  const updateSelectedDropdownIDx = (idx: number) => {
+    if (idx === selectedDropdownIdx) {
+      // toggle the current dropdown
+      setSelectedDropdownIdx(undefined);
+      return;
+    }
+
+    setSelectedDropdownIdx(idx);
+  };
+
+  const headers = [
+    { name: 'sneakerCondition', minWidth: '105px', text: 'condition' },
+    { name: 'purchaseDate', minWidth: '105px', text: 'purchase date' },
+    { name: 'purchasePrice', minWidth: '105px', text: 'purchase price' },
+    { name: 'marketValue', minWidth: '105px', text: 'market value' },
+    { name: 'gainPercentage', minWidth: '80px', text: 'gain/loss' },
+  ];
+
   const PortfolioTableHeader = () => (
     <thead>
       <tr>
-        <th
-          style={{ cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('name'))}
-          onClick={() => requestSort('name')}
-        >
+        <th className={clsx(getHeaderClassName('name'), 'pointer')} onClick={() => requestSort('name')}>
           name
         </th>
-        <th
-          style={{ minWidth: '105px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('sneakerCondition'))}
-          onClick={() => requestSort('sneakerCondition')}
-        >
-          condition
-        </th>
-        <th
-          style={{ minWidth: '80px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('purchaseDate'))}
-          onClick={() => requestSort('purchaseDate')}
-        >
-          purchase date
-        </th>
-        <th
-          style={{ minWidth: '75px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('purchasePrice'))}
-          onClick={() => requestSort('purchasePrice')}
-        >
-          purchase price
-        </th>
-        <th
-          style={{ minWidth: '60px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('marketValue'))}
-          onClick={() => requestSort('marketValue')}
-        >
-          Market Value
-        </th>
-
-        <th
-          style={{ minWidth: '60px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('gainPercentage'))}
-          onClick={() => requestSort('gainPercentage')}
-        >
-          Gain/Loss
-        </th>
-        {/* empty column for row deleting */}
-        <th></th>
+        {headers.map((h, idx) => (
+          <Header
+            minWidth={h.minWidth}
+            onClick={() => requestSort(h.name)}
+            className={clsx('sortable', 'pointer', getHeaderClassName(h.name))}
+            key={idx}
+          >
+            {h.text}
+          </Header>
+        ))}
+        <ShowDropdownHeader />
       </tr>
     </thead>
   );
 
   const PortfolioTableRow = (props: PortfolioTabaleRowProps) => {
+    const { rowIdx, showRowDropdown, onClickShowDropdown } = props;
+
     const {
       id,
       brand,
@@ -108,30 +108,61 @@ const PortfolioTable = (props: PortfolioTableProps) => {
     } = props.sneaker;
 
     return (
-      <tr>
-        <SneakerNameCell
-          name={`${brand} ${name}`}
-          colorway={colorway}
-          displaySize={`US Men's Size: ${size}`}
-          imgSrc={mainDisplayImage}
-        />
-        <td>{sneakerCondition}</td>
-        <td>{purchaseDate}</td>
-        <td>${purchasePrice}</td>
-        <td>{!marketValue ? 'Unknown' : '$' + marketValue}</td>
-        <td
-          style={{
-            color: gain === null ? '' : gain > 0 ? 'green' : 'red',
-          }}
-        >
-          {gain === null ? 'Unknown' : `$${gain} (${gainPercentage}%)`}
-        </td>
-        <td>
-          <Button onClick={() => onDeleteRow(id)} color='danger'>
-            REMOVE
-          </Button>
-        </td>
-      </tr>
+      <React.Fragment>
+        <tr>
+          <SneakerNameCell
+            name={`${brand} ${name}`}
+            colorway={colorway}
+            displaySize={`US Men's Size: ${size}`}
+            imgSrc={mainDisplayImage}
+          />
+          <Cell>{sneakerCondition}</Cell>
+          <Cell>{purchaseDate}</Cell>
+          <Cell>${purchasePrice}</Cell>
+          <Cell>{!marketValue ? 'Unknown' : '$' + marketValue}</Cell>
+          <Cell
+            style={{
+              color: gain === null ? '' : gain > 0 ? 'green' : 'red',
+            }}
+          >
+            {gain === null ? 'Unknown' : `$${gain} (${gainPercentage}%)`}
+          </Cell>
+          <Cell>
+            <Button onClick={() => onDeleteRow(id)} color='danger'>
+              REMOVE
+            </Button>
+          </Cell>
+
+          <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
+            {showRowDropdown ? <KeyboardArrowUp fontSize='default' /> : <KeyboardArrowDown fontSize='default' />}
+          </ShowDropdownCell>
+        </tr>
+        {showRowDropdown && (
+          <DropdownRow>
+            <List>
+              <ListItem>Condition: {mapUpperCaseFirstLetter(sneakerCondition, ' ')}</ListItem>
+              <ListItem>Purchase Date: {purchaseDate}</ListItem>
+              <ListItem>Purhcase Price: ${purchasePrice}</ListItem>
+              <ListItem>Market Value: {!marketValue ? 'Unknown' : '$' + marketValue}</ListItem>
+              <ListItem>
+                Gain/Loss:
+                <span
+                  style={{
+                    color: gain === null ? '' : gain > 0 ? 'green' : 'red',
+                  }}
+                >
+                  {gain === null ? ' Unknown' : ` $${gain} (${gainPercentage}%)`}
+                </span>
+              </ListItem>
+              <ListItem>
+                <Button onClick={() => onDeleteRow(id)} color='danger'>
+                  REMOVE
+                </Button>
+              </ListItem>
+            </List>
+          </DropdownRow>
+        )}
+      </React.Fragment>
     );
   };
 
@@ -140,7 +171,13 @@ const PortfolioTable = (props: PortfolioTableProps) => {
       <PortfolioTableHeader />
       <tbody>
         {sortedItems.map((sneaker, idx) => (
-          <PortfolioTableRow sneaker={sneaker} key={idx} />
+          <PortfolioTableRow
+            sneaker={sneaker}
+            rowIdx={idx}
+            showRowDropdown={selectedDropdownIdx === idx}
+            onClickShowDropdown={updateSelectedDropdownIDx}
+            key={idx}
+          />
         ))}
       </tbody>
     </Table>
@@ -149,4 +186,4 @@ const PortfolioTable = (props: PortfolioTableProps) => {
   // NOTE: these are the smae styled components from SneakerSearchBar
 };
 
-export default PortfolioTable
+export default PortfolioTable;

@@ -5,7 +5,8 @@
   "main": "app.ts",
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles --watchAll",
-    "dev": "export NODE_ENV=development && nodemon ./src/start.ts",
+    "dev": "export NODE_ENV='development'&&nodemon ./src/start.ts",
+    "win-dev": "set NODE_ENV=development && nodemon ./src/start.ts",
     "start": "node build/src/start.js"
   },
   "author": "Sneaker Trader",

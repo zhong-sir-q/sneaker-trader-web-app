@@ -9,10 +9,11 @@
     "start": "npm --prefix backend start",
     "postinstall": "npm run installBackend && npm run buildBackend",
     "dev": "concurrently 'npm --prefix frontend start' 'npm --prefix backend run dev'",
-    "deployAll": "npm run deployECS && npm --prefix frontend run build && npm --prefix frontend run deploy",
-    "deployECS": "./ecr_image_build_deploy.sh",
+    "deploy": "make bluegreen-deploy-all",
     "push": "npm --prefix backend test && git push && npm run deployAll",
-    "installBackend": "npm --prefix backend install"
+    "installBackend": "npm --prefix backend install",
+    "setup": "npm i -g concurrently ts-node nodemon && npm run buildAll",
+    "win-dev": "concurrently 'npm --prefix frontend win-start' 'npm --prefix backend run win-dev"
   },
   "keywords": [],
   "author": "",

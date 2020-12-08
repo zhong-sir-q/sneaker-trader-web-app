@@ -24,7 +24,8 @@ export interface UserServiceEntity extends UserEntity, UserUseCase {}
 export interface SellerEntity {
   getSellersBySneakerNameSize(
     currentUserId: number,
-    nameColorway: string,
+    name: string,
+    colorway: string,
     size: number
   ): Promise<ListedSneakerSeller[]>;
 }

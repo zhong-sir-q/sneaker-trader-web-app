@@ -1,13 +1,8 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Card } from 'reactstrap';
 import styled from 'styled-components';
 
-import FixedAspectRatioImg from './FixedAspectRatioImg';
-
-import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
-
 import { AppSneaker } from '../../../shared';
+import LazyLoad from 'react-lazyload';
 
 const InfoContainer = styled.div`
   padding: 5%;
@@ -25,79 +20,85 @@ const LowestAsk = styled.div`
   text-transform: capitalize;
 `;
 
+const StyledCard = styled.div`
+  text-align: left;
+`;
+
+type InfoProps = { isListed: boolean | undefined };
+
+const MainText = styled.div<InfoProps>`
+  margin-bottom: 4px;
+  line-height: 1.3;
+  font-size: ${({ isListed }) => (isListed ? '16px' : '1.55em')};
+`;
+
+const Price = styled.div<InfoProps>`
+  line-height: 1.3;
+  font-size: ${({ isListed }) => (isListed ? '18px' : '1.75em')};
+  white-space: nowrap;
+  font-weight: 700;
+`;
+
+type SizeTextProps = {
+  isListed: boolean | undefined;
+};
+
+const SizeText = styled.div<SizeTextProps>`
+  font-size: ${({ isListed }) => (isListed ? '14px' : '1.15em')};
+  line-height: 1.3;
+`;
+
 type SneakerCardProps = {
   sneaker: Partial<AppSneaker>;
-  mainDisplayImage: string | undefined;
+  mainDisplayImage: string;
   price: number | undefined;
   maxWidth?: string;
   // if isListed then clicking on the card will redirect to the buy page
   isListed?: boolean;
   styles?: React.CSSProperties;
   className?: string;
-  aspectRatio?: string;
+  lazyLoad?: boolean;
+  onClick?: () => void;
 };
 
 const SneakerCard = (props: SneakerCardProps) => {
-  const history = useHistory();
-
-  const { aspectRatio, sneaker, isListed, price, maxWidth, mainDisplayImage } = props;
+  const { sneaker, isListed, price, maxWidth, mainDisplayImage, onClick } = props;
   const { name, size, colorway } = sneaker;
-
-  const onClick = () => {
-    if (isListed && name && colorway) redirectBuySneakerPage(history, name, colorway);
-  };
 
   const displayName = `${name} ${colorway}`;
 
   return (
-    <Card
+    <StyledCard
       className={props.className}
       onClick={onClick}
       style={{
         ...props.styles,
         maxWidth,
         cursor: isListed ? 'pointer' : '',
-        boxShadow: 'none',
-        display: 'flex',
-        textAlign: 'left',
       }}
       data-testid={displayName}
     >
-      <FixedAspectRatioImg aspectRatio={aspectRatio || '107.5%'} imgSrc={mainDisplayImage} />
+      {props.lazyLoad ? (
+        <LazyLoad>
+          <img className='w-full' src={mainDisplayImage} alt={displayName} />
+        </LazyLoad>
+      ) : (
+        <img className='w-full' src={mainDisplayImage} alt={displayName} />
+      )}
       <InfoContainer>
-        <div
-          style={{
-            marginBottom: '4px',
-            lineHeight: '1.3',
-            fontSize: isListed ? '16px' : '1.55em',
-          }}
-        >
-          {displayName}
-        </div>
+        <MainText isListed={isListed}>{name}</MainText>
+        <MainText isListed={isListed}>{colorway}</MainText>
         <div>
           {price !== undefined && (
             <React.Fragment>
               <LowestAsk>Lowest Ask</LowestAsk>
-              <div
-                style={{
-                  fontSize: isListed ? '18px' : '1.75em',
-                  lineHeight: '1.3',
-                  fontWeight: 700,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                ${price}
-              </div>
+              <Price isListed={isListed}>${price}</Price>
             </React.Fragment>
           )}
-          {size && (
-            <div className='category' style={{ fontSize: isListed ? '14px' : '1.15em', lineHeight: '1.3' }}>
-              Size: {size}
-            </div>
-          )}
+          {size && <SizeText className='category' isListed={isListed}>Size: {size}</SizeText>}
         </div>
       </InfoContainer>
-    </Card>
+    </StyledCard>
   );
 };
 

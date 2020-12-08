@@ -10,18 +10,23 @@ import { FilterWrapper, FilterTitle, ArrowDirectionWrapper } from './FilterHelpe
 import { FiltersProps, FilterButtonProps } from './filter';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
+import SimpleBar from 'simplebar-react';
+// keep the css for custom scrollbar style
+import 'simplebar/dist/simplebar.min.css';
+
 const FilterButton = styled.button<FilterButtonProps>`
-  text-align: center;
   border: 1px solid rgb(229, 229, 229);
-  border-radius: 5px;
   margin-right: 6px;
   margin-bottom: 6px;
-  flex: 0%;
+  background: transparent;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: transparent;
-  color: ${(props) => (props.selected ? '#f96332' : '')};
+  padding: 0.65625em;
+  /* width 0 and flex makes all the flex item the same size */
+  width: 0;
+  flex: 1 1 25%;
+  border-bottom: ${({ selected }) => (selected ? '2px solid black' : '1px solid rgb(229, 229, 229)')};
+  font-weight: ${({ selected }) => (selected ? '700' : '')};
 
   &:focus {
     outline: none;
@@ -37,26 +42,36 @@ const FilterButtonText = styled.span`
 const FilterButtons = (props: FiltersProps) => {
   const { filters, filterKey, title } = props;
 
-  const { onSelectFilter, isFilterSelected } = useMarketPlaceCtx();
+  const { isFetching, onSelectFilter, isFilterSelected } = useMarketPlaceCtx();
 
   const { open, toggle } = useOpenCloseComp(true);
 
   return (
-    <FilterWrapper>
+    <React.Fragment>
       <FilterTitle onClick={toggle}>
         <span>{title}</span>
         <ArrowDirectionWrapper>{open ? <ArrowDropUp /> : <ArrowDropDown />}</ArrowDirectionWrapper>
       </FilterTitle>
       <Collapse isOpen={open}>
-        <Row style={{ margin: 0 }}>
-          {filters.map((val, idx) => (
-            <FilterButton onClick={() => onSelectFilter(filterKey, val)} selected={isFilterSelected(val)} key={idx}>
-              <FilterButtonText>{val}</FilterButtonText>
-            </FilterButton>
-          ))}
-        </Row>
+        <SimpleBar style={{ maxHeight: 215 }}>
+          <FilterWrapper>
+            <Row style={{ margin: 0 }}>
+              {filters.map((val, idx) => (
+                <FilterButton
+                  onClick={() => onSelectFilter(filterKey, val)}
+                  selected={isFilterSelected(val)}
+                  // disable the button when the parent is fetching some data
+                  disabled={isFetching}
+                  key={idx}
+                >
+                  <FilterButtonText>{val}</FilterButtonText>
+                </FilterButton>
+              ))}
+            </Row>
+          </FilterWrapper>
+        </SimpleBar>
       </Collapse>
-    </FilterWrapper>
+    </React.Fragment>
   );
 };
 

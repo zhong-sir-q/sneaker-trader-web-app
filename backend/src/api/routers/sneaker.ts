@@ -1,32 +1,76 @@
 import { Router } from 'express';
 import SneakerService from '../../services/SneakerService';
+import { ExpressHandler } from '../../@types/express';
+
+const createSneakerHandlers = (sneakerService: SneakerService) => {
+  const getSneakerByQuery: ExpressHandler = (req, res, next) => {
+    const { name, colorway, size, brand } = req.query;
+
+    if (name && colorway && size) {
+      sneakerService
+        .getByNameColorwaySize(name as string, colorway as string, Number(size))
+        .then((sneaker) => res.json(sneaker))
+        .catch(next);
+    } else if (name && colorway && brand) {
+      sneakerService
+        .getFirstByNameBrandColorway(name as string, brand as string, colorway as string)
+        .then((sneaker) => res.json(sneaker))
+        .catch(next);
+    } else if (name && colorway) {
+      sneakerService
+        .getFirstByNameColorway(name as string, colorway as string)
+        .then((sneaker) => res.json(sneaker))
+        .catch(next);
+    } else next(new Error('Invalid query at the get sneaker route'));
+  };
+
+  const create: ExpressHandler = (req, res, next) => {
+    const sneaker = req.body;
+
+    sneakerService
+      .create(sneaker)
+      .then((sneakerId) => res.json(sneakerId))
+      .catch(next);
+  };
+
+  const getGallerySneakers: ExpressHandler = (_req, res, next) => {
+    sneakerService
+      .getGallerySneakers()
+      .then((sneakers) => res.json(sneakers))
+      .catch(next);
+  };
+
+  const updateDisplayImage: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+    const { imageUrls } = req.body;
+
+    sneakerService
+      .updateDisplayImage(Number(id), imageUrls)
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  const getById: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    sneakerService
+      .getById(Number(id))
+      .then((sneaker) => res.json(sneaker))
+      .catch(next);
+  };
+
+  return { create, getById, getSneakerByQuery, getGallerySneakers, updateDisplayImage };
+};
 
 const sneakerRoute = Router();
 
-export default (app: Router, SneakerServiceInstance: SneakerService) => {
+export default (app: Router, sneakerService: SneakerService) => {
   app.use('/sneaker', sneakerRoute);
 
-  sneakerRoute.get('/:nameColorway', (req, res, next) => {
-    const { nameColorway } = req.params;
+  const { create, getById, getSneakerByQuery, getGallerySneakers, updateDisplayImage } = createSneakerHandlers(sneakerService);
 
-    SneakerServiceInstance.getFirstByNameColorway(nameColorway)
-      .then((sneaker) => res.json(sneaker))
-      .catch(next);
-  });
-
-  sneakerRoute.get('/:nameColorway/:size', (req, res, next) => {
-    const { nameColorway, size } = req.params;
-
-    SneakerServiceInstance.getByNameColorwaySize(nameColorway, Number(size))
-      .then((sneaker) => res.json(sneaker))
-      .catch(next);
-  });
-
-  sneakerRoute.post('/', (req, res, next) => {
-    const sneaker = req.body;
-
-    SneakerServiceInstance.create(sneaker)
-      .then((sneakerId) => res.json(sneakerId))
-      .catch(next);
-  });
+  sneakerRoute.route('/').post(create).get(getSneakerByQuery);
+  sneakerRoute.route('/updateImage/:id').put(updateDisplayImage);
+  sneakerRoute.route('/gallery').get(getGallerySneakers);
+  sneakerRoute.route('/one/:id').get(getById);
 };

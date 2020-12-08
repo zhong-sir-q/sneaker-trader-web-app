@@ -12,7 +12,8 @@ export type ListedSneakerSeller = {
   askingPrice: number;
   listedProductId: number;
   rating: number;
-  imageUrls: string;
+  sneakerImgUrls: string;
+  profilePicUrl: string;
 };
 
 export type Buyer = Customer & Pick<Transaction, 'transactionDatetime'> & { hasSellerRatedBuyer: 0 | 1 };
@@ -31,4 +32,6 @@ export type Address = {
   country: string;
   suburb: string;
   verificationStatus: AddrVerificationStatus;
+  requestVerificationDate?: string;
+  updateVerificationDate?: string;
 };

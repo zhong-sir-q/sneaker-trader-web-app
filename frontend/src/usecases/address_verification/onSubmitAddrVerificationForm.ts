@@ -6,13 +6,14 @@ import updateAddress from './updateAddress';
 
 const onSubmitAddrVerificationForm = (
   AddressControllerInstance: AddressController,
-  updateAddressCb: () => void
+  updateAddressCb: () => void,
+  requestVerificationCb: () => void
 ) => async (userId: number, formAddressValues: Address) => {
   switch (formAddressValues.verificationStatus) {
     case 'in_progress':
       return;
     case 'not_verified':
-      await onVerifyAddress(AddressControllerInstance)(userId, formAddressValues);
+      await onVerifyAddress(AddressControllerInstance, requestVerificationCb)(userId, formAddressValues);
       return;
     case 'verified':
       await updateAddress(AddressControllerInstance, updateAddressCb)(userId, formAddressValues);

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const FilterWrapper = styled.div`
-  margin-bottom: 15px;
+  height: 215px;
 `;
 
 export const ArrowDirectionWrapper = styled.div`

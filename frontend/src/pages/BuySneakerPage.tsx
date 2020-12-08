@@ -5,12 +5,12 @@ import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/
 import styled from 'styled-components';
 
 import CenterSpinner from 'components/CenterSpinner';
-import SneakerCard from 'components/SneakerCard';
 
 import { Size, SizeMinPriceGroupType, Sneaker, SneakerAsk } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
+import FixedAspectRatioSneakerCard from 'components/FixedAspectRatioSneakerCard';
 
-const CenterContainer = styled(Container)`
+const FlexContainer = styled(Container)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,15 +115,25 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
     return !chooseBuyAll ? allSize.concat(sizeTiles) : sizeTiles;
   };
 
-  const formatSneaker = (): Partial<Sneaker> => ({
+  const sneaker: Partial<Sneaker> = {
     name: displaySneaker?.name,
     colorway: displaySneaker?.colorway,
     size: selectedSize === 'all' ? undefined : selectedSize,
     imageUrls: displaySneaker?.imageUrls,
-  });
+  };
 
-  if (displaySneaker && sizeMinPriceGroup && filterAllAsks)
+  if (!(displaySneaker && sizeMinPriceGroup && filterAllAsks))
     return (
+      <Container fluid='md'>
+        <CenterSpinner fullHeight />
+      </Container>
+    );
+
+  const mainDisplayImage = sneaker.imageUrls && getMainDisplayImgUrl(sneaker.imageUrls);
+  if (!mainDisplayImage) return null;
+
+  return (
+    <React.Fragment>
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
@@ -133,12 +143,15 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
             </Container>
           </Col>
           <Col md='8'>
-            <CenterContainer>
-              <SneakerCard
-                mainDisplayImage={getMainDisplayImgUrl(formatSneaker().imageUrls)}
-                sneaker={formatSneaker()}
-                price={selectedSizeMinPrice}
-              />
+            <FlexContainer>
+              <SneakerCardWrapper>
+                <FixedAspectRatioSneakerCard
+                  mainDisplayImage={mainDisplayImage}
+                  sneaker={sneaker}
+                  price={selectedSizeMinPrice}
+                  ratio='66.6%'
+                />
+              </SneakerCardWrapper>
               <Button onClick={onViewAllAsks}>View All Asks</Button>
               <Button
                 style={{ display: 'block', margin: 'auto' }}
@@ -177,12 +190,16 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
                   </Button>
                 </DialogActions>
               </Dialog>
-            </CenterContainer>
+            </FlexContainer>
           </Col>
         </Row>
       </Container>
-    );
-  else return <CenterSpinner />;
+    </React.Fragment>
+  );
 };
+
+const SneakerCardWrapper = styled.div`
+  width: 100%;
+`;
 
 export default BuySneakerPage;

@@ -1,55 +1,44 @@
 import React, { useState } from 'react';
 import { Navbar, Nav, NavItem, Collapse, NavbarToggler } from 'reactstrap';
 
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import { signOut } from 'utils/auth';
 import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
-import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
-import { SearchBarSneaker } from '../../../../shared';
 
 import logo from 'assets/img/logo_transparent_background.png';
-import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 import { useUserRanking } from 'providers/UserRankingProvider';
+import { MD_WIDTH } from 'const/variables';
 
-const SearchBarWrapper = styled.div`
-  padding: 0.5rem 0.7rem;
-
-  @media (min-width: 680px) {
-    width: 550px;
-  }
-
-  @media (min-width: 991px) {
-    margin: auto;
-  }
-`;
 
 const StyledNavbar = styled(Navbar)`
-  @media (min-width: 991px) {
+  position: fixed;
+  z-index: 999;
+  /* this needs to be transparent at the marketplace because of the Hero card */
+  background-color: white;
+  left: 0;
+  right: 0;
+
+  @media (min-width: ${MD_WIDTH}) {
     padding-left: 3.5rem;
     padding-right: 3.5rem;
   }
 `;
 
+// NOTE: some navbar specific styles are overriden in sneakertrader.css
 const HomeNavbar = () => {
   const [openNav, setOpenNav] = useState(false);
 
   const toggleNav = () => setOpenNav(!openNav);
 
-  const { onOpenLeaderBoard } = useUserRanking()
+  const { onOpenLeaderBoard } = useUserRanking();
 
-  const history = useHistory();
   const { signedIn } = useAuth();
-  const { defaultSneakers } = useMarketPlaceCtx();
-
-  const navigateBuySneakerPage = (sneaker: SearchBarSneaker) =>
-    redirectBuySneakerPage(history, sneaker.name, sneaker.colorway);
 
   return (
     <StyledNavbar expand='lg'>
@@ -67,20 +56,16 @@ const HomeNavbar = () => {
       </div>
 
       <Collapse isOpen={openNav} navbar>
-        <SearchBarWrapper>
-          <SneakerSearchBar sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
-        </SearchBarWrapper>
-
-        <Nav navbar>
+        <StyledNav navbar>
           <NavItem>
-            <div style={{ color: 'black', cursor: 'pointer' }} onClick={onOpenLeaderBoard} className='nav-link'>
+            <div onClick={onOpenLeaderBoard} className='nav-link pointer'>
               Leaderboard
             </div>
           </NavItem>
 
           {signedIn && (
             <NavItem data-testid='homebar-dashboard-link'>
-              <Link style={{ color: 'black' }} to={ADMIN + DASHBOARD} className='nav-link'>
+              <Link to={ADMIN + DASHBOARD} className='nav-link'>
                 Dashboard
               </Link>
             </NavItem>
@@ -88,21 +73,31 @@ const HomeNavbar = () => {
 
           {signedIn ? (
             <NavItem onClick={() => signOut()}>
-              <Link style={{ color: 'black' }} to={HOME} className='nav-link'>
+              <Link to={HOME} className='nav-link'>
                 Logout
               </Link>
             </NavItem>
           ) : (
             <NavItem>
-              <Link className='nav-link' style={{ color: 'black' }} to={AUTH + SIGNIN}>
+              <Link className='nav-link' to={AUTH + SIGNIN}>
                 <i className='now-ui-icons users_circle-08' /> Login
               </Link>
             </NavItem>
           )}
-        </Nav>
+        </StyledNav>
       </Collapse>
     </StyledNavbar>
   );
 };
+
+const StyledNav = styled(Nav)`
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  /* the color will be white in the market place */
+  color: black;
+`;
 
 export default HomeNavbar;

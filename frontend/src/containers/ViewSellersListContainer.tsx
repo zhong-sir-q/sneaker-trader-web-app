@@ -21,6 +21,8 @@ import onConfirmPurchaseSneaker from 'usecases/onConfirmPurchaseSneaker';
 import { CreateTransactionPayload, ListedSneakerSeller, Sneaker } from '../../../shared';
 
 import sneakerInfoFromPath from 'utils/sneakerInfoFromPath';
+import AlertDialog from 'components/AlertDialog';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 class NoSuchSneakerInDbError extends Error {}
 
@@ -31,6 +33,8 @@ const ViewSellersListContainer = () => {
   // use this state so ViewSellerList will do load animation if it is true
   const [processingPurchase, setProcessingPurchase] = useState(false);
 
+  const buySuccessAlertHook = useOpenCloseComp();
+
   const history = useHistory();
 
   const { signedIn, currentUser } = useAuth();
@@ -39,18 +43,19 @@ const ViewSellersListContainer = () => {
     (async () => {
       if (!signedIn) {
         // use localStorage to cache the route, because the state will be cleared after redirect
-        localStorage.setItem('cached_route', history.location.pathname)
+        localStorage.setItem('cached_route', history.location.pathname);
         history.push(AUTH + SIGNIN, history.location.pathname);
         return;
       }
 
       // signed in, but allow some time to fetch the user object
-      if (!currentUser) return
+      if (!currentUser) return;
 
       const sneakerInfo = sneakerInfoFromPath(history.location.pathname);
 
       const sneakerToBuy = await SneakerControllerInstance.getByNameColorwaySize(
-        sneakerInfo.nameColorway,
+        sneakerInfo.name,
+        sneakerInfo.colorway,
         sneakerInfo.size
       );
 
@@ -60,7 +65,8 @@ const ViewSellersListContainer = () => {
 
       const sellersBySneakerNameSize = await SellerControllerInstance.getSellersBySneakerNameSize(
         currentUser.id,
-        sneakerInfo.nameColorway,
+        sneakerInfo.name,
+        sneakerInfo.colorway,
         sneakerInfo.size
       );
 
@@ -130,7 +136,7 @@ const ViewSellersListContainer = () => {
       sellerUserName: username,
       buyerUserName: currentUser!.username,
       buyerEmail: currentUser!.email,
-      productName: `Size ${sneakerInfo.size} ${sneakerInfo.nameColorway}`,
+      productName: `Size ${sneakerInfo.size} ${sneakerInfo.name} ${sneakerInfo.colorway}`,
     };
 
     await onConfirmPurchaseSneaker(
@@ -141,9 +147,12 @@ const ViewSellersListContainer = () => {
     )(mailPayload, transaction, decreaseWalletBalPayload);
 
     // after success purchase
-    alert('The seller will be in touch with you shortly');
-    history.push(HOME);
-    window.location.reload();
+    buySuccessAlertHook.onOpen();
+
+    setTimeout(() => {
+      history.push(HOME);
+      window.location.reload();
+    }, 2000);
   };
 
   const onCancel = () => history.goBack();
@@ -157,19 +166,27 @@ const ViewSellersListContainer = () => {
   const onSelectSeller = (idx: number) => setSelectedSellerIdx(idx);
 
   return (
-    <ViewSellersList
-      {...{
-        sellers,
-        selectedSellerIdx,
-        displaySneaker,
-        sortSellersByAskingPriceAscending,
-        sortSellersByAskingPriceDescending,
-        onSelectSeller,
-        onCancel,
-        onConfirm,
-        processingPurchase,
-      }}
-    />
+    <React.Fragment>
+      <ViewSellersList
+        {...{
+          sellers,
+          selectedSellerIdx,
+          displaySneaker,
+          sortSellersByAskingPriceAscending,
+          sortSellersByAskingPriceDescending,
+          onSelectSeller,
+          onCancel,
+          onConfirm,
+          processingPurchase,
+        }}
+      />
+      <AlertDialog
+        message='The seller will be in touch with you shortly'
+        open={buySuccessAlertHook.open}
+        onClose={buySuccessAlertHook.onClose}
+        color='success'
+      />
+    </React.Fragment>
   );
 };
 

@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DropzoneState, useDropzone } from 'react-dropzone';
 
 import styled from 'styled-components';
 import { Button, Card, CardFooter, CardHeader, CardBody } from 'reactstrap';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
+
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import { LISTING_FILE_UPLOAD_LIMIT } from 'const/variables';
+import EditPhotoDialog from './dialog/EditPhotoDialog';
 
 const getColor = (props: DropzoneState) => {
   if (props.isDragAccept) {
@@ -24,48 +28,7 @@ const DropZoneContainer = styled.div`
   background-color: #fafafa;
   color: #bdbdbd;
   transition: border 0.24s ease-in-out;
-`;
-
-const PreviewAside = styled.aside`
-  display: flex;
-  max-height: 350px;
-`;
-
-type ThumbProps = {
-  isImageSelected: boolean;
-  isFirstChild: boolean;
-};
-
-const Thumb = styled.div<ThumbProps>`
-  display: flex;
-  position: relative;
-  flex: 1 1 0;
-  flex-direction: column;
-  align-items: center;
-  border: 2.5px solid;
-  margin-top: 10px;
-  max-width: 265px;
-  padding-bottom: 23.5%;
-  margin-left: ${({ isFirstChild }) => (isFirstChild ? 0 : '10px')};
-  border-color: ${({ isImageSelected }) => (isImageSelected ? 'green' : '#eaeaea')};
-`;
-
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  margin-bottom: 5px;
-`;
-
-const GreenDot = styled.span`
-  height: 8px;
-  width: 8px;
-  background-color: green;
-  border-radius: 50%;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 3px;
+  margin-bottom: 10px;
 `;
 
 export type PreviewFile = File & {
@@ -74,30 +37,18 @@ export type PreviewFile = File & {
 };
 
 type PreviewImagesDropZoneProps = {
-  onPrevStep: () => void;
-  onNextStep: () => void;
+  onPrevStep?: () => void;
+  onNextStep?: () => void;
 };
 
 const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   const { onPrevStep, onNextStep } = props;
-  const { files, mainFileId, onDropFile, onRemoveFile, updateFileId } = usePreviewImgDropzoneCtx();
-
-  const thumbs = files.map((file, idx) => (
-    <Thumb isImageSelected={mainFileId === file.id} isFirstChild={idx === 0} key={file.id}>
-      <PreviewImage onClick={() => updateFileId(file.id)} src={file.preview} alt={file.name} />
-      <i
-        style={{ cursor: 'pointer', position: 'absolute', bottom: '-22px' }}
-        onClick={() => onRemoveFile(file.id)}
-        className='now-ui-icons ui-1_simple-remove'
-        data-testid={`del-preview-${idx}`}
-      />
-    </Thumb>
-  ));
+  const { files, mainFileId, cropperImages, onDropFile, updateMainFileId } = usePreviewImgDropzoneCtx();
 
   // set the first image to be the default main display
   useEffect(() => {
-    if (!mainFileId && thumbs.length > 0) updateFileId(thumbs[0].key as string);
-  }, [mainFileId, thumbs, updateFileId]);
+    if (!mainFileId && files.length > 0) updateMainFileId(files[0].id);
+  }, [mainFileId, files, updateMainFileId]);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     accept: 'image/*',
@@ -107,36 +58,160 @@ const PreviewImagesDropzone = (props: PreviewImagesDropZoneProps) => {
   return (
     <Card style={{ padding: '15px 15px 0px 15px' }}>
       <CardHeader>
-        <p>
-          <GreenDot /> Main Display Image
-        </p>
-        <p className='category' style={{ fontSize: '0.95em' }}>
-          Upload 5 images max
-        </p>
+        <HeaderText>Photos</HeaderText>
+        <LimitText>
+          Upload photos ({files.length}/{LISTING_FILE_UPLOAD_LIMIT})
+        </LimitText>
       </CardHeader>
 
       <CardBody>
-        <DropZoneContainer {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
+        <DropZoneContainer className='text-center' {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
           <input {...getInputProps()} name='files' data-testid='preview-img-dropzone' />
           <span>Select Images</span>
         </DropZoneContainer>
 
-        <PreviewAside data-testid='preview-img-container'>{thumbs}</PreviewAside>
+        {files.length > 0 && (
+          <ImagesWrapper>
+            {files.map((f, idx) => {
+              const cropperImg = cropperImages[idx];
+
+              return <EditableImage file={f} cropperImage={cropperImg} idx={idx} key={idx} />;
+            })}
+          </ImagesWrapper>
+        )}
       </CardBody>
 
-      <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <Button onClick={onPrevStep}>Previous</Button>
-        <Button
-          disabled={files.length === 0}
-          color='primary'
-          onClick={onNextStep}
-          data-testid='dropzone-confirm-preview-btn'
-        >
-          Preview
-        </Button>
-      </CardFooter>
+      {onPrevStep && onNextStep && (
+        <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
+          <Button onClick={onPrevStep}>Previous</Button>
+          <Button
+            disabled={files.length === 0}
+            color='primary'
+            onClick={onNextStep}
+            data-testid='dropzone-confirm-preview-btn'
+          >
+            Preview
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };
+
+type EditableImageProps = {
+  file: PreviewFile;
+  cropperImage: string;
+  idx: number;
+};
+
+const EditableImage = (props: EditableImageProps) => {
+  const { file, cropperImage, idx } = props;
+
+  // set is cropping to always true, the rotate function relies
+  // on the cropper to be mounted.
+
+  const [isCropping] = useState(true);
+
+  const {
+    mainFileId,
+    onRemoveFile,
+    updateFile,
+    updateMainFileId,
+    onRemoveFromCropperImagesByIdx,
+  } = usePreviewImgDropzoneCtx();
+
+  const { open, onOpen, onClose } = useOpenCloseComp();
+
+  const noop = () => {};
+
+  // the img may or may not have been edited
+  // update the data url of the respective image
+  const onDoneEditing = (editedImg: string) => {
+    updateFile(editedImg, file.id);
+    onClose();
+  };
+
+  const onSetMain = (img: string) => {
+    updateFile(img, file.id);
+    updateMainFileId(file.id);
+  };
+
+  const onRemove = () => {
+    onClose();
+    onRemoveFromCropperImagesByIdx(idx);
+    onRemoveFile(file.id);
+  };
+
+  return (
+    <React.Fragment>
+      <BackgroundImgWrapper onClick={onOpen}>
+        <BackgroundImg background={file.preview}>
+          <HeightController aspectratio='100%' />
+        </BackgroundImg>
+      </BackgroundImgWrapper>
+      <EditPhotoDialog
+        open={open}
+        imgSrc={cropperImage}
+        isCropping={isCropping}
+        isMain={file.id === mainFileId}
+        toggleIsCropping={noop}
+        onDone={onDoneEditing}
+        onDelete={onRemove}
+        setAsMain={onSetMain}
+      />
+    </React.Fragment>
+  );
+};
+
+const HeaderText = styled.div`
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  line-height: 36px;
+  font-weight: 700;
+`;
+
+const LimitText = styled.div`
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 24px;
+`;
+
+const ImagesWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+type BackgroundImgProps = {
+  background: string;
+};
+
+const BackgroundImg = styled.div<BackgroundImgProps>`
+  background-image: url(${({ background }) => `"${background}"`});
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid #d7d5d2;
+  border-radius: 8px;
+  flex: 0 0 auto;
+`;
+
+const BackgroundImgWrapper = styled.div`
+  width: 33.333%;
+  padding: 0 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 50%;
+  }
+`;
+
+type HeightControllerProps = {
+  aspectratio: string;
+};
+
+const HeightController = styled.div<HeightControllerProps>`
+  padding-top: ${({ aspectratio }) => aspectratio};
+`;
 
 export default PreviewImagesDropzone;

@@ -7,7 +7,14 @@ import clearTable from '../../__mocks__/teardown/clearTable';
 import { USERS, TRANSACTION, PRODUCTS, LISTED_PRODUCTS } from '../../config/tables';
 import fakeSneaker from '../../__mocks__/fakeSneaker';
 import fakeListedSneaker from '../../__mocks__/fakeListedSneaker';
-import { endPool } from '../../config/mysql';
+import mysqlPoolConnection, { endPool } from '../../config/mysql';
+
+beforeAll(async () => {
+  const poolConn = await mysqlPoolConnection()
+
+  // disable only full group by
+  await poolConn.query(`SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY', ''))`);
+})
 
 afterAll(async () => {
   await clearTable(TRANSACTION);

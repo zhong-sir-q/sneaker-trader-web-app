@@ -12,15 +12,9 @@ import SneakerControllerInstance from 'api/controllers/SneakerController';
 import BuySneakerPage from 'pages/BuySneakerPage';
 
 import { Sneaker, SizeMinPriceGroupType, SneakerAsk, Size } from '../../../shared';
-
-const nameColorwayFromPath = () => {
-  const { pathname } = window.location;
-
-  const pathArray = pathname.split('/');
-  const shoeNameColorway = pathArray[pathArray.length - 1].split('-').join(' ');
-
-  return shoeNameColorway;
-};
+import AlertDialog from 'components/AlertDialog';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import { nameColorwayFromPath } from 'utils/utils';
 
 const BuySneakerPageContainer = () => {
   const [selectedSize, setSelectedSize] = useState<Size>('all');
@@ -35,19 +29,24 @@ const BuySneakerPageContainer = () => {
 
   const [selectedSizeMinPrice, setSelectedSizeMinPrice] = useState<number>();
 
+  const alertDialogHook = useOpenCloseComp();
+
   const { currentUser } = useAuth();
 
   const history = useHistory();
 
   const onComponentMounted = useCallback(async () => {
-    const shoeNameColorway = nameColorwayFromPath();
+    const [shoeName, shoeColorway] = nameColorwayFromPath(window.location.pathname);
+
     const sizeMinPriceItems = await ListedSneakerControllerInstance.getSizeMinPriceGroupByNameColorway(
-      shoeNameColorway,
+      shoeName,
+      shoeColorway,
       currentUser ? currentUser.id : -1
     );
-    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeNameColorway);
 
-    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeNameColorway);
+    const asks = await ListedSneakerControllerInstance.getAllAsksByNameColorway(shoeName, shoeColorway);
+
+    const sneaker = await SneakerControllerInstance.getFirstByNameColorway(shoeName, shoeColorway);
 
     if (!sneaker) {
       history.push(HOME);
@@ -82,6 +81,7 @@ const BuySneakerPageContainer = () => {
 
     if (selectedSize === 'all') {
       setChooseBuyAll(true);
+      alertDialogHook.onOpen();
       return;
     }
 
@@ -91,21 +91,29 @@ const BuySneakerPageContainer = () => {
   const onCloseViewAllAsksModal = () => setOpenViewAskModal(false);
 
   return (
-    <BuySneakerPage
-      {...{
-        selectedSize,
-        displaySneaker,
-        sizeMinPriceGroup,
-        filterAllAsks,
-        openViewAskModal,
-        chooseBuyAll,
-        selectedSizeMinPrice,
-        onCloseViewAllAsksModal,
-        onViewAllAsks,
-        onBuy,
-        onClickSizeTile,
-      }}
-    />
+    <React.Fragment>
+      <BuySneakerPage
+        {...{
+          selectedSize,
+          displaySneaker,
+          sizeMinPriceGroup,
+          filterAllAsks,
+          openViewAskModal,
+          chooseBuyAll,
+          selectedSizeMinPrice,
+          onCloseViewAllAsksModal,
+          onViewAllAsks,
+          onBuy,
+          onClickSizeTile,
+        }}
+      />
+      <AlertDialog
+        open={alertDialogHook.open}
+        color='info'
+        message='Please select a size!'
+        onClose={alertDialogHook.onClose}
+      />
+    </React.Fragment>
   );
 };
 

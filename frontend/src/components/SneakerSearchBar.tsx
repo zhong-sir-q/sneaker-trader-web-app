@@ -1,47 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
-import { ListGroup, ListGroupItem, ListGroupItemText, InputGroup } from 'reactstrap';
+import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
+
+// import InfiniteScroll from 'react-infinite-scroll-component';
 
 import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
-
-const ListItemImg = styled.img`
-  height: 125px;
-  width: 125px;
-  margin-right: 10px;
-
-  @media (min-width: 768px) {
-    height: 130px;
-    width: 150px;
-    margin-right: 20px;
-  }
-`;
+import LazyBackgroundImg from './img/LazyBackgroundImg';
 
 const StyledInput = styled.input`
   width: 100%;
   padding-left: 35px;
+  border-radius: 3px;
+  border: none;
+  background-color: #f6f6f6;
+  padding-right: 15px;
+  box-shadow: none;
+  text-overflow: ellipsis;
+  height: 44px;
 
   /* apply margin to the input before collapse */
   @media (min-width: 991px) {
     margin-right: 15px;
   }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
-const StyledListGroup = styled(ListGroup)`
+const SearchIconOutternWrapper = styled.div`
+  position: relative;
+  padding-left: 6px;
+`;
+
+const SearchIconInnerWrapper = styled.div`
+  position: absolute;
+  top: 10px;
+`;
+
+const StyledListGroup = styled(ListGroup)<{ maxheight: string }>`
   position: absolute;
   margin-top: 5px;
   z-index: 1;
   width: 100%;
   overflow: auto;
-  max-height: 500px;
-`;
-
-const SearchIconWrapper = styled.div`
-  position: absolute;
-  padding: 2px;
-  padding-left: 8px;
+  max-height: ${(props) => props.maxheight || '70vh'};
 `;
 
 const StyledListGroupItem = styled(ListGroupItem)`
@@ -60,13 +66,21 @@ const StyledListGroupItemText = styled(ListGroupItemText)`
 
 type SneakerSearchBarProps = {
   sneakers: SearchBarSneaker[];
+  placeholder?: string;
+  suggestionMaxHeight?: string;
+  width?: string;
   onChooseSneaker: (sneaker: SearchBarSneaker) => void;
+  setSneakerNew?: () => void;
+  setSneakerExists?: () => void;
+  updateSearchVal?: (searchVal: string) => void;
 };
 
 const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [searchVal, setSearchVal] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
+
+  const { setSneakerExists, setSneakerNew, updateSearchVal } = props;
 
   const formatName = (sneaker: any) => [sneaker.brand, sneaker.name, sneaker.colorway].join(' ');
 
@@ -77,6 +91,13 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     ? props.sneakers
     : props.sneakers.filter((sneaker) => formatName(sneaker).toLowerCase().indexOf(searchVal.toLowerCase()) > -1);
 
+  useEffect(() => {
+    if (setSneakerExists && setSneakerNew) {
+      if (result.length > 0 || !searchVal) setSneakerExists();
+      else setSneakerNew();
+    }
+  });
+
   const onChange = (evt: any) => {
     const { value } = evt.target;
 
@@ -84,6 +105,8 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     else openSuggestions();
 
     setSearchVal(value);
+
+    if (updateSearchVal) updateSearchVal(value);
   };
 
   const clearSearchVal = () => setSearchVal('');
@@ -104,7 +127,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     } else if (e.key === 'ArrowDown') {
       if (activeSuggestionIdx === result.length - 1) return;
       setActiveSuggestionIdx(activeSuggestionIdx + 1);
-    } else if (e.key === 'Tab') hideSuggestions();
+    } else if (e.key === 'Tab' || e.key === 'Escape') hideSuggestions();
   };
 
   const onMouseDown = () => {
@@ -113,16 +136,25 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      <InputGroup>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInput autoFocus placeholder='Search...' value={searchVal} onChange={onChange} onKeyDown={onKeyDown} />
-      </InputGroup>
+    <div style={{ position: 'relative', width: props.width }}>
+      <StyledInputGroup>
+        <SearchIconOutternWrapper>
+          <SearchIconInnerWrapper>
+            <SearchIcon />
+          </SearchIconInnerWrapper>
+        </SearchIconOutternWrapper>
+        <StyledInput
+          placeholder={props.placeholder || 'Search for brand, color, etc...'}
+          value={searchVal}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          data-testid='listing-form-search-bar'
+          onFocus={() => openSuggestions()}
+        />
+      </StyledInputGroup>
       {showSuggestions && (
         <OutsideClickHandler handler={hideSuggestions}>
-          <StyledListGroup>
+          <StyledListGroup maxheight={props.suggestionMaxHeight}>
             {result.map((item, idx) => (
               <StyledListGroupItem
                 active={activeSuggestionIdx === idx}
@@ -130,7 +162,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
                 onMouseOver={() => setActiveSuggestionIdx(idx)}
                 onMouseDown={onMouseDown}
               >
-                <ListItemImg src={item.mainDisplayImage} />
+                <LazyBackgroundImg BackgroundImgElement={BackgroundImg} background={item.mainDisplayImage} placeholder='_' />
                 <StyledListGroupItemText>{formatName(item)}</StyledListGroupItemText>
               </StyledListGroupItem>
             ))}
@@ -140,5 +172,27 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     </div>
   );
 };
+
+const StyledInputGroup = styled.div``;
+
+// similar component used in PreviewImageDropzone
+type BackgroundImgProps = {
+  background: string;
+};
+
+const BackgroundImg = styled.div<BackgroundImgProps>`
+  background-image: url(${({ background }) => `"${background}"`});
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  padding-bottom: 25%;
+  padding-left: 25%;
+  margin-right: 8px;
+
+  @media (max-width: 768px) {
+    padding-bottom: 30%;
+    padding-left: 30%;
+  }
+`;
 
 export default SneakerSearchBar;

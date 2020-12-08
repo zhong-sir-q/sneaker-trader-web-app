@@ -10,6 +10,8 @@
 .carousel-control-next,
 .carousel-control-prev {
   filter: invert(100%);
+  /* move the arrow outside the carousel slider */
+  margin: -20%;
 }
 
 .carousel {
@@ -161,4 +163,33 @@ i.send:before {
 .message-left span,
 .message-right span {
   font-size: 10px;
+}
+.pointer {
+  cursor: pointer;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.simplebar-track.simplebar-vertical {
+  width: 8px;
+}
+
+.navbar a:not(.btn):not(.dropdown-item) {
+  color: inherit;
+}
+
+.navbar .navbar-nav .nav-item .nav-link:not(.btn):hover {
+  transition: all 300ms ease 0s;
+  opacity: .35;
+  color: inherit;
 }

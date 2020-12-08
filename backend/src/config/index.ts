@@ -2,7 +2,11 @@ import dotenv from 'dotenv';
 import Stripe from 'stripe';
 
 // load variables from .env to process.env
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+const { NODE_ENV } = process.env
+const suffix = !NODE_ENV ? '' : `.${NODE_ENV}`
+// windows only reads from .env rather .env.development
+const envPath = process.platform === 'win32' ? '.env' : `.env${suffix}`
+dotenv.config({ path: envPath });
 
 const config = {
   sqlConnectionConfig: {

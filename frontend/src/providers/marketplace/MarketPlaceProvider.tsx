@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useContext, useState, useEffect, useCa
 
 import { useAuth } from 'providers/AuthProvider';
 
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import ListedSneakerControllerInstance, { ListedSneakerController } from 'api/controllers/ListedSneakerController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
 
 import { GallerySneaker } from '../../../../shared';
@@ -22,6 +22,11 @@ type MarketPlaceCtxType = {
   filterSneakers: GallerySneaker[] | undefined;
   brands: string[] | undefined;
   filterItemGroup: FilterItem[];
+  numFilters: number;
+  hasMoreListedSneakers: boolean;
+  isFetching: boolean;
+  clearFilters: () => void;
+  fetchMoreListedSneakers: () => void;
   isFilterSelected: (filterVal: string) => boolean;
   updateFilterSneakers: (sneakersToShow: GallerySneaker[]) => void;
   onSelectFilter: SelectFilterHandler;
@@ -32,6 +37,12 @@ const INIT_CTX: MarketPlaceCtxType = {
   filterSneakers: undefined,
   brands: undefined,
   filterItemGroup: [],
+  numFilters: 0,
+  hasMoreListedSneakers: true,
+  isFetching: false,
+  clearFilters: () => {
+    throw new Error('Must override!');
+  },
   updateFilterSneakers: () => {
     throw new Error('Must override!');
   },
@@ -41,11 +52,16 @@ const INIT_CTX: MarketPlaceCtxType = {
   isFilterSelected: () => {
     throw new Error('Must override!');
   },
+  fetchMoreListedSneakers: () => {
+    throw new Error('Must override!');
+  },
 };
 
 export const MarketPlaceCtx = createContext(INIT_CTX);
 
 export const useMarketPlaceCtx = () => useContext(MarketPlaceCtx);
+
+const LIMIT = 10;
 
 const getSneakersBySizes = async (sizes: number[], sellerId: number) => {
   const nestedSneakers = await Promise.all(
@@ -61,32 +77,54 @@ const getSneakersBySizes = async (sizes: number[], sellerId: number) => {
 const filterByBrands = (sneakers: GallerySneaker[], brands: string[]) =>
   sneakers.filter((s) => brands.includes(s.brand));
 
-const MarketPlaceProvider = (props: { children: ReactNode }) => {
+const MarketPlaceProvider = (props: { children: ReactNode; listedSneakerController: ListedSneakerController }) => {
   const [defaultSneakers, setDefaultSneakers] = useState<GallerySneaker[]>();
   const [filterSneakers, setFilterSneakers] = useState<GallerySneaker[]>();
   const [brands, setBrands] = useState<string[]>();
 
   const [filterItemGroup, setFilterItemGroup] = useState<FilterItem[]>([]);
 
+  const [hasMoreListedSneakers, setHasMoreListedSneakers] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+
+  // 10 because initially we will fetch 10 sneakers
+  const [offset, setOffset] = useState(10);
+
+  const updateOffset = () => setOffset(offset + LIMIT);
+
   const { currentUser, signedIn } = useAuth();
 
   const updateFilterSneakers = useCallback((sneakers: GallerySneaker[]) => setFilterSneakers(sneakers), []);
+
+  // paginate the fetch listed sneakers request
+  const fetchMoreListedSneakers = () =>
+    setTimeout(async () => {
+      const more = await props.listedSneakerController.getGallerySneakers(-1, LIMIT, offset);
+      setFilterSneakers(filterSneakers?.concat(more));
+      updateOffset();
+      if (more.length === 0) setHasMoreListedSneakers(false);
+    }, 500);
 
   useEffect(() => {
     (async () => {
       let gallerySneakers: GallerySneaker[] = [];
 
       // if the user is not logged in, then render all gallery sneakers
-      if (!signedIn) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(-1);
+      if (!signedIn) gallerySneakers = await props.listedSneakerController.getGallerySneakers(-1);
       // otherwise hide the sneakers the seller has listed
-      else if (currentUser) gallerySneakers = await ListedSneakerControllerInstance.getGallerySneakers(currentUser.id);
+      else if (currentUser) gallerySneakers = await props.listedSneakerController.getGallerySneakers(currentUser.id);
 
       setDefaultSneakers(gallerySneakers);
       setFilterSneakers(gallerySneakers);
 
       setBrands(await HelperInfoControllerInstance.getBrands());
     })();
-  }, [signedIn, currentUser]);
+  }, [props.listedSneakerController, signedIn, currentUser]);
+
+  useEffect(() => {
+    // give it a second to fetch
+    if (isFetching) setTimeout(() => setIsFetching(false), 500);
+  }, [isFetching]);
 
   const filterHandler = useCallback(async () => {
     if (!defaultSneakers) return;
@@ -97,11 +135,13 @@ const MarketPlaceProvider = (props: { children: ReactNode }) => {
 
     // filter by brands and sizes
     if (!_.isEmpty(sizes) && !_.isEmpty(brands)) {
+      setIsFetching(true);
       const sneakersBySizes = await getSneakersBySizes(sizes, userId);
       const sneakersBySizesAndBrands = filterByBrands(sneakersBySizes, brands);
       updateFilterSneakers(sneakersBySizesAndBrands);
       // filter by sizes only
     } else if (!_.isEmpty(sizes)) {
+      setIsFetching(true);
       const sneakersBySizes = await getSneakersBySizes(sizes, userId);
       updateFilterSneakers(sneakersBySizes);
       // filter by brands only
@@ -116,6 +156,8 @@ const MarketPlaceProvider = (props: { children: ReactNode }) => {
     filterHandler();
   }, [filterHandler]);
 
+  const clearFilters = () => setFilterItemGroup([]);
+
   const isFilterSelected = (selectedVal: string) => filterItemGroup.findIndex((f) => f.value === selectedVal) > -1;
 
   const onSelectFilter = (filterKey: FilterByKey, filter: string) => {
@@ -128,10 +170,15 @@ const MarketPlaceProvider = (props: { children: ReactNode }) => {
   return (
     <MarketPlaceCtx.Provider
       value={{
+        brands,
+        isFetching,
         defaultSneakers,
         filterSneakers,
         filterItemGroup,
-        brands,
+        hasMoreListedSneakers,
+        numFilters: filterItemGroup.length,
+        fetchMoreListedSneakers,
+        clearFilters,
         updateFilterSneakers,
         isFilterSelected,
         onSelectFilter,

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { MailAfterPurchasePayload } from '../../../../shared';
+import { MailAfterPurchasePayload, User, Sneaker, ListedProduct, NewRequestSneaker } from '../../../../shared';
 import sendgridMail from '../../config/sendgridMail';
 
 // refactor: define the types
@@ -45,7 +45,57 @@ const formatToBuyerHtmlMessage = (body: {
   </html>
 `;
 
-const TO_SELLER_SUBJECT_AFTER_PURCHASE = 'Someone has requested a purchase of your product!!!';
+const newSneakerRequestMessage = (body: { user: User; listedSneaker: NewRequestSneaker }) => {
+  const { user, listedSneaker } = body;
+  const { id: userId, username, email, firstName, lastName } = user;
+  const { id: listedSneakerId, productId, name: sneakerName, colorway, size, mainDisplayImage } = listedSneaker;
+
+  const values = [
+    userId,
+    username,
+    email,
+    firstName,
+    lastName,
+    listedSneakerId,
+    productId,
+    sneakerName,
+    colorway,
+    size,
+    mainDisplayImage,
+  ];
+
+  const nullIdx = values.findIndex((v) => v === undefined);
+
+  // throw error if an undefined value is found
+  if (nullIdx > -1) throw new Error('Incomplete information for the new sneaker request');
+
+  return `<html>
+      <body>
+        <h2>The following user wants to make a new sneaker request:</h2>
+        <ul style='list-style:none;'>
+          <li>User Id: ${userId}</li>
+          <li>Username: ${username}</li>
+          <li>Email: ${email}</li>
+          <li>
+            Full name: ${firstName} ${lastName}
+          </li>
+        </ul>
+        <p>The requested sneaker is:</p>
+        <div>
+          <img src=${mainDisplayImage} alt=${sneakerName} />
+        </div>
+        <ul style='list-style:none;'>
+          <li>Listed sneaker Id: ${listedSneakerId}</li>
+          <li>Product Id: ${productId}</li>
+          <li>Sneaker Name: ${sneakerName}</li>
+          <li>Colorway: ${colorway}</li>
+          <li>Size: ${size}</li>
+        </ul>
+      </body>
+    </html>`;
+};
+
+const TO_SELLER_SUBJECT_AFTER_PURCHASE = 'A buyer wants to buy your listed sneakers!';
 const TO_BUYER_SUBJECT_AFTER_PURCHASE = 'Purchase at Sneaker Trader confirmation';
 
 class MailService {
@@ -79,6 +129,17 @@ class MailService {
       .send(toBuyerMsg)
       .then((result) => res.status(result[0].statusCode).json('Email sent to both buyer and seller'))
       .catch(next);
+  };
+
+  handleNewSneakerRequest = (user: User, newSneaker: Sneaker & ListedProduct) => {
+    const msg = {
+      to: 'hello@sneakertrader.com',
+      from: 'hello@sneakertrader.com',
+      subject: 'User new sneaker request',
+      html: newSneakerRequestMessage({ user, listedSneaker: newSneaker }),
+    };
+
+    return sendgridMail.send(msg);
   };
 }
 

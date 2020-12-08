@@ -12,10 +12,10 @@ const mockUserOne = fakeUser();
 
 let userId: number = -1;
 
-afterAll(() => {
-  clearTable(ADDRESS_VERIFICATION_CODE)
-  clearTable(ADDRESS)
-  clearTable(USERS)
+afterAll(async () => {
+  await clearTable(ADDRESS_VERIFICATION_CODE)
+  await clearTable(ADDRESS)
+  await clearTable(USERS)
 });
 
 describe('Address routes', () => {

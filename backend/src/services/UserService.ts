@@ -82,10 +82,20 @@ class UserService implements UserServiceEntity {
   async getAllUserRankingPoints(): Promise<UserRankingRow[]> {
     const poolConn = await mysqlPoolConnection();
 
+    // points for buying or selling the sneaker
+    const getTransactionPoints = `
+      SELECT U.id as userId, profilePicUrl, COUNT(*) AS transactionPoints
+        FROM Transactions T, Users U  WHERE sellerId = U.id OR buyerId = U.id 
+          GROUP BY U.id ORDER BY transactionPoints DESC`;
+
+    // points for listing the sneaker
+    const getListingPoints = `
+      SELECT U.id as userId, username, COUNT(*) as listingPoints FROM Users U, ListedProducts L
+         WHERE L.userId = U.id GROUP BY U.id ORDER BY listingPoints DESC`;
+
     const query = `
-      SELECT U.username, U.profilePicUrl, COUNT(*) AS rankingPoints FROM Transactions T, Users U 
-        WHERE sellerId = U.id OR buyerId = U.id GROUP BY U.id ORDER BY rankingPoints DESC
-    `;
+      SELECT username, profilePicUrl, (listingPoints + transactionPoints) as rankingPoints FROM (${getTransactionPoints}) X 
+        INNER JOIN (${getListingPoints}) Y ON X.userId = Y.userId`;
 
     return poolConn.query(query);
   }

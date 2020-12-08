@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import moment from 'moment';
 
 import UserControllerInstance from 'api/controllers/UserController';
+import { upperCaseFirstLetter } from './utils';
 
 const REQUIRED = '* Required';
 
@@ -17,7 +18,8 @@ export const equalDigits = (digits: number) =>
     return false;
   });
 
-export const required = () => Yup.string().required(REQUIRED);
+export const required = (fieldName?: string) =>
+  Yup.string().required(fieldName ? `${upperCaseFirstLetter(fieldName)} is required` : REQUIRED);
 
 export const customRequired = (message: string) => Yup.string().required(message);
 
@@ -26,7 +28,9 @@ export const validEmail = () => Yup.string().email('Invalid email address').requ
 export const validDate = (dateFormat: string) =>
   Yup.string()
     .required(REQUIRED)
-    .test('valid-date', `Valid date format: ${dateFormat}`, (datevalue) => moment(datevalue, dateFormat, true).isValid());
+    .test('valid-date', `Date format should be: ${dateFormat}`, (datevalue) =>
+      moment(datevalue, dateFormat, true).isValid()
+    );
 
 export const matchingPassword = (pwFieldName: string) =>
   Yup.string()
@@ -65,8 +69,8 @@ export const checkDuplicateUsername = (userId?: number) =>
 
 export const noSpecialChar = () =>
   Yup.string()
-    .matches(/^[a-zA-Z0-9\s]+$/, 'No special characters')
+    .matches(/^[a-zA-Z0-9.-\s]+$/, 'No special characters')
     .required(REQUIRED);
 
-export const minNumber = (lowerLim: number, msg: string) => Yup.number().min(lowerLim, msg).required(REQUIRED);
-export const allowedRange = (lo: number, hi: number) => Yup.number().min(lo).max(hi).required(REQUIRED);
+export const minNumber = (lowerLim: number, message: string) => Yup.number().min(lowerLim, message);
+export const allowedRange = (lo: number, hi: number) => Yup.number().min(lo).max(hi);

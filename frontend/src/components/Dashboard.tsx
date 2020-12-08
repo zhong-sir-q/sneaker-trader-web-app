@@ -3,6 +3,8 @@ import React from 'react';
 // reactstrap components
 import { Card, CardBody, Row, Col } from 'reactstrap';
 
+import { Skeleton } from '@material-ui/lab';
+
 import PanelHeader from './PanelHeader';
 import TransactionDualHistoryTable from './dashboard/TransactionDualHistoryTable';
 import SaleHistoryTable from './dashboard/SaleHistoryTable';
@@ -11,7 +13,6 @@ import ListedSneakerCounts from './dashboard/ListedSneakerCounts';
 import UserRankingPoints from './dashboard/UserRankingPoints';
 import SoldSneakerCounts from './dashboard/SoldSneakerCounts';
 import MonthlyProfit from './dashboard/charts/MonthlyProfit';
-import CenterSpinner from './CenterSpinner';
 
 import WalletBalance from './dashboard/WalletBalance';
 import { useUserStatsCtx } from 'providers/marketplace/UserStatsProvider';
@@ -25,19 +26,15 @@ import { useWalletCtx } from 'providers/WalletProvider';
  * - the value of your sneakers going up or down monthly (Trend)
  */
 
+const StatSkeleton = () => <Skeleton height={150} />;
+
 const Dashboard = () => {
   const { rankingPoints, listedSneakerCounts, completedSaleCounts, monthlyCumProfit } = useUserStatsCtx();
 
   const { walletBalance } = useWalletCtx();
 
   // check against undefined, because if if any of the value is 0, then it will render the spinner forever
-  return rankingPoints === undefined ||
-    listedSneakerCounts === undefined ||
-    completedSaleCounts === undefined ||
-    walletBalance === null ||
-    !monthlyCumProfit ? (
-    <CenterSpinner />
-  ) : (
+  return (
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content'>
@@ -47,16 +44,28 @@ const Dashboard = () => {
               <CardBody>
                 <Row>
                   <Col md='3'>
-                    <UserRankingPoints rankingPoints={rankingPoints} />
+                    {rankingPoints === undefined ? (
+                      <StatSkeleton />
+                    ) : (
+                      <UserRankingPoints rankingPoints={rankingPoints} />
+                    )}
                   </Col>
                   <Col md='3'>
-                    <ListedSneakerCounts counts={listedSneakerCounts} />
+                    {listedSneakerCounts === undefined ? (
+                      <StatSkeleton />
+                    ) : (
+                      <ListedSneakerCounts counts={listedSneakerCounts} />
+                    )}
                   </Col>
                   <Col md='3'>
-                    <WalletBalance balance={walletBalance} />
+                    {walletBalance === null ? <StatSkeleton /> : <WalletBalance balance={walletBalance} />}
                   </Col>
                   <Col md='3'>
-                    <SoldSneakerCounts counts={completedSaleCounts} />
+                    {completedSaleCounts === undefined ? (
+                      <StatSkeleton />
+                    ) : (
+                      <SoldSneakerCounts counts={completedSaleCounts} />
+                    )}
                   </Col>
                 </Row>
               </CardBody>
@@ -65,7 +74,7 @@ const Dashboard = () => {
         </Row>
         <Row>
           <Col>
-            <MonthlyProfit monthlyCumProfit={monthlyCumProfit} />
+            {monthlyCumProfit === undefined ? <Skeleton height={300} /> : <MonthlyProfit monthlyCumProfit={monthlyCumProfit} />}
           </Col>
         </Row>
         <Row>

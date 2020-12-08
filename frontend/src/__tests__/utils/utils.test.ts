@@ -3,7 +3,6 @@ import sneakerInfoFromPath from 'utils/sneakerInfoFromPath';
 import {
   upperCaseFirstLetter,
   mapUpperCaseFirstLetter,
-  range,
   getMainDisplayImgUrl,
   formatSneakerNameColorway,
   formatSneakerPathName,
@@ -23,7 +22,7 @@ describe('Utility functions', () => {
       expect(sneakerInfoFromPath(mockPath)).toThrowError();
     } catch {}
 
-    const mockPath = '/abc/market.k/pfafds/afa/lebron-james-sk/12';
+    const mockPath = '/abc/market.k/pfafds/afa/lebron-james.sk/12';
 
     // max of i is 4 because there are 4 paths before the sneaker name colorway
     for (let i = 0; i < 5; i++) {
@@ -32,12 +31,14 @@ describe('Utility functions', () => {
       const info = sneakerInfoFromPath(path);
 
       const desiredObj = {
-        nameColorway: expect.any(String),
+        name: expect.any(String),
+        colorway: expect.any(String),
         size: expect.any(Number),
       };
 
       expect(info).toMatchObject(desiredObj);
-      expect(info.nameColorway).toBe('lebron james sk');
+      expect(info.name).toBe('lebron james');
+      expect(info.colorway).toBe('sk');
       expect(info.size).toBe(12);
     }
   });
@@ -56,30 +57,15 @@ describe('Utility functions', () => {
     const s1 = 'this Is a Rand text';
     expect(mapUpperCaseFirstLetter(s1, ' ')).toBe('This Is A Rand Text');
 
-    // the separator is ',', so it will only uppercase the first letter of the string
+    // uppercase the first letter of the string
     expect(mapUpperCaseFirstLetter(s1, ',')).toBe('This Is a Rand text');
-  });
-
-  // exclusive of the end
-  test('Create a list of numbers given a range', () => {
-    const nums1 = range(1, 4, 1);
-    expect(nums1).toEqual([1, 2, 3]);
-
-    const nums2 = range(5, 1, -1);
-    expect(nums2).toEqual([5, 4, 3, 2]);
-
-    const nums3 = range(10, 2, 1);
-    expect(nums3).toEqual([]);
-
-    const nums4 = range(10, 20, 0);
-    expect(nums4).toEqual([10]);
   });
 
   test('Get main display image url', () => {
     const u1 = 'abc, opq, xyz';
 
     expect(getMainDisplayImgUrl(u1)).toBe('abc');
-    expect(getMainDisplayImgUrl(undefined)).toBe(undefined);
+    expect(getMainDisplayImgUrl(undefined)).toBe('');
   });
 
   test('Format sneaker name colorway', () => {
@@ -93,6 +79,10 @@ describe('Utility functions', () => {
     const n1 = 'Kobe';
     const c1 = 'Black';
 
-    expect(formatSneakerPathName(n1, c1)).toBe('Kobe-Black');
+    const n2 = 'slim kd 5';
+    const colorway = 'red and blue';
+
+    expect(formatSneakerPathName(n1, c1)).toBe('Kobe.Black');
+    expect(formatSneakerPathName(n2, colorway)).toBe('slim-kd-5.red-and-blue');
   });
 });

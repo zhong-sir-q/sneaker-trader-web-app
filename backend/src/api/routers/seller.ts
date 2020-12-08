@@ -6,14 +6,11 @@ const sellersRoute = Router();
 export default (app: Router, SellerServiceInstance: SellerService) => {
   app.use('/seller', sellersRoute);
 
-  sellersRoute.get('/:currentUserId', async (req, res, next) => {
-    const { currentUserId } = req.params;
-    const { sneakerName, size } = req.query;
+  sellersRoute.get('/:currentUserId/:name/:colorway/:size', async (req, res, next) => {
+    const { currentUserId, name, colorway, size } = req.params;
 
-    if (sneakerName && size) {
-      SellerServiceInstance.getSellersBySneakerNameSize(Number(currentUserId), sneakerName as string, Number(size))
-        .then((sellers) => res.json(sellers))
-        .catch(next);
-    } else res.status(404).json('Invalid params recieved at /sellers');
+    SellerServiceInstance.getSellersBySneakerNameSize(Number(currentUserId), name, colorway, Number(size))
+      .then((sellers) => res.json(sellers))
+      .catch(next);
   });
 };

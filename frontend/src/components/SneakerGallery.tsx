@@ -1,37 +1,71 @@
 import React from 'react';
-import { Container, Row } from 'reactstrap';
 import { GallerySneaker } from '../../../shared';
-import SneakerCard from './SneakerCard';
 
 import { getMainDisplayImgUrl } from 'utils/utils';
+import { useHistory } from 'react-router-dom';
+import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+import usePagination from 'hooks/usePagination';
+import styled from 'styled-components';
+import FixedAspectRatioSneakerCard from './FixedAspectRatioSneakerCard';
 
 type SneakerGalleryProps = {
   sneakers: GallerySneaker[];
 };
 
+const Flexbox = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const Wrapper = styled.div`
+  width: 100%;
+`;
+
 const SneakerGallery = (props: SneakerGalleryProps) => {
-  const render = () => {
-    return (
-      <Container>
-        <Row data-testid='market-place-gallery' xs='2' sm='2' md='3' lg='3'>
-          {props.sneakers.map((s, idx) => {
-            return (
-              <SneakerCard
-                className='p-1'
+  const history = useHistory();
+  const { startRowCount, endRowCount, PaginationComponent } = usePagination(props.sneakers.length, 15);
+
+  return (
+    <Wrapper>
+      <Flexbox data-testid='market-place-gallery'>
+        {props.sneakers.slice(startRowCount(), endRowCount()).map((s, idx) => {
+          const onClick = () => redirectBuySneakerPage(history, s.name, s.colorway);
+
+          return (
+            <CardWrapper key={idx}>
+              <FixedAspectRatioSneakerCard
                 mainDisplayImage={getMainDisplayImgUrl(s.imageUrls)}
                 isListed
                 sneaker={s}
-                key={idx}
                 price={s.minPrice}
+                onClick={onClick}
+                key={idx}
               />
-            );
-          })}
-        </Row>
-      </Container>
-    );
-  };
-
-  return render();
+            </CardWrapper>
+          );
+        })}
+      </Flexbox>
+      {props.sneakers.length > 0 && (
+        <div className='flex justify-center'>
+          <PaginationComponent />
+        </div>
+      )}
+    </Wrapper>
+  );
 };
+
+const CardWrapper = styled.div`
+  flex: 0 0 33%;
+  padding: 8px;
+
+  @media (max-width: 1024px) {
+    flex: 0 0 50%;
+    padding: 4px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+`;
 
 export default SneakerGallery;

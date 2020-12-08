@@ -21,14 +21,13 @@ import { useAuth } from 'providers/AuthProvider';
 
 import onSubmitAddrVerificationForm from 'usecases/address_verification/onSubmitAddrVerificationForm';
 import completeVerifyAddress from 'usecases/address_verification/completeVerifyAddress';
+import AlertDialog from './AlertDialog';
 
 export const DEFAULT_ADDRESS: Omit<Address, 'zipcode'> & { zipcode: number | '' } = {
   street: '',
   city: '',
   region: '',
   suburb: '',
-  // make it undefined instead of empty string
-  // so it renders a blank field rather than a 0
   zipcode: '',
   country: 'New Zealand',
   verificationStatus: 'not_verified',
@@ -52,7 +51,12 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
   const { address } = props;
 
   const { currentUser } = useAuth();
-  const { open, onClose, onOpen } = useOpenCloseComp();
+
+  const confirmCodeDialogHook = useOpenCloseComp();
+  const updateAddressSuccessAlertHook = useOpenCloseComp();
+  const addrVerifiedSuccessAlertHook = useOpenCloseComp();
+  const invalidCodeAlertHook = useOpenCloseComp();
+  const requestVerificationAlertHook = useOpenCloseComp();
 
   const [verificationCode, setVerificationCode] = useState<number>();
 
@@ -68,10 +72,11 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
 
   const disableField = () => address.verificationStatus === 'in_progress';
 
-  const onFailCompleteVerification = () => alert('Verification code is not valid');
+  const onFailCompleteVerification = () => invalidCodeAlertHook.onOpen();
+
   const onSuccessCompleteVerification = async () => {
-    alert('Congratulations, your address is verified!');
-    onClose();
+    addrVerifiedSuccessAlertHook.onOpen();
+    confirmCodeDialogHook.onClose();
     props.goLoadAddress();
   };
 
@@ -85,12 +90,17 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
     )(currentUser.id, verificationCode);
   };
 
-  const onUpdateAddressSuccess = () => alert('Address is updated!');
+  const onUpdateAddressSuccess = () => updateAddressSuccessAlertHook.onOpen();
+  const onRequestVerificationSuccess = () => requestVerificationAlertHook.onOpen();
 
   const onSubmit = async (addr: Address) => {
     if (!currentUser) return;
 
-    await onSubmitAddrVerificationForm(AddressControllerInstance, onUpdateAddressSuccess)(currentUser.id, addr);
+    await onSubmitAddrVerificationForm(
+      AddressControllerInstance,
+      onUpdateAddressSuccess,
+      onRequestVerificationSuccess
+    )(currentUser.id, addr);
 
     props.goLoadAddress();
   };
@@ -169,7 +179,7 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
               </CardBody>
               <CardFooter>
                 {address.verificationStatus === 'in_progress' ? (
-                  <Button color='primary' type='button' onClick={onOpen}>
+                  <Button color='primary' type='button' onClick={confirmCodeDialogHook.onOpen}>
                     {btnText()}
                   </Button>
                 ) : (
@@ -183,7 +193,7 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
         )}
       </Formik>
 
-      <Dialog open={open} onClose={onClose}>
+      <Dialog open={confirmCodeDialogHook.open} onClose={confirmCodeDialogHook.onClose}>
         <DialogTitle>Complete Address Verification</DialogTitle>
         <DialogContent>
           <TextField
@@ -205,12 +215,41 @@ const AddressVerificationForm = (props: AddressVerificationFormProps) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={confirmCodeDialogHook.onClose}>Cancel</Button>
           <Button color='primary' onClick={onConfirmCode}>
             Confirm
           </Button>
         </DialogActions>
       </Dialog>
+
+      <AlertDialog
+        message='A verification code will be sent to your address by mail.'
+        open={requestVerificationAlertHook.open}
+        color='info'
+        onClose={requestVerificationAlertHook.onClose}
+      />
+
+      <AlertDialog
+        message='Address is updated, we will send you a verification code by mail.'
+        open={updateAddressSuccessAlertHook.open}
+        color='primary'
+        onClose={updateAddressSuccessAlertHook.onClose}
+        maxWidth='sm'
+      />
+
+      <AlertDialog
+        message='Congratulations, your address is verified!'
+        open={addrVerifiedSuccessAlertHook.open}
+        color='success'
+        onClose={addrVerifiedSuccessAlertHook.onClose}
+      />
+
+      <AlertDialog
+        message='Verification code is not valid.'
+        open={invalidCodeAlertHook.open}
+        color='danger'
+        onClose={invalidCodeAlertHook.onClose}
+      />
     </React.Fragment>
   );
 };

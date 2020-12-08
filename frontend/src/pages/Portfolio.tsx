@@ -11,7 +11,6 @@ import styled from 'styled-components';
 import moment from 'moment';
 
 import PanelHeader from 'components/PanelHeader';
-import CenterSpinner from 'components/CenterSpinner';
 import SneakerSearchBar from 'components/SneakerSearchBar';
 
 import PortfolioTable from 'components/dashboard/portfolio/PortfolioTable';
@@ -30,6 +29,7 @@ import { PortfolioSneaker, SearchBarSneaker, PortfolioSneakerWithMarketValue, Ge
 import { months, MonthKey } from 'data/date';
 import onSubmitPortfolioForm from 'usecases/portfolio/onSubmitPortfolioForm';
 import onRemovePortfolioTableRow from 'usecases/portfolio/onRemovePortfolioTableRow';
+import { Skeleton } from '@material-ui/lab';
 
 const formatTablePortfolioSneaker = (sneaker: PortfolioSneakerWithMarketValue) => ({
   ...sneaker,
@@ -133,7 +133,7 @@ const Portfolio = () => {
   });
 
   const afterSubmitPortfolioForm = () => {
-    goFetchPortfolioSneaker()
+    goFetchPortfolioSneaker();
     onClose();
 
     // clean up
@@ -179,25 +179,27 @@ const Portfolio = () => {
     }
   };
 
+  const TableSkeleton = () => <Skeleton height='55vh' />;
+
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
-      <Container fluid='md'>
+      <Container style={{ minHeight: 'calc(90vh - 96px)' }} fluid='md'>
         <div className='text-right'>
           <Button onClick={onOpen} color='primary'>
             Add Item
           </Button>
         </div>
-        <Card>
-          {!portfolioSneakers || fetchPortfolioSneakers ? (
-            <CenterSpinner />
-          ) : (
+        {!portfolioSneakers || fetchPortfolioSneakers ? (
+          <TableSkeleton />
+        ) : (
+          <Card>
             <PortfolioTable
               sneakers={portfolioSneakers.map(formatTablePortfolioSneaker)}
               onDeleteRow={removePortfolioTableRow}
             />
-          )}
-        </Card>
+          </Card>
+        )}
         <Dialog
           classes={{
             paperFullWidth: classes.paperFullWidth,

@@ -1,45 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Button } from 'reactstrap';
 
-import SneakerCard from './SneakerCard';
-
 import { AppSneaker } from '../../../shared';
+import FixedAspectRatioSneakerCard from './FixedAspectRatioSneakerCard';
 import CenterSpinner from './CenterSpinner';
 
 type PreviewSneakerProps = {
-  sneaker: AppSneaker;
+  sneaker: Omit<AppSneaker, 'imageUrls'>;
   price: number;
-  mainDisplayImage: string | undefined;
-  onPrevStep: () => void;
+  mainDisplayImage: string;
   onSubmit: () => void;
-  aspectRatio?: string;
+  onPrevStep?: () => void;
+  ratio?: string;
 };
 
 const PreviewSneaker = (props: PreviewSneakerProps) => {
-  const { aspectRatio, sneaker, price, onPrevStep, onSubmit, mainDisplayImage } = props;
+  const { sneaker, price, ratio, mainDisplayImage, onPrevStep, onSubmit } = props;
 
   const [isSubmitDisabled, setSubmitDisabled] = useState(false);
 
+  useEffect(() => {
+    if (isSubmitDisabled)
+      setTimeout(() => {
+        setSubmitDisabled(false);
+      }, 3000);
+  }, [isSubmitDisabled]);
+
   const handleSubmit = () => {
-    setSubmitDisabled(!isSubmitDisabled);
+    setSubmitDisabled(true);
     onSubmit();
   };
 
-  return isSubmitDisabled ? (
-    <CenterSpinner />
-  ) : (
+  return (
     <Card className='text-center'>
       <CardHeader data-testid='preview-sneaker-card-header'>
         <h5 className='title'>Preview of {sneaker.name.toUpperCase()}</h5>
       </CardHeader>
       <CardBody data-testid='preview-sneaker-card-body'>
-        <SneakerCard aspectRatio={aspectRatio} sneaker={sneaker} mainDisplayImage={mainDisplayImage} price={price} />
+        <FixedAspectRatioSneakerCard
+          ratio={ratio}
+          sneaker={sneaker}
+          mainDisplayImage={mainDisplayImage}
+          price={price}
+        />
       </CardBody>
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <Button onClick={onPrevStep}>Previous</Button>
-        <Button type='button' color='primary' onClick={handleSubmit} disabled={isSubmitDisabled}>
-          Confirm
-        </Button>
+        {onPrevStep && <Button onClick={onPrevStep}>Previous</Button>}
+        {isSubmitDisabled ? (
+          <CenterSpinner fullHeight={false} />
+        ) : (
+          <Button type='button' color='primary' onClick={handleSubmit} disabled={isSubmitDisabled}>
+            Confirm
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

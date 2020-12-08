@@ -10,13 +10,13 @@ const Img = styled.img`
   object-fit: cover;
 
   @media (min-width: 768px) {
-    width: 90px;
-    height: 70px;
+    width: 5.625rem;
+    height: 4.375rem;
   }
 
   @media (min-width: 150px) {
-    width: 70px;
-    height: 50px;
+    width: 4.375rem;
+    height: 3.125rem;
   }
 `;
 
@@ -36,14 +36,12 @@ const SneakerNameTextWrapper = styled.div`
 const SizeText = styled.div`
   color: #000;
   font-size: 0.85em;
-  white-space: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
 `;
 
 const SneakerNameCellText = styled.div`
   font-weight: 600;
-  white-space: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
 `;
@@ -52,7 +50,7 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
   const { imgSrc, name, colorway, displaySize } = props;
 
   return (
-    <td>
+    <TableCell>
       <ImgContainer>
         <Img src={imgSrc} alt={name + colorway} />
       </ImgContainer>
@@ -62,8 +60,11 @@ const SneakerNameCell = (props: SneakerNameCellProps) => {
         <SneakerNameCellText>{colorway}</SneakerNameCellText>
         <SizeText className='category'>{displaySize}</SizeText>
       </SneakerNameTextWrapper>
-    </td>
+    </TableCell>
   );
 };
+
+const TableCell = styled.td`
+`;
 
 export default SneakerNameCell;

@@ -6,11 +6,12 @@ import { FormGroup, Label, Row, Col, Button } from "reactstrap";
 import FormikLabelSelect from "components/formik/FormikLabelSelect";
 import FormikLabelInput from "components/formik/FormikLabelInput";
 
-import { range } from "utils/utils";
 import { required, requiredPositiveNumber } from "utils/yup";
 
 import { SneakerCondition } from "../../../../../shared";
 import { months } from "data/date";
+
+import _ from 'lodash'
 
 export type PortfolioFormValues = {
   size: string;
@@ -57,7 +58,7 @@ const PortfolioForm = (props: PortfolioFormProps) => {
         <FormGroup>
           {/* TODO: the sizes need to be retrieved from th database, here is only a mock */}
           <FormikLabelSelect name='size' label='U.S Size' id='portfolio-sneaker-size'>
-            {range(MIN_SNEAKER_SIZE, 16, 1).map((size) => (
+            {_.range(MIN_SNEAKER_SIZE, 16, 1).map((size) => (
               <option value={size} key={size}>
                 {size}
               </option>
@@ -93,7 +94,7 @@ const PortfolioForm = (props: PortfolioFormProps) => {
             <FormGroup>
               <FormikLabelSelect name='purchaseYear' label='' id='portfolio-sneaker-purchase-year'>
                 <option value=''>Year</option>
-                {range(new Date().getFullYear(), 1985, -1).map((year) => (
+                {_.range(new Date().getFullYear(), 1985, -1).map((year) => (
                   <option value={year} key={year}>
                     {year}
                   </option>

@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 import { Route } from 'react-router-dom';
 
-import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import { ListedSneakerController } from 'api/controllers/ListedSneakerController';
 import { concatPaths } from 'utils/formatApiEndpoint';
 
 import { HOME } from 'routes';
@@ -49,15 +49,15 @@ export const renderListedSneakerRoutes = (listedSneakers: GetListedSneaker[]) =>
   });
 };
 
-const ListedSneakerRoutesProvider = (props: { children: ReactNode }) => {
+const ListedSneakerRoutesProvider = (props: { children: ReactNode, listedSneakerController: ListedSneakerController }) => {
   const [listedSneakerRoutes, setListedSneakerRoutes] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
     (async () => {
-      const sneakers = await ListedSneakerControllerInstance.getAllListedSneakers();
+      const sneakers = await props.listedSneakerController.getAllListedSneakers();
       setListedSneakerRoutes(renderListedSneakerRoutes(sneakers));
     })();
-  }, []);
+  }, [props.listedSneakerController]);
 
   return (
     <ListedSneakerRoutesCtx.Provider value={{ listedSneakerRoutes }}>{props.children}</ListedSneakerRoutesCtx.Provider>

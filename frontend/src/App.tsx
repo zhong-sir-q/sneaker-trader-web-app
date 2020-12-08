@@ -18,7 +18,9 @@ import { AUTH, ADMIN, SIGNIN, HOME } from 'routes';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'assets/scss/now-ui-dashboard.scss';
 import 'assets/css/demo.css';
+
 import 'assets/css/sneakertrader.css';
+import 'cropperjs/dist/cropper.css';
 
 // @ts-ignore
 import awsconfig from 'aws-exports';
@@ -30,6 +32,9 @@ import MarketPlaceProvider from 'providers/marketplace/MarketPlaceProvider';
 import NotFound from 'pages/NotFound';
 import ListedSneakerRoutesProvider from 'providers/ListedSneakerRoutesProvider';
 import UserRankingProvider from 'providers/UserRankingProvider';
+
+import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
+import EditListedSneakerRoutesProvider from 'providers/EditListedSneakerRoutesProvider';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
@@ -52,10 +57,10 @@ const RelaxedAuth = (props: RouteComponentProps<any>) => {
 
   // clear the cache before returning the route
   const clearCachedRoute = () => {
-    const cachedRoute = localStorage.getItem('cached_route')
-    localStorage.removeItem('cached_route')
-    return cachedRoute
-  }
+    const cachedRoute = localStorage.getItem('cached_route');
+    localStorage.removeItem('cached_route');
+    return cachedRoute;
+  };
 
   // state has the highest priority, then cached route, then HOME
   return !signedIn ? <AuthLayout /> : <Redirect to={(state as any) || clearCachedRoute() || HOME} />;
@@ -71,12 +76,16 @@ const App = () => {
           <Switch>
             <Route path={AUTH} component={RelaxedAuth} />
 
-            <Route path={ADMIN} component={ProtectedAdmin} />
+            <Route path={ADMIN}>
+              <EditListedSneakerRoutesProvider listedSneakerController={ListedSneakerControllerInstance}>
+                <ProtectedAdmin />
+              </EditListedSneakerRoutesProvider>
+            </Route>
 
             <Route path={HOME}>
               <UserRankingProvider>
-                <ListedSneakerRoutesProvider>
-                  <MarketPlaceProvider>
+                <ListedSneakerRoutesProvider listedSneakerController={ListedSneakerControllerInstance}>
+                  <MarketPlaceProvider listedSneakerController={ListedSneakerControllerInstance}>
                     <HomeLayout />
                   </MarketPlaceProvider>
                 </ListedSneakerRoutesProvider>

@@ -1,17 +1,19 @@
+// the name colorway and size must be at the end of the path
 const sneakerInfoFromPath = (pathname: string) => {
   const paths = pathname.split('/');
 
-  // current implementation depends on that the sneaker name colorway should
-  // be the only string that contains the hyphen '-'
-  const nameColorwayIdx = paths.findIndex((p: string) => p.includes('-'));
-  const sneakerInfo = paths.slice(nameColorwayIdx);
+  const sneakerInfo = paths.slice(paths.length - 2);
 
-  const sneakerNameColorway = sneakerInfo[0].split('-').join(' ');
-  const sneakerSize = Number(sneakerInfo[sneakerInfo.length - 1]);
+  const shoeNameColorway = sneakerInfo[0].split('.');
+  shoeNameColorway[0] = shoeNameColorway[0].split('-').join(' ');
+  shoeNameColorway[1] = shoeNameColorway[1].split('-').join(' ');
 
-  if (!sneakerSize) throw new Error('Sneaker size is not in the path')
+  const [name, colorway] = shoeNameColorway;
+  const size = Number(sneakerInfo[sneakerInfo.length - 1]);
 
-  return { nameColorway: sneakerNameColorway, size: sneakerSize };
+  if (!size) throw new Error('Sneaker size is not in the path');
+
+  return { name, colorway, size };
 };
 
 export default sneakerInfoFromPath;

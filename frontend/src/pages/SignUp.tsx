@@ -148,112 +148,124 @@ const SignupForm = () => {
                     setSubmitting(false);
                   }}
                 >
-                  <Card className='card-signup'>
-                    <FormikForm>
-                      <CardHeader className='text-center'>
-                        <CardTitle tag='h4'>Register</CardTitle>
-                        <CardText>
-                          <Link to={AUTH + SIGNIN}>Already have an account?</Link>
-                        </CardText>
-                        {signUpError && <CardText style={{ color: 'red' }}>{signUpError}</CardText>}
-                      </CardHeader>
-                      <CardBody>
-                        <FormikInput
-                          name='firstName'
-                          placeholder='First Name...'
-                          type='text'
-                          iconname='users_circle-08'
-                        />
-                        <FormikInput
-                          name='lastName'
-                          placeholder='Last Name...'
-                          type='text'
-                          iconname='text_caps-small'
-                        />
+                  {(formikProps) => (
+                    <Card className='card-signup'>
+                      <FormikForm>
+                        <CardHeader className='text-center'>
+                          <CardTitle tag='h4'>Register</CardTitle>
+                          <CardText>
+                            <Link to={AUTH + SIGNIN}>Already have an account?</Link>
+                          </CardText>
+                          {signUpError && <CardText style={{ color: 'red' }}>{signUpError}</CardText>}
+                        </CardHeader>
+                        <CardBody>
+                          <FormikInput
+                            name='firstName'
+                            placeholder='First Name...'
+                            type='text'
+                            iconname='users_circle-08'
+                          />
+                          <FormikInput
+                            name='lastName'
+                            placeholder='Last Name...'
+                            type='text'
+                            iconname='text_caps-small'
+                          />
 
-                        <FormikInput
-                          name='username'
-                          placeholder='User Name...'
-                          type='text'
-                          iconname='emoticons_satisfied'
-                        />
+                          <FormikInput
+                            name='username'
+                            placeholder='User Name...'
+                            type='text'
+                            iconname='emoticons_satisfied'
+                          />
 
-                        <FormikInput
-                          name='phoneNo'
-                          placeholder='Phone number...'
-                          type='text'
-                          iconname='ui-2_chat-round'
-                        />
+                          <FormikInput
+                            name='phoneNo'
+                            placeholder='Phone number...'
+                            type='text'
+                            iconname='ui-2_chat-round'
+                          />
 
-                        <FormikInput name='email' placeholder='Email...' type='email' iconname='ui-1_email-85' />
+                          <FormikInput
+                            name='email'
+                            placeholder='Email...'
+                            type='email'
+                            iconname='ui-1_email-85'
+                            onChange={(e: any) => {
+                              // AWS Amplify is case-sensitive about the keys
+                              e.target.value = (e.target.value as string).toLowerCase();
+                              formikProps.handleChange(e);
+                            }}
+                          />
 
-                        <FormikInput
-                          name='password'
-                          placeholder='Password...'
-                          type='password'
-                          iconname='ui-1_lock-circle-open'
-                        />
+                          <FormikInput
+                            name='password'
+                            placeholder='Password...'
+                            type='password'
+                            iconname='ui-1_lock-circle-open'
+                          />
 
-                        <FormikInput
-                          name='confirmPassword'
-                          placeholder='Confirm Password...'
-                          type='password'
-                          iconname='ui-1_lock-circle-open'
-                        />
+                          <FormikInput
+                            name='confirmPassword'
+                            placeholder='Confirm Password...'
+                            type='password'
+                            iconname='ui-1_lock-circle-open'
+                          />
 
-                        <FormikInput
-                          style={{ paddingLeft: '12px' }}
-                          name='gender'
-                          type='select'
-                          iconname='users_single-02'
-                        >
-                          <option disabled value=''>
-                            Select a gender
-                          </option>
-                          <option value='male'>Male</option>
-                          <option value='female'>Female</option>
-                          <option value='confidential'>Prefer not to say</option>
-                        </FormikInput>
+                          <FormikInput
+                            style={{ paddingLeft: '12px' }}
+                            name='gender'
+                            type='select'
+                            iconname='users_single-02'
+                          >
+                            <option disabled value=''>
+                              Select a gender
+                            </option>
+                            <option value='male'>Male</option>
+                            <option value='female'>Female</option>
+                            <option value='confidential'>Prefer not to say</option>
+                          </FormikInput>
 
-                        {/* FIXME: resetForm in onSubmit does not reset the datevalue */}
-                        <Field
-                          name='dob'
-                          timeFormat={false}
-                          placeholder='Date Of Birth...'
-                          component={FormikDatetime}
-                        />
+                          {/* FIXME: resetForm in onSubmit does not reset the datevalue */}
+                          <Field
+                            name='dob'
+                            timeFormat={false}
+                            placeholder='Date Of Birth...'
+                            component={FormikDatetime}
+                          />
 
-                        <FormGroup check>
-                          <Label style={{ marginLeft: '6px' }} check>
-                            <Field name='policyAgreed' type='checkbox' />
-                            <span className='form-check-sign' />
-                            <div>
-                              By signing up, I agree to the{' '}
-                              <a href={PRIVACY_POLICY} target='_blank' rel='noopener noreferrer'>
-                                privacy policy
-                              </a>{' '}
-                              and <a href='#policy'>terms and conditions</a>.
-                            </div>
-                            <RedStyledComp>
-                              <ErrorMessage name='policyAgreed' />
-                            </RedStyledComp>
-                          </Label>
-                        </FormGroup>
-                      </CardBody>
+                          <FormGroup check>
+                            <Label style={{ marginLeft: '6px' }} check>
+                              <Field name='policyAgreed' type='checkbox' />
+                              <span className='form-check-sign' />
+                              <div>
+                                By signing up, I agree to the{' '}
+                                <a href={PRIVACY_POLICY} target='_blank' rel='noopener noreferrer'>
+                                  privacy policy
+                                </a>{' '}
+                                and <a href='#policy'>terms and conditions</a>.
+                              </div>
+                              <RedStyledComp>
+                                <ErrorMessage name='policyAgreed' />
+                              </RedStyledComp>
+                            </Label>
+                          </FormGroup>
+                        </CardBody>
 
-                      <CardFooter className='text-center'>
-                        <Button
-                          data-testid='signup-submit'
-                          type='submit'
-                          color='primary'
-                          size='lg'
-                          className='btn-round'
-                        >
-                          Get Started
-                        </Button>
-                      </CardFooter>
-                    </FormikForm>
-                  </Card>
+                        <CardFooter className='text-center'>
+                          <Button
+                            data-testid='signup-submit'
+                            type='submit'
+                            color='primary'
+                            size='lg'
+                            className='btn-round'
+                          >
+                            Get Started
+                          </Button>
+                        </CardFooter>
+                      </FormikForm>
+                    </Card>
+                  )}
                 </Formik>
               </Col>
             </Row>

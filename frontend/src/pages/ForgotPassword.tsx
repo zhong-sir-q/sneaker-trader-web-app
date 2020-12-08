@@ -31,7 +31,7 @@ const validateEmailSchema = Yup.object({
 type RequestCodeProps = {
   handleSubmitEmail: (email: string) => void;
   handleCodeSent: () => void;
-}
+};
 
 const RequestCode = (props: RequestCodeProps) => {
   const [requestCodeError, setRequestCodeError] = useState<string>();
@@ -62,22 +62,33 @@ const RequestCode = (props: RequestCodeProps) => {
                   props.handleCodeSent();
                 }}
               >
-                <FormikForm>
-                  <Card className='card-lock text-center'>
-                    <CardTitle tag='h4'>Forgot your password?</CardTitle>
-                    <CardBody>
-                      {/* TODO: make the color red */}
-                      {requestCodeError && <CardText style={{ color: 'red' }}>{requestCodeError}</CardText>}
-                      <CardText>Enter your Email below and we will send a message to reset your password</CardText>
-                      <FormikInput name='email' iconname='users_circle-08' type='text' placeholder='Email...' />
-                    </CardBody>
-                    <CardFooter>
-                      <Button type='submit' color='primary' size='lg' className='mb-3 btn-round'>
-                        Reset my password
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </FormikForm>
+                {(formikProps) => (
+                  <FormikForm>
+                    <Card className='card-lock text-center'>
+                      <CardTitle tag='h4'>Forgot your password?</CardTitle>
+                      <CardBody>
+                        {requestCodeError && <CardText style={{ color: 'red' }}>{requestCodeError}</CardText>}
+                        <CardText>Enter your Email below and we will send a message to reset your password</CardText>
+                        <FormikInput
+                          name='email'
+                          iconname='users_circle-08'
+                          type='text'
+                          placeholder='Email...'
+                          onChange={(e: any) => {
+                            // AWS Amplify is case-sensitive about the keys
+                            e.target.value = (e.target.value as string).toLowerCase();
+                            formikProps.handleChange(e);
+                          }}
+                        />
+                      </CardBody>
+                      <CardFooter>
+                        <Button type='submit' color='primary' size='lg' className='mb-3 btn-round'>
+                          Reset my password
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </FormikForm>
+                )}
               </Formik>
             </Col>
           </Container>
@@ -96,7 +107,7 @@ const validateConfirmCodeSchema = Yup.object({
 
 type ConfirmCodeProps = {
   email: string;
-}
+};
 
 const ConfirmCode = (props: ConfirmCodeProps) => {
   const history = useHistory();
@@ -114,14 +125,18 @@ const ConfirmCode = (props: ConfirmCodeProps) => {
                   validationSchema={validateConfirmCodeSchema}
                   onSubmit={async (formStates) => {
                     // confirm to reset the password
-                    const error = await Auth.forgotPasswordSubmit(props.email, formStates.code, formStates.password).catch((err) => err);
+                    const error = await Auth.forgotPasswordSubmit(
+                      props.email,
+                      formStates.code,
+                      formStates.password
+                    ).catch((err) => err);
 
                     // handle the error
                     if (error) {
                       setConfirmCodeError(formatAmplifyErrorMessage(error));
                       return;
                     }
-                    
+
                     // NOTE: the user is not signed in after the password change
                     // display a success message to the user after they are signed in
                     history.push(ADMIN + DASHBOARD);
@@ -133,13 +148,24 @@ const ConfirmCode = (props: ConfirmCodeProps) => {
                         <CardTitle tag='h4'>Reset your password</CardTitle>
                         {confirmCodeError && <CardText style={{ color: 'red' }}>{confirmCodeError}</CardText>}
                         <CardText>
-                          We have sent a password reset code by {obfuscateEmail(props.email)}. Use the code below to reset your password.
+                          We have sent a password reset code by {obfuscateEmail(props.email)}. Use the code below to
+                          reset your password.
                         </CardText>
                       </CardHeader>
                       <CardBody>
                         <FormikInput name='code' iconname='users_circle-08' type='text' placeholder='Code...' />
-                        <FormikInput name='password' iconname='users_circle-08' type='password' placeholder='Password...' />
-                        <FormikInput name='confirmPassword' iconname='users_circle-08' type='password' placeholder='Confirm Password...' />
+                        <FormikInput
+                          name='password'
+                          iconname='ui-1_lock-circle-open'
+                          type='password'
+                          placeholder='Password...'
+                        />
+                        <FormikInput
+                          name='confirmPassword'
+                          iconname='ui-1_lock-circle-open'
+                          type='password'
+                          placeholder='Confirm Password...'
+                        />
                       </CardBody>
                       <CardFooter className='text-center'>
                         <Button type='submit' color='primary' size='lg' className='mb-3 btn-round'>
@@ -167,7 +193,11 @@ const ForgotPassword = () => {
   const onCodeSent = () => setCodeSent(true);
   const onSubmitEmail = (submittedEmail: string) => setEmail(submittedEmail);
 
-  return !codeSent ? <RequestCode handleCodeSent={onCodeSent} handleSubmitEmail={onSubmitEmail} /> : <ConfirmCode email={email} />;
+  return !codeSent ? (
+    <RequestCode handleCodeSent={onCodeSent} handleSubmitEmail={onSubmitEmail} />
+  ) : (
+    <ConfirmCode email={email} />
+  );
 };
 
 export default ForgotPassword;

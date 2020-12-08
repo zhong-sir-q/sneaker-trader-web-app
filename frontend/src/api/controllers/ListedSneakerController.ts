@@ -6,6 +6,7 @@ import {
   SellerListedSneaker,
   ListedProduct,
   GetListedSneaker,
+  CreateListedSneakerPayload,
 } from '../../../../shared';
 
 import ListedSneakerEntity from '../../../../shared/@types/domains/entities/ListedSneakerEntity';
@@ -25,20 +26,34 @@ export class ListedSneakerController implements ListedSneakerEntity {
 
   getAllListedSneakers = (): Promise<GetListedSneaker[]> => fetch(this.listedSneakerPath).then((res) => res.json());
 
-  getGallerySneakers = (sellerId: number): Promise<GallerySneaker[]> =>
-    fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId)).then((res) => res.json());
+  getGallerySneakers = (sellerId: number, limit?: number, offset?: number): Promise<GallerySneaker[]> => {
+    // TODO: use a out of box solution or define a custom function to build the query
+    let query = '';
+    if (limit !== undefined) query = `limit=${limit}`;
+    if (offset !== undefined) query = `${query}&offset=${offset}`;
+    if (query) query = '?' + query;
 
-  getSizeMinPriceGroupByNameColorway = (nameColorway: string, sellerId: number): Promise<SizeMinPriceGroupType> =>
-    fetch(concatPaths(this.listedSneakerPath, 'sizeMinPriceGroup', nameColorway, sellerId)).then((res) => res.json());
+    return fetch(concatPaths(this.listedSneakerPath, 'gallery', sellerId + query)).then((res) => res.json());
+  };
+
+  getSizeMinPriceGroupByNameColorway = (
+    name: string,
+    colorway: string,
+    sellerId: number
+  ): Promise<SizeMinPriceGroupType> =>
+    fetch(concatPaths(this.listedSneakerPath, 'sizeMinPriceGroup', name, colorway, sellerId)).then((res) => res.json());
 
   getGallerySneakersBySize = (sellerId: number, size: number): Promise<GallerySneaker[]> =>
     fetch(concatPaths(this.listedSneakerPath, 'gallery', 'size', sellerId, size)).then((res) => res.json());
 
-  getAllAsksByNameColorway = (nameColorway: string): Promise<SneakerAsk[]> =>
-    fetch(this.listedSneakerPath + `/allAsks?nameColorway=${nameColorway}`).then((res) => res.json());
+  getAllAsksByNameColorway = (name: string, colorway: string): Promise<SneakerAsk[]> =>
+    fetch(concatPaths(this.listedSneakerPath, 'allAsks', name, colorway)).then((res) => res.json());
 
   getBySellerId = (sellerId: number): Promise<SellerListedSneaker[]> =>
     fetch(this.listedSneakerPath + `/all/${sellerId}`).then((res) => res.json());
+
+  getAll = (): Promise<{ name: string; colorway: string; brand: string; imageUrls: string }[]> =>
+    fetch(concatPaths(this.listedSneakerPath, 'history')).then((r) => r.json());
 
   handlePurchase = (id: number, sellerId: number) =>
     fetch(this.listedSneakerPath + '/purchase', formatRequestOptions({ id, sellerId }, undefined, 'PUT')).then((r) =>
@@ -52,10 +67,22 @@ export class ListedSneakerController implements ListedSneakerEntity {
     ).then((r) => r.json());
 
   getUnsoldListedSneakers = async (sellerId: number) =>
-    (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold');
+    (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus !== 'sold' && p.prodStatus !== 'deleted');
 
   getSoldListedSneakers = async (sellerId: number) =>
     (await this.getBySellerId(sellerId)).filter((p) => p.prodStatus === 'sold');
+
+  update = (listedSneakerId: number, listedSneaker: CreateListedSneakerPayload): Promise<ListedProduct> =>
+    fetch(
+      concatPaths(this.listedSneakerPath, 'one', listedSneakerId),
+      formatRequestOptions(listedSneaker, undefined, 'PUT')
+    ).then((r) => r.json());
+
+  removeListing = (listedSneakerId: number) =>
+    fetch(
+      concatPaths(this.listedSneakerPath, 'one', listedSneakerId),
+      formatRequestOptions(undefined, undefined, 'DELETE')
+    ).then((r) => r.json());
 }
 
 const ListedSneakerControllerInstance = new ListedSneakerController();

@@ -1,29 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 
 import { Table } from 'reactstrap';
-import styled from 'styled-components';
+import { List, ListItem } from '@material-ui/core';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 import moment from 'moment';
 
-import useSortableColData from 'hooks/useSortableColData';
-
 import BuyerCTAButtonsGroup from 'components/buttons/BuyerCTAButtonsGroup';
 
-import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
-import { upperCaseFirstLetter } from 'utils/utils';
+import useSortableColData from 'hooks/useSortableColData';
 import usePagination from 'hooks/usePagination';
+import useWindowDimensions from 'hooks/useWindowDimensions';
 
-const ImgContainer = styled.div`
-  float: left;
-  @media (min-width: 150px) {
-    width: 60px;
-  }
+import { Header, DropdownRow, Cell, ShowDropdownHeader, ShowDropdownCell } from './table/Common';
 
-  @media (min-width: 768px) {
-    width: 80px;
-  }
-`;
+import SneakerNameCell from 'components/SneakerNameCell';
+
+import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
+import { upperCaseFirstLetter, mapUpperCaseFirstLetter } from 'utils/utils';
 
 const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
   let total = 0;
@@ -35,6 +30,9 @@ const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneak
 
 type PurchasedSneakerRowProps = {
   sneaker: BuyerPurchasedSneaker;
+  rowIdx: number;
+  showRowDropdown: boolean;
+  onClickShowDropdown: (rowIdx: number) => void;
 };
 
 type PurchasedSneakerTableProps = {
@@ -45,6 +43,20 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
   const { sneakers } = props;
   console.log('sneakers', sneakers)
 
+  const [selectedDropdownIdx, setSelectedDropdownIdx] = useState<number>();
+
+  const windowDimensions = useWindowDimensions();
+
+  const updateSelectedDropdownIDx = (idx: number) => {
+    if (idx === selectedDropdownIdx) {
+      // toggle the current dropdown
+      setSelectedDropdownIdx(undefined);
+      return;
+    }
+
+    setSelectedDropdownIdx(idx);
+  };
+
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<BuyerPurchasedSneaker>(sneakers);
 
   const { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent } = usePagination(
@@ -52,49 +64,38 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
     5
   );
 
+  const headerClass = (colName: string) => clsx('sortable', getHeaderClassName(colName), 'pointer');
+
   const PurchasedSneakerTableHeader = () => (
     <thead>
       <tr>
-        <th
-          style={{ cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('name'))}
-          onClick={() => requestSort('name')}
-        >
+        <th className={headerClass('name')} onClick={() => requestSort('name')}>
           name
         </th>
-        <th
-          style={{ minWidth: '105px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('transactionDatetime'))}
+        <Header
+          minWidth='105px'
+          className={headerClass('transactionDatetime')}
           onClick={() => requestSort('transactionDatetime')}
         >
           purchased date
-        </th>
-        <th
-          style={{ minWidth: '80px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('prodStatus'))}
-          onClick={() => requestSort('prodStatus')}
-        >
+        </Header>
+        <Header minWidth='80px' className={headerClass('prodStatus')} onClick={() => requestSort('prodStatus')}>
           status
-        </th>
-        <th
-          style={{ minWidth: '75px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('price'))}
-          onClick={() => requestSort('price')}
-        >
+        </Header>
+        <Header minWidth='75px' className={headerClass('price')} onClick={() => requestSort('price')}>
           price
-        </th>
-        <th
-          style={{ minWidth: '60px', cursor: 'pointer' }}
-          className={clsx('sortable', getHeaderClassName('quantity'))}
-          onClick={() => requestSort('quantity')}
-        >
+        </Header>
+        <Header minWidth='60px' className={headerClass('quantity')} onClick={() => requestSort('quantity')}>
           qty
-        </th>
+        </Header>
+        <ShowDropdownHeader />
       </tr>
     </thead>
   );
 
   const PurchasedSneakerRow = (props: PurchasedSneakerRowProps) => {
+    const { rowIdx, showRowDropdown, onClickShowDropdown } = props;
+
     const {
       id,
       brand,
@@ -108,6 +109,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       seller,
       userId,
       sizeSystem,
+      prodCondition,
       transactionDatetime,
       productId
     } = props.sneaker;
@@ -116,41 +118,40 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
 
     return (
-      <tr>
-        <td>
-          <ImgContainer>
-            <img src={mainDisplayImage} alt={name + colorway} />
-          </ImgContainer>
-          <div style={{ overflowX: 'hidden', paddingLeft: '8px', top: '5px' }}>
-            <span style={{ fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'hidden' }}>
-              {displayName}
-            </span>
-            <span
-              style={{
-                color: '#000',
-                fontSize: '0.85em',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                overflowX: 'hidden',
-                display: 'block',
-              }}
-              className='category'
-            >
-              {displaySize}
-            </span>
-          </div>
-        </td>
-        <td>{moment(transactionDatetime).format('YYYY-MM-DD')}</td>
-        <td>{upperCaseFirstLetter(prodStatus)}</td>
-        <td>
-          <small>$</small>
-          {price}
-        </td>
-        <td>{quantity || 1}</td>
-        <td style={{ minWidth: '220px' }}>
+      <React.Fragment>
+        <tr>
+          <SneakerNameCell imgSrc={mainDisplayImage} name={displayName} displaySize={displaySize} colorway={colorway} />
+          <Cell>{moment(transactionDatetime).format('YYYY-MM-DD')}</Cell>
+          <Cell>{upperCaseFirstLetter(prodStatus)}</Cell>
+          <Cell>
+            <small>$</small>
+            {price}
+          </Cell>
+          <Cell>{quantity || 1}</Cell>
+          <Cell style={{ minWidth: '220px' }}>
           <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId}/>
-        </td>
-      </tr>
+          </Cell>
+          <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
+            {showRowDropdown ? <KeyboardArrowUp fontSize='default' /> : <KeyboardArrowDown fontSize='default' />}
+          </ShowDropdownCell>
+        </tr>
+        {showRowDropdown && (
+          <DropdownRow>
+            <td colSpan={999}>
+              <List>
+                <ListItem>Purchased Date: {moment(transactionDatetime).format('YYYY-MM-DD')}</ListItem>
+                <ListItem>Status: {upperCaseFirstLetter(prodStatus)}</ListItem>
+                <ListItem>Price: ${price}</ListItem>
+                <ListItem>Condition: {mapUpperCaseFirstLetter(prodCondition, ' ')}</ListItem>
+                <ListItem>Quantity: {quantity || 1}</ListItem>
+                <ListItem>
+                <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId}/>
+                </ListItem>
+              </List>
+            </td>
+          </DropdownRow>
+        )}
+      </React.Fragment>
     );
   };
 
@@ -160,10 +161,16 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
         <PurchasedSneakerTableHeader />
         <tbody>
           {sortedItems.slice(startRowCount(), endRowCount()).map((s, idx) => (
-            <PurchasedSneakerRow key={idx} sneaker={s} />
+            <PurchasedSneakerRow
+              sneaker={s}
+              showRowDropdown={idx === selectedDropdownIdx}
+              onClickShowDropdown={updateSelectedDropdownIDx}
+              rowIdx={idx}
+              key={idx}
+            />
           ))}
           <tr>
-            <td colSpan={5} />
+            {windowDimensions.width > 1024 && <td colSpan={4} />}
             <td className='td-total'>Total</td>
             <td className='td-price'>
               <small>$</small>

@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import { Input, ListGroup, ListGroupItem, InputProps } from 'reactstrap';
 import OutsideClickHandler from '../OutsideClickHandler';
 import { useField, FieldHookConfig } from 'formik';
+import styled from 'styled-components';
 
 type FormikAutoSuggestInputProps = {
   label: string;
   options: string[];
   setfieldvalue: (field: string, value: any) => void;
 } & FieldHookConfig<string>;
+
+const StyledListGroup = styled(ListGroup)`
+  position: absolute;
+  margin-top: 2px;
+  z-index: 1;
+  max-height: 21rem;
+  width: 100%;
+  overflow: auto;
+`;
 
 const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
   const { options, setfieldvalue, ...inputProps } = props;
@@ -77,7 +87,7 @@ const FormikAutoSuggestInput = (props: FormikAutoSuggestInputProps) => {
 
       return (
         <OutsideClickHandler handler={() => setShowSuggestions(false)}>
-          <ListGroup style={{ position: 'absolute', marginTop: '2px', zIndex: 1 }}>{listItems}</ListGroup>
+          <StyledListGroup>{listItems}</StyledListGroup>
         </OutsideClickHandler>
       );
     }

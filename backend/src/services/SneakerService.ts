@@ -2,45 +2,94 @@ import { formatInsertRowsQuery, formatGetRowsQuery, doubleQuotedValue } from '..
 
 import mysqlPoolConnection from '../config/mysql';
 
-import { PRODUCTS } from '../config/tables';
+import { PRODUCTS, LISTED_PRODUCTS } from '../config/tables';
 
 import { AppSneaker, Sneaker } from '../../../shared';
 import SneakerEntity from '../../../shared/@types/domains/entities/SneakerEntity';
 
 class SneakerService implements SneakerEntity {
-  async getByNameColorwaySize(nameColorway: string, size: number): Promise<Sneaker> {
+  async getByNameColorwaySize(name: string, colorway: string, size: number): Promise<Sneaker> {
     const poolConn = await mysqlPoolConnection();
 
-    const condition = `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)} AND size = ${size}`;
-    const getQuery = formatGetRowsQuery(PRODUCTS, condition);
-    const prod = await poolConn.query(getQuery);
+    const query = `
+      SELECT * FROM ${PRODUCTS} WHERE name = ? AND colorway = ? AND size = ?
+    `;
+
+    const prod = await poolConn.query(query, [name, colorway, size]);
 
     // has to be null instead of undefined
     // otherwise the app cannot deserialize it for some reason
-    return prod.length === 1 ? prod[0] : null;
+    return prod.length ? prod[0] : null;
   }
 
-  async getFirstByNameColorway(nameColorway: string): Promise<Sneaker> {
+  async getFirstByNameColorway(name: string, colorway: string): Promise<Sneaker> {
     const poolConn = await mysqlPoolConnection();
 
-    const getByNameColorwayQuery = formatGetRowsQuery(
-      PRODUCTS,
-      `CONCAT(name, ' ', colorway) = ${doubleQuotedValue(nameColorway)}`
-    );
+    const getByNameColorwayQuery = `
+      SELECT * FROM ${PRODUCTS} WHERE name = ? AND colorway = ?
+    `;
 
-    const res = await poolConn.query(getByNameColorwayQuery);
-    return res ? res[0] : null;
+    const res = await poolConn.query(getByNameColorwayQuery, [name, colorway]);
+
+    return res.length ? res[0] : null;
+  }
+
+  async getFirstByNameBrandColorway(name: string, brand: string, colorway: string): Promise<Sneaker> {
+    const poolConn = await mysqlPoolConnection();
+
+    const getByNameColorwayQuery = `
+      SELECT * FROM ${PRODUCTS} WHERE name = ? AND brand = ? AND colorway = ?
+    `;
+
+    const res = await poolConn.query(getByNameColorwayQuery, [name, brand, colorway]);
+
+    return res.length ? res[0] : null;
+  }
+
+  async getGallerySneakers(): Promise<Sneaker[]> {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT P.* FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L WHERE L.prodStatus = 'listed'
+        AND P.id = L.productId GROUP BY P.id, name, colorway, size
+    `;
+
+    return poolConn.query(query);
+  }
+
+  async getById(id: number): Promise<Sneaker | null> {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT * FROM ${PRODUCTS} WHERE id = ?
+    `;
+
+    const res = await poolConn.query(query, [id]);
+
+    return res.length ? res[0] : null;
   }
 
   async create(sneaker: AppSneaker): Promise<number> {
     const poolConn = await mysqlPoolConnection();
-    const dbSneaker = await this.getByNameColorwaySize(`${sneaker.name} ${sneaker.colorway}`, sneaker.size);
+
+    const { name, colorway, size } = sneaker;
+    const dbSneaker = await this.getByNameColorwaySize(name, colorway, size);
 
     if (dbSneaker) throw Error('Sneaker already exists');
 
     const createSneakerQuery = formatInsertRowsQuery(PRODUCTS, sneaker);
 
     return poolConn.query(createSneakerQuery).then((res) => res.insertId);
+  }
+
+  async updateDisplayImage(id: number, imgUrl: string): Promise<any> {
+    const poolConn = await mysqlPoolConnection();
+
+    const updateQuery = `
+      UPDATE ${PRODUCTS} SET imageUrls = '${imgUrl}' WHERE id = ?
+    `;
+
+    return poolConn.query(updateQuery, [id]);
   }
 }
 

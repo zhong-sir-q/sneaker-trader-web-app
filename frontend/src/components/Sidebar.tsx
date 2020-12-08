@@ -5,7 +5,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Button, Collapse, Nav } from 'reactstrap';
 
 // routes
-import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE } from 'routes';
+import { ADMIN, HOME, RouteState, SneakerTraderRoute, USER_PROFILE, SUPER_USER_EDIT_GALLERY } from 'routes';
 
 import { useAuth } from 'providers/AuthProvider';
 
@@ -13,6 +13,7 @@ import logo from 'assets/img/logo_transparent_background.png';
 import defaultAvatar from 'assets/img/placeholder.jpg';
 import { signOut } from 'utils/auth';
 import { useUserRanking } from 'providers/UserRankingProvider';
+import isAdminUser from 'usecases/isAdminUser';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -75,16 +76,18 @@ const Sidebar = (props: SideBarProps) => {
   const location = useLocation();
   const { onOpenLeaderBoard } = useUserRanking();
 
-  // TODO: type this
-  const sidebar = useRef<any>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
+  // triggers a re-render so the active route effect is shown when the location changes
   useEffect(() => {
     setReRender((val) => !val);
   }, [location]);
 
   // this function creates the links and collapses that appear in the sidebar (left menu)
-  const createLinks = (routes: SneakerTraderRoute[]) => {
+  const createLinks = (routes: SneakerTraderRoute[], userEmail: string | undefined) => {
     return routes.map((route, idx) => {
+      if (userEmail && route.path === SUPER_USER_EDIT_GALLERY && !isAdminUser(userEmail)) return null;
+
       if (route.collapse) {
         // TODO: figure out what st is and rename the variable
         let st = {} as SideBarStateType;
@@ -123,7 +126,7 @@ const Sidebar = (props: SideBarProps) => {
               )}
             </a>
             <Collapse isOpen={collapseStates[route.state]}>
-              <ul className='nav'>{createLinks(route.views)}</ul>
+              <ul className='nav'>{createLinks(route.views, userEmail)}</ul>
             </Collapse>
           </li>
         );
@@ -153,13 +156,13 @@ const Sidebar = (props: SideBarProps) => {
     <React.Fragment>
       <div className='sidebar' data-color={props.backgroundColor}>
         <div className='logo'>
-          <Link to={HOME} className='simple-text logo-mini'>
+          <Link to={HOME} className='simple-text logo-mini' style={{ margin: 0, width: '65px' }}>
             <div className='logo-img'>
               <img src={logo} alt='sneakertrader-logo' />
             </div>
           </Link>
-          <Link to={HOME} className='simple-text logo-normal'>
-            Home
+          <Link style={{ visibility: 'hidden' }} to={HOME} className='simple-text logo-normal'>
+            USE_ME_TO_OCCUPY_SPACE
           </Link>
 
           <div className='navbar-minimize'>
@@ -176,9 +179,9 @@ const Sidebar = (props: SideBarProps) => {
           </div>
         </div>
 
-        <div className='sidebar-wrapper' ref={sidebar}>
+        <div className='sidebar-wrapper' style={{ overflowY: 'auto' }} ref={sidebarRef}>
           <div className='user'>
-            <div className='photo' style={{ backgroundColor: 'white' }}>
+            <div className='photo'>
               <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
             </div>
             <div className='info'>
@@ -189,7 +192,7 @@ const Sidebar = (props: SideBarProps) => {
                 onClick={() => setCollapseStates({ ...collapseStates, openAvatar: !collapseStates.openAvatar })}
               >
                 <span>
-                  {currentUser?.username || 'DEFAULT_USERNAME'}
+                  {currentUser?.username || 'No username'}
                   <b className='caret' />
                 </span>
               </a>
@@ -212,12 +215,12 @@ const Sidebar = (props: SideBarProps) => {
             </div>
           </div>
           <Nav>
-            {createLinks(props.routes)}
+            {createLinks(props.routes, currentUser?.email)}
             <li>
               {/* location is unchanged */}
               <NavLink to={location.pathname} onClick={onOpenLeaderBoard}>
                 <React.Fragment>
-                  <i className='now-ui-icons design_scissors' />
+                  <i className='now-ui-icons business_chart-bar-32' />
                   <p>Leaderboard</p>
                 </React.Fragment>
               </NavLink>

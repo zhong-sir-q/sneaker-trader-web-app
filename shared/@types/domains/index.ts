@@ -32,6 +32,15 @@ export type MailAfterPurchasePayload = {
   productName: string;
 };
 
+export type NewRequestSneaker = {
+  id: number;
+  productId: number;
+  name: string;
+  colorway: string;
+  size: number;
+  mainDisplayImage: string;
+};
+
 export type HelperInfoType = 'sneakernames' | 'colorways' | 'brands';
 
 export type UserRankingRow = { username: string; profilePicUrl: string; rankingPoints: number };

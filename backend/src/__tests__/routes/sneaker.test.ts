@@ -27,16 +27,4 @@ describe('Sneaker route', () => {
     expect(failedRes.status).toBe(500)
     done()
   })
-
-  test('Return null for getting a product with unknown shoe name and size', async (done) => {
-    const randName = faker.name.firstName();
-    const randNum = faker.random.number();
-
-    const res = await request(app)
-      .get(`/api/sneaker/${randName}/${randNum}`)
-      .then((r) => r.body);
-
-    expect(res).toBe(null);
-    done();
-  });
 });

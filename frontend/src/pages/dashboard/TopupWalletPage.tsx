@@ -21,34 +21,36 @@ const PaperContainer = styled(Paper)`
 `;
 
 const TopupWalletPage = () => {
-  const { open, onOpen, onClose } = useOpenCloseComp()
+  const { open, onOpen, onClose } = useOpenCloseComp();
 
   const { walletBalance } = useWalletCtx();
 
   return walletBalance === null ? (
     <CenterSpinner />
   ) : (
-    <div>
+    <React.Fragment>
       <PanelHeader size='sm' />
-      <PaperContainer>
-        <div style={{ width: '300px' }}>
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h5 style={{ margin: 0 }}>Balance</h5>
-              </CardTitle>
-            </CardHeader>
-            <CardBody>
-              <h3 style={{ margin: 0 }}>{`$${walletBalance}`}</h3>
-            </CardBody>
-          </Card>
-          <Button onClick={onOpen} style={{ width: '100%', fontSize: '1.25em' }} color='primary'>
-            Topup
-          </Button>
-        </div>
-      </PaperContainer>
+      <div className='content'>
+        <PaperContainer>
+          <div style={{ width: '300px' }}>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <h5 style={{ margin: 0 }}>Balance</h5>
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <h3 style={{ margin: 0 }}>{`$${walletBalance}`}</h3>
+              </CardBody>
+            </Card>
+            <Button onClick={onOpen} style={{ width: '100%', fontSize: '1.25em' }} color='primary'>
+              Topup
+            </Button>
+          </div>
+        </PaperContainer>
+      </div>
       <TopupWalletDialog isOpen={open} handleClose={onClose} />
-    </div>
+    </React.Fragment>
   );
 };
 

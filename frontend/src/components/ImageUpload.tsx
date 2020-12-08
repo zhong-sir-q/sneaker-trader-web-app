@@ -1,12 +1,18 @@
 import React, { createRef } from 'react';
 
 import { Button } from 'reactstrap';
+import styled from 'styled-components';
 
 type ImageUploadProps = {
   imgPreviewUrl: string;
   canAddImage: boolean;
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
+
+const RoundedImg = styled.img`
+  border-radius: 50%;
+  height: 100px;
+`;
 
 const ImageUpload = (props: ImageUploadProps) => {
   const fileInputRef = createRef<HTMLInputElement>();
@@ -19,10 +25,8 @@ const ImageUpload = (props: ImageUploadProps) => {
 
   return (
     <div className='fileinput text-center'>
-      <input type='file' onChange={onImageChange} ref={fileInputRef} />`
-      <div className='thumbnail img-circle'>
-        <img src={imgPreviewUrl} alt='uploaed file' />
-      </div>
+      <input type='file' accept='image/*' onChange={onImageChange} ref={fileInputRef} />`
+      <RoundedImg src={imgPreviewUrl} alt='Uploaded' />
       <div>
         {canAddImage ? (
           <Button className='btn-round' onClick={handleClick}>

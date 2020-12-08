@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Col, Container, Progress } from 'reactstrap';
+import { Col, Progress, Button } from 'reactstrap';
+
+import { DialogContent, Dialog, DialogTitle, makeStyles, Typography } from '@material-ui/core';
+
+import styled from 'styled-components';
 
 import AwsControllerInstance from 'api/controllers/AwsController';
 import HelperInfoControllerInstance from 'api/controllers/HelperInfoController';
@@ -9,7 +13,6 @@ import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerContro
 import SneakerControllerInstance from 'api/controllers/SneakerController';
 import WalletControllerInstance from 'api/controllers/WalletController';
 
-import ListedSneakerSuccess from 'components/ListSneakerSuccess';
 import PanelHeader from 'components/PanelHeader';
 import PreviewImagesDropzone from 'components/PreviewImagesDropzone';
 import PreviewSneaker from 'components/PreviewSneaker';
@@ -17,49 +20,54 @@ import SneakerInfoForm from 'components/SneakerInfoForm';
 
 import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
-import { SneakerListingFormStateType, useSneakerListingFormCtx } from 'providers/SneakerListingFormProvider';
+import { useSneakerListingFormCtx, INIT_LISTING_FORM_STATE_VALUES } from 'providers/SneakerListingFormProvider';
 
-import { ADMIN, TOPUP_WALLET } from 'routes';
+import { ADMIN, TOPUP_WALLET, DASHBOARD } from 'routes';
 
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
 
-import { mapUpperCaseFirstLetter } from 'utils/utils';
+import { formatListedSneakerPayload, formatSneaker, getMainDisplayImgUrl } from 'utils/utils';
+import SneakerSearchBar from 'components/SneakerSearchBar';
 
-import { ListedSneakerFormPayload, SneakerStatus } from '../../../shared';
+import { SearchBarSneaker } from '../../../shared';
 
-const formatListedSneakerPayload = (sneaker: SneakerListingFormStateType, quantity?: number) => (
-  s3UploadedUrls: string[]
-): ListedSneakerFormPayload => ({
-  askingPrice: Number(sneaker.askingPrice),
-  sizeSystem: sneaker.sizeSystem,
-  currencyCode: sneaker.currencyCode,
-  prodCondition: sneaker.prodCondition,
-  quantity: quantity || 1,
-  prodStatus: 'listed' as SneakerStatus,
-  conditionRating: sneaker.conditionRating,
-  description: sneaker.description,
-  serialNumber: '',
-  originalPurchasePrice: Number(sneaker.originalPurchasePrice),
-  mainDisplayImage: s3UploadedUrls[0],
-});
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
-const formatSneaker = (s: SneakerListingFormStateType) => {
-  const name = mapUpperCaseFirstLetter(s.name, ' ');
-  const colorway = mapUpperCaseFirstLetter(s.colorway, ' ');
-  const brand = mapUpperCaseFirstLetter(s.brand, ' ');
+import FixedAspectRatioSneakerCard from 'components/FixedAspectRatioSneakerCard';
+import MuiCloseButton from 'components/buttons/MuiCloseButton';
+import AlertDialog from 'components/AlertDialog';
+import MailControllerInstance from 'api/controllers/MailController';
 
-  const size = Number(s.size);
-
-  return { name, colorway, brand, size };
+// this prop is for testing purposes, so we can start from any step we want
+type SneakerListingFormProps = {
+  step?: number;
 };
 
 // the providers reside in routes.tsx
-const SneakerListingForm = () => {
-  const [step, setStep] = useState(0);
+const SneakerListingForm = (props: SneakerListingFormProps) => {
+  const [step, setStep] = useState(props.step || 0);
+  // see if the sneaker is already in the suggestion list
+  const [isSneakerNew, setIsSneakerNew] = useState(false);
+
+  const negativeBalanceAlertHook = useOpenCloseComp();
+
+  const setSnekaerNew = () => setIsSneakerNew(true);
+  const setSneakerExists = () => setIsSneakerNew(false);
+
+  const [listedSneakers, setListedSneakers] = useState<
+    { name: string; colorway: string; brand: string; mainDisplayImage: string }[]
+  >([]);
+
+  // use this state to get the one from the sneaker search bar
+  const [searchBarInputVal, setSearchBarInputVal] = useState('');
+  const updateSearchBarInputVal = (val: string) => setSearchBarInputVal(val);
+
+  const successDialogHook = useOpenCloseComp();
+  const { currentUser } = useAuth();
   const history = useHistory();
 
-  const { currentUser } = useAuth();
+  const { updateFormState } = useSneakerListingFormCtx();
 
   useEffect(() => {
     if (!currentUser) return;
@@ -67,36 +75,58 @@ const SneakerListingForm = () => {
     const goTopupWalletIfNegativeWalletBalance = async () => {
       const isWalletBalancePositive = await checkUserWalletBalance(WalletControllerInstance, currentUser.id);
 
-      if (!isWalletBalancePositive) {
-        history.push(ADMIN + TOPUP_WALLET);
-        alert('Please topup first, your wallet balance must be greater than 0');
-      }
+      if (!isWalletBalancePositive) negativeBalanceAlertHook.onOpen();
     };
 
     goTopupWalletIfNegativeWalletBalance();
-  });
+  }, [currentUser, history, negativeBalanceAlertHook]);
 
-  const { formDataFromFiles, getMainDisplayFile, destroyFiles } = usePreviewImgDropzoneCtx();
+  const onCloseNegWalletBalanceAlert = () => {
+    negativeBalanceAlertHook.onClose();
+    history.push(ADMIN + TOPUP_WALLET);
+  };
+
+  useEffect(() => {
+    (async () => {
+      const sneakers = await ListedSneakerControllerInstance.getAll();
+      const imgUrlsToMainDisplayImage = sneakers.map((s) => ({
+        ...s,
+        mainDisplayImage: getMainDisplayImgUrl(s.imageUrls),
+      }));
+
+      setListedSneakers(imgUrlsToMainDisplayImage);
+    })();
+  }, []);
+
+  const { formDataFromFiles, mainDisplayFileDataUrl, destroyFiles } = usePreviewImgDropzoneCtx();
   const { brandOptions, colorwayOptions, sneakerNamesOptions, listingSneakerFormState } = useSneakerListingFormCtx();
 
-  const goPrevStep = () => setStep(step - 1);
+  const goPrevStep = () => {
+    if (step === 0) return;
+    setStep(step - 1);
+  };
   const goNextstep = () => setStep(step + 1);
 
   const onFinishSubmit = async () => {
+    // preparing the data
     const { name, colorway, brand } = listingSneakerFormState;
 
     const imgFormData = formDataFromFiles();
     const sneakerPayload = formatSneaker(listingSneakerFormState);
-    const createListedProductPayload = formatListedSneakerPayload(listingSneakerFormState);
+    const createListedProductPayload = formatListedSneakerPayload(
+      listingSneakerFormState,
+      isSneakerNew ? 'new sneaker request' : 'listed'
+    );
 
     await onListingSneaker(
       AwsControllerInstance,
       SneakerControllerInstance,
       ListedSneakerControllerInstance,
-      HelperInfoControllerInstance
+      HelperInfoControllerInstance,
+      MailControllerInstance
     )(
       imgFormData,
-      currentUser!.id!,
+      currentUser!,
       sneakerPayload,
       createListedProductPayload,
       !brandOptions.includes(brand) ? brand : undefined,
@@ -105,59 +135,180 @@ const SneakerListingForm = () => {
     );
 
     // Go to the success message
-    goNextstep();
-
-    destroyFiles();
+    successDialogHook.onOpen();
   };
 
+  const onChooseSearchBarSneaker = (sneaker: SearchBarSneaker) => {
+    updateFormState({
+      ...INIT_LISTING_FORM_STATE_VALUES,
+      ...sneaker,
+    });
+
+    goNextstep();
+  };
+
+  const onRequestNewSneaker = (searchVal: string) => {
+    updateFormState({
+      ...INIT_LISTING_FORM_STATE_VALUES,
+      name: searchVal,
+    });
+
+    goNextstep();
+  };
+
+  const successTitle = isSneakerNew
+    ? `Thank you ${currentUser?.username}, we will review your new sneaker request shortly.`
+    : 'Your sneaker is now listed!';
+
+  const STEPS = 4;
+
   const renderStep = () => {
+    if (!currentUser) return null;
+
     switch (step) {
       case 0:
-        return <SneakerInfoForm goNextStep={goNextstep} />;
+        return (
+          <React.Fragment>
+            <SneakerSearchBar
+              sneakers={listedSneakers}
+              onChooseSneaker={onChooseSearchBarSneaker}
+              setSneakerNew={setSnekaerNew}
+              setSneakerExists={setSneakerExists}
+              updateSearchVal={updateSearchBarInputVal}
+              suggestionMaxHeight='55vh'
+            />
+            {isSneakerNew ? (
+              <div className='text-center'>
+                <Button color='primary' onClick={() => onRequestNewSneaker(searchBarInputVal)}>
+                  Request a new listing
+                </Button>
+              </div>
+            ) : null}
+          </React.Fragment>
+        );
       case 1:
-        return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
+        return <SneakerInfoForm title='Sneaker Listing Form' goNextStep={goNextstep} goPrevStep={goPrevStep} />;
       case 2:
-        const previewSneaker = {
-          ...formatSneaker(listingSneakerFormState),
-          // although plural, but preview is always a single url
-          imageUrls: getMainDisplayFile()!.preview,
-        };
+        return <PreviewImagesDropzone onNextStep={goNextstep} onPrevStep={goPrevStep} />;
+      case 3:
+        if (!mainDisplayFileDataUrl) return null;
 
         return (
           <PreviewSneaker
-            aspectRatio='58.5%'
-            sneaker={previewSneaker}
-            mainDisplayImage={previewSneaker.imageUrls}
+            sneaker={formatSneaker(listingSneakerFormState)}
+            mainDisplayImage={mainDisplayFileDataUrl}
             price={Number(listingSneakerFormState.askingPrice)}
             onPrevStep={goPrevStep}
             onSubmit={onFinishSubmit}
+            ratio='66.6%'
           />
         );
-      case 3:
-        return <ListedSneakerSuccess />;
       default:
-        return undefined;
+        return null;
     }
   };
 
-  const calcProgress = () => ((step + 1) / 4) * 100;
+  const SuccessDialog = () => {
+    if (!mainDisplayFileDataUrl) return null;
+
+    const sneaker = formatSneaker(listingSneakerFormState);
+
+    const classes = makeStyles(() => ({
+      typographyTitle: {
+        fontSize: '1.5rem',
+        fontWeight: 600,
+        textAlign: 'center',
+      },
+      paper: {
+        padding: '10px',
+      },
+    }))();
+
+    const onCloseDialog = () => {
+      successDialogHook.onClose();
+      history.push(ADMIN + DASHBOARD);
+      destroyFiles();
+    };
+
+    return (
+      <Dialog
+        classes={{ paper: classes.paper }}
+        fullWidth
+        maxWidth='sm'
+        open={successDialogHook.open}
+        onClose={onCloseDialog}
+      >
+        <MuiCloseButton onClick={onCloseDialog} />
+        <DialogTitle>
+          <Typography
+            classes={{
+              root: classes.typographyTitle,   
+            }}
+          >
+            {successTitle}
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <FixedAspectRatioSneakerCard
+            ratio='100%'
+            sneaker={sneaker}
+            mainDisplayImage={mainDisplayFileDataUrl}
+            price={Number(listingSneakerFormState.askingPrice)}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  // STEPS - 1 because the last step is a success message
+  const calcProgress = () => ((step + 1) / (STEPS - 1)) * 100;
 
   return (
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content' style={{ paddingTop: '2.2rem' }}>
-        <Container style={{ maxWidth: step === 2 ? '625px' : undefined }}>
-          <Col className='text-center'>
-            <p style={{ margin: 0 }}>{calcProgress()}%</p>
+        <StepContainer>
+          <Col>
+            {step < 4 && (
+              <StepIndicator>
+                Step {step + 1} of {STEPS - 1}
+              </StepIndicator>
+            )}
             <div style={{ marginBottom: '1rem' }}>
               <Progress value={calcProgress()} />
             </div>
             {renderStep()}
           </Col>
-        </Container>
+        </StepContainer>
       </div>
+      <SuccessDialog />
+      <AlertDialog
+        color='info'
+        message='Please topup first, your wallet balance must be greater than 0'
+        open={negativeBalanceAlertHook.open}
+        onClose={onCloseNegWalletBalanceAlert}
+        maxWidth='sm'
+      />
     </React.Fragment>
   );
 };
+
+const StepIndicator = styled.div`
+  text-align: center;
+  font-size: 1.75rem;
+`;
+
+const StepContainer = styled.div`
+  margin: auto;
+  width: 50%;
+
+  @media (max-width: 1536px) {
+    width: 70%;
+  }
+
+  @media (max-width: 768px) {
+    width: 92.5%;
+  }
+`;
 
 export default SneakerListingForm;

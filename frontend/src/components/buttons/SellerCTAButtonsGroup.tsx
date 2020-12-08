@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import RateCustomer from 'components/RateCustomer';
 import ContactCustomerButton from './ContactCustomerButton';
+import RemoveListingButton from './RemoveListingButton';
 import { CompleteSaleButton } from './StyledButton';
 
 import { SneakerStatus, Buyer } from '../../../../shared';
@@ -14,41 +15,48 @@ type SellerCTAButtonsGroupProps = {
   buyer: Buyer;
   productId: number;
   onCompleteSale: () => void;
+  onRemoveListing: () => void;
 };
 
 const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
-  const { prodStatus, listedProdId, productId, buyer, onCompleteSale, userId } = props;
+  const { prodStatus, listedProdId, productId, buyer, onCompleteSale, userId, onRemoveListing } = props;
 
   // DIRTY TRICK: update the state after the rating is completed to hide the RateCustomer
   // button, if this state is not used, I have to tell the parent to fetch all data in order to update
   // which will be very slow
-  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(buyer ? buyer.hasSellerRatedBuyer : 0)
+  const [hasSellerRatedBuyer, setHasSellerRatedBuyer] = useState(buyer ? buyer.hasSellerRatedBuyer : 0);
 
   const onCompleteRating = async (listedProductId: number, rating: number, comment: string) => {
     await TransactionControllerInstance.rateBuyer(listedProductId, rating, comment);
-    setHasSellerRatedBuyer(1)
+    setHasSellerRatedBuyer(1);
   };
 
-  switch (prodStatus) {
-    case 'pending':
-      return (
-        <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={buyer} title='Contact Buyer' productId={productId} userId={userId} userType="seller"/>
-          <CompleteSaleButton onClick={onCompleteSale}>Complete Sale</CompleteSaleButton>
-        </div>
-      );
-    case 'sold':
-      return (
-        <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={buyer!} title='Contact Buyer' productId={productId} userId={userId} userType="seller"/>
-          {!hasSellerRatedBuyer && (
-            <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompleteRating} />
-          )}
-        </div>
-      );
-    default:
-      return null;
-  }
+  const render = () => {
+    switch (prodStatus) {
+      case 'listed':
+        return <RemoveListingButton listedProdId={listedProdId} title='Remove Listing' onConfirmRemove={onRemoveListing} />;
+      case 'pending':
+        return (
+          <>
+            <ContactCustomerButton customer={buyer!} title='Contact Buyer' productId={productId} userId={userId} userType="seller"/>
+            <CompleteSaleButton onClick={onCompleteSale}>Complete Sale</CompleteSaleButton>
+          </>
+        );
+      case 'sold':
+        return (
+          <>
+            <ContactCustomerButton customer={buyer!} title='Contact Buyer' productId={productId} userId={userId} userType="seller"/>
+            {!hasSellerRatedBuyer && (
+              <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompleteRating} />
+            )}
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return <div className='flex margin-right-except-last'>{render()}</div>;
 };
 
 export default SellerCTAButtonsGroup;

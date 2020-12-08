@@ -1,26 +1,92 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import ListedSneakerService from '../../services/ListedSneakerService';
+import { ExpressHandler } from '../../@types/express';
 
-const listedSneakerRoute = Router();
+const createListedSneakerHandlers = (listedSneakerService: ListedSneakerService) => {
+  const update: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    const listedSneaker = req.body;
+
+    listedSneakerService
+      .update(Number(id), listedSneaker)
+      .then(() => res.json(listedSneaker))
+      .catch(next);
+  };
+
+  const get: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    listedSneakerService
+      .getById(Number(id))
+      .then((r) => (r.length > 0 ? r[0] : null))
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  const getAll: ExpressHandler = (_req, res, next) => {
+    listedSneakerService
+      .getAll()
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  const remove: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    listedSneakerService
+      .remove(Number(id))
+      .then((r) => res.json(r))
+      .catch(next);
+  };
+
+  const getGallerySneakersBySellerId: ExpressHandler = (req, res, next) => {
+    const { sellerId } = req.params;
+    const { limit, offset } = req.query;
+
+    listedSneakerService
+      .getGallerySneakers(Number(sellerId), Number(limit), Number(offset))
+      .then((gallerySneakers) => res.json(gallerySneakers))
+      .catch(next);
+  };
+
+  return {
+    update,
+    get,
+    getAll,
+    remove,
+    getGallerySneakersBySellerId,
+  };
+};
 
 export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService) => {
-  app.use('/listedSneaker', listedSneakerRoute);
+  const { update, get, getAll, remove, getGallerySneakersBySellerId } = createListedSneakerHandlers(
+    ListedSneakerServiceInstance
+  );
 
-  listedSneakerRoute.get('/', async (_req, res, next) => {
+  const router = Router();
+
+  app.use('/listedSneaker', router);
+
+  router.route('/history').get(getAll);
+  router.route('/one/:id').get(get).put(update).delete(remove);
+  router.route('/gallery/:sellerId').get(getGallerySneakersBySellerId);
+
+  router.get('/', async (_req, res, next) => {
     ListedSneakerServiceInstance.getAllListedSneakers()
       .then((r) => res.json(r))
       .catch((err) => next(err));
   });
 
-  listedSneakerRoute.get('/sizeMinPriceGroup/:nameColorway/:sellerId', (req, res, next) => {
-    const { nameColorway, sellerId } = req.params;
+  router.get('/sizeMinPriceGroup/:name/:colorway/:sellerId', (req, res, next) => {
+    const { name, colorway, sellerId } = req.params;
 
-    ListedSneakerServiceInstance.getSizeMinPriceGroupByNameColorway(nameColorway, Number(sellerId))
+    ListedSneakerServiceInstance.getSizeMinPriceGroupByNameColorway(name, colorway, Number(sellerId))
       .then((r) => res.json(r))
       .catch(next);
   });
 
-  listedSneakerRoute.get('/gallery/size/:sellerId/:size', (req, res, next) => {
+  router.get('/gallery/size/:sellerId/:size', (req, res, next) => {
     const { sellerId, size } = req.params;
 
     ListedSneakerServiceInstance.getGallerySneakersBySize(Number(sellerId), Number(size))
@@ -28,7 +94,7 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .catch(next);
   });
 
-  listedSneakerRoute.get('/all/:sellerId', (req, res, next) => {
+  router.get('/all/:sellerId', (req, res, next) => {
     const { sellerId } = req.params;
 
     ListedSneakerServiceInstance.getBySellerId(Number(sellerId))
@@ -36,23 +102,15 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .catch(next);
   });
 
-  listedSneakerRoute.get('/allAsks', (req, res, next) => {
-    const { nameColorway } = req.query;
+  router.get('/allAsks/:name/:colorway', (req, res, next) => {
+    const { name, colorway } = req.params;
 
-    ListedSneakerServiceInstance.getAllAsksByNameColorway(nameColorway as string)
+    ListedSneakerServiceInstance.getAllAsksByNameColorway(name, colorway)
       .then((result) => res.json(result))
       .catch(next);
   });
 
-  listedSneakerRoute.get('/gallery/:sellerId', (req, res, next) => {
-    const { sellerId } = req.params;
-
-    ListedSneakerServiceInstance.getGallerySneakers(Number(sellerId))
-      .then((gallerySneakers) => res.json(gallerySneakers))
-      .catch(next);
-  });
-
-  listedSneakerRoute.post('/', (req, res, next) => {
+  router.post('/', (req, res, next) => {
     const listedSneaker = req.body;
 
     ListedSneakerServiceInstance.create(listedSneaker)
@@ -60,7 +118,7 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .catch(next);
   });
 
-  listedSneakerRoute.put('/purchase', (req, res, next) => {
+  router.put('/purchase', (req, res, next) => {
     const { id, sellerId } = req.body;
 
     ListedSneakerServiceInstance.handlePurchase(id, sellerId)
@@ -68,7 +126,7 @@ export default (app: Router, ListedSneakerServiceInstance: ListedSneakerService)
       .catch(next);
   });
 
-  listedSneakerRoute.put('/status/:id', (req, res, next) => {
+  router.put('/status/:id', (req, res, next) => {
     const { id } = req.params;
     const listedSneakerStatus = req.body;
 

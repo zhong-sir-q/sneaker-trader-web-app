@@ -11,12 +11,30 @@ The project implements a typical client-server model. In the *react* app, all bu
 ## Get Started
 
 ### Configuration
-- Each `frontend` and `backend` directory contains specific `.env` files for development, production and test environment respectively, contact admin to retrieve the relevant `.env` files.
-- Setup Amplify in `frontend`, you can either [create new auth resources](https://docs.amplify.aws/lib/auth/getting-started/q/platform/js#configure-your-application) or contact admin to retrieve relevant information to [re-use the existing backend](https://docs.amplify.aws/lib/auth/start/q/platform/js#re-use-existing-authentication-resource)
+- Each `frontend` and `backend` directory contains specific `.env` files for development, production and test environment respectively also `aws-exports.js` is necessary to get Amplify up and running, contact admin to retrieve the relevant credentials.
 
 ### Run the project
-- Run `npm install` in `frontend` and `backend` respectively.
-- In the root directory, run `npm run buildAll`, this creates type references between the `shared` folder and the two other directories. Then run `npm run dev`, you should be able to see the react app running at https://localhost:3000 and the express app running at http://localhost:4000.
+
+- In the root directory, first setup and build the project:
+
+```bash
+# installs global dependenciens and create the type references
+npm run setup
+```
+
+- Then to run the project, if you are on **Windows**:
+
+```bash
+npm run win-dev
+```
+
+Else if you are on **MacOS** or **Linux**:
+
+```bash
+npm run dev
+```
+
+- Then you can see the react app running at https://localhost:3000 and the express app running at http://localhost:4000.
 
 ### Note
 - Anytime type declarations are added to the shared folder, run `npm run buildAll` to sync the updates between the folders.

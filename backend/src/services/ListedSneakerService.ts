@@ -7,7 +7,7 @@ import {
   GallerySneaker,
   SellerListedSneaker,
   CreateListedSneakerPayload,
-  GetListedSneaker
+  GetListedSneaker,
 } from '../../../shared';
 
 import ListedSneakerEntity from '../../../shared/@types/domains/entities/ListedSneakerEntity';
@@ -19,18 +19,18 @@ import { getBuyersAvgRatingQuery } from '../utils/queries';
 class ListedSneakerService implements ListedSneakerEntity {
   // get all sneaker asks along with the min asking price of each size the
   // the available numbers
-  async getAllAsksByNameColorway(nameColorway: string): Promise<SneakerAsk[]> {
+  async getAllAsksByNameColorway(name: string, colorway: string): Promise<SneakerAsk[]> {
     const poolConn = await mysqlPoolConnection();
 
     const getAllAsksQuery = `
-      SELECT size, Min(askingPrice) as askingPrice, SUM(L.quantity) as numsAvailable 
+      SELECT size, Min(askingPrice) as askingPrice, SUM(L.quantity) as numsAvailable
         FROM ListedProducts L, Products P
-          WHERE L.prodStatus = "listed" AND L.productId = P.id 
-            AND CONCAT(P.name, ' ', P.colorWay) = ${doubleQuotedValue(nameColorway)}
+          WHERE L.prodStatus = "listed" AND L.productId = P.id
+            AND P.name = ? AND P.colorway = ?
               GROUP BY size ORDER BY askingPrice;
     `;
 
-    return poolConn.query(getAllAsksQuery);
+    return poolConn.query(getAllAsksQuery, [name, colorway]);
   }
 
   async getBySellerId(sellerId: number): Promise<SellerListedSneaker[]> {
@@ -52,7 +52,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     `;
 
     const buyerIfPendingOrSoldProduct = `
-      IF(prodStatus = 'pending' OR prodStatus = 'sold', 
+      IF(prodStatus = 'pending' OR prodStatus = 'sold',
         (${getBuyerQuery}), null) AS stringifiedBuyer`;
 
     const getSellerListedProductsQuery = `
@@ -74,6 +74,18 @@ class ListedSneakerService implements ListedSneakerEntity {
     return sellerListedSneakers;
   }
 
+  // return all sneakers with no duplicates, they are duplicates if they have the same name, colorway, brand
+  async getAll() {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT name, brand, colorway, P.imageUrls FROM ${PRODUCTS} P,
+        ${LISTED_PRODUCTS} L WHERE P.id = L.productId
+          GROUP BY name, brand, colorway`;
+
+    return poolConn.query(query);
+  }
+
   async getGallerySneakersBySize(sellerId: number, size: number): Promise<GallerySneaker[]> {
     const poolConn = await mysqlPoolConnection();
 
@@ -81,21 +93,27 @@ class ListedSneakerService implements ListedSneakerEntity {
     // shoe sizes different products, therefore we don't need to group by the name and colorway
     const getBySizeQuery = `
     SELECT name, colorway, brand, size, P.imageUrls, minPrice, mainDisplayImage FROM ${PRODUCTS} P JOIN (
-      SELECT MIN(askingPrice) as minPrice, productId, mainDisplayImage FROM ${LISTED_PRODUCTS} 
+      SELECT MIN(askingPrice) as minPrice, productId, mainDisplayImage FROM ${LISTED_PRODUCTS}
       WHERE prodStatus = "listed" AND NOT userId = ${sellerId} GROUP BY productId
     ) L ON P.id = L.productId WHERE size = ${size}`;
 
     return poolConn.query(getBySizeQuery);
   }
 
-  async getGallerySneakers(sellerId: number): Promise<GallerySneaker[]> {
+  async getGallerySneakers(sellerId: number, limit?: number, offset?: number): Promise<GallerySneaker[]> {
     // get all sneakers grouped by the names and their min price
-    const query = `
+    let query = `
       SELECT name, size, brand, colorway, P.imageUrls,
         MIN(minAskingPrice) as minPrice, mainDisplayImage FROM ${PRODUCTS} P JOIN (
           SELECT MIN(askingPrice) as minAskingPrice, productId, mainDisplayImage FROM ${LISTED_PRODUCTS}
             WHERE prodStatus = "listed" AND NOT userId = ${sellerId} GROUP BY productId
               ) L ON P.id = L.productId GROUP BY name, colorway`;
+
+    let constraint = '';
+    if (limit) constraint = `LIMIT ${limit}`;
+    if (offset) constraint = `${constraint} OFFSET ${offset}`;
+
+    query = query + ' ' + constraint;
 
     const poolConn = await mysqlPoolConnection();
     const sneakersWithLowestAskPrice = await poolConn.query(query);
@@ -107,7 +125,8 @@ class ListedSneakerService implements ListedSneakerEntity {
    * @param nameColorway space separated name, e.g. Kobe 4 Black
    */
   getSizeMinPriceGroupByNameColorway = async (
-    nameColorway: string,
+    name: string,
+    colorway: string,
     sellerId: number
   ): Promise<SizeMinPriceGroupType> => {
     const poolConn = await mysqlPoolConnection();
@@ -125,19 +144,18 @@ class ListedSneakerService implements ListedSneakerEntity {
     // pair of sneakers with the same name colorway and size
     const query = `
       SELECT P.size, MIN(L.askingPrice) as minPrice FROM ${PRODUCTS} P, ${LISTED_PRODUCTS} L
-        WHERE P.id = L.productId AND L.prodStatus = "listed" AND NOT L.userId = ${sellerId} AND
-          CONCAT(P.name, ' ', P.colorway) = ${doubleQuotedValue(nameColorway)}
-            GROUP BY P.id
+        WHERE P.id = L.productId AND L.prodStatus = "listed" AND NOT L.userId = ? AND
+          P.name = ? AND P.colorway = ? GROUP BY P.id
     `;
 
-    return poolConn.query(query);
+    return poolConn.query(query, [sellerId, name, colorway]);
   };
 
   async getAllListedSneakers(): Promise<GetListedSneaker[]> {
     const poolConn = await mysqlPoolConnection();
 
     const allListedProductsQuery = `
-      SELECT L.*, name, brand, colorway, size FROM ${PRODUCTS} P, 
+      SELECT L.*, name, brand, colorway, size FROM ${PRODUCTS} P,
         ${LISTED_PRODUCTS} L WHERE P.id = L.productId AND L.prodStatus = 'listed'
           GROUP BY name, colorway`;
 
@@ -165,6 +183,24 @@ class ListedSneakerService implements ListedSneakerEntity {
     const poolConn = await mysqlPoolConnection();
 
     return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneakerStatus, `id = ${listedSneakerId}`));
+  }
+
+  async update(listedSneakerId: number, listedSneaker: CreateListedSneakerPayload): Promise<ListedProduct> {
+    const poolConn = await mysqlPoolConnection();
+
+    return poolConn.query(formatUpdateRowsQuery(LISTED_PRODUCTS, listedSneaker, `id = ${listedSneakerId}`));
+  }
+
+  // soft delete the listed sneaker
+  async remove(listedSneakerId: number) {
+    return this.updateListedSneakerStatus(listedSneakerId, { prodStatus: 'deleted' });
+  }
+
+  async getById(listedSneakerId: Number) {
+    const poolConn = await mysqlPoolConnection();
+    const sql = `SELECT * from ${LISTED_PRODUCTS} WHERE id = ?`;
+
+    return poolConn.query(sql, [listedSneakerId]);
   }
 }
 

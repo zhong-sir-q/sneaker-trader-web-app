@@ -6,10 +6,10 @@ import mysqlPoolConnection from '../config/mysql';
 import AddressVerificationCodeService from './AddressVerificationCodeService';
 
 class AddressService implements AddressEntity {
-  private readonly AddressVerificationCodeServiceInstance: AddressVerificationCodeService;
+  private readonly addressService: AddressVerificationCodeService;
 
   constructor(AddrVerifyCodeServ: AddressVerificationCodeService) {
-    this.AddressVerificationCodeServiceInstance = AddrVerifyCodeServ;
+    this.addressService = AddrVerifyCodeServ;
   }
 
   async addUserAddress(userId: number, addr: Address): Promise<void> {
@@ -36,19 +36,22 @@ class AddressService implements AddressEntity {
     const addr = await this.getAddressByUserId(userId);
     if (!addr) return false;
 
-    const isCodeValid = await this.AddressVerificationCodeServiceInstance.validateCode(userId, code);
+    const isCodeValid = await this.addressService.validateCode(userId, code);
     if (isCodeValid) this.updateVerificationStatus(userId, 'verified');
 
     return isCodeValid;
   }
 
   async generateVerificationCode(userId: number): Promise<void> {
-    this.AddressVerificationCodeServiceInstance.generateVerificationCode(userId);
+    this.addressService.generateVerificationCode(userId);
   }
 
   async updateAddressByUserId(userId: number, addr: Address): Promise<void> {
     const poolConn = await mysqlPoolConnection();
+
     const updateQuery = formatUpdateRowsQuery(ADDRESS, addr, `userId = ${userId}`);
+
+    this.updateVerificationStatus(userId, 'in_progress');
 
     await poolConn.query(updateQuery);
   }

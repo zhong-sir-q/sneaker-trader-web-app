@@ -13,6 +13,7 @@ type TransactionTableContextType = {
   unsoldListedSneakers: SellerListedSneaker[] | undefined;
   purchasedSneakers: BuyerPurchasedSneaker[] | undefined;
   sellerSoldSneakers: SellerListedSneaker[] | undefined;
+  removeUnsoldSneakers: (id: number) => void;
   handleOpenPopup: () => void;
   handleClosePopup: () => void;
   toggleShowListed: () => void;
@@ -24,15 +25,10 @@ const INIT_TRANSACTION_CONTEXT: TransactionTableContextType = {
   unsoldListedSneakers: undefined,
   purchasedSneakers: undefined,
   sellerSoldSneakers: undefined,
-  handleOpenPopup: () => {
-    throw new Error('Must override!');
-  },
-  handleClosePopup: () => {
-    throw new Error('Must override!');
-  },
-  toggleShowListed: () => {
-    throw new Error('Must override!');
-  },
+  removeUnsoldSneakers: () => { throw new Error('Must override!') },
+  handleOpenPopup: () => { throw new Error('Must override!') },
+  handleClosePopup: () => { throw new Error('Must override!') },
+  toggleShowListed: () => { throw new Error('Must override!') },
 };
 
 const TransactionTableContext = createContext(INIT_TRANSACTION_CONTEXT);
@@ -55,6 +51,12 @@ const TransactionTableProvider = (props: { children: ReactNode }) => {
 
   const { currentUser } = useAuth();
 
+  const removeUnsoldSneakers = (id: number) => {
+    const unsold = unsoldListedSneakers?.filter(s => s.id !== id)
+    setUnsoldListedSneakers(unsold)
+  }
+
+  // refetch the data if a sale has been completed
   useEffect(() => {
     (async () => {
       if (currentUser) {
@@ -82,6 +84,7 @@ const TransactionTableProvider = (props: { children: ReactNode }) => {
         showListed,
         purchasedSneakers,
         unsoldListedSneakers,
+        removeUnsoldSneakers,
         sellerSoldSneakers,
         handleClosePopup,
         handleOpenPopup,
