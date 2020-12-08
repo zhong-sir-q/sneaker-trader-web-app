@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Col, Progress, Button } from 'reactstrap';
 
-import { DialogContent, Dialog, DialogTitle, makeStyles } from '@material-ui/core';
+import { DialogContent, Dialog, DialogTitle, makeStyles, Typography } from '@material-ui/core';
 
 import styled from 'styled-components';
 
@@ -37,6 +37,7 @@ import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import FixedAspectRatioSneakerCard from 'components/FixedAspectRatioSneakerCard';
 import MuiCloseButton from 'components/buttons/MuiCloseButton';
 import AlertDialog from 'components/AlertDialog';
+import MailControllerInstance from 'api/controllers/MailController';
 
 // this prop is for testing purposes, so we can start from any step we want
 type SneakerListingFormProps = {
@@ -107,6 +108,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
   const goNextstep = () => setStep(step + 1);
 
   const onFinishSubmit = async () => {
+    // preparing the data
     const { name, colorway, brand } = listingSneakerFormState;
 
     const imgFormData = formDataFromFiles();
@@ -120,10 +122,11 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
       AwsControllerInstance,
       SneakerControllerInstance,
       ListedSneakerControllerInstance,
-      HelperInfoControllerInstance
+      HelperInfoControllerInstance,
+      MailControllerInstance
     )(
       imgFormData,
-      currentUser!.id!,
+      currentUser!,
       sneakerPayload,
       createListedProductPayload,
       !brandOptions.includes(brand) ? brand : undefined,
@@ -160,6 +163,8 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
   const STEPS = 4;
 
   const renderStep = () => {
+    if (!currentUser) return null;
+
     switch (step) {
       case 0:
         return (
@@ -209,25 +214,40 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     const sneaker = formatSneaker(listingSneakerFormState);
 
     const classes = makeStyles(() => ({
-      dialogTitle: {
+      typographyTitle: {
         fontSize: '1.5rem',
         fontWeight: 600,
         textAlign: 'center',
+      },
+      paper: {
+        padding: '10px',
       },
     }))();
 
     const onCloseDialog = () => {
       successDialogHook.onClose();
       history.push(ADMIN + DASHBOARD);
-      destroyFiles()
+      destroyFiles();
     };
 
     return (
-      <Dialog fullWidth maxWidth='sm' open={successDialogHook.open} onClose={onCloseDialog}>
+      <Dialog
+        classes={{ paper: classes.paper }}
+        fullWidth
+        maxWidth='sm'
+        open={successDialogHook.open}
+        onClose={onCloseDialog}
+      >
         <MuiCloseButton onClick={onCloseDialog} />
-        <DialogTitle classes={{
-          root: classes.dialogTitle
-        }}>{successTitle}</DialogTitle>
+        <DialogTitle>
+          <Typography
+            classes={{
+              root: classes.typographyTitle,   
+            }}
+          >
+            {successTitle}
+          </Typography>
+        </DialogTitle>
         <DialogContent>
           <FixedAspectRatioSneakerCard
             ratio='100%'

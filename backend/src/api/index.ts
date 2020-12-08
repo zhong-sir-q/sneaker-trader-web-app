@@ -8,7 +8,8 @@ import address from './routers/address';
 import sneaker from './routers/sneaker';
 import listedSneaker from './routers/listedSneaker';
 
-import mail from './routers/mail';
+import createMailRoutes from './routers/mail';
+
 import aws from './routers/aws';
 import poli from './routers/poli';
 import stripe from './routers/stripe';
@@ -46,7 +47,12 @@ export default () => {
   // app will use the following routes as middleware at the respective routes
 
   // external apis
-  mail(app, new MailService());
+  const mailService = new MailService();
+
+  const { router: mailRoutes } = createMailRoutes(mailService);
+
+  app.use('/mail', mailRoutes);
+
   aws(app, new CustomAwsService());
   stripe(app, new StripeService());
   poli(app);

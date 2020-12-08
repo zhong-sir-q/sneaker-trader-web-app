@@ -7,7 +7,7 @@ import formatRequestOptions from 'utils/formatRequestOptions';
 import queryString from 'query-string';
 
 export class SneakerController implements SneakerEntity {
-  sneakerPath: string;
+  private sneakerPath: string;
 
   constructor() {
     this.sneakerPath = formatApiEndpoint('sneaker');
@@ -32,6 +32,9 @@ export class SneakerController implements SneakerEntity {
       concatPaths(this.sneakerPath, 'updateImage', id),
       formatRequestOptions({ imageUrls }, undefined, 'PUT')
     ).then((r) => r.json());
+
+  getById = (id: number): Promise<Sneaker | null> =>
+    fetch(concatPaths(this.sneakerPath, 'one', id)).then((r) => r.json());
 }
 
 const SneakerControllerInstance = new SneakerController();

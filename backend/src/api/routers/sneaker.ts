@@ -50,7 +50,16 @@ const createSneakerHandlers = (sneakerService: SneakerService) => {
       .catch(next);
   };
 
-  return { create, getSneakerByQuery, getGallerySneakers, updateDisplayImage };
+  const getById: ExpressHandler = (req, res, next) => {
+    const { id } = req.params;
+
+    sneakerService
+      .getById(Number(id))
+      .then((sneaker) => res.json(sneaker))
+      .catch(next);
+  };
+
+  return { create, getById, getSneakerByQuery, getGallerySneakers, updateDisplayImage };
 };
 
 const sneakerRoute = Router();
@@ -58,9 +67,10 @@ const sneakerRoute = Router();
 export default (app: Router, sneakerService: SneakerService) => {
   app.use('/sneaker', sneakerRoute);
 
-  const { create, getSneakerByQuery, getGallerySneakers, updateDisplayImage } = createSneakerHandlers(sneakerService);
+  const { create, getById, getSneakerByQuery, getGallerySneakers, updateDisplayImage } = createSneakerHandlers(sneakerService);
 
   sneakerRoute.route('/').post(create).get(getSneakerByQuery);
   sneakerRoute.route('/updateImage/:id').put(updateDisplayImage);
   sneakerRoute.route('/gallery').get(getGallerySneakers);
+  sneakerRoute.route('/one/:id').get(getById);
 };

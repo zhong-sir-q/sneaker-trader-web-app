@@ -4,12 +4,14 @@ import {
   MockSneakerControllerInstance,
   MockListedSneakerControllerInstance,
   MockHelperInfoControllerInstance,
+  MockMailControllerInstance,
 } from '__mocks__/controllers';
 
 import faker from 'faker';
 import fakeListingFormSneaker from '__mocks__/data/fakeListingFormSneaker';
 import fakeListedSneakerFormPayload from '__mocks__/data/fakeListedSneakerFormPayload';
 import fakeSneaker from '__mocks__/data/fakeSneaker';
+import fakeUser from '__mocks__/data/fakeUser';
 
 test('Call respective functions on listing a sneaker', async (done) => {
   const spyGetSneakerByNameColorwaySize = jest
@@ -24,16 +26,9 @@ test('Call respective functions on listing a sneaker', async (done) => {
     MockAwsControllerInstance,
     MockSneakerControllerInstance,
     MockListedSneakerControllerInstance,
-    MockHelperInfoControllerInstance
-  )(
-    new FormData(),
-    faker.random.number(),
-    fakeListingFormSneaker(),
-    fakeListedSneakerFormPayload,
-    'Nike',
-    undefined,
-    undefined
-  );
+    MockHelperInfoControllerInstance,
+    MockMailControllerInstance
+  )(new FormData(), fakeUser(), fakeListingFormSneaker(), fakeListedSneakerFormPayload, 'Nike', undefined, undefined);
 
   expect(spyUploadS3MultipleImages).toBeCalledTimes(1);
   expect(spyGetSneakerByNameColorwaySize).toBeCalledTimes(1);
@@ -45,5 +40,5 @@ test('Call respective functions on listing a sneaker', async (done) => {
   expect(MockHelperInfoControllerInstance.createColorway).toBeCalledTimes(0);
   expect(MockHelperInfoControllerInstance.createSneakerName).toBeCalledTimes(0);
 
-  done()
+  done();
 });

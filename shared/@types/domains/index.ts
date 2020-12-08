@@ -10,8 +10,8 @@ export * from './entities/HelperInfoEntity';
 export * from './entities/TransactionsEntity';
 export * from './entities/SneakerEntity';
 export * from './entities/AddressEntity';
-export * from './entities/PortfolioSneakerEntity'
-export * from './entities/GoogleOauthEntity'
+export * from './entities/PortfolioSneakerEntity';
+export * from './entities/GoogleOauthEntity';
 
 export type DecreaseWalletPayload = {
   userId: number;
@@ -29,6 +29,15 @@ export type MailAfterPurchasePayload = {
   buyerUserName: string;
   buyerEmail: string;
   productName: string;
+};
+
+export type NewRequestSneaker = {
+  id: number;
+  productId: number;
+  name: string;
+  colorway: string;
+  size: number;
+  mainDisplayImage: string;
 };
 
 export type HelperInfoType = 'sneakernames' | 'colorways' | 'brands';

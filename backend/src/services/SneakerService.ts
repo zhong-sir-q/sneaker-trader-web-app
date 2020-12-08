@@ -57,6 +57,18 @@ class SneakerService implements SneakerEntity {
     return poolConn.query(query);
   }
 
+  async getById(id: number): Promise<Sneaker | null> {
+    const poolConn = await mysqlPoolConnection();
+
+    const query = `
+      SELECT * FROM ${PRODUCTS} WHERE id = ?
+    `;
+
+    const res = await poolConn.query(query, [id]);
+
+    return res.length ? res[0] : null;
+  }
+
   async create(sneaker: AppSneaker): Promise<number> {
     const poolConn = await mysqlPoolConnection();
 
