@@ -1,26 +1,26 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-import { Table, Card, CardBody, Button } from 'reactstrap';
+import { Table, Card, CardBody, Button, CardFooter } from 'reactstrap';
 import { Dialog, DialogTitle, DialogActions, makeStyles } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+import { Edit } from '@material-ui/icons';
+
+import { useHistory } from 'react-router-dom';
 
 import { v4 as uuidV4 } from 'uuid';
 
-import { Edit } from '@material-ui/icons';
-import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import styled from 'styled-components';
 
 import PanelHeader from 'components/PanelHeader';
 import AlertDialog from 'components/AlertDialog';
 import SneakerNameCell from 'components/SneakerNameCell';
+import SuperUserEditPhotoDialog from 'components/dialog/SuperUserEditPhotoDialog';
 
 import { SneakerController } from 'api/controllers/SneakerController';
 
 import { useAuth } from 'providers/AuthProvider';
 
 import isAdminUser from 'usecases/isAdminUser';
-
-import { Skeleton } from '@material-ui/lab';
-import { useHistory } from 'react-router-dom';
 
 import { ADMIN, DASHBOARD } from 'routes';
 
@@ -29,7 +29,9 @@ import { AwsController } from 'api/controllers/AwsController';
 import { Sneaker } from '../../../../shared';
 
 import { createBlob } from 'utils/utils';
-import SuperUserEditPhotoDialog from 'components/dialog/SuperUserEditPhotoDialog';
+
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import usePagination from 'hooks/usePagination';
 
 const HiddenInput = styled.input`
   display: none;
@@ -157,14 +159,14 @@ type SuperEditGalleryProps = {
 const SuperEditGallery = (props: SuperEditGalleryProps) => {
   const history = useHistory();
   const { currentUser, signedIn } = useAuth();
-  const [sneakers, setSneakers] = useState<any[]>();
+  const [sneakers, setSneakers] = useState<any[]>([]);
+
+  const { currentPage, pagesCount, startRowCount, endRowCount, PaginationComponent } = usePagination(
+    sneakers.length,
+    8
+  );
 
   const { sneakerController, awsController } = props;
-
-  const fetchGallerySneakers = async () => {
-    const s = await sneakerController.getGallerySneakers();
-    setSneakers(s.map((sneaker) => ({ ...sneaker, mainDisplayImage: sneaker.imageUrls.split(',')[0] })));
-  };
 
   useEffect(() => {
     if (!currentUser) return;
@@ -173,6 +175,11 @@ const SuperEditGallery = (props: SuperEditGalleryProps) => {
       history.push(ADMIN + DASHBOARD);
       return;
     }
+
+    const fetchGallerySneakers = async () => {
+      const s = await sneakerController.getGallerySneakers();
+      setSneakers(s.map((sneaker) => ({ ...sneaker, mainDisplayImage: sneaker.imageUrls.split(',')[0] })));
+    };
 
     fetchGallerySneakers();
   });
@@ -194,7 +201,7 @@ const SuperEditGallery = (props: SuperEditGalleryProps) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sneakers.map((sneaker, idx) => (
+                  {sneakers.slice(startRowCount(), endRowCount()).map((sneaker, idx) => (
                     <TableRow
                       sneaker={sneaker}
                       sneakerController={sneakerController}
@@ -205,11 +212,23 @@ const SuperEditGallery = (props: SuperEditGalleryProps) => {
                 </tbody>
               </Table>
             </CardBody>
+            <Footer>
+              <PaginationComponent />
+              <p>
+                {currentPage + 1} of {pagesCount}
+              </p>
+            </Footer>
           </Card>
         )}
       </div>
     </React.Fragment>
   );
 };
+
+const Footer = styled(CardFooter)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 export default SuperEditGallery;

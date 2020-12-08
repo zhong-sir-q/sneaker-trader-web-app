@@ -133,7 +133,7 @@ class MailService {
 
   handleNewSneakerRequest = (user: User, newSneaker: Sneaker & ListedProduct) => {
     const msg = {
-      to: 'alex.zhong@sneakertrader.com',
+      to: 'hello@sneakertrader.com',
       from: 'hello@sneakertrader.com',
       subject: 'User new sneaker request',
       html: newSneakerRequestMessage({ user, listedSneaker: newSneaker }),
