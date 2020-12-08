@@ -3,25 +3,20 @@ import styled from 'styled-components';
 
 import Cropper from 'react-cropper';
 import { Dialog } from '@material-ui/core';
-import { Edit, StarBorderOutlined, RotateRight, Crop, Delete } from '@material-ui/icons';
+import { Close, Edit, RotateRight, Crop, CloudUpload } from '@material-ui/icons';
 
-type EditPhotoDialogProps = {
+type SuperUserEditPhotoDialogProps = {
   open: boolean;
   imgSrc: string;
-  isMain: boolean;
-  // this is always true, defined in the scope, see reason below in toggleIsCropping
-  isCropping?: boolean;
   onDone: (img: string) => void;
-  onDelete: () => void;
-  setAsMain: (img: string) => void;
-  // no support for toggle cropping currently, because rotation relies on the Cropper component to be mounted
-  toggleIsCropping?: () => void;
+  onUpload: () => void;
+  onCancel: () => void;
 };
 
 // Trademe style edit photo dialog as of 2020 December
-const EditPhotoDialog = (props: EditPhotoDialogProps) => {
-  const { open, imgSrc, isMain, onDone, onDelete, setAsMain, toggleIsCropping } = props;
-  const isCropping = true
+const SuperUserEditPhotoDialog = (props: SuperUserEditPhotoDialogProps) => {
+  const { open, imgSrc, onDone, onUpload, onCancel } = props;
+  const isCropping = true;
 
   const cropperRef = useRef<HTMLImageElement>(null);
   const getCropper = () => (cropperRef.current as any).cropper;
@@ -56,21 +51,21 @@ const EditPhotoDialog = (props: EditPhotoDialogProps) => {
         )}
       </DialogBody>
       <DialogFooter>
-        <DialogSetMainButton isMain={isMain} onClick={() => setAsMain(cropperDataUrl())}>
-          <StarBorderOutlined fontSize='default' />
-          <FooterButtonText>{isMain ? 'Main Photo' : 'Set as main'}</FooterButtonText>
-        </DialogSetMainButton>
+        <DialogFooterButton onClick={onUpload}>
+          <CloudUpload fontSize='default' />
+          <FooterButtonText>Upload</FooterButtonText>
+        </DialogFooterButton>
         <DialogFooterButton onClick={rotateRight}>
           <RotateRight fontSize='default' />
           <FooterButtonText>Rotate</FooterButtonText>
         </DialogFooterButton>
-        <DialogCropButton isCropping={isCropping} onClick={toggleIsCropping}>
+        <DialogCropButton isCropping={isCropping}>
           <Crop fontSize='default' />
           <FooterButtonText>Crop</FooterButtonText>
         </DialogCropButton>
-        <DialogFooterButton onClick={onDelete}>
-          <Delete fontSize='default' />
-          <FooterButtonText>Delete</FooterButtonText>
+        <DialogFooterButton onClick={onCancel}>
+          <Close fontSize='default' />
+          <FooterButtonText>Cancel</FooterButtonText>
         </DialogFooterButton>
       </DialogFooter>
     </Dialog>
@@ -112,15 +107,6 @@ const DialogCropButton = styled(DialogFooterButton)<DialogCropButtonProps>`
   color: ${({ isCropping }) => (isCropping ? '#fff' : '')};
 `;
 
-type DialogSetMainButtonProps = {
-  isMain: boolean;
-};
-
-const DialogSetMainButton = styled(DialogFooterButton)<DialogSetMainButtonProps>`
-  background-color: ${({ isMain }) => (isMain ? '#f9af2c' : '')};
-  color: ${({ isMain }) => (isMain ? '#fff' : '')};
-`;
-
 const DialogHeaderText = styled.div`
   font-weight: 700;
   line-height: 28px;
@@ -151,4 +137,4 @@ const HeaderHelperText = styled.span`
   margin-left: 12px;
 `;
 
-export default EditPhotoDialog;
+export default SuperUserEditPhotoDialog;

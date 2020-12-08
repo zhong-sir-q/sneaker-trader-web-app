@@ -19,11 +19,12 @@ import SneakerSearchBar from 'components/SneakerSearchBar';
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
 import { SearchBarSneaker } from '../../../shared';
+import { MD_WIDTH } from 'const/variables';
 
 const FilterGroup = styled(Col)`
   min-width: 200px;
 
-  @media (max-width: 786px) {
+  @media (max-width: ${MD_WIDTH}) {
     display: none;
   }
 `;
@@ -34,7 +35,7 @@ const Grid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 1em;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${MD_WIDTH}) {
     grid-template-columns: repeat(2, 1fr);
   }
 `;
@@ -46,6 +47,7 @@ const SkeletonPlaceHolder = styled.div`
 const SkeletonWrapper = styled.div`
   min-height: calc(100vh - 150px);
   width: 100%;
+  padding: 2% 10%;
 `;
 
 const Wrapper = styled.div`
@@ -53,8 +55,9 @@ const Wrapper = styled.div`
   width: 100%;
   padding: 0 6%;
   display: flex;
+  justify-content: center;
 
-  @media (max-width: 786px) {
+  @media (max-width: ${MD_WIDTH}) {
     padding: 0;
     flex-direction: column;
   }
@@ -80,7 +83,7 @@ const MobileWrapper = styled.div`
   margin-left: 4px;
   margin-right: 4px;
 
-  @media (min-width: 786px) {
+  @media (min-width: ${MD_WIDTH}) {
     display: none;
   }
 `;
@@ -103,30 +106,99 @@ const MarketPlace = () => {
     redirectBuySneakerPage(history, sneaker.name, sneaker.colorway);
 
   return (
-    <Wrapper>
-      <MobileWrapper>
-        <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
-          <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
-      </MobileWrapper>
-      <FilterGroup md={2} lg={2}>
+    <React.Fragment>
+      <Hero>
+        <Jumbo>
+          <JumboHeader>
+            <JumboHeaderText>Get your sneakers before Xmas</JumboHeaderText>
+            <JumboSubHeaderText>The Place to get your Kicks for the holidays</JumboSubHeaderText>
+          </JumboHeader>
+        </Jumbo>
         <FilterButtonWrapper>
-          <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
+          <SearchBarRow>
+            <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
+          </SearchBarRow>
         </FilterButtonWrapper>
-        <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
-      </FilterGroup>
-      {isFetching ? (
-        <SkeletonWrapper>
-          <SkeletonGrid />
-        </SkeletonWrapper>
-      ) : (
-        <SneakerGallery sneakers={filterSneakers} />
-      )}
-    </Wrapper>
+      </Hero>
+      <Wrapper>
+        <MobileWrapper>
+          <TopGradient />
+          <FiltersDrawer brandFilters={brands} sizeFilters={sizeFilters.map((n) => String(n))} />
+          <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
+        </MobileWrapper>
+        <FilterGroup md={2} lg={2}>
+          <FilterButtonWrapper>
+            <FilterButtons filterKey='size' filters={sizeFilters.map((size) => String(size))} title='us sizes' />
+          </FilterButtonWrapper>
+          <CheckboxFilters filterKey='brand' filters={brands} title='brands' />
+        </FilterGroup>
+        {isFetching ? (
+          <SkeletonWrapper>
+            <SkeletonGrid />
+          </SkeletonWrapper>
+        ) : (
+          <SneakerGallery sneakers={filterSneakers} />
+        )}
+      </Wrapper>
+    </React.Fragment>
   );
 };
 
+const SearchBarRow = styled.div`
+  max-width: 640px;
+  margin: auto;
+`;
+
 const FilterButtonWrapper = styled.div`
   margin-bottom: 22px;
+`;
+
+const Hero = styled.div`
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #000;
+  text-align: center;
+  background-image: url('https://stockx-assets.imgix.net/Core/holiday-siteheader-2020-2x.png?auto=compress,format');
+  height: 520px;
+  margin-top: 0;
+  padding-top: 111px;
+  margin-bottom: 25px;
+
+  @media (max-width: ${MD_WIDTH}) {
+    display: none;
+  }
+`;
+
+const Jumbo = styled.div`
+  color: #fff;
+`;
+
+const JumboHeader = styled.h1`
+  font-family: RingsideWideSSm-Medium_Web, sans-serif;
+  padding-left: 10px;
+  padding-right: 10px;
+  letter-spacing: 2px;
+  font-size: 3rem;
+  margin: auto auto 20px;
+`;
+
+const JumboHeaderText = styled.span`
+  display: block;
+  margin-bottom: 10px;
+  letter-spacing: -1px;
+`;
+
+const JumboSubHeaderText = styled(JumboHeaderText)`
+  display: inline-block;
+  padding: 10px;
+  background-color: black;
+`;
+
+const TopGradient = styled.div`
+  height: 80px;
+  background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
+  background-color: #fff;
 `;
 
 export default MarketPlace;

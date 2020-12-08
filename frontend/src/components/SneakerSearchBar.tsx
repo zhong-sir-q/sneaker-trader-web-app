@@ -184,13 +184,13 @@ const BackgroundImg = styled.div<BackgroundImgProps>`
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  padding-bottom: 40%;
-  padding-left: 40%;
+  padding-bottom: 25%;
+  padding-left: 25%;
   margin-right: 8px;
 
   @media (max-width: 768px) {
-    padding-bottom: 60%;
-    padding-left: 60%;
+    padding-bottom: 30%;
+    padding-left: 30%;
   }
 `;
 

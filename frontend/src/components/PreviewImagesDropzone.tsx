@@ -111,6 +111,7 @@ const EditableImage = (props: EditableImageProps) => {
   // on the cropper to be mounted.
 
   const [isCropping] = useState(true);
+
   const {
     mainFileId,
     onRemoveFile,
@@ -118,6 +119,7 @@ const EditableImage = (props: EditableImageProps) => {
     updateMainFileId,
     onRemoveFromCropperImagesByIdx,
   } = usePreviewImgDropzoneCtx();
+
   const { open, onOpen, onClose } = useOpenCloseComp();
 
   const noop = () => {};

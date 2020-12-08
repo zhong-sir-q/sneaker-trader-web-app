@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 import { Table, Card, CardBody, Button } from 'reactstrap';
-import { Dialog, DialogTitle, DialogActions, DialogContent, makeStyles } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogActions, makeStyles } from '@material-ui/core';
 
 import { v4 as uuidV4 } from 'uuid';
 
@@ -9,7 +9,6 @@ import { Edit } from '@material-ui/icons';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import styled from 'styled-components';
 
-import ImgCropper from 'components/ImgCropper';
 import PanelHeader from 'components/PanelHeader';
 import AlertDialog from 'components/AlertDialog';
 import SneakerNameCell from 'components/SneakerNameCell';
@@ -30,7 +29,7 @@ import { AwsController } from 'api/controllers/AwsController';
 import { Sneaker } from '../../../../shared';
 
 import { createBlob } from 'utils/utils';
-import MuiCloseButton from 'components/buttons/MuiCloseButton';
+import SuperUserEditPhotoDialog from 'components/dialog/SuperUserEditPhotoDialog';
 
 const HiddenInput = styled.input`
   display: none;
@@ -83,10 +82,12 @@ const TableRow = (props: TableRowProps) => {
 
   const onConfirmEdit = async (editedImgDataUrl: string) => {
     setDisplayImg(editedImgDataUrl);
-    lagUpdateCropperImage(editedImgDataUrl);
+    confirmUploadDialogHook.onClose();
+
     const f = new File([await createBlob(editedImgDataUrl)], uuidV4());
     await changeSneakerRemoteImage(id, f);
-    confirmUploadDialogHook.onClose();
+
+    lagUpdateCropperImage(editedImgDataUrl);
   };
 
   const onImgChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,19 +118,13 @@ const TableRow = (props: TableRowProps) => {
       <SneakerNameCell imgSrc={displayImg} name={displayName} displaySize='' colorway={colorway} />
       <td>
         <Edit className='pointer' onClick={confirmUploadDialogHook.onOpen} fontSize='default' />
-        <Dialog open={confirmUploadDialogHook.open} onClose={cancleEditing}>
-          <MuiCloseButton onClick={cancleEditing} />
-          <DialogTitle>Edit Image</DialogTitle>
-          <DialogContent>
-            <ImgCropper img={cropperImage} onConfirmCrop={onConfirmEdit} />
-          </DialogContent>
-          <DialogActions className={classes.dialogAction}>
-            <Button color='info' onClick={onUpload}>
-              Or Upload A New Image
-            </Button>
-            <Button onClick={cancleEditing}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
+        <SuperUserEditPhotoDialog
+          open={confirmUploadDialogHook.open}
+          imgSrc={cropperImage}
+          onDone={onConfirmEdit}
+          onUpload={onUpload}
+          onCancel={cancleEditing}
+        />
         <AlertDialog
           color='success'
           message='Product image updated'

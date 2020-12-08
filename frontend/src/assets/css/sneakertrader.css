@@ -87,3 +87,13 @@
 .simplebar-track.simplebar-vertical {
   width: 8px;
 }
+
+.navbar a:not(.btn):not(.dropdown-item) {
+  color: inherit;
+}
+
+.navbar .navbar-nav .nav-item .nav-link:not(.btn):hover {
+  transition: all 300ms ease 0s;
+  opacity: .35;
+  color: inherit;
+}

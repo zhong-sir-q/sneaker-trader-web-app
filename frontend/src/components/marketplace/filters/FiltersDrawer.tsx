@@ -14,6 +14,7 @@ import FilterButtons from './FilterButtons';
 
 const CollapseButtonDiv = styled.div`
   display: block;
+  text-align: end;
 `;
 
 type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] };

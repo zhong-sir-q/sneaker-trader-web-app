@@ -122,16 +122,24 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
     imageUrls: displaySneaker?.imageUrls,
   };
 
-  if (displaySneaker && sizeMinPriceGroup && filterAllAsks) {
-    const mainDisplayImage = sneaker.imageUrls && getMainDisplayImgUrl(sneaker.imageUrls);
-    if (!mainDisplayImage) return null;
-
+  if (!(displaySneaker && sizeMinPriceGroup && filterAllAsks))
     return (
+      <Container fluid='md'>
+        <CenterSpinner fullHeight />
+      </Container>
+    );
+
+  const mainDisplayImage = sneaker.imageUrls && getMainDisplayImgUrl(sneaker.imageUrls);
+  if (!mainDisplayImage) return null;
+
+  return (
+    <React.Fragment>
+      <TopGradient />
       <Container fluid='md'>
         <h2>{`${displaySneaker.name} ${displaySneaker.colorway}`}</h2>
         <Row style={{ minHeight: 'calc(95vh - 96px)' }}>
           <Col md='4'>
-            <Container fluid='md'>  
+            <Container fluid='md'>
               <Row>{renderTiles()}</Row>
             </Container>
           </Col>
@@ -187,12 +195,18 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
           </Col>
         </Row>
       </Container>
-    );
-  } else return <CenterSpinner />;
+    </React.Fragment>
+  );
 };
 
 const SneakerCardWrapper = styled.div`
   width: 100%;
+`;
+
+const TopGradient = styled.div`
+  height: 11vh;
+  background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
+  background-color: #fff;
 `;
 
 export default BuySneakerPage;

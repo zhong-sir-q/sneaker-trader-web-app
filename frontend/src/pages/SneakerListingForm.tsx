@@ -169,9 +169,11 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
               suggestionMaxHeight='55vh'
             />
             {isSneakerNew ? (
-              <Button className='text-center' color='primary' onClick={() => onRequestNewSneaker(searchBarInputVal)}>
-                Request a new listing
-              </Button>
+              <div className='text-center'>
+                <Button color='primary' onClick={() => onRequestNewSneaker(searchBarInputVal)}>
+                  Request a new listing
+                </Button>
+              </div>
             ) : null}
           </React.Fragment>
         );

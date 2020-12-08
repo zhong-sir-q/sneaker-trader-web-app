@@ -95,82 +95,91 @@ const ViewSellersList = (props: ViewSellersListProps) => {
   } = props;
 
   return !sellers || !displaySneaker || processingPurchase ? (
-    <CenterSpinner />
+    <CenterSpinner fullHeight />
   ) : (
-    <Wrapper>
-      {selectedSellerIdx === -1 ? (
-        <SneakerCard
-          styles={{ margin: 'auto', marginBottom: '15px' }}
-          sneaker={displaySneaker}
-          mainDisplayImage={getMainDisplayImgUrl(displaySneaker.imageUrls)}
-          price={undefined}
-          maxWidth='400px'
+    <React.Fragment>
+      <TopGradient />
+      <Wrapper>
+        {selectedSellerIdx === -1 ? (
+          <SneakerCard
+            styles={{ margin: 'auto', marginBottom: '15px' }}
+            sneaker={displaySneaker}
+            mainDisplayImage={getMainDisplayImgUrl(displaySneaker.imageUrls)}
+            price={undefined}
+            maxWidth='400px'
+          />
+        ) : (
+          <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls(sellers[selectedSellerIdx].sneakerImgUrls)} />
+        )}
+        <SortByPriceDropdown
+          sortInAscendingOrder={sortSellersByAskingPriceAscending}
+          sortInDescendingOrder={sortSellersByAskingPriceDescending}
         />
-      ) : (
-        <SneakerCarousel imgUrlItems={getSellerSeneakrImgUrls(sellers[selectedSellerIdx].sneakerImgUrls)} />
-      )}
-      <SortByPriceDropdown
-        sortInAscendingOrder={sortSellersByAskingPriceAscending}
-        sortInDescendingOrder={sortSellersByAskingPriceDescending}
-      />
-      <StyledListGroup>
-        {sellers.map(({ username, profilePicUrl, askingPrice, rating }, idx) => (
-          <SellerListGroupItem
-            key={idx}
-            action
-            onClick={() => onSelectSeller(idx)}
-            style={{
-              borderColor: idx === selectedSellerIdx ? 'green' : undefined,
-              borderTopWidth: '1px',
-            }}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div>
-                <span className='bold'>Username:</span>
-                <span> {username}</span>
+        <StyledListGroup>
+          {sellers.map(({ username, profilePicUrl, askingPrice, rating }, idx) => (
+            <SellerListGroupItem
+              key={idx}
+              action
+              onClick={() => onSelectSeller(idx)}
+              style={{
+                borderColor: idx === selectedSellerIdx ? 'green' : undefined,
+                borderTopWidth: '1px',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div>
+                  <span className='bold'>Username:</span>
+                  <span> {username}</span>
+                </div>
+                <div>
+                  <span className='bold'>Asking price:</span>
+                  <span> $ {askingPrice}</span>
+                </div>
+                <div>
+                  <span className='bold'>Rating:</span>
+                  <span>
+                    {' '}
+                    {!rating || rating <= 0 ? 0 : rating} out of {USER_RATING}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className='bold'>Asking price:</span>
-                <span> $ {askingPrice}</span>
-              </div>
-              <div>
-                <span className='bold'>Rating:</span>
-                <span>
-                  {' '}
-                  {!rating || rating <= 0 ? 0 : rating} out of {USER_RATING}
-                </span>
-              </div>
+              <LazyLoad>
+                <ProfileImg src={profilePicUrl || defaultAvatar} alt={`${username} profile`} />
+              </LazyLoad>
+            </SellerListGroupItem>
+          ))}
+        </StyledListGroup>
+        <footer>
+          {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (
+            <ListGroup style={{ marginTop: '15px' }}>
+              <ListGroupItem>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Total:</span>
+                  <span>${sellers[selectedSellerIdx].askingPrice}</span>
+                </div>
+              </ListGroupItem>
+            </ListGroup>
+          ) : null}
+          <div className='text-center'>
+            <div>
+              <Button style={{ marginRight: '25px' }} onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button disabled={selectedSellerIdx === -1 || processingPurchase} color='primary' onClick={onConfirm}>
+                Confirm
+              </Button>
             </div>
-            <LazyLoad>
-              <ProfileImg src={profilePicUrl || defaultAvatar} alt={`${username} profile`} />
-            </LazyLoad>
-          </SellerListGroupItem>
-        ))}
-      </StyledListGroup>
-      <footer>
-        {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (
-          <ListGroup style={{ marginTop: '15px' }}>
-            <ListGroupItem>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Total:</span>
-                <span>${sellers[selectedSellerIdx].askingPrice}</span>
-              </div>
-            </ListGroupItem>
-          </ListGroup>
-        ) : null}
-        <div className='text-center'>
-          <div>
-            <Button style={{ marginRight: '25px' }} onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button disabled={selectedSellerIdx === -1 || processingPurchase} color='primary' onClick={onConfirm}>
-              Confirm
-            </Button>
           </div>
-        </div>
-      </footer>
-    </Wrapper>
+        </footer>
+      </Wrapper>
+    </React.Fragment>
   );
 };
+
+const TopGradient = styled.div`
+  height: 80px;
+  background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
+  background-color: #fff;
+`;
 
 export default ViewSellersList;
