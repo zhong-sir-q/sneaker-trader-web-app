@@ -92,7 +92,16 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
         <DialogContent>
           {
             (messages && messages.length) ? messages.map(function(item: any, i: any){
-              const localDate = new Date(item.dateTime);
+              const date = new Date(item.dateTime);
+              const newDate = new Date(date.getTime() + date.getTimezoneOffset()*60*1000);
+              const offset = date.getTimezoneOffset() / 60;
+              const hours = date.getHours();
+              newDate.setHours(hours - offset);
+              const time = newDate.toLocaleString();
+              const splitValue = time.split(' ')[1];
+              const splitChatTime = splitValue.split(':');
+              const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
+
               if (item.userType === userType) {
                 return (<div className="message-right">
                   <div className="chat-content-right">{item.message}</div>
@@ -100,7 +109,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
                     <div className='photo' style={{ backgroundColor: 'white' }}>
                       <img className='h-100' src={defaultAvatar} alt='uploaed file' />
                     </div>
-                    {/* <span>{item.time}</span> */}
+                    <span>{chatTime}</span>
                   </div>
                 </div>)
               } else {
@@ -109,7 +118,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
                     <div className='photo' style={{ backgroundColor: 'white' }}>
                       <img className='h-100' src={defaultAvatar} alt='uploaed file' />
                     </div>
-                    {/* <span>{item.time}</span> */}
+                    <span>{chatTime}</span>
                   </div>
                   <div className="chat-content-left">{item.message}</div>
                 </div>)
