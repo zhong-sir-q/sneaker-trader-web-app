@@ -43,6 +43,7 @@ type PurchasedSneakerTableProps = {
 
 const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
   const { sneakers } = props;
+  console.log('sneakers', sneakers)
 
   const { sortedItems, requestSort, getHeaderClassName } = useSortableColData<BuyerPurchasedSneaker>(sneakers);
 
@@ -108,6 +109,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       userId,
       sizeSystem,
       transactionDatetime,
+      productId
     } = props.sneaker;
 
     const displayName = `${brand} ${name} ${colorway}`;
@@ -146,7 +148,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
         </td>
         <td>{quantity || 1}</td>
         <td style={{ minWidth: '220px' }}>
-          <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId}/>
+          <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId}/>
         </td>
       </tr>
     );

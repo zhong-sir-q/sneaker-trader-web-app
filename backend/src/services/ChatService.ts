@@ -6,21 +6,19 @@ import mysqlPoolConnection from '../config/mysql';
 
 class ChatService implements ChatEntity {
 
-  async sendMessage(productId: number, buyerId: number, sellerId: number, message: string, userType: string, dateTime: string): Promise<void> {
+  async sendMessage(productId: number, buyerId: number, sellerId: number, message: string, userType: string): Promise<void> {
     const poolConn = await mysqlPoolConnection();
-
-    const sendMessageQuery = formatInsertRowsQuery(CHAT, { productId, buyerId, sellerId, message, userType, dateTime });
+    const sendMessageQuery = formatInsertRowsQuery(CHAT, { productId, buyerId, sellerId, message, userType });
     await poolConn.query(sendMessageQuery);
   }
-
 
   async getChatByProductIdAndBuyerIDAndSellerId(productId: number, buyerId: number, sellerId: number): Promise<any> {
     const poolConn = await mysqlPoolConnection();
 
-    const getAddrQuery = formatGetRowsQuery(CHAT, `productId = ${productId} and buerId = ${buyerId} and sellerId = ${sellerId}`);
-    const result = await poolConn.query(getAddrQuery);
+    const getChatQuery = formatGetRowsQuery(CHAT, `productId = ${productId} and buyerId = ${buyerId} and sellerId = ${sellerId}`);
+    const result = await poolConn.query(getChatQuery);
 
-    return result.length === 0 ? null : result[0];
+    return result.length === 0 ? null : result;
   }
 }
 

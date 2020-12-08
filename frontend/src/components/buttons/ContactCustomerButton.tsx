@@ -91,31 +91,30 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
         </DialogTitle>
         <DialogContent>
           {
-            messages.map(function(item: any, i: any){
-              if (item.buyerId === buyerId && item.productId === productId && item.sellerId === sellerId) {
-                if (item.userType === userType) {
-                  return (<div className="message-right">
-                    <div className="chat-content-right">{item.message}</div>
-                    <div className="profile">
-                      <div className='photo' style={{ backgroundColor: 'white' }}>
-                        <img className='h-100' src={defaultAvatar} alt='uploaed file' />
-                      </div>
-                      <span>{item.time}</span>
+            (messages && messages.length) ? messages.map(function(item: any, i: any){
+              const localDate = new Date(item.dateTime);
+              if (item.userType === userType) {
+                return (<div className="message-right">
+                  <div className="chat-content-right">{item.message}</div>
+                  <div className="profile">
+                    <div className='photo' style={{ backgroundColor: 'white' }}>
+                      <img className='h-100' src={defaultAvatar} alt='uploaed file' />
                     </div>
-                  </div>)
-                } else {
-                  return (<div className="message-left">
-                    <div className="profile">
-                      <div className='photo' style={{ backgroundColor: 'white' }}>
-                        <img className='h-100' src={defaultAvatar} alt='uploaed file' />
-                      </div>
-                      <span>{item.time}</span>
+                    {/* <span>{item.time}</span> */}
+                  </div>
+                </div>)
+              } else {
+                return (<div className="message-left">
+                  <div className="profile">
+                    <div className='photo' style={{ backgroundColor: 'white' }}>
+                      <img className='h-100' src={defaultAvatar} alt='uploaed file' />
                     </div>
-                    <div className="chat-content-left">{item.message}</div>
-                  </div>)
-                }
+                    {/* <span>{item.time}</span> */}
+                  </div>
+                  <div className="chat-content-left">{item.message}</div>
+                </div>)
               }
-            })
+            }) : null
           }
         </DialogContent>
         <DialogActions>

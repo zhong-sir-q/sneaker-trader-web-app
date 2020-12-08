@@ -9,19 +9,8 @@ export default (app: Router, ChatServiceInstance: ChatService) => {
 
   chatRoute.get('/:productId/:buyerId/:sellerId', (req, res, next) => {
     const { productId, buyerId, sellerId } = req.params;
-    res.json(chartHistory)
-    // ChatServiceInstance.getChatByProductIdAndBuyerIDAndSellerId(Number(productId), Number(buyerId), Number(sellerId))
-    //   .then((chatList: any) => res.json(chatList))
-    //   .catch(next);
-  });
-
-  chatRoute.post('/:productId', (req, res, next) => {
-    const { productId } = req.params;
-    const { message, userType, buyerId, sellerId } = req.body;
-    const myDate = new Date();
-    const dateTime = myDate.toUTCString();
-    ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType, dateTime)
-      .then(() => res.json('Sent message'))
+    ChatServiceInstance.getChatByProductIdAndBuyerIDAndSellerId(Number(productId), Number(buyerId), Number(sellerId))
+      .then((chatList: any) => res.json(chatList))
       .catch(next);
   });
 };

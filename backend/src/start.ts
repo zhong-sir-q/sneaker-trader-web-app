@@ -20,9 +20,7 @@ io.on('connection', function(socket: any) {
         const { message, productId, buyerId, sellerId, userType} = data;
         io.emit("newMessage", message);
         chatHistory.push(data);
-        const myDate = new Date();
-    const dateTime = myDate.toUTCString();
-    ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType, dateTime)
+    ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType)
       .then(() => console.log('Sent message'))
       .catch(() => {console.log('llll')});
 

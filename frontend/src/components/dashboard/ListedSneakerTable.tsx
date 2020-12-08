@@ -107,6 +107,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       sizeSystem,
       userId,
       listedDatetime,
+      productId
     } = props.sneaker;
 
     const onCompleteSale = async () => {
@@ -131,6 +132,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
         <td style={{ minWidth: '220px' }}>
           <SellerCTAButtonsGroup
             listedProdId={id}
+            productId={productId}
             buyer={buyer}
             prodStatus={prodStatus}
             onCompleteSale={onCompleteSale}
