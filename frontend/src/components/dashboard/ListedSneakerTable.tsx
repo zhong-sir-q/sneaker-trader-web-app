@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Table } from 'reactstrap';
-import { List, ListItem } from '@material-ui/core';
+import { List, ListItem, makeStyles } from '@material-ui/core';
 import { Edit, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 import clsx from 'clsx';
@@ -13,7 +13,7 @@ import SellerCTAButtonsGroup from 'components/buttons/SellerCTAButtonsGroup';
 
 import ListedSneakerControllerInstance from 'api/controllers/ListedSneakerController';
 
-import { upperCaseFirstLetter, createEditListedSneakerPath, mapUpperCaseFirstLetter } from 'utils/utils';
+import { createEditListedSneakerPath } from 'utils/utils';
 
 import useWindowDimensions from 'hooks/useWindowDimensions';
 import useSortableColData from 'hooks/useSortableColData';
@@ -22,6 +22,7 @@ import usePagination from 'hooks/usePagination';
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
 
 import { Header, ShowDropdownHeader, Cell, ShowDropdownCell, DropdownRow } from './table/Common';
+import SneakerStatusText from './SneakerStatusText';
 
 type ListedSneakerTableRowProps = {
   sneaker: SellerListedSneaker;
@@ -139,13 +140,17 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     const displayName = `${brand} ${name}`;
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
 
+    const muiStyles = useMuiStyles();
+
     return (
       <React.Fragment>
         <tr>
           <SneakerNameCell imgSrc={mainDisplayImage} name={displayName} displaySize={displaySize} colorway={colorway} />
           <Cell>{moment(listedDatetime).format('YYYY-MM-DD')}</Cell>
           <Cell>{buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</Cell>
-          <Cell>{upperCaseFirstLetter(prodStatus)}</Cell>
+          <Cell className={muiStyles.uppercase}>
+            <SneakerStatusText status={prodStatus} />
+          </Cell>
           <Cell>
             <small>$</small>
             {price}
@@ -172,9 +177,12 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
               <List>
                 <ListItem>Listed Date: {moment(listedDatetime).format('YYYY-MM-DD')}</ListItem>
                 <ListItem>Sold Date: {buyer ? moment(buyer.transactionDatetime).format('YYYY-MM-DD') : 'N/A'}</ListItem>
-                <ListItem>Status: {prodStatus}</ListItem>
+                <ListItem classes={{ root: muiStyles.uppercase }}>Condition:&nbsp;{prodCondition}</ListItem>
                 <ListItem>Price: ${price}</ListItem>
-                <ListItem>Condition: {mapUpperCaseFirstLetter(prodCondition, ' ')}</ListItem>
+                <ListItem classes={{ root: muiStyles.uppercase }}>
+                  Status:&nbsp;
+                  <SneakerStatusText status={prodStatus} />
+                </ListItem>
                 <ListItem>Quantity: {quantity || 1}</ListItem>
                 <ListItem>
                   <SellerCTAButtonsGroup
@@ -228,5 +236,11 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
     <div>No listed sneakers</div>
   );
 };
+
+const useMuiStyles = makeStyles(() => ({
+  uppercase: {
+    textTransform: 'capitalize',
+  },
+}));
 
 export default ListedSneakerTable;

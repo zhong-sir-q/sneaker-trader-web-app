@@ -204,12 +204,6 @@ const Sidebar = (props: SideBarProps) => {
                       <span className='sidebar-normal'>My Profile</span>
                     </Link>
                   </li>
-                  <li>
-                    <a href='#pablo' onClick={(e) => e.preventDefault}>
-                      <span className='sidebar-mini-icon'>S</span>
-                      <span className='sidebar-normal'>Settings</span>
-                    </a>
-                  </li>
                 </ul>
               </Collapse>
             </div>

@@ -16,12 +16,14 @@ import { validEmail, minCharacters } from 'utils/yup';
 
 import { SIGNUP, AUTH, FORGOT_PW, HOME, SIGNIN } from 'routes';
 
-import stLogo from 'assets/img/logo_transparent_background.png';
-import bgImage from 'assets/img/bg14.jpg';
 import { signIn } from 'utils/auth';
 import SignInWithFacebook from 'components/buttons/SignInWithFacebook';
 
+// images
 import googleLogo from 'assets/img/google_logo_svg.png';
+import stLogo from 'assets/img/logo_transparent_background.png';
+import bgImage from 'assets/img/aj1-splash.jpg';
+
 import {
   GoogleOauth2Controller,
   FederatedSigninError,
