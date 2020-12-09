@@ -16,6 +16,7 @@ import { useUserRanking } from 'providers/UserRankingProvider';
 import isAdminUser from 'usecases/isAdminUser';
 import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import TopupWalletDialog from './TopupWalletDialog';
+import WalletProvider from 'providers/WalletProvider';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -242,7 +243,9 @@ const Sidebar = (props: SideBarProps) => {
           </Nav>
         </div>
       </div>
-      <TopupWalletDialog isOpen={walletDialogHook.open} handleClose={walletDialogHook.onClose} />
+      <WalletProvider>
+        <TopupWalletDialog isOpen={walletDialogHook.open} handleClose={walletDialogHook.onClose} />
+      </WalletProvider>
     </React.Fragment>
   );
 };

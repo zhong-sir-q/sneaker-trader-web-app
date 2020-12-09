@@ -164,8 +164,10 @@ const PreviewImgDropzoneProvider = (props: { children: React.ReactNode; previewF
   );
 };
 
-export default (props: { children: React.ReactNode; previewFiles?: PreviewFile[] }) => (
-  <AlertDialogProvider color='danger' message='Maximum upload of 5 images!'>
-    <PreviewImgDropzoneProvider previewFiles={props.previewFiles}>{props.children}</PreviewImgDropzoneProvider>
-  </AlertDialogProvider>
-);
+export default function Provider(props: { children: React.ReactNode; previewFiles?: PreviewFile[] }) {
+  return (
+    <AlertDialogProvider color='danger' message='Maximum upload of 5 images!'>
+      <PreviewImgDropzoneProvider previewFiles={props.previewFiles}>{props.children}</PreviewImgDropzoneProvider>
+    </AlertDialogProvider>
+  );
+}

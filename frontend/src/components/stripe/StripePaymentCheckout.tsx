@@ -69,6 +69,10 @@ const StripePaymentCheckout = (props: StripePaymentCheckoutProps) => {
     setIsConfirming(false);
   };
 
+  elements?.getElement(CardElement)?.on('change', (evt) => {
+    if (evt.error) setPaymentError(evt.error.message);
+  });
+
   const disableConfirm = () => !stripe || isConfirming || props.dollarAmountToCharge < 0.5;
 
   return (
