@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { ListGroup, ListGroupItem, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import {
+  ListGroup,
+  ListGroupItem,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
+} from 'reactstrap';
 
 import LazyLoad from 'react-lazyload';
 
@@ -13,7 +22,7 @@ import { ListedSneakerSeller, Sneaker } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
 
 import defaultAvatar from 'assets/img/placeholder.jpg';
-import { USER_RATING } from 'const/variables';
+import { TOTAL_USER_RATING } from 'const/variables';
 
 const SellerListGroupItem = styled(ListGroupItem)`
   outline: none;
@@ -81,6 +90,31 @@ const Wrapper = styled.div`
   min-height: calc(95vh - 75px);
 `;
 
+const FlexWrapper = styled(Wrapper)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const BigSpinner = styled(Spinner)`
+  width: 4rem;
+  height: 4rem;
+`;
+
+const HelperText = styled.p`
+  font-size: 1.75rem;
+  margin-top: 0.5rem;
+
+  @media (max-width: 1264px) {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
+`;
+
 const ViewSellersList = (props: ViewSellersListProps) => {
   const {
     sellers,
@@ -94,8 +128,18 @@ const ViewSellersList = (props: ViewSellersListProps) => {
     onSelectSeller,
   } = props;
 
-  return !sellers || !displaySneaker || processingPurchase ? (
-    <CenterSpinner fullHeight />
+  if (processingPurchase)
+    return (
+      <FlexWrapper>
+        <BigSpinner />
+        <HelperText>We are processing your request</HelperText>
+      </FlexWrapper>
+    );
+
+  return !sellers || !displaySneaker ? (
+    <Wrapper>
+      <CenterSpinner fullHeight />
+    </Wrapper>
   ) : (
     <React.Fragment>
       <Wrapper>
@@ -138,7 +182,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
                   <span className='bold'>Rating:</span>
                   <span>
                     {' '}
-                    {!rating || rating <= 0 ? 0 : rating} out of {USER_RATING}
+                    {!rating || rating <= 0 ? 0 : rating} out of {TOTAL_USER_RATING}
                   </span>
                 </div>
               </div>
@@ -150,7 +194,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
         </StyledListGroup>
         <footer>
           {selectedSellerIdx !== -1 && selectedSellerIdx < sellers.length ? (
-            <ListGroup style={{ marginTop: '15px' }}>
+            <ListGroup style={{ marginTop: '1rem' }}>
               <ListGroupItem>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Total:</span>
@@ -161,7 +205,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
           ) : null}
           <div className='text-center'>
             <div>
-              <Button style={{ marginRight: '25px' }} onClick={onCancel}>
+              <Button style={{ marginRight: '1.5625rem' }} onClick={onCancel}>
                 Cancel
               </Button>
               <Button disabled={selectedSellerIdx === -1 || processingPurchase} color='primary' onClick={onConfirm}>

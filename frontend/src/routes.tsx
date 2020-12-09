@@ -7,7 +7,6 @@ import ForgotPassword from 'pages/ForgotPassword';
 import UserProfile from 'pages/UserProfile';
 import SneakerListingForm from 'pages/SneakerListingForm';
 import MarketPlace from 'pages/MarketPlace';
-import TopupWalletPage from 'pages/dashboard/TopupWalletPage';
 import PrivacyPolicy from 'pages/PrivacyPolicy';
 import Portfolio from 'pages/Portfolio';
 import SignupForm from 'pages/SignUp';
@@ -38,7 +37,6 @@ export const FORGOT_PW = '/reset';
 export const DASHBOARD = '/dashboard';
 export const USER_PROFILE = '/profile';
 export const PRODUCT_LISTING = '/product/listing';
-export const TOPUP_WALLET = '/topup';
 export const PORTFOLIO = '/portfolio';
 
 export const TERMS = '/terms';
@@ -104,12 +102,6 @@ export const sidebarRoutes = [
     path: PRODUCT_LISTING,
     name: 'Product Listing',
     icon: 'now-ui-icons objects_diamond',
-    layout: ADMIN,
-  },
-  {
-    path: TOPUP_WALLET,
-    name: 'Topup Wallet',
-    icon: 'now-ui-icons business_money-coins',
     layout: ADMIN,
   },
   {
@@ -197,16 +189,6 @@ const routes: SneakerTraderRoute[] = [
           <SneakerListingForm />
         </PreviewImgDropzoneProvider>
       </SneakerListingFormProvider>
-    ),
-    layout: ADMIN,
-  },
-  {
-    path: TOPUP_WALLET,
-    name: 'Topup Wallet',
-    component: () => (
-      <WalletProvider>
-        <TopupWalletPage />
-      </WalletProvider>
     ),
     layout: ADMIN,
   },

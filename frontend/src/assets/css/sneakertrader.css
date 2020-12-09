@@ -164,15 +164,12 @@ i.send:before {
 .message-right span {
   font-size: 10px;
 }
+
 .pointer {
   cursor: pointer;
 }
 
-.no-margin {
-  margin: 0;
-}
-
-.bold {
+Q.bold {
   font-weight: bold;
 }
 

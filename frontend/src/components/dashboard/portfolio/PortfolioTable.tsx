@@ -71,7 +71,7 @@ const PortfolioTable = (props: PortfolioTableProps) => {
   const PortfolioTableHeader = () => (
     <thead>
       <tr>
-        <th className={clsx(getHeaderClassName('name'), 'pointer')} onClick={() => requestSort('name')}>
+        <th className={clsx('sortable', getHeaderClassName('name'), 'pointer')} onClick={() => requestSort('name')}>
           name
         </th>
         {headers.map((h, idx) => (

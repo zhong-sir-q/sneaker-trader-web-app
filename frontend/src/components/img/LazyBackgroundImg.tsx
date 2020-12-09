@@ -13,10 +13,6 @@ const LazyBackgroundImg = (props: LazyBackgroundImgProps) => {
   const { background, BackgroundImgElement } = props;
 
   useEffect(() => {
-    console.log(src);
-  }, [src]);
-
-  useEffect(() => {
     const imageLoader = new Image();
     imageLoader.src = background;
 

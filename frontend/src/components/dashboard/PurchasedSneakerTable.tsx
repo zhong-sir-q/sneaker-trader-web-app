@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import clsx from 'clsx';
 
 import { Table } from 'reactstrap';
-import { List, ListItem } from '@material-ui/core';
+import { List, ListItem, makeStyles } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
 import moment from 'moment';
@@ -18,7 +18,8 @@ import { Header, DropdownRow, Cell, ShowDropdownHeader, ShowDropdownCell } from 
 import SneakerNameCell from 'components/SneakerNameCell';
 
 import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
-import { upperCaseFirstLetter, mapUpperCaseFirstLetter } from 'utils/utils';
+import { upperCaseFirstLetter } from 'utils/utils';
+import SneakerStatusText from './SneakerStatusText';
 
 const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
   let total = 0;
@@ -117,12 +118,16 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
     const displayName = `${brand} ${name} ${colorway}`;
     const displaySize = `${sizeSystem} Men's Size: ${size}`;
 
+    const muiStyles = useMuiStyles();
+
     return (
       <React.Fragment>
         <tr>
           <SneakerNameCell imgSrc={mainDisplayImage} name={displayName} displaySize={displaySize} colorway={colorway} />
           <Cell>{moment(transactionDatetime).format('YYYY-MM-DD')}</Cell>
-          <Cell>{upperCaseFirstLetter(prodStatus)}</Cell>
+          <Cell className={muiStyles.uppercase}>
+            <SneakerStatusText status={prodStatus} />
+          </Cell>
           <Cell>
             <small>$</small>
             {price}
@@ -139,11 +144,19 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
           <DropdownRow>
             <td colSpan={999}>
               <List>
-                <ListItem>Purchased Date: {moment(transactionDatetime).format('YYYY-MM-DD')}</ListItem>
-                <ListItem>Status: {upperCaseFirstLetter(prodStatus)}</ListItem>
-                <ListItem>Price: ${price}</ListItem>
-                <ListItem>Condition: {mapUpperCaseFirstLetter(prodCondition, ' ')}</ListItem>
-                <ListItem>Quantity: {quantity || 1}</ListItem>
+                <ListItem>Purchased Date:&nbsp;{moment(transactionDatetime).format('YYYY-MM-DD')}</ListItem>
+                <ListItem
+                  classes={{
+                    root: muiStyles.uppercase,
+                  }}
+                >
+                  Condition:&nbsp;{upperCaseFirstLetter(prodCondition)}
+                </ListItem>
+                <ListItem>Price:&nbsp;${price}</ListItem>
+                <ListItem>
+                  <span>Status:&nbsp;</span> <SneakerStatusText status={prodStatus} />
+                </ListItem>
+                <ListItem>Quantity:&nbsp;{quantity || 1}</ListItem>
                 <ListItem>
                 <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId}/>
                 </ListItem>
@@ -190,5 +203,11 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
     <div>No purchased sneakers</div>
   );
 };
+
+const useMuiStyles = makeStyles(() => ({
+  uppercase: {
+    textTransform: 'capitalize',
+  },
+}));
 
 export default PurchasedSneakerTable;

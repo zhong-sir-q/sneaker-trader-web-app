@@ -49,7 +49,7 @@ const ViewSellersListContainer = () => {
       }
 
       // signed in, but allow some time to fetch the user object
-      if (!currentUser) return;
+      // if (!currentUser) return;
 
       const sneakerInfo = sneakerInfoFromPath(history.location.pathname);
 
@@ -59,16 +59,22 @@ const ViewSellersListContainer = () => {
         sneakerInfo.size
       );
 
+      console.log(sneakerToBuy)
+
       if (!sneakerToBuy) throw new NoSuchSneakerInDbError();
 
+      console.log(currentUser?.id)
+      console.log(sneakerInfo)
       setDisplaySneaker(sneakerToBuy);
 
       const sellersBySneakerNameSize = await SellerControllerInstance.getSellersBySneakerNameSize(
-        currentUser.id,
+        currentUser!.id,
         sneakerInfo.name,
         sneakerInfo.colorway,
         sneakerInfo.size
       );
+
+      console.log(sellersBySneakerNameSize)
 
       setSellers(sellersBySneakerNameSize);
     })();

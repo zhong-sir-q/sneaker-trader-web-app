@@ -95,7 +95,7 @@ class UserService implements UserServiceEntity {
 
     const query = `
       SELECT username, profilePicUrl, (listingPoints + transactionPoints) as rankingPoints FROM (${getTransactionPoints}) X 
-        INNER JOIN (${getListingPoints}) Y ON X.userId = Y.userId`;
+        INNER JOIN (${getListingPoints}) Y ON X.userId = Y.userId ORDER BY rankingPoints DESC`;
 
     return poolConn.query(query);
   }

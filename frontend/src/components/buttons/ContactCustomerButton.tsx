@@ -11,7 +11,8 @@ import { Customer } from '../../../../shared';
 import { useAuth } from 'providers/AuthProvider';
 
 import { io } from 'socket.io-client';
-let socket = io(`http://localhost:4000`);
+
+let socket = io(process.env.REACT_APP_API_SERVER as string);
 
 type ContactCustomerButtonProps = {
   customer: Customer;

@@ -27,11 +27,6 @@ const AuthNavbar = () => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className='ml-auto' navbar>
             <NavItem>
-              <Link to='/admin/dashboard' className='nav-link'>
-                <i className='now-ui-icons design_bullet-list-67' /> Dashboard
-              </Link>
-            </NavItem>
-            <NavItem>
               <Link to={AUTH + SIGNIN} className='nav-link'>
                 <i className='now-ui-icons users_circle-08' /> Login
               </Link>

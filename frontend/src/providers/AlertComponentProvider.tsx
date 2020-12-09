@@ -32,7 +32,7 @@ const AlertComponentProvider = (props: { children: ReactNode; color: string; mes
   return (
     <AlertComponentCtx.Provider value={{ onOpenAlert }}>
       <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
-        <Alert className='no-margin' color={color} toggle={onClose}>
+        <Alert className='m-0' color={color} toggle={onClose}>
           {alertMsg}
         </Alert>
       </Dialog>

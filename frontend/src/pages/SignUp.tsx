@@ -40,7 +40,7 @@ import {
 import { SIGNIN, AUTH, PRIVACY_POLICY } from 'routes';
 import { CreateUserPayload } from '../../../shared';
 
-import bgImage from 'assets/img/bg16.jpg';
+import bgImage from 'assets/img/converse-collection-bg.jpg';
 import onSignup from 'usecases/onSignup';
 
 import UserRegistrationControllerInstance from 'api/controllers/UserRegistrationController';
