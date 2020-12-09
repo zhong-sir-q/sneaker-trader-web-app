@@ -9,3 +9,4 @@ export const TRANSACTION = 'Transactions';
 export const ADDRESS = 'Addresses';
 export const ADDRESS_VERIFICATION_CODE = 'AddressVerificationCodes';
 export const PORTFOLIO_SNEAKER = 'PortfolioSneakers';
+export const CHAT = 'Chats';

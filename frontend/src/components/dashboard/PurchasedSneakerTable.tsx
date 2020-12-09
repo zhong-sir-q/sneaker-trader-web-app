@@ -42,6 +42,7 @@ type PurchasedSneakerTableProps = {
 
 const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
   const { sneakers } = props;
+  console.log('sneakers', sneakers)
 
   const [selectedDropdownIdx, setSelectedDropdownIdx] = useState<number>();
 
@@ -107,9 +108,11 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       quantity,
       prodStatus,
       seller,
+      userId,
       sizeSystem,
       prodCondition,
       transactionDatetime,
+      productId
     } = props.sneaker;
 
     const displayName = `${brand} ${name} ${colorway}`;
@@ -131,7 +134,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
           </Cell>
           <Cell>{quantity || 1}</Cell>
           <Cell style={{ minWidth: '220px' }}>
-            <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} />
+            <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId} />
           </Cell>
           <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
             {showRowDropdown ? <KeyboardArrowUp fontSize='default' /> : <KeyboardArrowDown fontSize='default' />}
@@ -155,7 +158,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
                 </ListItem>
                 <ListItem>Quantity:&nbsp;{quantity || 1}</ListItem>
                 <ListItem>
-                  <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} />
+                  <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId} />
                 </ListItem>
               </List>
             </td>

@@ -10,10 +10,12 @@ type BuyerCTAButtonsGroupProps = {
   prodStatus: SneakerStatus;
   listedProdId: number;
   seller: Seller;
+  userId: number;
+  productId: number;
 };
 
 const BuyerCTAButtonsGroup = (props: BuyerCTAButtonsGroupProps) => {
-  const { prodStatus, listedProdId, seller } = props;
+  const { prodStatus, listedProdId, productId, seller, userId } = props;
 
   // DIRTY TRICK: update the state after the rating is completed to hide the RateCustomer
   // button, if this state is not used, I have to tell the parent to fetch all data in order to update
@@ -29,13 +31,13 @@ const BuyerCTAButtonsGroup = (props: BuyerCTAButtonsGroupProps) => {
     case 'pending':
       return (
         <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={seller} title='Contact Seller' />
+          <ContactCustomerButton customer={seller} title='Contact Seller'productId={productId} userId={userId} userType="buyer" />
         </div>
       );
     case 'sold':
       return (
         <div className='flex margin-right-except-last'>
-          <ContactCustomerButton customer={seller} title='Contact Seller' />
+          <ContactCustomerButton customer={seller} title='Contact Seller' productId={productId} userId={userId} userType="buyer"/>
           {!hasBuyerRatedSeller && (
             <RateCustomer title='Rate Seller' listedProductId={listedProdId} rateUser={onCompelteRating} />
           )}

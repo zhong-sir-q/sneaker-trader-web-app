@@ -13,7 +13,7 @@ import { ListedSneakerSeller, Sneaker } from '../../../shared';
 import { getMainDisplayImgUrl } from 'utils/utils';
 
 import defaultAvatar from 'assets/img/placeholder.jpg';
-import { USER_RATING } from 'const/variables';
+import { TOTAL_USER_RATING } from 'const/variables';
 
 const SellerListGroupItem = styled(ListGroupItem)`
   outline: none;
@@ -138,7 +138,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
                   <span className='bold'>Rating:</span>
                   <span>
                     {' '}
-                    {!rating || rating <= 0 ? 0 : rating} out of {USER_RATING}
+                    {!rating || rating <= 0 ? 0 : rating} out of {TOTAL_USER_RATING}
                   </span>
                 </div>
               </div>
