@@ -30,6 +30,7 @@ const FormikDatetime = (props: { field: any; form: any; timeFormat: boolean; pla
           onChange={onFieldChange}
           onBlur={onFieldBlur}
           inputProps={{ placeholder, style: { padding: '10px 18px 10px 18px' } }}
+          value={field.value}
         />
       </div>
       {form.touched[field.name] && form.errors[field.name] && <InputFieldError error={form.errors[field.name]} />}

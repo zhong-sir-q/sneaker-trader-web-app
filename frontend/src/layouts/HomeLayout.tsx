@@ -34,6 +34,14 @@ const TopGradient = styled.div`
   height: 11vh;
   background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
   background-color: #fff;
+
+  @media (max-width: 768px) {
+    height: 13vh;
+  }
+
+  @media (max-width: 428px) {
+    height: 15vh;
+  }
 `;
 
 export default HomeLayout;

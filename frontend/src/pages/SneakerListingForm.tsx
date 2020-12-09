@@ -22,7 +22,7 @@ import { useAuth } from 'providers/AuthProvider';
 import { usePreviewImgDropzoneCtx } from 'providers/PreviewImgDropzoneProvider';
 import { useSneakerListingFormCtx, INIT_LISTING_FORM_STATE_VALUES } from 'providers/SneakerListingFormProvider';
 
-import { ADMIN, TOPUP_WALLET, DASHBOARD } from 'routes';
+import { ADMIN, DASHBOARD } from 'routes';
 
 import checkUserWalletBalance from 'usecases/checkUserWalletBalance';
 import onListingSneaker from 'usecases/onListingSneaker';
@@ -83,7 +83,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
 
   const onCloseNegWalletBalanceAlert = () => {
     negativeBalanceAlertHook.onClose();
-    history.push(ADMIN + TOPUP_WALLET);
+    history.push(ADMIN);
   };
 
   useEffect(() => {
@@ -160,7 +160,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
     ? `Thank you ${currentUser?.username}, we will review your new sneaker request shortly.`
     : 'Your sneaker is now listed!';
 
-  const STEPS = 4;
+  const STEPS = 5;
 
   const renderStep = () => {
     if (!currentUser) return null;
@@ -269,7 +269,7 @@ const SneakerListingForm = (props: SneakerListingFormProps) => {
       <div className='content' style={{ paddingTop: '2.2rem' }}>
         <StepContainer>
           <Col>
-            {step < 4 && (
+            {step < STEPS && (
               <StepIndicator>
                 Step {step + 1} of {STEPS - 1}
               </StepIndicator>

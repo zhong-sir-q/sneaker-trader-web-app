@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Form as FormikForm, Formik, Field } from 'formik';
 
 // reactstrap components
-import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Alert, Label } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Row, Col, FormGroup, Label } from 'reactstrap';
+
+import { Tooltip } from '@material-ui/core';
+import { HouseOutlined } from '@material-ui/icons';
 
 import * as Yup from 'yup';
 
@@ -11,6 +14,11 @@ import PanelHeader from 'components/PanelHeader';
 import FormikLabelInput from 'components/formik/FormikLabelInput';
 
 import { User, Address } from '../../../shared';
+
+import AddressVerificationForm, { DEFAULT_ADDRESS } from 'components/AddressVerificationForm';
+import AlertDialog from 'components/AlertDialog';
+import ImageUpload from 'components/ImageUpload';
+import FormikDatetime from 'components/formik/FormikDatetime';
 import CenterSpinner from 'components/CenterSpinner';
 
 import UserControllerInstance from 'api/controllers/UserController';
@@ -18,17 +26,12 @@ import { useAuth } from 'providers/AuthProvider';
 
 import { checkDuplicateUsername, validDate } from 'utils/yup';
 
-import ImageUpload from 'components/ImageUpload';
-
 import defaultAvatar from 'assets/img/placeholder.jpg';
 
 import AwsControllerInstance from 'api/controllers/AwsController';
-import AddressVerificationForm, { DEFAULT_ADDRESS } from 'components/AddressVerificationForm';
-import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import AddressControllerInstance from 'api/controllers/AddressController';
-import FormikDatetime from 'components/formik/FormikDatetime';
-import { Tooltip } from '@material-ui/core';
-import { HouseOutlined } from '@material-ui/icons';
+
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
 
 // user may have empty firstname or empty lastname or both
 const nameIfUndefined = (alternativeName: string, ...names: (string | undefined)[]) => {
@@ -78,6 +81,7 @@ const UserProfile = () => {
 
   const goLoadAddress = () => setLoadAddress(true);
 
+  // initialization
   useEffect(() => {
     if (!currentUser) return;
 
@@ -128,14 +132,17 @@ const UserProfile = () => {
   };
 
   return !currentUser ? (
-    <CenterSpinner />
+    <React.Fragment>
+      <PanelHeader size='sm' />
+      <div className='content'>
+        <CenterSpinner fullHeight />
+      </div>
+    </React.Fragment>
   ) : (
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content'>
-        <Alert color='info' isOpen={openAlert} toggle={onDismissAlert}>
-          Changes have been saved
-        </Alert>
+        <AlertDialog color='info' open={openAlert} onClose={onDismissAlert} message='Changes have been saved' />
         <Formik
           initialValues={currentUser}
           enableReinitialize

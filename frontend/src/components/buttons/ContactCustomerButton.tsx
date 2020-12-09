@@ -23,22 +23,24 @@ type ContactCustomerButtonProps = {
 };
 
 const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
+  const { customer, title, productId, userId, userType } = props;
+
+  const { username } = customer;
+
   const [showContact, setShowContact] = useState(false);
 
-  const { customer, title, productId, userId, userType } = props;
   const { currentUser } = useAuth();
+
   const handleShow = () => setShowContact(true);
   const handleClose = () => setShowContact(false);
 
-  const [initialized, setInitialized] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [text, setText] = useState('');
   const [buyerId, setBuyerId] = useState(0);
   const [sellerId, setSellerId] = useState(0);
-  const handleChange = async (evt: any) => {
-    const data = Object.assign({}, evt);
-    setText(data.target.value);
-  };
+
+  const [text, setText] = useState('');
+  const handleChange = (evt: any) => setText(evt.target.value);
+
   const handleSubmit = async () => {
     const today = new Date();
     const time = today.getHours() + ':' + today.getMinutes();
@@ -46,41 +48,36 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
     socket.emit('message', data);
     setText('');
   };
-  const connectToRoom = () => {
-    socket.on('connect', (data: any) => {
-      const roomName = `${productId}_${buyerId}_${sellerId}`;
-      socket.emit('join', roomName);
-    });
-    socket.on('newMessage', (data: any) => {
-      getMessages();
-    });
-    setInitialized(true);
-  };
-  const getMessages = async () => {
-    if (currentUser) {
-      const buyerId = userType === 'seller' ? customer.id : currentUser?.id;
-      const sellerId = userType === 'buyer' ? userId : currentUser?.id;
-      setBuyerId(buyerId);
-      setSellerId(sellerId);
-      const response = await ChatControllerInstance.getChatByProductIdAndBuyerIDAndSellerId(
-        productId,
-        buyerId,
-        sellerId
-      );
-      setMessages(response);
-      setInitialized(true);
-    }
-  };
+
   useEffect(() => {
-    if (!initialized) {
+    socket.on('newMessage', () => {
       getMessages();
-      connectToRoom();
-    }
+    });
+
+    const getMessages = async () => {
+      if (currentUser) {
+        const buyerId = userType === 'seller' ? customer.id : currentUser?.id;
+        const sellerId = userType === 'buyer' ? userId : currentUser?.id;
+
+        setBuyerId(buyerId);
+        setSellerId(sellerId);
+
+        const response = await ChatControllerInstance.getChatByProductIdAndBuyerIDAndSellerId(
+          productId,
+          buyerId,
+          sellerId
+        );
+        
+        // NOTE: why sometimes response is undefined?
+        if (response) setMessages(response);
+      }
+    };
+
+    getMessages();
   });
 
-  const { username } = customer;
   return (
-    <React.Fragment>
+    <>
       <ContactButton onClick={handleShow}>{title}</ContactButton>
       <Dialog open={showContact} onClose={handleClose} className='chat-container'>
         <DialogTitle>
@@ -90,52 +87,51 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
           </span>
         </DialogTitle>
         <DialogContent>
-          {messages && messages.length
-            ? messages.map(function (item: any, i: any) {
-                const date = new Date(item.dateTime);
-                const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
-                const offset = date.getTimezoneOffset() / 60;
-                const hours = date.getHours();
-                newDate.setHours(hours - offset);
-                const time = newDate.toLocaleString();
-                const splitValue = time.split(' ')[1];
-                const splitChatTime = splitValue.split(':');
-                const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
+          {messages.length > 0 &&
+            messages.map(function (item: any, idx: number) {
+              const date = new Date(item.dateTime);
+              const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+              const offset = date.getTimezoneOffset() / 60;
+              const hours = date.getHours();
+              newDate.setHours(hours - offset);
+              const time = newDate.toLocaleString();
+              const splitValue = time.split(' ')[1];
+              const splitChatTime = splitValue.split(':');
+              const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
 
-                if (item.userType === userType) {
-                  return (
-                    <div className='message-right'>
-                      <div className='chat-content-right'>{item.message}</div>
-                      <div className='profile'>
-                        <div className='photo' style={{ backgroundColor: 'white' }}>
-                          <img className='h-100' src={defaultAvatar} alt='uploaed file' />
-                        </div>
-                        <span>{chatTime}</span>
+              if (item.userType === userType) {
+                return (
+                  <div className='message-right' key={idx}>
+                    <div className='chat-content-right'>{item.message}</div>
+                    <div className='profile'>
+                      <div className='photo' style={{ backgroundColor: 'white' }}>
+                        <img className='h-100' src={defaultAvatar} alt='uploaed file' />
                       </div>
+                      <span>{chatTime}</span>
                     </div>
-                  );
-                } else {
-                  return (
-                    <div className='message-left'>
-                      <div className='profile'>
-                        <div className='photo' style={{ backgroundColor: 'white' }}>
-                          <img className='h-100' src={defaultAvatar} alt='uploaed file' />
-                        </div>
-                        <span>{chatTime}</span>
+                  </div>
+                );
+              } else {
+                return (
+                  <div className='message-left' key={idx}>
+                    <div className='profile'>
+                      <div className='photo' style={{ backgroundColor: 'white' }}>
+                        <img className='h-100' src={defaultAvatar} alt='uploaed file' />
                       </div>
-                      <div className='chat-content-left'>{item.message}</div>
+                      <span>{chatTime}</span>
                     </div>
-                  );
-                }
-              })
-            : null}
+                    <div className='chat-content-left'>{item.message}</div>
+                  </div>
+                );
+              }
+            })}
         </DialogContent>
         <DialogActions>
           <Input placeholder='Type your message here' value={text} onChange={handleChange} />
           <i className='send' onClick={handleSubmit}></i>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </>
   );
 };
 

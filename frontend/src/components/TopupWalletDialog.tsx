@@ -21,15 +21,22 @@ const TopupWalletDialog = (props: TopupWalletDialogProps) => {
 
   const onChange = (evt: any) => setTopupAmount(evt.target.value);
 
+  const resetAmount = () => setTopupAmount(undefined);
+
+  const onClose = () => {
+    handleClose();
+    resetAmount();
+  };
+
   // use case
   const onTopup = async () => {
     await WalletControllerInstance.topup(currentUser!.id, topupAmount!);
     goFetchBalance();
-    handleClose();
+    onClose();
   };
 
   return (
-    <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={handleClose}>
+    <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={onClose}>
       <DialogTitle>Topup Wallet</DialogTitle>
       <DialogContent>
         <div style={{ marginBottom: '12px' }}>

@@ -14,6 +14,8 @@ import defaultAvatar from 'assets/img/placeholder.jpg';
 import { signOut } from 'utils/auth';
 import { useUserRanking } from 'providers/UserRankingProvider';
 import isAdminUser from 'usecases/isAdminUser';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import TopupWalletDialog from './TopupWalletDialog';
 
 type SideBarBackgroundColor = 'blue' | 'yellow' | 'green' | 'orange' | 'red';
 
@@ -75,6 +77,8 @@ const Sidebar = (props: SideBarProps) => {
   const { currentUser } = useAuth();
   const location = useLocation();
   const { onOpenLeaderBoard } = useUserRanking();
+
+  const walletDialogHook = useOpenCloseComp();
 
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -212,6 +216,14 @@ const Sidebar = (props: SideBarProps) => {
             {createLinks(props.routes, currentUser?.email)}
             <li>
               {/* location is unchanged */}
+              <NavLink to={location.pathname} onClick={walletDialogHook.onOpen}>
+                <React.Fragment>
+                  <i className='now-ui-icons business_money-coins' />
+                  <p>Topup Wallet</p>
+                </React.Fragment>
+              </NavLink>
+            </li>
+            <li>
               <NavLink to={location.pathname} onClick={onOpenLeaderBoard}>
                 <React.Fragment>
                   <i className='now-ui-icons business_chart-bar-32' />
@@ -230,6 +242,7 @@ const Sidebar = (props: SideBarProps) => {
           </Nav>
         </div>
       </div>
+      <TopupWalletDialog isOpen={walletDialogHook.open} handleClose={walletDialogHook.onClose} />
     </React.Fragment>
   );
 };

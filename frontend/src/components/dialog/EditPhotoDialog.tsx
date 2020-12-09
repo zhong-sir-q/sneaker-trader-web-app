@@ -86,7 +86,6 @@ const DialogHeader = styled.div`
 
 const DialogFooter = styled.div`
   display: flex;
-  padding: 8px;
   color: #007acd;
 `;
 
@@ -100,7 +99,7 @@ const DialogFooterButton = styled.div`
   cursor: pointer;
   white-space: nowrap;
   flex: 1;
-  padding: 8px;
+  padding: 1rem;
 `;
 
 type DialogCropButtonProps = {
@@ -123,7 +122,7 @@ const DialogSetMainButton = styled(DialogFooterButton)<DialogSetMainButtonProps>
 
 const DialogHeaderText = styled.div`
   font-weight: 700;
-  line-height: 28px;
+  line-height: 1.75rem;
   font-size: 1.375rem;
 `;
 
@@ -141,14 +140,14 @@ const FooterButtonText = styled.div`
 
 const DialogBody = styled.div`
   background-color: #f6f5f4;
-  padding: 4.125rem 26px;
+  padding: 4.125rem 1.625rem;
 `;
 
 const DialogImg = styled.img``;
 
 const HeaderHelperText = styled.span`
   vertical-align: middle;
-  margin-left: 12px;
+  margin-left: 0.75rem;
 `;
 
 export default EditPhotoDialog;
