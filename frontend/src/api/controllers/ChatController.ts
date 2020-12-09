@@ -15,6 +15,9 @@ export class ChatController implements ChatEntity {
   getChatByProductIdAndBuyerIDAndSellerId = (productId: number, buyerId: number, sellerId: number): Promise<any> =>
     fetch(concatPaths(this.chatPath, productId, buyerId, sellerId)).then((r) => r.json());
 
+  updateStatus = (ids: any, status: string) =>
+    fetch(concatPaths(this.chatPath, 'updateStatus'), formatRequestOptions({ids, status}, undefined, 'PUT'));
+
 }
 
 const ChatControllerrInstance = new ChatController();

@@ -97,4 +97,5 @@ export type Chat = {
   message: string;
   userType: string;
   dateTime: string;
+  status: string;
 };

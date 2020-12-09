@@ -12,4 +12,12 @@ export default (app: Router, ChatServiceInstance: ChatService) => {
       .then((chatList: any) => res.json(chatList))
       .catch(next);
   });
+
+  chatRoute.put('/updateStatus', (req, res, next) => {
+    const { ids } = req.body;
+
+    ChatServiceInstance.updateStatus(ids, 'read')
+      .then(() => res.json('Status Updated'))
+      .catch(next);
+  });
 };

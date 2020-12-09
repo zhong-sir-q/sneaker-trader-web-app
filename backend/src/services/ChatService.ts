@@ -1,5 +1,5 @@
 import { ChatEntity } from '../../../shared';
-import { formatGetRowsQuery, formatInsertRowsQuery } from '../utils/formatDbQuery';
+import { formatGetRowsQuery, formatInsertRowsQuery, formatUpdateRowsQuery } from '../utils/formatDbQuery';
 
 import { CHAT } from '../config/tables';
 import mysqlPoolConnection from '../config/mysql';
@@ -19,6 +19,16 @@ class ChatService implements ChatEntity {
     const result = await poolConn.query(getChatQuery);
 
     return result.length === 0 ? null : result;
+  }
+
+  async updateStatus(ids: any, status: string) {
+    const updateStatusQuery = formatUpdateRowsQuery(
+      CHAT,
+      { status: status },
+      `id IN (${ids})`
+    );
+    const poolConn = await mysqlPoolConnection();
+    return poolConn.query(updateStatusQuery);
   }
 }
 

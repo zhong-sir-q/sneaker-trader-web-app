@@ -193,3 +193,16 @@ i.send:before {
   opacity: .35;
   color: inherit;
 }
+
+.table-shopping .btn-secondary {
+  position: relative;
+}
+.notify {
+  width: 12px;
+  height: 12px;
+  background-color: #ffb236;
+  display: inline-block;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+}

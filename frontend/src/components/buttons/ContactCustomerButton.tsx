@@ -27,13 +27,12 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const { customer, title, productId, userId, userType } = props;
   const { currentUser } = useAuth();
   const handleShow = () => setShowContact(true);
-  const handleClose = () => setShowContact(false);
-
   const [initialized, setInitialized] = useState(false);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [buyerId, setBuyerId] = useState(0);
   const [sellerId, setSellerId] = useState(0);
+  const [unreadMessageIds, setUnreadMessageIds] = useState([]);
   const handleChange = async (evt: any) => {
     const data = Object.assign({}, evt);
     setText(data.target.value)
@@ -45,6 +44,13 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
     socket.emit("message", data);
     setText('');
   };
+  const handleClose = async () => {
+    if (unreadMessageIds.length) {
+      await ChatControllerInstance.updateStatus(unreadMessageIds, 'read');
+      getMessages();
+    }
+    setShowContact(false);
+  }
   const connectToRoom = () => {
     socket.on("connect", (data: any) => {
       const roomName = `${productId}_${buyerId}_${sellerId}`;
@@ -63,6 +69,16 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
       setSellerId(sellerId);
       const response = await ChatControllerInstance.getChatByProductIdAndBuyerIDAndSellerId(productId, buyerId, sellerId);
       setMessages(response);
+
+      if (response && response.length) {
+        let chatIds: Array = [];
+        for (let entry of response) {
+          if (entry.status === 'unread' && entry.userType !== userType) {
+            chatIds.push(entry.id);
+          }
+        }
+        setUnreadMessageIds(chatIds);
+      }
       setInitialized(true);
     }
   };
@@ -76,7 +92,10 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const { username } = customer;
   return (
     <React.Fragment>
-      <ContactButton onClick={handleShow}>{title}</ContactButton>
+      <ContactButton onClick={handleShow}>
+        {title}
+        {unreadMessageIds.length !== 0 ? <span className="notify"></span> : null}
+      </ContactButton>
       <Dialog open={showContact} onClose={handleClose} className="chat-container">
         <DialogTitle>
           {username || 'Anonymous'}
