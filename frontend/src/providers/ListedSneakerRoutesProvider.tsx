@@ -36,10 +36,8 @@ export const renderListedSneakerRoutes = (listedSneakers: GetListedSneaker[]) =>
 
     const routes = (
       <React.Fragment key={idx}>
+        {!seenPaths.has(path) ? <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} /> : null}
         <Route exact path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
-        {!seenPaths.has(path) ? (
-          <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} />
-        ) : null}
       </React.Fragment>
     );
 
@@ -49,7 +47,10 @@ export const renderListedSneakerRoutes = (listedSneakers: GetListedSneaker[]) =>
   });
 };
 
-const ListedSneakerRoutesProvider = (props: { children: ReactNode, listedSneakerController: ListedSneakerController }) => {
+const ListedSneakerRoutesProvider = (props: {
+  children: ReactNode;
+  listedSneakerController: ListedSneakerController;
+}) => {
   const [listedSneakerRoutes, setListedSneakerRoutes] = useState<JSX.Element[]>([]);
 
   useEffect(() => {

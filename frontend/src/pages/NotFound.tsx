@@ -3,9 +3,19 @@ import './NotFoundStyle.css';
 import { Link } from 'react-router-dom';
 import { HOME } from 'routes';
 
-const NotFound = (): JSX.Element => {
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  background-color: rgb(149, 194, 222);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const NotFound = () => {
   return (
-    <div style={{ backgroundColor: '#95c2de', height: '100vh' }}>
+    <Wrapper>
       <div className='mainbox'>
         <div className='err'>4</div>
         <i className='far fa-question-circle fa-spin'></i>
@@ -17,7 +27,7 @@ const NotFound = (): JSX.Element => {
           </p>
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 };
 

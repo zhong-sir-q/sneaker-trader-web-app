@@ -35,17 +35,16 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const [sellerId, setSellerId] = useState(0);
   const [unreadMessageIds, setUnreadMessageIds] = useState<number[]>([]);
 
-  const handleChange = async (evt: any) => {
-    const data = Object.assign({}, evt);
-    setText(data.target.value);
-  };
-  const handleSubmit = async () => {
+  const handleChange = (evt: any) => setText(evt.target.value);
+
+  const handleSubmit = () => {
     const today = new Date();
     const time = today.getHours() + ':' + today.getMinutes();
     const data = { message: text, buyerId, sellerId, userType, time, productId };
     socket.emit('message', data);
     setText('');
   };
+
   const handleClose = async () => {
     if (unreadMessageIds.length) {
       await ChatControllerInstance.updateStatus(unreadMessageIds, 'read');
@@ -53,6 +52,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
     }
     setShowContact(false);
   };
+
   const connectToRoom = () => {
     socket.on('connect', () => {
       const roomName = `${productId}_${buyerId}_${sellerId}`;
@@ -61,19 +61,23 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
     socket.on('newMessage', () => {
       getMessages();
     });
+
     setInitialized(true);
   };
+
   const getMessages = async () => {
     if (currentUser) {
       const buyerId = userType === 'seller' ? customer.id : currentUser?.id;
       const sellerId = userType === 'buyer' ? userId : currentUser?.id;
       setBuyerId(buyerId);
       setSellerId(sellerId);
+
       const response = await ChatControllerInstance.getChatByProductIdAndBuyerIDAndSellerId(
         productId,
         buyerId,
         sellerId
       );
+
       setMessages(response);
 
       if (response && response.length) {
@@ -88,6 +92,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
       setInitialized(true);
     }
   };
+
   useEffect(() => {
     if (!initialized) {
       getMessages();
@@ -96,6 +101,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   });
 
   const { username } = customer;
+
   return (
     <React.Fragment>
       <ContactButton onClick={handleShow}>

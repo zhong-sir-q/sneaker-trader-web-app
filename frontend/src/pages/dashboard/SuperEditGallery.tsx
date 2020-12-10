@@ -44,7 +44,7 @@ type TableRowProps = {
   awsController: AwsController;
 };
 
-const useRowDialogStyle = makeStyles((_theme) => ({
+const useRowDialogStyle = makeStyles(() => ({
   dialogAction: {
     justifyContent: 'space-evenly',
   },
