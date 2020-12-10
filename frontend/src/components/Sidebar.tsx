@@ -32,7 +32,9 @@ export const defaultSideBarProps: SideBarProps = {
   routes: [],
   showNotification: false,
   backgroundColor: 'blue' as SideBarBackgroundColor,
-  minimizeSidebar: () => {},
+  minimizeSidebar: () => {
+    console.log()
+  },
 };
 
 // this verifies if any of the collapses should be default opened on a rerender of this component
@@ -94,8 +96,7 @@ const Sidebar = (props: SideBarProps) => {
       if (userEmail && route.path === SUPER_USER_EDIT_GALLERY && !isAdminUser(userEmail)) return null;
 
       if (route.collapse) {
-        // TODO: figure out what st is and rename the variable
-        let st = {} as SideBarStateType;
+        const st = {} as SideBarStateType;
         st[route.state] = !collapseStates[route.state];
 
         // TODO: refactor out to individual components

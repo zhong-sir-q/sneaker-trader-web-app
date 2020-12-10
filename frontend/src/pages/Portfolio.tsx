@@ -67,7 +67,7 @@ const formatSearchBarSneaker = (s: GetListedSneaker): SearchBarSneaker => {
   return { name, colorway, brand, mainDisplayImage };
 };
 
-const Portfolio = () => {
+const Portfolio = (): JSX.Element => {
   const { currentUser } = useAuth();
 
   const [fetchPortfolioSneakers, setFetchPortfolioSneakers] = useState(true);
@@ -154,28 +154,26 @@ const Portfolio = () => {
   };
 
   const renderComp = () => {
-    switch (step) {
-      case 0:
-        return <SneakerSearchBar sneakers={searchBarSneakers || []} onChooseSneaker={onConfirmSearchSneaker} />;
-      case 1:
-        if (!selectedSneaker) return null;
-        const { brand, name, colorway } = selectedSneaker;
-        const resultItemText = `${brand} ${name} ${colorway}`;
+    if (step === 0)
+      return <SneakerSearchBar sneakers={searchBarSneakers || []} onChooseSneaker={onConfirmSearchSneaker} />;
+    else if (step === 1) {
+      if (!selectedSneaker) return null;
 
-        return (
-          <PortfolioForm
-            onSubmit={onSubmitForm}
-            SearchResultChild={() => (
-              <SearchResultItem
-                onClose={onCancelChosenSneaker}
-                imgSrc={selectedSneaker.mainDisplayImage}
-                itemText={resultItemText}
-              />
-            )}
-          />
-        );
-      default:
-        return null;
+      const { brand, name, colorway } = selectedSneaker;
+      const resultItemText = `${brand} ${name} ${colorway}`;
+
+      return (
+        <PortfolioForm
+          onSubmit={onSubmitForm}
+          SearchResultChild={() => (
+            <SearchResultItem
+              onClose={onCancelChosenSneaker}
+              imgSrc={selectedSneaker.mainDisplayImage}
+              itemText={resultItemText}
+            />
+          )}
+        />
+      );
     }
   };
 

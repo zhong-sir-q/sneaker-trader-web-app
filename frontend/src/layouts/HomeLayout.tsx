@@ -31,7 +31,7 @@ const HomeLayout = () => {
 };
 
 const TopGradient = styled.div`
-  height: 11vh;
+  height: 15vh;
   background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
   background-color: #fff;
 

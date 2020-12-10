@@ -84,7 +84,9 @@ const CheckboxFilters = (props: Omit<FiltersProps, 'filterSelected'>) => {
   const { onSelectFilter, isFilterSelected, isFetching } = useMarketPlaceCtx();
   const { open, toggle } = useOpenCloseComp(true);
 
-  const onCheck = (value: string) => (isFetching ? (() => {})() : onSelectFilter(filterKey, value));
+  const onCheck = (value: string) => {
+    if (!isFetching) onSelectFilter(filterKey, value);
+  };
 
   return (
     <React.Fragment>

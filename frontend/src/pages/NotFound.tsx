@@ -3,7 +3,7 @@ import './NotFoundStyle.css';
 import { Link } from 'react-router-dom';
 import { HOME } from 'routes';
 
-const NotFound = () => {
+const NotFound = (): JSX.Element => {
   return (
     <div style={{ backgroundColor: '#95c2de', height: '100vh' }}>
       <div className='mainbox'>
@@ -13,7 +13,7 @@ const NotFound = () => {
         <div className='message'>
           Maybe this page moved? Got deleted? Is hiding out in quarantine? Never existed in the first place?
           <p>
-            Let's go <Link to={HOME}>home</Link> and try from there.
+            Let&lsquo;s go <Link to={HOME}>home</Link> and try from there.
           </p>
         </div>
       </div>

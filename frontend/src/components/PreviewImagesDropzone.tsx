@@ -122,8 +122,6 @@ const EditableImage = (props: EditableImageProps) => {
 
   const { open, onOpen, onClose } = useOpenCloseComp();
 
-  const noop = () => {};
-
   // the img may or may not have been edited
   // update the data url of the respective image
   const onDoneEditing = (editedImg: string) => {
@@ -154,7 +152,6 @@ const EditableImage = (props: EditableImageProps) => {
         imgSrc={cropperImage}
         isCropping={isCropping}
         isMain={file.id === mainFileId}
-        toggleIsCropping={noop}
         onDone={onDoneEditing}
         onDelete={onRemove}
         setAsMain={onSetMain}

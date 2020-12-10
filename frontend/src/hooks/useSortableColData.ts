@@ -32,7 +32,7 @@ const useSortableColData = <T>(
   const [sortConfig, setSortConfig] = React.useState(config);
 
   const sortedItems = React.useMemo(() => {
-    let sortableItems = [...items];
+    const sortableItems = [...items];
 
     if (sortConfig) {
       sortableItems.sort((a, b) => {

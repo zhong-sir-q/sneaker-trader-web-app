@@ -124,6 +124,26 @@ export type HomeRoute = {
   component: () => JSX.Element;
 };
 
+const DashboardWithProviders = (): JSX.Element => (
+  <UserStatsProvider>
+    <WalletProvider>
+      <Dashboard />
+    </WalletProvider>
+  </UserStatsProvider>
+);
+
+const InjectedSignin = (): JSX.Element => <SignIn googleOauth2Controller={GoogleOauth2ControllerInstance} />;
+
+const SneakerListingFormWithProviders = (): JSX.Element => (
+  <SneakerListingFormProvider>
+    <PreviewImgDropzoneProvider>
+      <SneakerListingForm />
+    </PreviewImgDropzoneProvider>
+  </SneakerListingFormProvider>
+);
+
+const SudoEditGallery = (): JSX.Element => <SuperEditGallery sneakerController={SneakerControllerInstance} awsController={AwsControllerInstance} />
+
 export const homeRoutes: HomeRoute[] = [
   {
     path: '/',
@@ -152,7 +172,7 @@ const routes: SneakerTraderRoute[] = [
   {
     path: SIGNIN,
     name: 'Signin',
-    component: () => <SignIn googleOauth2Controller={GoogleOauth2ControllerInstance} />,
+    component: InjectedSignin,
     layout: AUTH,
   },
   {
@@ -165,13 +185,7 @@ const routes: SneakerTraderRoute[] = [
     path: DASHBOARD,
     name: 'Dashboard',
     icon: 'now-ui-icons design_app',
-    component: () => (
-      <UserStatsProvider>
-        <WalletProvider>
-          <Dashboard />
-        </WalletProvider>
-      </UserStatsProvider>
-    ),
+    component: DashboardWithProviders,
     layout: ADMIN,
   },
   {
@@ -183,13 +197,7 @@ const routes: SneakerTraderRoute[] = [
   {
     path: PRODUCT_LISTING,
     name: 'Product Listing',
-    component: () => (
-      <SneakerListingFormProvider>
-        <PreviewImgDropzoneProvider>
-          <SneakerListingForm />
-        </PreviewImgDropzoneProvider>
-      </SneakerListingFormProvider>
-    ),
+    component: SneakerListingFormWithProviders,
     layout: ADMIN,
   },
   {
@@ -201,9 +209,7 @@ const routes: SneakerTraderRoute[] = [
   {
     path: SUPER_USER_EDIT_GALLERY,
     name: 'Edit Gallery Sneaker',
-    component: () => (
-      <SuperEditGallery sneakerController={SneakerControllerInstance} awsController={AwsControllerInstance} />
-    ),
+    component: SudoEditGallery,
     layout: ADMIN,
   },
 ];

@@ -14,9 +14,9 @@ const Terms = () => {
       </p>
 
       <p>
-        By using our Services, you are agreeing to these terms. Please read these Terms and Conditions ("Terms", "Terms
-        and Conditions") carefully before using the https://www.sneakertrader.com website and the mobile application
-        (the "Service") operated by Sneaker Trader Limited ("us", "we", or "our").{' '}
+        By using our Services, you are agreeing to these terms. Please read these Terms and Conditions (&quot;Terms&quot;, &quot;Terms
+        and Conditions&quot;) carefully before using the https://www.sneakertrader.com website and the mobile application
+        (the &quot;Service&quot;) operated by Sneaker Trader Limited (&quot;us&quot;, &quot;we&quot;, or &quot;our&quot;).{' '}
       </p>
 
       <p>
@@ -31,12 +31,12 @@ const Terms = () => {
 
       <p>
         The following terminology applies to these Terms and Conditions, Privacy Statement and Disclaimer notice, and
-        any or all Agreements: "Client", "You" and "Your" refer to you, the person accessing this website and accepting
-        the Company's terms and conditions. "The Company", "Ourselves", "We" and "Us" refer to our Company. "Party",
-        "Parties" or "Us" refers to both the Customer and ourselves, or either the Customer or ourselves. All terms
+        any or all Agreements: &quot;Client&quot;, &quot;You&quot; and &quot;Your&quot; refer to you, the person accessing this website and accepting
+        the Company&lsquo;s terms and conditions. &quot;The Company&quot;, &quot;Ourselves&quot;, &quot;We&quot; and &quot;Us&quot; refer to our Company. &quot;Party&quot;,
+        &quot;Parties&quot; or &quot;Us&quot; refers to both the Customer and ourselves, or either the Customer or ourselves. All terms
         refer to the offer, acceptance and consideration of payment necessary to undertake the process of our assistance
         to the Client in the most appropriate manner, whether through formal meetings of a fixed duration, or by any
-        other means, with the express purpose of meeting the Client's needs in terms of providing the Company's declared
+        other means, with the express purpose of meeting the Client&lsquo;s needs in terms of providing the Company&lsquo;s declared
         services / products, in accordance with and subject to applicable US laws. Any use of the above terminology or
         other words in the singular, plural, capital letters and/or plural, and/or these terms, is considered
         interchangeable and therefore a reference to them.{' '}
@@ -97,7 +97,7 @@ const Terms = () => {
       </p>
 
       <p>
-        If you wish to purchase any product or service made available through the Service ("Purchase"), you may be asked
+        If you wish to purchase any product or service made available through the Service (&quot;Purchase&quot;), you may be asked
         to supply certain information relevant to your Purchase including, without limitation].
       </p>
 
@@ -128,7 +128,7 @@ const Terms = () => {
       </p>
 
       <p>
-        The information contained on this website is provided on an " as is " basis. To the fullest extent permitted by
+        The information contained on this website is provided on an &quot; as is &quot; basis. To the fullest extent permitted by
         law, this company:{' '}
       </p>
 
@@ -136,7 +136,7 @@ const Terms = () => {
         <li>
           excludes all representations and warranties with respect to this website and its content or that are or may be
           provided by affiliates or any other third party, including with respect to any inaccuracy or omission in this
-          website and/or the Company's documentation; and{' '}
+          website and/or the Company&lsquo;s documentation; and{' '}
         </li>
         <li>
           excludes any liability for damages arising out of or in connection with your use of this website. Sneaker
@@ -185,7 +185,7 @@ const Terms = () => {
       </p>
 
       <p>
-        A minimum of 24 hours' notice of cancellation is required. Such notice may be given, in person, by email, mobile
+        A minimum of 24 hours&lsquo; notice of cancellation is required. Such notice may be given, in person, by email, mobile
         phone, text message and/or fax, or by any other means, and will be accepted subject to written confirmation. We
         reserve the right to charge a cancellation fee of [SPECIFY] to cover any administrative costs.
       </p>
@@ -323,7 +323,7 @@ const Terms = () => {
       <p>
         We reserve the right to modify these terms or any additional terms that apply to a Service to, for example,
         reflect changes to the law or changes to our Services. You should look at the terms regularly. If a revision is
-        material, we will try to provide at least [SPECIFY] days' notice prior to any new terms taking effect. What
+        material, we will try to provide at least [SPECIFY] days&lsquo; notice prior to any new terms taking effect. What
         constitutes a material change will be determined at our sole discretion.{' '}
       </p>
 

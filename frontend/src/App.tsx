@@ -22,7 +22,6 @@ import 'assets/css/demo.css';
 import 'assets/css/sneakertrader.css';
 import 'cropperjs/dist/cropper.css';
 
-// @ts-ignore
 import awsconfig from 'aws-exports';
 
 // providers

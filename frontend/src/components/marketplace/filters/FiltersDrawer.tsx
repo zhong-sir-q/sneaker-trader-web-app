@@ -31,7 +31,7 @@ const FiltersDrawer = (props: FiltersDrawerProps) => {
         <Button onClick={onOpen}>Filter</Button>
       </CollapseButtonDiv>
       {/* the user cannot close the drawer by clicking the outside */}
-      <Drawer anchor='bottom' open={open} onClose={() => {}}>
+      <Drawer anchor='bottom' open={open}>
         <MuiCloseButton onClick={onClose} />
         <div style={{ padding: '50px', overflow: 'auto', paddingBottom: 0 }}>
           <FilterButtonWrapper>

@@ -54,7 +54,9 @@ const AuthProvider = (props: { children: ReactNode }) => {
     });
 
     return () => {
-      Hub.remove('auth', () => {});
+      Hub.remove('auth', () => {
+        console.log('Unsubscribe to auth events')
+      });
     };
   });
 

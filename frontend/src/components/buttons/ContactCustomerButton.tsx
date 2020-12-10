@@ -12,7 +12,7 @@ import { useAuth } from 'providers/AuthProvider';
 
 import { io } from 'socket.io-client';
 
-let socket = io(process.env.REACT_APP_API_SERVER as string);
+const socket = io(process.env.REACT_APP_API_SERVER as string);
 
 type ContactCustomerButtonProps = {
   customer: Customer;
@@ -54,11 +54,11 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
     setShowContact(false);
   };
   const connectToRoom = () => {
-    socket.on('connect', (data: any) => {
+    socket.on('connect', () => {
       const roomName = `${productId}_${buyerId}_${sellerId}`;
       socket.emit('join', roomName);
     });
-    socket.on('newMessage', (data: any) => {
+    socket.on('newMessage', () => {
       getMessages();
     });
     setInitialized(true);
@@ -77,8 +77,8 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
       setMessages(response);
 
       if (response && response.length) {
-        let chatIds: Array<number> = [];
-        for (let entry of response) {
+        const chatIds: Array<number> = [];
+        for (const entry of response) {
           if (entry.status === 'unread' && entry.userType !== userType) {
             chatIds.push(entry.id);
           }
@@ -111,7 +111,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
         </DialogTitle>
         <DialogContent>
           {messages && messages.length
-            ? messages.map(function (item: any, i: any) {
+            ? messages.map(function (item: any, idx: any) {
                 const date = new Date(item.dateTime);
                 const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
                 const offset = date.getTimezoneOffset() / 60;
@@ -124,7 +124,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
 
                 if (item.userType === userType) {
                   return (
-                    <div className='message-right'>
+                    <div className='message-right' key={idx}>
                       <div className='chat-content-right'>{item.message}</div>
                       <div className='profile'>
                         <div className='photo' style={{ backgroundColor: 'white' }}>
@@ -136,7 +136,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
                   );
                 } else {
                   return (
-                    <div className='message-left'>
+                    <div className='message-left' key={idx}>
                       <div className='profile'>
                         <div className='photo' style={{ backgroundColor: 'white' }}>
                           <img className='h-100' src={defaultAvatar} alt='uploaed file' />
