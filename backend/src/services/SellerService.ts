@@ -11,6 +11,7 @@ class SellerService implements SellerEntity {
   ): Promise<ListedSneakerSeller[]> {
     const poolConn = await mysqlPoolConnection();
 
+    // NOT L.userId = ? because the current user cannot see their own listing
     const getSellersQuery = `
       SELECT U.id, U.username, U.email, U.profilePicUrl, L.askingPrice, L.id as listedProductId,
         L.imageUrls as sneakerImgUrls FROM Users U, ListedProducts L, Products P WHERE U.id = L.userId

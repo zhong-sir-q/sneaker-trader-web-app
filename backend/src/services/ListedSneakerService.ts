@@ -157,7 +157,7 @@ class ListedSneakerService implements ListedSneakerEntity {
     const allListedProductsQuery = `
       SELECT L.*, name, brand, colorway, size FROM ${PRODUCTS} P,
         ${LISTED_PRODUCTS} L WHERE P.id = L.productId AND L.prodStatus = 'listed'
-          GROUP BY name, colorway`;
+          GROUP BY productId`;
 
     return poolConn.query(allListedProductsQuery);
   }

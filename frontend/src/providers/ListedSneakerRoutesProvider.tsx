@@ -36,7 +36,7 @@ export const renderListedSneakerRoutes = (listedSneakers: GetListedSneaker[]) =>
 
     const routes = (
       <React.Fragment key={idx}>
-        <Route path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
+        <Route exact path={concatPaths(HOME, path, size)} component={ViewSellersListContainer} />
         {!seenPaths.has(path) ? (
           <Route exact path={concatPaths(HOME, path)} component={BuySneakerPageContainer} />
         ) : null}
