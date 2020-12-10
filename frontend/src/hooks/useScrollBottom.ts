@@ -1,21 +1,21 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback, MutableRefObject } from 'react';
 
 /**
  * @param deps : scroll to the bottom of the element whenever the dependency changes
  * @returns a html element ref
  */
-const useScrollBottom = (...deps: any[]) => {
-  const elementRef = useRef<HTMLElement>();
+const useScrollBottom = (...deps: any[]): [MutableRefObject<any>, () => void] => {
+  const elementRef = useRef<any>(null);
+
+  const scrollToBottom = useCallback(() => {
+    if (elementRef.current) elementRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [elementRef]);
 
   useEffect(() => {
-    const scrollToBottom = () => {
-      if (elementRef.current) elementRef.current.scrollIntoView({ behavior: 'smooth' });
-    };
-
     scrollToBottom();
-  }, [...deps, elementRef]);
+  }, [...deps, elementRef, scrollToBottom]);
 
-  return elementRef;
+  return [elementRef, scrollToBottom];
 };
 
 export default useScrollBottom;

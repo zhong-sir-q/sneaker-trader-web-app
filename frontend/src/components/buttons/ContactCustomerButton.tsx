@@ -34,13 +34,18 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
   const [buyerId, setBuyerId] = useState(0);
   const [sellerId, setSellerId] = useState(0);
 
-  const handleShow = () => setShowContact(true);
+  const [messages, setMessages] = useState([]);
+  const [messageEndRef, scrollToMessageEnd] = useScrollBottom(messages);
+
+  const handleShow = () => {
+    setShowContact(true);
+    // allow some time for the the message end to mount
+    setTimeout(() => scrollToMessageEnd(), 0);
+  };
+
   const [initialized, setInitialized] = useState(false);
 
-  const [messages, setMessages] = useState([]);
   const [unreadMessageIds, setUnreadMessageIds] = useState<number[]>([]);
-
-  const messagesRef = useScrollBottom(messages);
 
   const handleChange = (evt: any) => setText(evt.target.value);
 
@@ -109,6 +114,10 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
 
   const { username } = customer;
 
+  // important to use message-right, so it will occur at the bottom of the message list, so
+  // scollIntoView will reach the bottom of the chatbox
+  const MessageEnd = () => <div className='message-right' ref={messageEndRef} />;
+
   return (
     <React.Fragment>
       <ContactButton onClick={handleShow}>
@@ -122,49 +131,59 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
             <i className='fa fa-times-circle'></i>
           </span>
         </DialogTitle>
-        <DialogContent ref={messagesRef}>
-          {messages && messages.length
-            ? messages.map(function (item: any, idx: any) {
-                const date = new Date(item.dateTime);
-                const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
-                const offset = date.getTimezoneOffset() / 60;
-                const hours = date.getHours();
-                newDate.setHours(hours - offset);
-                const time = newDate.toLocaleString();
-                const splitValue = time.split(' ')[1];
-                const splitChatTime = splitValue.split(':');
-                const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
+        <DialogContent>
+          {messages &&
+            messages.length &&
+            messages.map(function (item: any, idx: any) {
+              const date = new Date(item.dateTime);
+              const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+              const offset = date.getTimezoneOffset() / 60;
+              const hours = date.getHours();
+              newDate.setHours(hours - offset);
+              const time = newDate.toLocaleString();
+              const splitValue = time.split(' ')[1];
+              const splitChatTime = splitValue.split(':');
+              const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
 
-                if (item.userType === userType) {
-                  return (
-                    <div className='message-right' key={idx}>
-                      <div className='chat-content-right'>{item.message}</div>
-                      <div className='profile'>
-                        <div className='photo' style={{ backgroundColor: 'white' }}>
-                          <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
-                        </div>
-                        <span>{chatTime}</span>
+              // the current user
+              if (item.userType === userType) {
+                return (
+                  <div className='message-right' key={idx}>
+                    <div className='chat-content-right'>{item.message}</div>
+                    <div className='profile'>
+                      <div className='photo' style={{ backgroundColor: 'white' }}>
+                        <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
                       </div>
+                      <span>{chatTime}</span>
                     </div>
-                  );
-                } else {
-                  return (
-                    <div className='message-left' key={idx}>
-                      <div className='profile'>
-                        <div className='photo' style={{ backgroundColor: 'white' }}>
-                          <img className='h-100' src={customer.profilePicUrl || defaultAvatar} alt='uploaed file' />
-                        </div>
-                        <span>{chatTime}</span>
+                  </div>
+                );
+              } else {
+                // the customer to contact
+                return (
+                  <div className='message-left' key={idx}>
+                    <div className='profile'>
+                      <div className='photo' style={{ backgroundColor: 'white' }}>
+                        <img className='h-100' src={customer.profilePicUrl || defaultAvatar} alt='uploaed file' />
                       </div>
-                      <div className='chat-content-left'>{item.message}</div>
+                      <span>{chatTime}</span>
                     </div>
-                  );
-                }
-              })
-            : null}
+                    <div className='chat-content-left'>{item.message}</div>
+                  </div>
+                );
+              }
+            })}
+          <MessageEnd />
         </DialogContent>
         <DialogActions>
-          <Input placeholder='Type your message here' value={text} onChange={handleChange} />
+          <Input
+            placeholder='Type your message here'
+            value={text}
+            onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSubmit();
+            }}
+          />
           <i className='send' onClick={handleSubmit}></i>
         </DialogActions>
       </Dialog>
