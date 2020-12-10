@@ -8,21 +8,19 @@ import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 
 import SneakerGallery from 'components/SneakerGallery';
-import FiltersDrawer from 'components/marketplace/filters/FiltersDrawer';
 import CheckboxFilters from 'components/marketplace/filters/CheckboxFilters';
-
-import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
-
 import FilterButtons from 'components/marketplace/filters/FilterButtons';
 import SneakerSearchBar from 'components/SneakerSearchBar';
+
+import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 
 import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
 
 import heroSplashImg from 'assets/img/aj1-splash.jpg';
 
-import { SearchBarSneaker } from '../../../shared';
-
 import { MD_WIDTH } from 'const/variables';
+
+import { SearchBarSneaker } from '../../../shared';
 
 const FilterGroup = styled(Col)`
   min-width: 200px;
@@ -63,6 +61,8 @@ const Wrapper = styled.div`
   @media (max-width: ${MD_WIDTH}) {
     padding: 0;
     flex-direction: column;
+    /* no need to center item along the column */
+    justify-content: normal;
   }
 `;
 
@@ -81,15 +81,6 @@ const SkeletonGrid = () => {
 };
 
 // only show on small screen
-const MobileWrapper = styled.div`
-  margin-bottom: 8px;
-  margin-left: 4px;
-  margin-right: 4px;
-
-  @media (min-width: ${MD_WIDTH}) {
-    display: none;
-  }
-`;
 
 const MarketPlace = () => {
   const { defaultSneakers, filterSneakers, brands, isFetching } = useMarketPlaceCtx();
@@ -97,13 +88,13 @@ const MarketPlace = () => {
   // fetched first then render the filters
   const [lagging, setLagging] = useState(true);
 
+  const history = useHistory();
+
   // 1.5s to load the sneakers, then we show the filters
   // there should be a better solution than this
   useEffect(() => {
     setTimeout(() => setLagging(false), 1500);
   }, []);
-
-  const history = useHistory();
 
   const sizeFilters = _.range(3, 15, 0.5);
 
@@ -130,20 +121,9 @@ const MarketPlace = () => {
           <SneakerSearchBar width='100%' sneakers={defaultSneakers || []} onChooseSneaker={navigateBuySneakerPage} />
         </SearchBarRow>
       </Hero>
+      <TopGradient />
       <Wrapper>
-        <MobileWrapper>
-          <TopGradient />
-          {!lagging && (
-            <React.Fragment>
-              <FiltersDrawer brandFilters={brands || []} sizeFilters={sizeFilters.map((n) => String(n))} />
-              <SneakerSearchBar
-                width='100%'
-                sneakers={defaultSneakers || []}
-                onChooseSneaker={navigateBuySneakerPage}
-              />
-            </React.Fragment>
-          )}
-        </MobileWrapper>
+        {/* do not render the filters on desktop version because of asthetic purposes */}
         {!lagging && (
           <FilterGroup md={2} lg={2}>
             <FilterButtonWrapper>
@@ -223,6 +203,10 @@ const TopGradient = styled.div`
   height: 80px;
   background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
   background-color: #fff;
+
+  @media (min-width: ${MD_WIDTH}) {
+    display: none;
+  }
 `;
 
 export default MarketPlace;

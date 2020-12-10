@@ -22,6 +22,7 @@ const HomeLayout = () => {
   return (
     <React.Fragment>
       <HomeNavbar />
+      {/* do not render TopGradient at market place due to the Hero Card */}
       {location.pathname !== '/' ? <TopGradient /> : null}
       {renderHomeRoutes()}
       {listedSneakerRoutes}
@@ -31,15 +32,19 @@ const HomeLayout = () => {
 };
 
 const TopGradient = styled.div`
+<<<<<<< HEAD
   height: 15vh;
+=======
+  height: 10vh;
+>>>>>>> Use a fixed searchbar in the navbar
   background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
   background-color: #fff;
 
-  @media (max-width: 768px) {
+  @media (max-height: 768px) {
     height: 13vh;
   }
 
-  @media (max-width: 428px) {
+  @media (max-height: 428px) {
     height: 15vh;
   }
 `;

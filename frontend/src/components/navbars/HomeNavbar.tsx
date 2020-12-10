@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Navbar, Nav, NavItem, Collapse, NavbarToggler } from 'reactstrap';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-
 import { signOut } from 'utils/auth';
-import { useAuth } from 'providers/AuthProvider';
 
 import { ADMIN, DASHBOARD, AUTH, SIGNIN, HOME } from 'routes';
 
@@ -15,6 +13,20 @@ import logo from 'assets/img/logo_transparent_background.png';
 import { useUserRanking } from 'providers/UserRankingProvider';
 import { MD_WIDTH } from 'const/variables';
 
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+
+import FiltersDrawer from 'components/marketplace/filters/FiltersDrawer';
+import SneakerSearchBar from 'components/SneakerSearchBar';
+
+import { FilterList, Cancel, Search } from '@material-ui/icons';
+
+import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
+import { useAuth } from 'providers/AuthProvider';
+
+import { SearchBarSneaker } from '../../../../shared';
+
+import redirectBuySneakerPage from 'utils/redirectBuySneakerPage';
+import _ from 'lodash';
 
 const StyledNavbar = styled(Navbar)`
   position: fixed;
@@ -34,15 +46,26 @@ const StyledNavbar = styled(Navbar)`
 const HomeNavbar = () => {
   const [openNav, setOpenNav] = useState(false);
 
+  const { defaultSneakers, brands } = useMarketPlaceCtx();
+
   const toggleNav = () => setOpenNav(!openNav);
 
   const { onOpenLeaderBoard } = useUserRanking();
+  const filterDrawerHook = useOpenCloseComp();
+  const mobileSearchbarHook = useOpenCloseComp();
 
   const { signedIn } = useAuth();
 
+  const history = useHistory();
+
+  const navigateBuySneakerPage = (sneaker: SearchBarSneaker) =>
+    redirectBuySneakerPage(history, sneaker.name, sneaker.colorway);
+
+  const sizeFilters = _.range(3, 15, 0.5).map((v) => String(v));
+
   return (
     <StyledNavbar expand='lg'>
-      <div className='navbar-wrapper'>
+      <NavbarWrapper className='navbar-wrapper w-full'>
         <div className='navbar-toggle'>
           <NavbarToggler onClick={toggleNav}>
             <span style={{ backgroundColor: '#888' }} className='navbar-toggler-bar bar1' />
@@ -50,10 +73,38 @@ const HomeNavbar = () => {
             <span style={{ backgroundColor: '#888' }} className='navbar-toggler-bar bar3' />
           </NavbarToggler>
         </div>
-        <Link to={HOME} style={{ width: '120px' }}>
-          <img src={logo} alt='sneakertrader-logo' />
-        </Link>
-      </div>
+
+        {mobileSearchbarHook.open ? (
+          <React.Fragment>
+            <FiltersDrawer
+              open={filterDrawerHook.open}
+              onClose={filterDrawerHook.onClose}
+              brandFilters={brands || []}
+              sizeFilters={sizeFilters || []}
+            />
+            <SneakerSearchBar
+              width='100%'
+              sneakers={defaultSneakers || []}
+              onChooseSneaker={navigateBuySneakerPage}
+              focusOnMount
+            />
+            <FilterListIconWrapper onClick={filterDrawerHook.onOpen}>
+              <StyledFilterListIcon />
+            </FilterListIconWrapper>
+
+            <Cancel onClick={mobileSearchbarHook.onClose} />
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Link to={HOME}>
+              {/* same height as the searchbar so it does not stretch */}
+              <img style={{ height: '44px' }} src={logo} alt='sneakertrader-logo' />
+            </Link>
+
+            <Search onClick={mobileSearchbarHook.onOpen} />
+          </React.Fragment>
+        )}
+      </NavbarWrapper>
 
       <Collapse isOpen={openNav} navbar>
         <StyledNav navbar>
@@ -98,6 +149,23 @@ const StyledNav = styled(Nav)`
   text-transform: capitalize;
   /* the color will be white in the market place */
   color: black;
+`;
+
+const StyledFilterListIcon = styled(FilterList)`
+  position: absolute;
+  right: 10px;
+  top: -12px;
+`;
+
+const SearchBarWrapper = styled.div``;
+
+const FilterListIconWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+`;
+
+const NavbarWrapper = styled.div`
+  justify-content: space-between;
 `;
 
 export default HomeNavbar;

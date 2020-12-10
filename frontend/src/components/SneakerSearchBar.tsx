@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import styled from 'styled-components';
 import SearchIcon from '@material-ui/icons/Search';
@@ -9,6 +9,7 @@ import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
 import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 import LazyBackgroundImg from './img/LazyBackgroundImg';
+import { FilterList } from '@material-ui/icons';
 
 const StyledInput = styled.input`
   width: 100%;
@@ -69,6 +70,7 @@ type SneakerSearchBarProps = {
   placeholder?: string;
   suggestionMaxHeight?: string;
   width?: string;
+  focusOnMount?: boolean;
   onChooseSneaker: (sneaker: SearchBarSneaker) => void;
   setSneakerNew?: () => void;
   setSneakerExists?: () => void;
@@ -80,7 +82,9 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIdx, setActiveSuggestionIdx] = useState(0);
 
-  const { setSneakerExists, setSneakerNew, updateSearchVal } = props;
+  const { focusOnMount, setSneakerExists, setSneakerNew, updateSearchVal } = props;
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const formatName = (sneaker: any) => [sneaker.brand, sneaker.name, sneaker.colorway].join(' ');
 
@@ -98,6 +102,10 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
     }
   });
 
+  useEffect(() => {
+    if (focusOnMount && inputRef.current) inputRef.current.focus();
+  }, [focusOnMount, inputRef]);
+
   const onChange = (evt: any) => {
     const { value } = evt.target;
 
@@ -114,6 +122,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
   const onConfirmVal = () => {
     props.onChooseSneaker(result[activeSuggestionIdx]);
     clearSearchVal();
+    hideSuggestions();
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -150,6 +159,7 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
           onKeyDown={onKeyDown}
           data-testid='listing-form-search-bar'
           onFocus={() => openSuggestions()}
+          ref={inputRef}
         />
       </StyledInputGroup>
       {showSuggestions && (
@@ -162,7 +172,11 @@ const SneakerSearchBar = (props: SneakerSearchBarProps) => {
                 onMouseOver={() => setActiveSuggestionIdx(idx)}
                 onMouseDown={onMouseDown}
               >
-                <LazyBackgroundImg BackgroundImgElement={BackgroundImg} background={item.mainDisplayImage} placeholder='_' />
+                <LazyBackgroundImg
+                  BackgroundImgElement={BackgroundImg}
+                  background={item.mainDisplayImage}
+                  placeholder='_'
+                />
                 <StyledListGroupItemText>{formatName(item)}</StyledListGroupItemText>
               </StyledListGroupItem>
             ))}

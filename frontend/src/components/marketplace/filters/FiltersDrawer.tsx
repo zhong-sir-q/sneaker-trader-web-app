@@ -7,29 +7,19 @@ import styled from 'styled-components';
 
 import CheckboxFilters from './CheckboxFilters';
 
-import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import MuiCloseButton from 'components/buttons/MuiCloseButton';
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import FilterButtons from './FilterButtons';
 
-const CollapseButtonDiv = styled.div`
-  display: block;
-  text-align: end;
-`;
-
-type FiltersDrawerProps = { sizeFilters: string[]; brandFilters: string[] };
+type FiltersDrawerProps = { open: boolean; onClose: () => void; sizeFilters: string[]; brandFilters: string[] };
 
 const FiltersDrawer = (props: FiltersDrawerProps) => {
-  const { sizeFilters, brandFilters } = props;
+  const { open, sizeFilters, brandFilters, onClose } = props;
 
-  const { open, onOpen, onClose } = useOpenCloseComp();
   const { numFilters, clearFilters } = useMarketPlaceCtx();
 
   return (
     <React.Fragment>
-      <CollapseButtonDiv>
-        <Button onClick={onOpen}>Filter</Button>
-      </CollapseButtonDiv>
       {/* the user cannot close the drawer by clicking the outside */}
       <Drawer anchor='bottom' open={open}>
         <MuiCloseButton onClick={onClose} />
