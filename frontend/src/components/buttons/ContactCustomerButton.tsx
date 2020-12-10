@@ -11,6 +11,7 @@ import { Customer } from '../../../../shared';
 import { useAuth } from 'providers/AuthProvider';
 
 import { io } from 'socket.io-client';
+import useScrollBottom from 'hooks/useScrollBottom';
 
 const socket = io(process.env.REACT_APP_API_SERVER as string);
 
@@ -27,13 +28,19 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
 
   const { customer, title, productId, userId, userType } = props;
   const { currentUser } = useAuth();
-  const handleShow = () => setShowContact(true);
-  const [initialized, setInitialized] = useState(false);
-  const [messages, setMessages] = useState([]);
+
   const [text, setText] = useState('');
+
   const [buyerId, setBuyerId] = useState(0);
   const [sellerId, setSellerId] = useState(0);
+
+  const handleShow = () => setShowContact(true);
+  const [initialized, setInitialized] = useState(false);
+
+  const [messages, setMessages] = useState([]);
   const [unreadMessageIds, setUnreadMessageIds] = useState<number[]>([]);
+
+  const messagesRef = useScrollBottom(messages);
 
   const handleChange = (evt: any) => setText(evt.target.value);
 
@@ -115,7 +122,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
             <i className='fa fa-times-circle'></i>
           </span>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent ref={messagesRef}>
           {messages && messages.length
             ? messages.map(function (item: any, idx: any) {
                 const date = new Date(item.dateTime);
@@ -134,7 +141,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
                       <div className='chat-content-right'>{item.message}</div>
                       <div className='profile'>
                         <div className='photo' style={{ backgroundColor: 'white' }}>
-                          <img className='h-100' src={defaultAvatar} alt='uploaed file' />
+                          <img className='h-100' src={currentUser?.profilePicUrl || defaultAvatar} alt='uploaed file' />
                         </div>
                         <span>{chatTime}</span>
                       </div>
@@ -145,7 +152,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
                     <div className='message-left' key={idx}>
                       <div className='profile'>
                         <div className='photo' style={{ backgroundColor: 'white' }}>
-                          <img className='h-100' src={defaultAvatar} alt='uploaed file' />
+                          <img className='h-100' src={customer.profilePicUrl || defaultAvatar} alt='uploaed file' />
                         </div>
                         <span>{chatTime}</span>
                       </div>
