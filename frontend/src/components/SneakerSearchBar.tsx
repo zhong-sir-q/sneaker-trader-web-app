@@ -9,7 +9,6 @@ import { ListGroup, ListGroupItem, ListGroupItemText } from 'reactstrap';
 import OutsideClickHandler from './OutsideClickHandler';
 import { SearchBarSneaker } from '../../../shared';
 import LazyBackgroundImg from './img/LazyBackgroundImg';
-import { FilterList } from '@material-ui/icons';
 
 const StyledInput = styled.input`
   width: 100%;
