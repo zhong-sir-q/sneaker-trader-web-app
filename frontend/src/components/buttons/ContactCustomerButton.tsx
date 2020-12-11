@@ -124,7 +124,7 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
         {title}
         {unreadMessageIds.length !== 0 ? <span className='notify'></span> : null}
       </ContactButton>
-      <Dialog open={showContact} onClose={handleClose} className='chat-container'>
+      <Dialog open={showContact} className='chat-container'>
         <DialogTitle>
           {username || 'Anonymous'}
           <span className='close' onClick={handleClose}>
@@ -144,6 +144,9 @@ const ContactCustomerButton = (props: ContactCustomerButtonProps) => {
               const splitValue = time.split(' ')[1];
               const splitChatTime = splitValue.split(':');
               const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
+              
+              // TODO: use moment to take care time calculation
+              // const chatTime = moment(item.dateTime).format('h:mm')
 
               // the current user
               if (item.userType === userType) {
