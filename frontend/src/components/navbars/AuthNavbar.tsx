@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Collapse, Navbar, NavbarToggler, Nav, NavItem, Container } from 'reactstrap';
 
-import logo from 'assets/img/logo_transparent_background.png';
+import logo from 'assets/img/white_logo_transparent_background.png';
 
 import { AUTH, SIGNIN, SIGNUP, HOME } from 'routes';
 
