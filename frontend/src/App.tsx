@@ -90,7 +90,7 @@ const App = () => {
             </UserRankingProvider>
 
             {/* this currently does not work, ideally we want to show the 404 page
-          when a random route is entered */}
+            when a random route is entered */}
             <Route path='*' component={NotFound} />
           </Switch>
         </Elements>

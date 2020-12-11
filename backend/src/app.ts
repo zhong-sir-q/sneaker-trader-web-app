@@ -7,7 +7,7 @@ import apiRoutes from './api';
 const app = express();
 
 // register all middleware, refer to the guide for loader best practices
-app.use(cors<Request<any, any, any, any>>()); // enable cors
+app.use(cors()); // enable cors
 app.use(express.json()); // parsing application/json
 app.use('/api', apiRoutes());
 

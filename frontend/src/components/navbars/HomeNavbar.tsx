@@ -18,7 +18,7 @@ import useOpenCloseComp from 'hooks/useOpenCloseComp';
 import FiltersDrawer from 'components/marketplace/filters/FiltersDrawer';
 import SneakerSearchBar from 'components/SneakerSearchBar';
 
-import { FilterList, Cancel, Search } from '@material-ui/icons';
+import { FilterList, Cancel as CancelIcon, Search as SearchIcon } from '@material-ui/icons';
 
 import { useMarketPlaceCtx } from 'providers/marketplace/MarketPlaceProvider';
 import { useAuth } from 'providers/AuthProvider';
@@ -41,6 +41,12 @@ const StyledNavbar = styled(Navbar)`
     padding-right: 3.5rem;
   }
 `;
+
+const MobileSearchIcon = styled(SearchIcon)`
+  @media (min-width: ${MD_WIDTH}) {
+    display: none;
+  }
+`
 
 // NOTE: some navbar specific styles are overriden in sneakertrader.css
 const HomeNavbar = () => {
@@ -92,7 +98,7 @@ const HomeNavbar = () => {
               <StyledFilterListIcon />
             </FilterListIconWrapper>
 
-            <Cancel onClick={mobileSearchbarHook.onClose} />
+            <CancelIcon onClick={mobileSearchbarHook.onClose} />
           </React.Fragment>
         ) : (
           <React.Fragment>
@@ -101,7 +107,7 @@ const HomeNavbar = () => {
               <img style={{ height: '44px' }} src={logo} alt='sneakertrader-logo' />
             </Link>
 
-            <Search onClick={mobileSearchbarHook.onOpen} />
+            <MobileSearchIcon onClick={mobileSearchbarHook.onOpen} />
           </React.Fragment>
         )}
       </NavbarWrapper>
@@ -156,8 +162,6 @@ const StyledFilterListIcon = styled(FilterList)`
   right: 10px;
   top: -12px;
 `;
-
-const SearchBarWrapper = styled.div``;
 
 const FilterListIconWrapper = styled.div`
   position: relative;

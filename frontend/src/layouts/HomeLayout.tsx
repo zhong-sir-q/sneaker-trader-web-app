@@ -8,6 +8,7 @@ import { homeRoutes } from 'routes';
 import { useListedSneakerRoutes } from 'providers/ListedSneakerRoutesProvider';
 
 import styled from 'styled-components';
+import ScrollToTopOnRouteChange from 'components/ScrollToTopOnRouteChange';
 
 const HomeLayout = () => {
   const { listedSneakerRoutes } = useListedSneakerRoutes();
@@ -21,27 +22,25 @@ const HomeLayout = () => {
 
   return (
     <React.Fragment>
-      <HomeNavbar />
-      {/* do not render TopGradient at market place due to the Hero Card */}
-      {location.pathname !== '/' ? <TopGradient /> : null}
-      {renderHomeRoutes()}
-      {listedSneakerRoutes}
-      <Footer fluid default={false} />
+      <ScrollToTopOnRouteChange>
+        <HomeNavbar />
+        {/* do not render TopGradient at market place due to the Hero Card */}
+        {location.pathname !== '/' ? <TopGradient /> : null}
+        {renderHomeRoutes()}
+        {listedSneakerRoutes}
+        <Footer fluid default={false} />
+      </ScrollToTopOnRouteChange>
     </React.Fragment>
   );
 };
 
 const TopGradient = styled.div`
-<<<<<<< HEAD
-  height: 15vh;
-=======
-  height: 10vh;
->>>>>>> Use a fixed searchbar in the navbar
+  height: 12vh;
   background: linear-gradient(#e5e5e5, #f5f5f5, #fff, #fff);
   background-color: #fff;
 
   @media (max-height: 768px) {
-    height: 13vh;
+    height: 14vh;
   }
 
   @media (max-height: 428px) {
