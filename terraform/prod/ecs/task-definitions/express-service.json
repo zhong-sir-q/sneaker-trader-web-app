@@ -1,0 +1,152 @@
+[
+  {
+    "ipcMode": null,
+    "executionRoleArn": "arn:aws:iam::257875578557:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+      {
+        "dnsSearchDomains": null,
+        "environmentFiles": null,
+        "logConfiguration": null,
+        "entryPoint": null,
+        "portMappings": [
+          {
+            "hostPort": 4000,
+            "protocol": "tcp",
+            "containerPort": 4000
+          }
+        ],
+        "command": null,
+        "linuxParameters": null,
+        "cpu": 0,
+        "environment": [
+          {
+            "name": "ACCESS_KEY_ID",
+            "value": "AKIATYCUVB26UUCVR72J"
+          },
+          {
+            "name": "database",
+            "value": "SneakerTrader"
+          },
+          {
+            "name": "dbPassword",
+            "value": "dupmYRoFCngO0x6IS29R"
+          },
+          {
+            "name": "GOOGLE_CLIENT_ID",
+            "value": "1021202892438-g7803i6ust97vvb8mojt8lneu1fdajgd.apps.googleusercontent.com"
+          },
+          {
+            "name": "GOOGLE_CLIENT_SECRET",
+            "value": "21dRstB2vi7qgl_bJZjl4QnB"
+          },
+          {
+            "name": "GOOGLE_REDIRECT_URI",
+            "value": "https://prod.sneakertrader.com/auth/signin"
+          },
+          {
+            "name": "host",
+            "value": "sneaker-trader-dev.co49fxphruqd.ap-southeast-2.rds.amazonaws.com"
+          },
+          {
+            "name": "IMAGE_UPLOADS_BUCKET",
+            "value": "sneaker-trader-client-images-uploads"
+          },
+          {
+            "name": "REGION",
+            "value": "ap-southeast-2"
+          },
+          {
+            "name": "SECRET_ACCESS_KEY",
+            "value": "lbR5GXC8a67vovHUgicEB49X1YTdERwYGVev694z"
+          },
+          {
+            "name": "SENDGRID_API_KEY",
+            "value": "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"
+          },
+          {
+            "name": "STRIPE_SECRET_KEY",
+            "value": "sk_test_51HCwsjDjeByI3phItrTmwXP6Cs7trDorK4g3ASTNME8X4jYT49B0eFqIDA8stt1cd2HSFl4d9Uzo0HA4YofzF6T800TU67nBao"
+          },
+          {
+            "name": "user",
+            "value": "admin"
+          },
+          {
+            "name": "USER_POOL_ID",
+            "value": "ap-southeast-2_c1cS2P5jy"
+          }
+        ],
+        "resourceRequirements": null,
+        "ulimits": null,
+        "dnsServers": null,
+        "mountPoints": [],
+        "workingDirectory": null,
+        "secrets": null,
+        "dockerSecurityOptions": null,
+        "memory": null,
+        "memoryReservation": null,
+        "volumesFrom": [],
+        "stopTimeout": null,
+        "image": "257875578557.dkr.ecr.ap-southeast-2.amazonaws.com/sneakertrader/express:prod",
+        "startTimeout": null,
+        "firelensConfiguration": null,
+        "dependsOn": null,
+        "disableNetworking": null,
+        "interactive": null,
+        "healthCheck": null,
+        "essential": true,
+        "links": null,
+        "hostname": null,
+        "extraHosts": null,
+        "pseudoTerminal": null,
+        "user": null,
+        "readonlyRootFilesystem": null,
+        "dockerLabels": null,
+        "systemControls": null,
+        "privileged": null,
+        "name": "sneaker-trader-express-prod-container"
+      }
+    ],
+    "placementConstraints": [],
+    "memory": "1024",
+    "taskRoleArn": null,
+    "compatibilities": ["EC2", "FARGATE"],
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:257875578557:task-definition/st-express-prod-task:20",
+    "family": "st-express-service-prod",
+    "requiresAttributes": [
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.ecr-auth"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.execution-role-ecr-pull"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.task-eni"
+      }
+    ],
+    "pidMode": null,
+    "requiresCompatibilities": ["FARGATE"],
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "revision": 20,
+    "status": "ACTIVE",
+    "inferenceAccelerators": null,
+    "proxyConfiguration": null,
+    "volumes": []
+  }
+]
