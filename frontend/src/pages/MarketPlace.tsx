@@ -90,10 +90,8 @@ const MarketPlace = () => {
 
   const history = useHistory();
 
-  // 1.5s to load the sneakers, then we show the filters
-  // there should be a better solution than this
   useEffect(() => {
-    setTimeout(() => setLagging(false), 1500);
+    setTimeout(() => setLagging(false), 0);
   }, []);
 
   const sizeFilters = _.range(3, 15, 0.5);

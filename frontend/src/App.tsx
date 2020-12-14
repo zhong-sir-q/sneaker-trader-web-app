@@ -22,8 +22,6 @@ import 'assets/css/demo.css';
 import 'assets/css/sneakertrader.css';
 import 'cropperjs/dist/cropper.css';
 
-import awsconfig from 'aws-exports';
-
 // providers
 import AuthProvider, { useAuth } from 'providers/AuthProvider';
 import MarketPlaceProvider from 'providers/marketplace/MarketPlaceProvider';
@@ -38,9 +36,11 @@ import EditListedSneakerRoutesProvider from 'providers/EditListedSneakerRoutesPr
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
 Amplify.configure({
-  ...awsconfig,
   Auth: {
     identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID,
+    region: process.env.REACT_APP_COGNITO_REGION,
+    userPoolId: process.env.REACT_APP_USER_POOL_ID,
+    userPoolWebClientId: process.env.REACT_APP_WEB_CLIENT_ID,
   },
 });
 

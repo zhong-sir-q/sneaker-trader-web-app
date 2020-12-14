@@ -121,9 +121,13 @@ const SignupForm = () => {
   const [signUpError, setSignUpError] = useState<string>();
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-  const handleSubmit = async (formStates: SignupFormStateType) => {
+  const handleSubmit = async (
+    formStates: SignupFormStateType,
+    resetForm: (nextState?: Partial<FormikState<SignupFormStateType>> | undefined) => void
+  ) => {
     try {
       await onSignup(UserRegistrationControllerInstance)(convertFormValuesToUser(formStates), formStates.password);
+      resetForm(INIT_FORM_VALUES as Partial<FormikState<SignupFormStateType>>);
       setSignUpSuccess(true);
     } catch (err) {
       setSignUpError(err.message);
@@ -142,10 +146,8 @@ const SignupForm = () => {
                 <Formik
                   initialValues={INIT_FORM_VALUES}
                   validationSchema={validationSchema}
-                  onSubmit={async (formStates, { setSubmitting, resetForm }) => {
-                    await handleSubmit(formStates);
-                    resetForm(INIT_FORM_VALUES as Partial<FormikState<SignupFormStateType>>);
-                    setSubmitting(false);
+                  onSubmit={async (formStates, { resetForm }) => {
+                    await handleSubmit(formStates, resetForm);
                   }}
                 >
                   {(formikProps) => (

@@ -21,7 +21,15 @@ export class UserController implements UserEntity {
   getByUsername = (username: string): Promise<User | null> =>
     fetch(`${this.userPath}/name/${username}`).then((res) => res.json());
 
-  create = (user: Partial<AppUser>) => fetch(this.userPath, formatRequestOptions(user)).then((res) => res.json());
+  create = (user: Partial<AppUser>) =>
+    fetch(this.userPath, formatRequestOptions(user)).then(async (res) => {
+      if (res.status === 400) {
+        const { message } = await res.json();
+        throw new Error(message);
+      }
+
+      return res.json();
+    });
 
   update = (email: string, user: Partial<User>) =>
     fetch(concatPaths(this.userPath, email), formatRequestOptions(user, undefined, 'PUT')).then((res) => res);

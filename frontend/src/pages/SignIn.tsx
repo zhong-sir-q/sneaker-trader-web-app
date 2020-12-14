@@ -21,7 +21,7 @@ import SignInWithFacebook from 'components/buttons/SignInWithFacebook';
 
 // images
 import googleLogo from 'assets/img/google_logo_svg.png';
-import stLogo from 'assets/img/logo_transparent_background.png';
+import stLogo from 'assets/img/white_logo_transparent_background.png';
 import bgImage from 'assets/img/aj1-splash.jpg';
 
 import {

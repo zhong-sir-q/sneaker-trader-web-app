@@ -42,11 +42,11 @@ const StyledNavbar = styled(Navbar)`
   }
 `;
 
-const MobileSearchIcon = styled(SearchIcon)`
-  @media (min-width: ${MD_WIDTH}) {
+const MobileSearchIconWrapper = styled.div`
+  @media (min-width: 994px) {
     display: none;
   }
-`
+`;
 
 // NOTE: some navbar specific styles are overriden in sneakertrader.css
 const HomeNavbar = () => {
@@ -107,7 +107,9 @@ const HomeNavbar = () => {
               <img style={{ height: '44px' }} src={logo} alt='sneakertrader-logo' />
             </Link>
 
-            <MobileSearchIcon onClick={mobileSearchbarHook.onOpen} />
+            <MobileSearchIconWrapper onClick={mobileSearchbarHook.onOpen}>
+              <SearchIcon />
+            </MobileSearchIconWrapper>
           </React.Fragment>
         )}
       </NavbarWrapper>
