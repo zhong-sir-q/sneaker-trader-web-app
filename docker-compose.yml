@@ -6,6 +6,6 @@ services:
         ports: 
             - "4000:4000"
         env_file: 
-            - ./backend/.env.production
+            - ./backend/.env.development
         environment:
-            - NODE_ENV=production
+            - NODE_ENV=development

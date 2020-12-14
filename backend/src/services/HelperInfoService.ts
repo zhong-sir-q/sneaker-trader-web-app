@@ -19,7 +19,7 @@ class HelperInfoService implements HelperInfoServiceEntity {
   async get(info: HelperInfoType) {
     const tableName = this.getTableName(info);
 
-    return this.conn.query(`SELECT * FROM Colorways`)
+    return this.conn.query(`SELECT * FROM ${tableName}`);
   }
 
   async create(info: HelperInfoType, payload: any) {
