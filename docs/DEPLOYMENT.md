@@ -1,5 +1,7 @@
 ## Deploy frontend React and backend Express on AWS
 
+In the root directory, first initialize the environment variables by running `source .dev_env.sh` or `source .prod_env.sh` depending on the deployment stage.
+
 We are hosting the frontend assets in a S3 bucket, and packaged the backend app into a docker image to run it in ECS. Depending on the deployment type of ECS, if it is rolling update, `make run-rolling-update` will create a new backend docker image and push to ECR. If the deployment type is blue/green, since we have setup a [cloudwatch event](https://docs.aws.amazon.com/codepipeline/latest/userguide/create-cwe-ecr-source-console.html), which watches the action happening in ECR, if it is a success, then it triggers the [code pipeline](https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-ecs-ecr-codedeploy.html) we have setup. Therefore, `make push-ecr-img` will trigger a blue green deployment.
 
 `make build-deploy-frontend` builds and pushes the frontend assets to S3.

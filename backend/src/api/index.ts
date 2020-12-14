@@ -43,6 +43,7 @@ import chat from './routers/chat';
 import ChatService from '../services/ChatService';
 
 import createProxyRoutes from './routers/proxy';
+import { promisifiedPool } from '../config/mysql';
 
 export default () => {
   const app = Router();
@@ -76,14 +77,14 @@ export default () => {
   const proxyRoutes = createProxyRoutes();
   app.use('/proxy', proxyRoutes.router);
 
-  seller(app, new SellerService());
+  seller(app, new SellerService(promisifiedPool));
   address(app, new AddressService(new AddressVerificationCodeService()));
 
   sneaker(app, new SneakerService());
-  listedSneaker(app, new ListedSneakerService());
+  listedSneaker(app, new ListedSneakerService(promisifiedPool));
   portfolio(app, new PortfolioSneakerService());
 
-  helperInfo(app, new HelperInfoService());
+  helperInfo(app, new HelperInfoService(promisifiedPool));
 
   wallet(app, walletService);
   transaction(app, new TransactionService());

@@ -1,16 +1,20 @@
-import mysqlPoolConnection from '../config/mysql';
+import { PromisifiedPool } from '../config/mysql';
 import { getSellersAvgRatingQuery } from '../utils/queries';
 import { SellerEntity, ListedSneakerSeller } from '../../../shared';
 
 class SellerService implements SellerEntity {
+  private conn: PromisifiedPool;
+
+  constructor(connection: PromisifiedPool) {
+    this.conn = connection;
+  }
+
   async getSellersBySneakerNameSize(
     currentUserId: number,
     name: string,
     colorway: string,
     size: number
   ): Promise<ListedSneakerSeller[]> {
-    const poolConn = await mysqlPoolConnection();
-
     // NOT L.userId = ? because the current user cannot see their own listing
     const getSellersQuery = `
       SELECT U.id, U.username, U.email, U.profilePicUrl, L.askingPrice, L.id as listedProductId,
@@ -28,7 +32,7 @@ class SellerService implements SellerEntity {
              ON (q1.id = q2.sellerId) ORDER BY rating DESC, askingPrice
     `;
 
-    return poolConn.query(sellersQuery, [currentUserId, name, colorway, size]);
+    return this.conn.query(sellersQuery, [currentUserId, name, colorway, size]);
   }
 }
 

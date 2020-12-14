@@ -5,13 +5,14 @@ import ListedSneakerService from '../../services/ListedSneakerService';
 import fakeUser from '../fakeUser';
 import fakeSneaker from '../fakeSneaker';
 import fakeListedSneaker from '../fakeListedSneaker';
+import { promisifiedPool } from '../../config/mysql';
 
 const getRand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const initListedSneakerTable = async () => {
   const UserServiceInstance = new UserService();
   const SneakerServiceInstance = new SneakerService();
-  const ListedSneakerServiceInstance = new ListedSneakerService();
+  const ListedSneakerServiceInstance = new ListedSneakerService(promisifiedPool);
 
   const userIds: number[] = [];
   const sneakerIds: number[] = [];

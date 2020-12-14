@@ -55,7 +55,8 @@
     "compile-sass": "node-sass src/assets/scss/now-ui-dashboard.scss src/assets/css/now-ui-dashboard.css",
     "minify-sass": "node-sass src/assets/scss/now-ui-dashboard.scss src/assets/css/now-ui-dashboard.min.css --output-style compressed",
     "map-sass": "node-sass src/assets/scss/now-ui-dashboard.scss src/assets/css/now-ui-dashboard.css --source-map true",
-    "deploy": "aws s3 sync build/ s3://sneaker-trader-app --acl public-read --cache-control max-age=0",
+    "deploy-dev": "aws s3 sync build/ s3://sneaker-trader-app --acl public-read --cache-control max-age=0",
+    "deploy-prod": "aws s3 sync build/ s3://sneaker-trader-prod-app --acl public-read --cache-control max-age=0",
     "switchDev": "git checkout dev && amplify env checkout dev",
     "switchProd": "git checkout prod && amplify env checkout prod",
     "cypress:open": "./node_modules/.bin/cypress open"

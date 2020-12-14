@@ -1,11 +1,29 @@
+ifndef env
+$(error "Deployment environment is not defined")
+endif
+
+ifndef service_name
+$(error "ECS service name is not defined")
+endif
+
+ifndef account_id
+$(error "AWS account id is not defined")
+endif
+
+ifeq ($(env), dev)
+else ifeq ($(env), prod)
+else
+$(error "Deployment environment must be dev or prod")
+endif
+
 BG_DEPLOYMENT_FILE="create-bluegreen-deployment.json"
 
-AWS_ACCOUNT_ID="257875578557"
+AWS_ACCOUNT_ID=$(account_id)
 ECR_URL="$(AWS_ACCOUNT_ID).dkr.ecr.ap-southeast-2.amazonaws.com/sneakertrader/express"
-TAG_NAME="prod"
+TAG_NAME=$(env)
 LOCAL_IMAGE_NAME="main_backend"
 
-SERVICE_NAME="st-blue-green-service"
+SERVICE_NAME=$(service_name)
 
 # NOTE: no security policy is attached to ECR at the moment, hence anyone can push, unsafe.
 # TODO: how to make sure the blug green version of the ecs uses the correct docker image? (the tag is overriden)
@@ -22,7 +40,7 @@ create-bluegreen-deploy:
 
 # works only when ecs is type of rolling update
 update-ecs-service:
-	aws ecs update-service --cluster sneaker-trader-cluster --service $SERVICE_NAME --force-new-deployment
+	aws ecs update-service --cluster sneaker-trader-cluster --service $(SERVICE_NAME) --force-new-deployment
 
 # run-bluegreen-deploy: push-ecr-img create-bluegreen-deploy
 run-bluegreen-deploy: push-ecr-img
@@ -30,7 +48,12 @@ run-bluegreen-deploy: push-ecr-img
 run-rolling-update: push-ecr-img update-ecs-service
 
 build-deploy-frontend:
-	npm --prefix frontend run build && npm --prefix frontend run deploy
+	npm --prefix frontend run build
+	@if [ $(env) = "dev" ]; then\
+  	npm --prefix frontend run deploy-dev;\
+	else\
+		npm --prefix frontend run deploy-prod;\
+	fi
 
 bluegreen-deploy-all: run-bluegreen-deploy build-deploy-frontend
 

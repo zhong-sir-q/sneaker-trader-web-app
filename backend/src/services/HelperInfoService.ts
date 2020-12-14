@@ -1,27 +1,31 @@
 import { formatGetRowsQuery, formatInsertRowsQuery } from '../utils/formatDbQuery';
 
-import mysqlPoolConnection from '../config/mysql';
+import { PromisifiedPool } from '../config/mysql';
 import { SNEAKER_NAMES, COLORWAYS, BRANDS } from '../config/tables';
 
 import { HelperInfoType, HelperInfoServiceEntity } from '../../../shared';
 
 class HelperInfoService implements HelperInfoServiceEntity {
+  private conn: PromisifiedPool;
+
+  constructor(connection: PromisifiedPool) {
+    this.conn = connection;
+  }
+
   private getTableName(info: HelperInfoType) {
     return info === 'sneakernames' ? SNEAKER_NAMES : info === 'colorways' ? COLORWAYS : BRANDS;
   }
 
   async get(info: HelperInfoType) {
-    const poolConn = await mysqlPoolConnection();
     const tableName = this.getTableName(info);
 
-    return poolConn.query(formatGetRowsQuery(tableName));
+    return this.conn.query(`SELECT * FROM Colorways`)
   }
 
   async create(info: HelperInfoType, payload: any) {
-    const poolConn = await mysqlPoolConnection();
     const tableName = this.getTableName(info);
 
-    return poolConn.query(formatInsertRowsQuery(tableName, payload));
+    return this.conn.query(formatInsertRowsQuery(tableName, payload));
   }
 }
 
