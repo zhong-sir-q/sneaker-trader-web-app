@@ -1,9 +1,11 @@
+HINT=consider source .dev_env.sh or source .prod_env.sh
+
 ifndef env
-$(error "Deployment environment is not defined")
+$(error "Deployment environment is not defined, $(HINT)")
 endif
 
 ifndef service_name
-$(error "ECS service name is not defined")
+$(error "ECS service name is not defined, $(HINT)")
 endif
 
 ifndef account_id
