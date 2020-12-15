@@ -32,9 +32,7 @@ export const defaultSideBarProps: SideBarProps = {
   routes: [],
   showNotification: false,
   backgroundColor: 'blue' as SideBarBackgroundColor,
-  minimizeSidebar: () => {
-    console.log()
-  },
+  minimizeSidebar: () => {},
 };
 
 // this verifies if any of the collapses should be default opened on a rerender of this component

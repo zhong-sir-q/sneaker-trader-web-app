@@ -10,7 +10,6 @@ import { useAuth } from 'providers/AuthProvider';
 
 import { io } from 'socket.io-client';
 import useScrollBottom from 'hooks/useScrollBottom';
-import CenterSpinner from 'components/CenterSpinner';
 
 const socket = io(process.env.REACT_APP_API_SERVER as string);
 
@@ -23,6 +22,22 @@ type ChatDialogProps = {
   onClose: () => void;
 };
 
+// TODO: use moment to take care time calculation
+// const chatTime = moment(item.dateTime).format('h:mm')
+const formatChatTime = (dateTime: number) => {
+  const date = new Date(dateTime);
+  const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+  const offset = date.getTimezoneOffset() / 60;
+  const hours = date.getHours();
+  newDate.setHours(hours - offset);
+  const time = newDate.toLocaleString();
+  const splitValue = time.split(' ')[1];
+  const splitChatTime = splitValue.split(':');
+  const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
+
+  return chatTime;
+};
+
 const ChatDialog = (props: ChatDialogProps) => {
   const { open, customer, productId, userId, userType, onClose } = props;
   const { currentUser } = useAuth();
@@ -31,12 +46,10 @@ const ChatDialog = (props: ChatDialogProps) => {
 
   const [text, setText] = useState('');
 
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<any[]>();
   const [messageEndRef, scrollToMessageEnd] = useScrollBottom(messages);
 
   const [unreadMessageIds, setUnreadMessageIds] = useState<number[]>([]);
-
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (evt: any) => setText(evt.target.value);
 
@@ -46,9 +59,7 @@ const ChatDialog = (props: ChatDialogProps) => {
   const handleSubmit = () => {
     if (text.trim() === '') return;
 
-    const today = new Date();
-    const time = today.getHours() + ':' + today.getMinutes();
-    const data = { message: text.trim(), buyerId, sellerId, userType, time, productId };
+    const data = { message: text.trim(), buyerId, sellerId, userType, productId, dateTime: formatChatTime(Date.now()) };
     socket.emit('message', data);
     setText('');
   };
@@ -61,15 +72,13 @@ const ChatDialog = (props: ChatDialogProps) => {
 
   const getMessages = async () => {
     if (currentUser) {
-      setLoading(true);
-
       const response = await ChatControllerInstance.getChatByProductIdAndBuyerIDAndSellerId(
         productId,
         buyerId,
         sellerId
       );
 
-      setMessages(response);
+      if (response) setMessages(response);
 
       if (response && response.length) {
         const chatIds: Array<number> = [];
@@ -83,18 +92,19 @@ const ChatDialog = (props: ChatDialogProps) => {
         setUnreadMessageIds(chatIds);
       }
 
-      setLoading(false);
       scrollToMessageEnd();
     }
   };
 
   useEffect(() => {
     getMessages();
+  }, [productId, sellerId, buyerId]);
 
+  useEffect(() => {
     socket.on(`newMessage_${productId}_${buyerId}_${sellerId}`, () => {
       getMessages();
     });
-  }, [productId, sellerId, buyerId]);
+  }, []);
 
   const { username } = customer;
 
@@ -127,24 +137,10 @@ const ChatDialog = (props: ChatDialogProps) => {
           root: classes.dialogContent,
         }}
       >
-        {loading ? (
-          <CenterSpinner fullParentHeight />
-        ) : (
-          messages &&
+        {messages &&
           messages.length > 0 &&
           messages.map(function (item: any, idx: any) {
-            const date = new Date(item.dateTime);
-            const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
-            const offset = date.getTimezoneOffset() / 60;
-            const hours = date.getHours();
-            newDate.setHours(hours - offset);
-            const time = newDate.toLocaleString();
-            const splitValue = time.split(' ')[1];
-            const splitChatTime = splitValue.split(':');
-            const chatTime = `${splitChatTime[0]}: ${splitChatTime[1]}`;
-
-            // TODO: use moment to take care time calculation
-            // const chatTime = moment(item.dateTime).format('h:mm')
+            const chatTime = formatChatTime(item.dateTime);
 
             // the current user
             if (item.userType === userType) {
@@ -173,8 +169,7 @@ const ChatDialog = (props: ChatDialogProps) => {
                 </div>
               );
             }
-          })
-        )}
+          })}
         <MessageEnd />
       </DialogContent>
       <DialogActions

@@ -8,7 +8,7 @@ const useScrollBottom = (...deps: any[]): [MutableRefObject<any>, () => void] =>
   const elementRef = useRef<any>(null);
 
   const scrollToBottom = useCallback(() => {
-    if (elementRef.current) elementRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (elementRef.current) elementRef.current.scrollIntoView();
   }, [elementRef]);
 
   useEffect(() => {

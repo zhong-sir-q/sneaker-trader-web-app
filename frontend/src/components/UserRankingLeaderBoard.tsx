@@ -87,10 +87,11 @@ export const UserRankingLeaderBoardDialog = (props: UserRankingLeaderBoardDialog
   return (
     <Dialog fullWidth maxWidth='xs' open={isDialogOpen} onClose={closeDialog}>
       <DialogTitle>
+        Leaderboard
         <MuiCloseButton onClick={closeDialog} />
       </DialogTitle>
       <DialogContent>
-        <UserRankingLeaderBoard items={rankings} />
+        {rankings.length === 0 ? 'You can be the first on here!' : <UserRankingLeaderBoard items={rankings} />}
       </DialogContent>
     </Dialog>
   );

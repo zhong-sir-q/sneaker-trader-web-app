@@ -61,11 +61,8 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
     contactChatDialogHook.onOpen();
   }, [contactSeller]);
 
-  const onContactSeller = (seller: Seller, productId: number, userId: number) => {
-    console.log('Product Id', productId);
-    console.log('User Id', userId);
+  const onContactSeller = (seller: Seller, productId: number, userId: number) =>
     setContactSeller({ seller, productId, userId });
-  };
 
   const updateSelectedDropdownIDx = (idx: number) => {
     if (idx === selectedDropdownIdx) {

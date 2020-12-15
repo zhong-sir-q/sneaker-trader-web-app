@@ -3,6 +3,7 @@ import ChatService from './services/ChatService';
 
 import { Socket } from 'socket.io';
 import { promisifiedPool } from './config/mysql';
+import moment from 'moment';
 
 const PORT = process.env.PORT || 4000;
 const http = require('http').Server(app);
@@ -16,10 +17,10 @@ const io = require('socket.io')(http, {
 const ChatServiceInstance = new ChatService(promisifiedPool);
 
 io.on('connection', function (socket: Socket) {
-  socket.on('message', function (data: any) {
-    const { message, productId, buyerId, sellerId, userType } = data;
+  socket.on('message', function (msgPayload: any) {
+    const { message, productId, buyerId, sellerId, userType } = msgPayload;
 
-    io.emit(`newMessage_${productId}_${buyerId}_${sellerId}`, message);
+    io.emit(`newMessage_${productId}_${buyerId}_${sellerId}`, msgPayload);
 
     ChatServiceInstance.sendMessage(Number(productId), Number(buyerId), Number(sellerId), message, userType);
   });
