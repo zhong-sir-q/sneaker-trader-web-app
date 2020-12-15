@@ -77,6 +77,7 @@ i.send {
   background: -webkit-gradient(linear, left top, left bottom, from(#7dcae8), to(#3cafdd));
   background: linear-gradient(to bottom, #f47137, #fdac80);
 }
+
 i.send:before {
   content: "";
   display: block;
@@ -91,33 +92,25 @@ i.send:before {
   left: 8px;
   top: 8px;
 }
-.chat-container .MuiDialog-paperWidthSm {
-  border-radius: 0;
-  width: 460px;
-  max-height: 460px;
-  height: 420px;
-}
-.chat-container .MuiDialogTitle-root {
-  background: #F7F9FA;
-  padding: 10px 20px;
-}
-.chat-container .MuiDialogActions-root {
-  background: #EBEBEB;
-}
+
+/* .chat-container .MuiTypography-root {
+  font-size: 16px;
+  font-weight: bold;
+} */
+
 .chat-container .form-control:focus {
   background: none;
 }
+
 .chat-container .form-control {
   border: none;
 }
-.chat-container .MuiTypography-root {
-  font-size: 16px;
-  font-weight: bold;
-}
+
 .chat-container .fa-times-circle {
   position: relative;
   left: 10px;
 }
+
 .chat-container .chat-content-left {
   width: 100%;
   background: #e4e4e4;
@@ -127,6 +120,7 @@ i.send:before {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 }
+
 .chat-container .chat-content-right {
   width: 100%;
   float: right;
@@ -138,17 +132,16 @@ i.send:before {
   border-bottom-left-radius: 8px;
   border-top-left-radius: 8px;
 }
-.chat-container .MuiDialogContent-root {
-  padding: 8px;
-}
-.message-left,
-.message-right {
+
+.message-left, .message-right {
   width: 55%;
   display: flex;
 }
+
 .message-right {
   float: right;
 }
+
 .chat-container .profile {
   width: 66px;
   position: relative;
@@ -169,7 +162,7 @@ i.send:before {
   cursor: pointer;
 }
 
-Q.bold {
+.bold {
   font-weight: bold;
 }
 

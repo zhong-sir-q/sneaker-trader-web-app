@@ -138,7 +138,7 @@ const ViewSellersList = (props: ViewSellersListProps) => {
 
   return !sellers || !displaySneaker ? (
     <Wrapper>
-      <CenterSpinner fullHeight />
+      <CenterSpinner fullScreenHeight />
     </Wrapper>
   ) : (
     <React.Fragment>

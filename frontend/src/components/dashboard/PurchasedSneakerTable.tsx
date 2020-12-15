@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 
 import { Table } from 'reactstrap';
@@ -17,9 +17,11 @@ import { Header, DropdownRow, Cell, ShowDropdownHeader, ShowDropdownCell } from 
 
 import SneakerNameCell from 'components/SneakerNameCell';
 
-import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
+import { SellerListedSneaker, BuyerPurchasedSneaker, Seller } from '../../../../shared';
 import { upperCaseFirstLetter } from 'utils/utils';
 import SneakerStatusText from './SneakerStatusText';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import ChatDialog from 'components/dialog/ChatDialog';
 
 const computeTotalAmount = (sneakers: (SellerListedSneaker | BuyerPurchasedSneaker)[]) => {
   let total = 0;
@@ -40,13 +42,30 @@ type PurchasedSneakerTableProps = {
   sneakers: BuyerPurchasedSneaker[];
 };
 
+type ContactSeller = {
+  seller: Seller;
+  productId: number;
+  userId: number;
+};
+
 const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
   const { sneakers } = props;
-  console.log('sneakers', sneakers)
 
   const [selectedDropdownIdx, setSelectedDropdownIdx] = useState<number>();
+  const [contactSeller, setContactSeller] = useState<ContactSeller>();
 
   const windowDimensions = useWindowDimensions();
+  const contactChatDialogHook = useOpenCloseComp();
+
+  useEffect(() => {
+    contactChatDialogHook.onOpen();
+  }, [contactSeller]);
+
+  const onContactSeller = (seller: Seller, productId: number, userId: number) => {
+    console.log('Product Id', productId);
+    console.log('User Id', userId);
+    setContactSeller({ seller, productId, userId });
+  };
 
   const updateSelectedDropdownIDx = (idx: number) => {
     if (idx === selectedDropdownIdx) {
@@ -112,7 +131,7 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
       sizeSystem,
       prodCondition,
       transactionDatetime,
-      productId
+      productId,
     } = props.sneaker;
 
     const displayName = `${brand} ${name} ${colorway}`;
@@ -134,7 +153,12 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
           </Cell>
           <Cell>{quantity || 1}</Cell>
           <Cell style={{ minWidth: '220px' }}>
-          <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId}/>
+            <BuyerCTAButtonsGroup
+              listedProdId={id}
+              prodStatus={prodStatus}
+              seller={seller}
+              onContact={() => onContactSeller(seller, productId, userId)}
+            />
           </Cell>
           <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
             {showRowDropdown ? <KeyboardArrowUp fontSize='default' /> : <KeyboardArrowDown fontSize='default' />}
@@ -158,7 +182,12 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
                 </ListItem>
                 <ListItem>Quantity:&nbsp;{quantity || 1}</ListItem>
                 <ListItem>
-                <BuyerCTAButtonsGroup listedProdId={id} prodStatus={prodStatus} seller={seller} userId={userId} productId={productId}/>
+                  <BuyerCTAButtonsGroup
+                    listedProdId={id}
+                    prodStatus={prodStatus}
+                    seller={seller}
+                    onContact={() => onContactSeller(seller, productId, userId)}
+                  />
                 </ListItem>
               </List>
             </td>
@@ -198,6 +227,16 @@ const PurchasedSneakerTable = (props: PurchasedSneakerTableProps) => {
           {currentPage + 1} of {pagesCount}
         </span>
       </div>
+      {contactSeller && (
+        <ChatDialog
+          open={contactChatDialogHook.open}
+          customer={contactSeller.seller}
+          productId={contactSeller.productId}
+          userId={contactSeller.userId}
+          userType='seller'
+          onClose={contactChatDialogHook.onClose}
+        />
+      )}
     </React.Fragment>
   ) : (
     <div>No purchased sneakers</div>

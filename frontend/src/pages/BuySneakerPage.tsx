@@ -125,7 +125,7 @@ const BuySneakerPage = (props: BuySneakerPageProps) => {
   if (!(displaySneaker && sizeMinPriceGroup && filterAllAsks))
     return (
       <Container fluid='md'>
-        <CenterSpinner fullHeight />
+        <CenterSpinner fullScreenHeight />
       </Container>
     );
 

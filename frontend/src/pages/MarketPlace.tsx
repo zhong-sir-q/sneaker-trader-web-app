@@ -80,10 +80,11 @@ const SkeletonGrid = () => {
   );
 };
 
-// only show on small screen
+// brands used to be programatically retrieved, but use hard-coded values here for good first site impression
+const brands = ['Adidas', 'Air Jordan', 'Anta', 'Jordan', 'Li Ning', 'New Balance', 'Nike', 'Puma', 'Under Armor']
 
 const MarketPlace = () => {
-  const { defaultSneakers, filterSneakers, brands, isFetching } = useMarketPlaceCtx();
+  const { defaultSneakers, filterSneakers, isFetching } = useMarketPlaceCtx();
   // lag some time to allow the sneakers to be
   // fetched first then render the filters
   const [lagging, setLagging] = useState(true);

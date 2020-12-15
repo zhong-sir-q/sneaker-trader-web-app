@@ -40,7 +40,8 @@ const TopupWalletDialog = (props: TopupWalletDialogProps) => {
     <Dialog fullWidth maxWidth='xs' open={isOpen}>
       <MuiCloseButton onClick={onClose} />
       <DialogTitle>
-        <h5 className='text-center m-0'>Topup Wallet</h5>
+        {/* <h5 className='text-center m-0'>Topup Wallet</h5> */}
+        Topup Wallet
       </DialogTitle>
       <DialogContent>
         <div style={{ marginBottom: '12px' }}>

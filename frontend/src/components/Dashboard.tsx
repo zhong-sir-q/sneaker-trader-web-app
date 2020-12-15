@@ -92,4 +92,66 @@ const Dashboard = () => {
   );
 };
 
+
+// const FBStyleChat = () => (
+//   <ChatWrapper>
+//     <ChatBoxContainer>
+//       <ChatBoxFlexWrapper>
+//         {Array(2)
+//           .fill(0)
+//           .map((_, idx) => (
+//             <ChatBox key={idx} />
+//           ))}
+//       </ChatBoxFlexWrapper>
+//     </ChatBoxContainer>
+//     <AvatarListWrapper>
+//       <AvatarList>
+//         {Array(2)
+//           .fill(0)
+//           .map((_, idx) => (
+//             <AvatarItem key={idx}>
+//               <Edit />
+//             </AvatarItem>
+//           ))}
+//       </AvatarList>
+//     </AvatarListWrapper>
+//   </ChatWrapper>
+// );
+
+// const ChatBoxContainer = styled.div``;
+
+// // same margin size as the width of the list
+// const ChatBoxFlexWrapper = styled.div`
+//   display: flex;
+//   margin-right: 80px;
+// `;
+
+// const ChatBox = styled.div`
+//   width: 300px;
+//   height: 400px;
+//   background-color: red;
+//   margin-left: 10px;
+// `;
+
+// const AvatarListWrapper = styled.div`
+//   position: absolute;
+//   right: 0;
+//   bottom: 0;
+// `;
+
+// const AvatarList = styled.div`
+//   width: 80px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// `;
+
+// const AvatarItem = styled.div``;
+
+// const ChatWrapper = styled.div`
+//   position: fixed;
+//   right: 0;
+//   bottom: 0;
+// `;
+
 export default Dashboard;

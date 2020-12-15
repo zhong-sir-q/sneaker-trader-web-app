@@ -47,7 +47,7 @@ const PreviewSneaker = (props: PreviewSneakerProps) => {
       <CardFooter style={{ display: 'flex', justifyContent: 'space-around' }}>
         {onPrevStep && <Button onClick={onPrevStep}>Previous</Button>}
         {isSubmitDisabled ? (
-          <CenterSpinner fullHeight={false} />
+          <CenterSpinner fullScreenHeight={false} />
         ) : (
           <Button type='button' color='primary' onClick={handleSubmit} disabled={isSubmitDisabled}>
             Confirm

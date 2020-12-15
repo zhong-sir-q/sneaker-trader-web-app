@@ -16,10 +16,11 @@ type SellerCTAButtonsGroupProps = {
   productId: number;
   onCompleteSale: () => void;
   onRemoveListing: () => void;
+  onContact: () => void;
 };
 
 const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
-  const { prodStatus, listedProdId, buyer, productId, userId, onCompleteSale, onRemoveListing } = props;
+  const { prodStatus, listedProdId, buyer, onContact, onCompleteSale, onRemoveListing } = props;
 
   // DIRTY TRICK: update the state after the rating is completed to hide the RateCustomer
   // button, if this state is not used, I have to tell the parent to fetch all data in order to update
@@ -34,18 +35,20 @@ const SellerCTAButtonsGroup = (props: SellerCTAButtonsGroupProps) => {
   const render = () => {
     switch (prodStatus) {
       case 'listed':
-        return <RemoveListingButton listedProdId={listedProdId} title='Remove Listing' onConfirmRemove={onRemoveListing} />;
+        return (
+          <RemoveListingButton listedProdId={listedProdId} title='Remove Listing' onConfirmRemove={onRemoveListing} />
+        );
       case 'pending':
         return (
           <>
-            <ContactCustomerButton customer={buyer} title='Contact Buyer' productId={productId} userId={userId} userType="seller" />
+            <ContactCustomerButton title='Contact Buyer' onClick={onContact} />
             <CompleteSaleButton onClick={onCompleteSale}>Complete Sale</CompleteSaleButton>
           </>
         );
       case 'sold':
         return (
           <>
-            <ContactCustomerButton customer={buyer} title='Contact Buyer' productId={productId} userId={userId} userType="seller" />
+            <ContactCustomerButton title='Contact Buyer' onClick={onContact} />
             {!hasSellerRatedBuyer && (
               <RateCustomer title='Rate Buyer' listedProductId={listedProdId} rateUser={onCompleteRating} />
             )}

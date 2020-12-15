@@ -1,10 +1,10 @@
 import React from 'react';
 import { Row, Spinner } from 'reactstrap';
 
-const CenterSpinner = (props: { fullHeight?: boolean }) => (
+const CenterSpinner = (props: { fullScreenHeight?: boolean; fullParentHeight?: boolean }) => (
   <Row
     style={{
-      minHeight: props.fullHeight ? 'calc(99vh - 96px)' : undefined,
+      minHeight: props.fullScreenHeight ? 'calc(99vh - 96px)' : props.fullParentHeight ? '100%' : undefined,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',

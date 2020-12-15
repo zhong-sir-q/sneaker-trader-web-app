@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Table } from 'reactstrap';
@@ -19,10 +19,12 @@ import useWindowDimensions from 'hooks/useWindowDimensions';
 import useSortableColData from 'hooks/useSortableColData';
 import usePagination from 'hooks/usePagination';
 
-import { SellerListedSneaker, BuyerPurchasedSneaker } from '../../../../shared';
+import { SellerListedSneaker, BuyerPurchasedSneaker, Buyer } from '../../../../shared';
 
 import { Header, ShowDropdownHeader, Cell, ShowDropdownCell, DropdownRow } from './table/Common';
 import SneakerStatusText from './SneakerStatusText';
+import useOpenCloseComp from 'hooks/useOpenCloseComp';
+import ChatDialog from 'components/dialog/ChatDialog';
 
 type ListedSneakerTableRowProps = {
   sneaker: SellerListedSneaker;
@@ -36,10 +38,26 @@ type ListedSneakerTableProps = {
   setShowCompleteSaleSuccess?: () => void;
 };
 
+type ContactBuyer = {
+  buyer: Buyer;
+  productId: number;
+  // the id of the user that will contact the buyer
+  userId: number;
+};
+
 const ListedSneakerTable = (props: ListedSneakerTableProps) => {
   const { sneakers, setShowCompleteSaleSuccess } = props;
 
   const [selectedDropdownIdx, setSelectedDropdownIdx] = useState<number>();
+  const [contactBuyer, setContactBuyer] = useState<ContactBuyer>();
+  const contactChatDialogHook = useOpenCloseComp();
+
+  useEffect(() => {
+    contactChatDialogHook.onOpen();
+  }, [contactBuyer]);
+
+  const onContactBuyer = (buyer: Buyer, productId: number, userId: number) =>
+    setContactBuyer({ buyer, productId, userId });
 
   const windowDimensions = useWindowDimensions();
 
@@ -124,7 +142,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
       userId,
       listedDatetime,
       productId,
-      prodCondition
+      prodCondition,
     } = props.sneaker;
 
     const onCompleteSale = async () => {
@@ -168,6 +186,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
               prodStatus={prodStatus}
               onCompleteSale={onCompleteSale}
               onRemoveListing={onRemoveListing}
+              onContact={() => onContactBuyer(buyer, productId, userId)}
             />
           </Cell>
           <ShowDropdownCell onClick={() => onClickShowDropdown(rowIdx)}>
@@ -197,6 +216,7 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
                     prodStatus={prodStatus}
                     onCompleteSale={onCompleteSale}
                     onRemoveListing={onRemoveListing}
+                    onContact={() => onContactBuyer(buyer, productId, userId)}
                   />
                 </ListItem>
               </List>
@@ -237,6 +257,16 @@ const ListedSneakerTable = (props: ListedSneakerTableProps) => {
           {currentPage + 1} of {pagesCount}
         </span>
       </div>
+      {contactBuyer && (
+        <ChatDialog
+          open={contactChatDialogHook.open}
+          customer={contactBuyer.buyer}
+          productId={contactBuyer.productId}
+          userId={contactBuyer.userId}
+          userType='seller'
+          onClose={contactChatDialogHook.onClose}
+        />
+      )}
     </React.Fragment>
   ) : (
     <div>No listed sneakers</div>

@@ -135,7 +135,7 @@ const UserProfile = () => {
     <React.Fragment>
       <PanelHeader size='sm' />
       <div className='content'>
-        <CenterSpinner fullHeight />
+        <CenterSpinner fullScreenHeight />
       </div>
     </React.Fragment>
   ) : (
