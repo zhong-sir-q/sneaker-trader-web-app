@@ -88,7 +88,7 @@ export default () => {
 
   wallet(app, walletService);
   transaction(app, new TransactionService());
-  chat(app, new ChatService());
+  chat(app, new ChatService(promisifiedPool));
 
   return app;
 };
