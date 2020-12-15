@@ -44,7 +44,7 @@ const sneakerListingFormValidationSchema = Yup.object({
   currencyCode: required('currency code'),
   sizeSystem: required('size system'),
   prodCondition: required('product condition') as Yup.Schema<SneakerCondition>,
-  askingPrice: minNumber(20, 'Minimum $20').required('Asking price is required'),
+  askingPrice: minNumber(100, 'Minimum $100').required('Asking price is required'),
   size: allowedRange(1, 15).required('Size is required'),
   originalPurchasePrice: minNumber(1, 'Minimum $1').required('Original purchase price is required'),
 });

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Collapse, Navbar, NavbarToggler, Nav, NavItem, Container } from 'reactstrap';
 
-import logo from 'assets/img/white_logo_transparent_background.png';
+import white_logo from 'assets/img/white_logo_transparent_background.png';
+import red_logo from 'assets/img/logo_transparent_background.png'
 
 import { AUTH, SIGNIN, SIGNUP, HOME } from 'routes';
 
@@ -21,7 +22,7 @@ const AuthNavbar = () => {
             </NavbarToggler>
           </div>
           <Link to={HOME} style={{ width: '120px' }}>
-            <img src={logo} alt='sneakertrader-logo' />
+            <img src={isOpen ? red_logo : white_logo} alt='sneakertrader-logo' />
           </Link>
         </div>
         <Collapse isOpen={isOpen} navbar>

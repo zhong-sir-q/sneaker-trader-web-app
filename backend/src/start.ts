@@ -10,11 +10,15 @@ const server = app.listen(PORT, function () {
   console.log('listening on *:' + PORT);
 });
 
+const allowedOrigins = '*'
+
 const io = require('socket.io')(server, {
   cors: {
-    origin: '*',
-  },
-})
+    origin: allowedOrigins,
+    methods: ["GET", "POST", 'PUT', 'DELETE'],
+    credentials: true,
+  }
+});
 
 const ChatServiceInstance = new ChatService(promisifiedPool);
 
